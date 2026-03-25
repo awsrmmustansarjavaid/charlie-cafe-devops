@@ -725,7 +725,7 @@ https://charlie-cafe-assets.s3.amazonaws.com/hero.jpg
 
 Read more about Charlie Cafe Lambda Layer (pymysql)
 
-[Lambda Layer (pymysql)](./AWS%20Charlie%20Cafe%20Project%20DOCs/Charlie%20Cafe%20Lambda%20pymysql-layer.md)
+[Lambda Layer (pymysql)](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/Charlie%20Cafe%20Lambda%20pymysql-layer.md)
 
 ### 1️⃣ - PyMySQL Lambda Layer
 
@@ -735,7 +735,7 @@ Read more about Charlie Cafe Lambda Layer (pymysql)
 sudo nano upload-pymysql-layer.sh
 ```
 
-[PyMySQL Lambda Layer](../AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Bash%20Script/☕%20AWS%20CAFE%20—%20PyMySQL%20Lambda%20Layer/upload-pymysql-layer.sh)
+[PyMySQL Lambda Layer](./scripts/upload-pymysql-layer.sh)
 
 ```
 sudo chmod +x upload-pymysql-layer.sh
@@ -759,10 +759,10 @@ sudo ./upload-pymysql-layer.sh
 
 ### ⚠️ Read ablout all "FrontEnd Configuration"
 
-[Cafe_FrontEnd_Config](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Cafe_FrontEnd_Config/Cafe_FrontEnd_Config.md)
+[Cafe_FrontEnd_Config](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20Front%20&%20Backend%20Code%20Script/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20Frontend%20Code%20Script/Cafe_FrontEnd_Config/Cafe_FrontEnd_Config.md)
 
 
-[Download & Upload Html Directory ](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Cafe_FrontEnd_Config/Cafe%20Code%20Drive/)
+[Download & Upload Frontend Directory ](./frontend/)
 
 ### 2️⃣ Charlie Cafe Export S3 to HTML Script
 
@@ -776,7 +776,7 @@ sudo ./upload-pymysql-layer.sh
 sudo nano charlie-cafe-export-s3-to-html.sh
 ```
 
-[Charlie Cafe Export S3 to HTML Script](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Bash%20Script/charlie-cafe-export-s3-to-html/charlie-cafe-export-s3-to-html.sh)
+[Charlie Cafe Export S3 to HTML Script](./scripts/charlie-cafe-export-s3-to-html.sh)
 
 ```
 sudo chmod +x charlie-cafe-export-s3-to-html.sh
