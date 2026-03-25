@@ -71,8 +71,17 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
+### 📦 1. Create a Dockerfile
 
-### 🌐 3. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
+Inside your project root (charlie-cafe-devops/), create:
+
+```
+Dockerfile
+```
+
+
+
+### 🌐 2. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
 
 #### 📄 Read more here 
 
