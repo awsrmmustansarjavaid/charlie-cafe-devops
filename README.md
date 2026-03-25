@@ -74,8 +74,27 @@ charlie-cafe-devops
 
 ### 📄 3. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
 
+#### ✅ ✅ FINAL SPLIT (PRODUCTION STYLE)
+
+You will have:
+
+```
+schema.sql   → structure (DB + tables)
+data.sql     → sample/test data
+verify.sql   → testing + analytics
+```
+
 #### 👉 Create this file:
 
 ```
 infrastructure/rds/schema.sql
 ```
+
+```
+infrastructure/rds/data.sql
+```
+
+```
+infrastructure/rds/verify.sql
+```
+
