@@ -2,50 +2,55 @@
 
 > ### DevOPS Lab Project
 
-## Charlie Cafe Project Structure
+# Charlie Cafe Project Structure
+
+## 📁 Professional Repository Structure
 
 ### Create your repo like this:
 
+> #### Update your repo to this (no file changes, only organization):
+
 ```
-charlie-cafe/
+charlie-cafe-devops/
 │
 ├── README.md
+├── LICENSE
 ├── .gitignore
 ├── docker-compose.yml
 │
-├── frontend/
-│   ├── html/
-│   ├── css/
-│   ├── js/
-│   └── php/
+├── app/                        # Your original code (UNCHANGED)
+│   ├── frontend/
+│   │   ├── *.html
+│   │   ├── *.php
+│   │   ├── css/
+│   │   └── js/
+│   │
+│   └── backend/
+│       └── lambda/
+│           ├── *.py
 │
-├── backend/
-│   └── lambda/
-│       ├── cafe_order_processor.py
-│       ├── admin_mark_paid.py
-│       └── other_lambda_files.py
-│
-├── database/
-│   ├── rds-schema.sql
-│   └── mysql-init/
-│
-├── scripts/
-│   ├── setup_lamp.sh
-│   ├── setup_rds.sh
-│   ├── s3_to_ec2.sh
-│   ├── ec2_to_s3.sh
-│   └── lambda_layer.sh
+├── infrastructure/
+│   ├── rds/
+│   │   └── schema.sql
+│   ├── scripts/
+│   │   ├── setup_lamp.sh
+│   │   ├── setup_rds.sh
+│   │   ├── s3_to_ec2.sh
+│   │   └── ec2_to_s3.sh
 │
 ├── docker/
 │   ├── apache-php/
 │   │   └── Dockerfile
-│   ├── mysql/
-│   │   └── Dockerfile (optional)
-│   └── lambda/
-│       └── Dockerfile
+│   └── mysql/
 │
-└── docs/
-    └── architecture.md
+├── docs/
+│   ├── architecture.md
+│   ├── deployment.md
+│   └── your-original-guide.md  ✅ (your file)
+│
+└── .github/
+    └── workflows/
+        └── deploy.yml
 ```
 
 ### 👉 Important:
