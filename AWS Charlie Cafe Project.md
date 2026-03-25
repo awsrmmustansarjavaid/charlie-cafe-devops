@@ -5944,7 +5944,7 @@ AWSSecretsManagerReadWrite
 
 ### 5️⃣ — CONNECT CafeMenu TABLE IN LAMBDA
 
-[CafeOrderProcessingLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeOrderProcessor/CafeOrderProcessingLambda.py)
+[CafeOrderProcessingLambda.py](./backend/CafeOrderProcessingLambda.py)
 
 #### 2️⃣ — DEPLOY LAMBDA (DO NOT SKIP)
 
@@ -6074,7 +6074,7 @@ item_profit = item_sales - item_cost
 
 - **Open CafeAnalyticsLambda**
 
-[CafeAnalyticsLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeAnalyticsLambda/CafeAnalyticsLambda.py)
+[CafeAnalyticsLambda.py](./backend/CafeAnalyticsLambda.py)
 
 ### 4️⃣ CONFIGURE LAMBDA ENVIRONMENT VARIABLES (MANDATORY)
 
@@ -6306,7 +6306,7 @@ if 'Admin' not in groups:
 
 - **Open CafeAnalyticsLambda**
 
-[CafeAnalyticsLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeAnalyticsLambda/CafeAnalyticsLambda.py)
+[CafeAnalyticsLambda.py](./backend/CafeAnalyticsLambda.py)
 
 #### 4️⃣ CONFIGURE LAMBDA ENVIRONMENT VARIABLES (MANDATORY)
 
@@ -6646,7 +6646,7 @@ sudo nano setup_cafe_hr_attendance.sh
 
 #### 2️⃣ Bash Script 
 
-[setup_cafe_hr_attendance.sh](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Bash%20Script/setup_cafe_hr_attendance/setup_cafe_hr_attendance.sh)
+[setup_cafe_hr_attendance.sh](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20Front%20%26%20Backend%20Code%20Script/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20Bash%20Script/setup_cafe_hr_attendance/setup_cafe_hr_attendance.sh)
 
 #### 3️⃣ Make the Script Executable
 
