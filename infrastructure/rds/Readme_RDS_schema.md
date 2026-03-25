@@ -698,6 +698,150 @@ Unknown column 'payment_method'
 
 If needed, we can upgrade schema.sql safely (next step).
 
----
-## 🌐 modern DevOps territory
+
+### 🌐 How to run your current files in production without Docker/CI/CD
+
+```
+# Connect to RDS
+mysql -h <RDS_HOST> -u <USER> -p < schema.sql    # Create DB and tables
+mysql -h <RDS_HOST> -u <USER> -p < data.sql      # Optional: seed data
+mysql -h <RDS_HOST> -u <USER> -p < verify.sql    # QA check
+```
+
+✅ This is safe and works now.
+
+### 🌐 How to integrate schema.sql, data.sql, verify.sql into Docker + CI/CD
+
+Since you already have:
+
+```
+charlie-cafe-devops/
+├── docker/
+│   └── mysql/
+│       └── Dockerfile
+├── docker-compose.yml
+└── .github/workflows/deploy.yml
+```
+
+Here’s the common production-ready pattern:
+
+### Step 1 — Dockerize MySQL for local testing
+
+#### docker/mysql/Dockerfile
+
+```
+FROM mysql:8.0
+
+ENV MYSQL_ROOT_PASSWORD=rootpassword
+ENV MYSQL_DATABASE=cafe_db
+
+# Copy schema and data
+COPY ../../infrastructure/rds/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+COPY ../../infrastructure/rds/data.sql /docker-entrypoint-initdb.d/02-data.sql
+```
+
+- MySQL image runs the scripts automatically on first container startup.
+
+- verify.sql is not copied — you run it manually or via CI/CD test.
+
+#### docker-compose.yml
+
+```
+version: "3.9"
+
+services:
+  mysql:
+    build: ./docker/mysql
+    container_name: charlie-cafe-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  apache-php:
+    build: ./docker/apache-php
+    container_name: charlie-cafe-web
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
+```
+
+### Step 2 — Add verify.sql to CI/CD for QA
+
+#### .github/workflows/deploy.yml
+
+```
+name: Deploy Charlie Cafe
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: cafe_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -uroot -prootpassword; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Apply schema
+        run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
+
+      - name: Apply sample data
+        run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
+
+      - name: Verify schema
+        run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
+```
+
+✅ This allows automatic DB creation + QA verification in CI/CD whenever you push code.
+
+### Step 3 — Production vs Local
+
+- Local development: Use Docker MySQL container + schema + data.
+
+- Production RDS: Run schema.sql only + optional verify.sql.
+
+- No Docker is needed on production RDS — RDS is fully managed by AWS.
+
+### Step 4 — Optional Advanced
+
+#### Later, you can add:
+
+- Terraform script to provision RDS automatically
+
+- CI/CD scripts to run schema migrations
+
+- Versioned SQL migrations (like Flyway or Liquibase)
+
+### 💡 Key takeaway:
+
+- Your three SQL files are already production-ready without Docker or CI/CD. Docker + CI/CD is only automation and testing convenience, not a requirement.
 
