@@ -3997,7 +3997,7 @@ ORD-20260114-8392
 
 ### 2️⃣ Lambda Code (STRICT COPY)
 
-[CafeOrderWorkerLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeOrderWorkerLambda/CafeOrderWorkerLambda.py)
+[CafeOrderWorkerLambda.py](./backend/CafeOrderWorkerLambda.py)
 
 ### 3️⃣ Move Lambda Into VPC
 
@@ -4150,7 +4150,7 @@ def lambda_handler(event, context):
 ```
 #### ⚠️ Already Added And CafeOrderStatusLambda.py code is updated... Skip this step
 
-[CafeOrderStatusLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeOrderStatusLambda/CafeOrderStatusLambda.py)
+[CafeOrderStatusLambda.py](./backend/CafeOrderStatusLambda.py)
 
 ### 🧑‍💻 STEP 8 — order-receipt.php
 
@@ -4184,7 +4184,7 @@ GET https://YOUR_API_ID.execute-api.us-east-1.amazonaws.com/prod/cafe-order-stat
 
 **⚠️ STEP 8 is ALREADY implemented in your order-receipt.php.You do NOT need structural changes.**
 
-[order-receipt.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order-status/CC%20-%20Order-Status%20CUSTOMER%20ORDER%20RECEIPT_single%20order/order-receipt.php)
+[order-receipt.php](./frontend/php/order-receipt.php)
 
 **☕ You now have a REAL SaaS-LEVEL CUSTOMER ORDER TRACKING SYSTEM**
 
@@ -4289,7 +4289,7 @@ echo "<a class='btn btn-success mt-2'
 
 **⚠️ STEP 3 is ALREADY implemented in your order.php.You do NOT need structural changes.**
 
-[order.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order.php/orders.php)
+[order.php](./frontend/php/orders.php)
 
 ### 🧩 STEP 4 — CREATE CUSTOMER TRACKING PAGE
 
@@ -4309,7 +4309,7 @@ order-receipt.php
 
 **⚠️ STEP 5 is ALREADY implemented in your order-receipt.php.You do NOT need structural changes.**
 
-[order-receipt.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order-status/CC%20-%20Order-Status%20CUSTOMER%20ORDER%20RECEIPT_single%20order/order-receipt.php)
+[order-receipt.php](./frontend/php/order-receipt.php)
 
 **✅ PHASE 4️⃣ STATUS**
 
@@ -4433,7 +4433,7 @@ DESCRIBE orders;
 
 #### 💻 MODERN CAFE-STYLE orders.php (Frontend Only Modified)
 
-[orders.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order.php/orders.php)
+[orders.php](./frontend/php/orders.php)
 
 
 **✅ PHASE 1️⃣ STATUS**
@@ -4500,7 +4500,7 @@ AdminMarkPaidLambda
 
 #### Replace entire Lambda code with this:
 
-[AdminMarkPaidLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/AdminMarkPaidLambda/AdminMarkPaidLambda.py)
+[AdminMarkPaidLambda.py](./backend/AdminMarkPaidLambda.py)
 
 ### 4️⃣ Move Lambda Into VPC
 
@@ -4595,7 +4595,7 @@ POST https://xxxx.execute-api.us-east-1.amazonaws.com/prod/admin/mark-paid
 
 ### 7️⃣ — admin-orders.html
 
-[admin-orders.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/admin-orders/admin-orders.html)
+[admin-orders.html](./frontend/html/admin-orders.html)
 
 **🔁 Replace with your real API Gateway URL**
 
@@ -4639,7 +4639,7 @@ Your existing Order Status API must return:
 
 #### ✅ FULL UPDATED FILE (WITH COMMENTS)
 
-[payment-status.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/payment-status.php/payment-status.php)
+[payment-status.php](./frontend/php/payment-status.php)
 
 **🔁 Replace with your real API Gateway URL**
 
@@ -4664,7 +4664,7 @@ Below is a clean, correct version aligned with your flow.
 
 #### 📄 payment-status.php
 
-[payment-status.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/payment-status.php/payment-status.php)
+[payment-status.php](./frontend/php/payment-status.php)
 
 **✅ PHASE 4️⃣ STATUS**
 
@@ -4940,7 +4940,7 @@ Execution role: Create new role
 
 🌱 Environment variable usage clarified
 
-[CafeAnalyticsLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeAnalyticsLambda/CafeAnalyticsLambda.py)
+[CafeAnalyticsLambda.py](./backend/CafeAnalyticsLambda.py)
 
 
 ### 3️⃣ 🔐 Environment Variable Required
@@ -5204,7 +5204,7 @@ sudo nano /var/www/html/analytics.html
 
 ### 2️⃣ analytics.html (FULL CODE)
 
-[analytics.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-%20Sales%20Analytics/analytics.html)
+[analytics.html](./frontend/html/analytics.html)
 
 ### 3️⃣ File PERMISSIONS (MANDATORY)
 
@@ -5233,7 +5233,7 @@ sudo systemctl restart httpd
 
 **⚠️ All these changes have already been made in all the admin files, so there is no need to follow these steps.**
 
-[order-status.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order-status/CC%20-%20Order-Status_LIVE%20ADMIN%20DASHBOARD_many%20orders/order-status.html)
+[order-status.html](./frontend/html/order-status.html)
 
 ### 2️⃣ Restart Apache (MANDATORY)
 
@@ -5375,7 +5375,7 @@ CloudWatchLogsFullAccess
 
 #### 2️⃣ Paste THIS CODE (COPY EXACTLY)
 
-[CafeAnalyticsLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeAnalyticsLambda/CafeAnalyticsLambda.py)
+[CafeAnalyticsLambda.py](./backend/CafeAnalyticsLambda.py)
 
 - Click Deploy
 
