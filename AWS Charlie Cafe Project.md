@@ -1306,11 +1306,11 @@ d2og2zrs47voou.cloudfront.net
 
 ### READ Me About
 
-[☕ CC- 2 —Secure Charlie Cafe Dashboard System](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20Charlie%20Café%20–%20Project%20With%20Detailed%20(Doc)/☕%20AWS%20Charlie%20Café%20–%20Project%20With%20Detailed%20Readme(Doc)/☕CC-%201%20—Secure%20Charlie%20Cafe%20Dashboard%20System.md)
+[☕ CC- 2 —Secure Charlie Cafe Dashboard System](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/%E2%98%95%20AWS%20Charlie%20Caf%C3%A9%20%E2%80%93%20Project%20With%20Detailed%20(Doc)/%E2%98%95%20AWS%20Charlie%20Caf%C3%A9%20%E2%80%93%20Project%20With%20Detailed%20Readme(Doc)/%E2%98%95CC-%201%20%E2%80%94Secure%20Charlie%20Cafe%20Dashboard%20System.md)
 
 ### AWS Cognito + PHP backend + protected API
 
-[☕ AWS Cognito + PHP backend + protected API](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20Charlie%20Café%20–%20Project%20With%20Detailed%20(Doc)/☕%20AWS%20Charlie%20Café%20–%20Project%20With%20Detailed%20Readme(Doc)/AWS%20Cognito%20%2B%20PHP%20backend%20%2B%20protected%20API.md)
+[☕ AWS Cognito + PHP backend + protected API](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/%E2%98%95%20AWS%20Charlie%20Caf%C3%A9%20%E2%80%93%20Project%20With%20Detailed%20(Doc)/%E2%98%95%20AWS%20Charlie%20Caf%C3%A9%20%E2%80%93%20Project%20With%20Detailed%20Readme(Doc)/AWS%20Cognito%20%2B%20PHP%20backend%20%2B%20protected%20API.md)
 
 
 ## 🔐 PHASE 1️⃣ — Cognito Authentication infrastructure 
