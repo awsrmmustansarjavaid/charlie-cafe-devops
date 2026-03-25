@@ -552,7 +552,7 @@ sudo ./connect-rds.sh
 sudo nano setup_charlie_cafe_db_full.sh
 ```
 
-[Order Processing & HR Schema Setup + Verification ](./scripts/Charlie-Cafe_RDS-Full.sh)
+[Order Processing & HR Schema Setup + Verification ](./scripts/setup_charlie_cafe_db_full.sh)
 
 #### ▶️ Run
 
@@ -566,7 +566,7 @@ sudo ./setup_charlie_cafe_db_full.sh
 
 ### 4️⃣ Verify table exists
 
-[AWS Charlie Cafe RDS Verification](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Charlie%20Cafe%20%20RDS%20Project.md#rds-verification)
+[AWS Charlie Cafe RDS Verification](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Charlie%20Cafe%20%20RDS%20Project.md#rds-verification)
 
 #### Exit MySQL:
 
