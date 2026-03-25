@@ -845,3 +845,238 @@ jobs:
 
 - Your three SQL files are already production-ready without Docker or CI/CD. Docker + CI/CD is only automation and testing convenience, not a requirement.
 
+## 🌐 a fully working docker-compose + CI/CD pipeline ready to run your Charlie Cafe database
+
+✅ Docker (local environment)
+
+✅ MySQL auto schema + data load
+
+✅ CI/CD (GitHub Actions) with verification
+
+✅ Clean structure (based on your repo)
+
+### 🚀 FINAL GOAL
+
+#### You will run:
+
+```
+docker-compose up -d
+```
+
+#### 👉 And get:
+
+- MySQL running
+
+- Database created
+
+- Tables created
+
+- Sample data inserted
+
+- App ready
+
+### 🐬 2. DOCKER MYSQL SETUP (AUTO LOAD SCHEMA)
+
+#### 📄 docker/mysql/Dockerfile
+
+```
+FROM mysql:8.0
+
+ENV MYSQL_ROOT_PASSWORD=rootpassword
+ENV MYSQL_DATABASE=cafe_db
+
+# Auto-run SQL files on container start
+COPY ../../infrastructure/rds/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+COPY ../../infrastructure/rds/data.sql /docker-entrypoint-initdb.d/02-data.sql
+```
+
+### ⚠️ IMPORTANT RULE
+
+#### Docker runs files in this order:
+
+```
+01-schema.sql  ✅
+02-data.sql    ✅
+```
+
+### 🌐 3. DOCKER APACHE + PHP
+
+#### 📄 docker/apache-php/Dockerfile
+
+```
+FROM php:8.2-apache
+
+# Install MySQL extension
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# Copy your frontend code
+COPY ../../app/frontend/ /var/www/html/
+
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
+EXPOSE 80
+```
+
+### ⚙️ 4. docker-compose.yml (MAIN ENGINE)
+
+```
+version: "3.9"
+
+services:
+  mysql:
+    build: ./docker/mysql
+    container_name: cafe-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: cafe_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  web:
+    build: ./docker/apache-php
+    container_name: cafe-web
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
+```
+
+### ▶️ 5. RUN YOUR PROJECT
+
+```
+docker-compose up -d
+```
+
+### 🌍 ACCESS YOUR APP
+
+#### Open browser:
+
+```
+http://localhost:8080
+```
+
+### 🧪 6. RUN VERIFICATION MANUALLY
+
+```
+docker exec -i cafe-mysql mysql -uroot -prootpassword cafe_db < infrastructure/rds/verify.sql
+```
+
+### 🔥 7. FULL CI/CD PIPELINE (AUTO TEST)
+
+#### 📄 .github/workflows/deploy.yml
+
+```
+name: Charlie Cafe CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-db:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: cafe_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -uroot -prootpassword; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Run Schema
+        run: |
+          mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
+
+      - name: Run Data
+        run: |
+          mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
+
+      - name: Run Verification
+        run: |
+          mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
+```
+
+### 🧠 HOW EVERYTHING WORKS (IMPORTANT)
+
+#### 🔹 Docker Flow
+
+- Start MySQL container
+
+- MySQL auto-runs:
+
+    - schema.sql
+
+    - data.sql
+
+- Database ready
+
+####  🔹CI/CD Flow
+
+- GitHub push
+
+- MySQL container starts
+
+- schema.sql runs
+
+- data.sql runs
+
+- verify.sql tests everything
+
+### 🏆 FINAL RESULT
+
+You now have:
+
+✅ Production-style schema
+
+✅ Docker local environment
+
+✅ Auto DB setup
+
+✅ CI/CD validation
+
+✅ Clean DevOps structure
+
+### ⚠️ IMPORTANT NEXT STEP (VERY IMPORTANT)
+
+#### Remember your earlier error:
+
+```
+Unknown column 'payment_method'
+```
+
+👉 Your current schema does NOT include it
+
+### ✅ FIX (OPTIONAL UPGRADE)
+
+#### Add this to orders table:
+
+```
+payment_method VARCHAR(20),
+```
+
