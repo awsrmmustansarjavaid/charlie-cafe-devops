@@ -352,6 +352,16 @@ verify.sql   → testing + analytics
 
 ### 📁 1. schema.sql (STRUCTURE ONLY)
 
+- Creates database if not exists → safe for repeated runs
+
+- Creates all tables with proper primary keys
+
+- Creates foreign keys for relationships (attendance, leaves)
+
+- Uses IF NOT EXISTS → prevents errors if re-run
+
+- Sets UTF8MB4 charset → supports emojis and special chars
+
 #### 👉 This is the MOST IMPORTANT file
 
 ```
@@ -434,6 +444,10 @@ CREATE TABLE IF NOT EXISTS orders (
 
 ### 📁 2. data.sql (SAMPLE DATA)
 
+- Seeding test/sample data for QA or demo
+
+- Can run safely without breaking schema (INSERT IGNORE)
+
 ```
 -- ==========================================================
 -- ☕ Charlie Cafe — SAMPLE DATA
@@ -490,6 +504,10 @@ VALUES
 ```
 
 ### 📁 3. verify.sql (TESTING + ANALYTICS)
+
+- Verification after deployment
+
+- Checks: tables, relationships, indexes, row counts, analytics (today/week/month sales)
 
 ```
 -- ==========================================================
