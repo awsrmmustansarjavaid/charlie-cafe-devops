@@ -395,7 +395,7 @@ CafeDevWebServer
 ### 1️⃣ LAMP Server USER DATA
 > **📍 File Location: AWS-LAMP Server-Bash-Script.md**
 
-[AWS-LAMP Server Bash-Script](../AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Bash%20Script/Linux%20Lamp%20Server/Lamp%20Server%20Script.sh)
+[AWS-LAMP Server Bash-Script](./scripts/Lamp%20Server%20Script.sh)
 
 ### 8️⃣ Development and Delopment LAMP Server 
 
@@ -414,7 +414,7 @@ ssh -i CafeDevKey.pem ec2-user@<PUBLIC-IP>
 sudo nano lamp-verify.sh
 ```
 
-[VERIFY LAMP + MySQL CLIENT](../AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Bash%20Script/Linux%20Lamp%20Server/lamp-verify.sh)
+[VERIFY LAMP + MySQL CLIENT](./scripts/lamp-verify.sh)
 
 ```
 sudo chmod +x lamp-verify.sh
@@ -515,7 +515,7 @@ mysql --version
 sudo nano connect-rds.sh
 ```
 
-[RDS Credentials to Secrets Manager ](../AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Bash%20Script/AWS%20RDS%20Bash%20Scripts/connect-rds.sh)
+[RDS Credentials to Secrets Manager ](./scripts/connect-rds.sh)
 
 
 ```
@@ -552,7 +552,7 @@ sudo ./connect-rds.sh
 sudo nano setup_charlie_cafe_db_full.sh
 ```
 
-[Order Processing & HR Schema Setup + Verification ](../AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Bash%20Script/AWS%20RDS%20Bash%20Scripts/Charlie-Cafe_RDS-Full.sh)
+[Order Processing & HR Schema Setup + Verification ](./scripts/Charlie-Cafe_RDS-Full.sh)
 
 #### ▶️ Run
 
