@@ -7096,7 +7096,7 @@ Everything will work.
 
 > **a single merged Lambda, Check-in and check-out are the same domain action (attendance), just different operations.**
 
-[hr-attendance.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Cafe-HR%20%26%20Attendance%20System/hr-attendance.py)
+[hr-attendance.py](./backend/hr-attendance.py)
 
 
 #### ✅ Add VPC Configuration (CRITICAL)
@@ -7121,7 +7121,7 @@ hr-employee-profile
 
 #### 2️⃣ Code:
 
-[hr-employee-profile.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Cafe-HR%20%26%20Attendance%20System//hr-employee-profile.py)
+[hr-employee-profile.py](./backend/hr-employee-profile.py)
 
 - Deploy.
 
@@ -7135,7 +7135,7 @@ hr-attendance-history
 
 #### 2️⃣ Code:
 
-[hr-attendance-history.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Cafe-HR%20%26%20Attendance%20System//hr-attendance-history.py)
+[hr-attendance-history.py](./backend/hr-attendance-history.py)
 
 - Deploy.
 
@@ -7149,7 +7149,7 @@ hr-leaves-holidays
 
 #### 2️⃣ Code:
 
-[hr-leaves-holidays.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Cafe-HR%20%26%20Attendance%20System/hr-leaves-holidays.py)
+[hr-leaves-holidays.py](./backend/hr-leaves-holidays.py)
 
 - Deploy.
 
@@ -7442,7 +7442,7 @@ sudo nano /var/www/html/checkin.html
 
 #### 2️⃣ checkin.html Code
 
-[checkin.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-Secure%20HR%20%26%20Attendance%20System/checkin.html)
+[checkin.html](./frontend/html/checkin.html)
 
 ✅ This page allows employees to check in and check out and confirms success/failure messages.
 
@@ -7457,7 +7457,7 @@ sudo nano /var/www/html/employee-portal.html
 
 #### 2️⃣ employee-portal.html Code
 
-[employee-portal.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-Secure%20HR%20%26%20Attendance%20System/employee-portal.html)
+[employee-portal.html](./frontend/html/employee-portal.html)
 
 ✅ Employees can view profile, attendance, leaves, and holidays.
 
@@ -7472,7 +7472,7 @@ sudo nano /var/www/html/Cognito-Tester.html
 
 #### 2️⃣ Cognito-Tester.html Code
 
-[Cognito-Tester.html](./☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Cognito%20Hosted%20UI/Cognito%20Employee%20ID%20Tester/Cognito-Tester.html)
+[Cognito-Tester.html](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20Front%20%26%20Backend%20Code%20Script/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20Frontend%20Code%20Script/Cognito%20Hosted%20UI/Cognito%20Employee%20ID%20Tester/Cognito-Tester.html)
 
 #### 3️⃣ Test Steps
 
