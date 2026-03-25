@@ -1727,9 +1727,6 @@ Where 5 must match the employee_id in your RDS employees table.
 
 - Save.
 
-
-
-
 ### 🟢 STEP 13 — Amazon Cognito Hosted UI — Callback + Logout
 
 ✅ Updated Login.html (with your Cognito config structure ready)
@@ -1754,7 +1751,7 @@ Where 5 must match the employee_id in your RDS employees table.
 
 - Cloudfront
 
-[login.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Cognito%20Hosted%20UI/login.html)
+[login.html](./frontend/html/login.html)
 
 ### ✅ 2️⃣ Updated logout.php
 
@@ -1791,7 +1788,7 @@ We can handle both in ONE FILE using a condition.
 
 ### ✅ Single File: logout.php
 
-[logout.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Cognito%20Hosted%20UI/logout.php)
+[logout.php](./frontend/php/logout.php)
 
 ### 🧠 Why This Works
 
@@ -1834,7 +1831,7 @@ This single-file approach is:
 
 This replaces hardcoded config from your old file.
 
-[config.js](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/config.js)
+[config.js](./frontend/js/config.js)
 
 #### ✅ Replace with your real values:
 
@@ -1850,7 +1847,7 @@ This replaces hardcoded config from your old file.
 
 Move all generic helpers here.
 
-[utils.js](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/utils.js)
+[utils.js](./frontend/js/utils.js)
 
 
 ### 🔐 STEP 3 — central-auth.js (COGNITO ONLY)
@@ -1859,21 +1856,21 @@ This file contains ONLY authentication logic.
 
 No API routes inside.
 
-[central-auth.js](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/central-auth.js)
+[central-auth.js](./frontend/js/central-auth.js)
 
 ### 🌐 STEP 4 — api.js (PUBLIC + PROTECTED FETCH)
 
 This file handles API logic only.
 
-[api.js](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/api.js)
+[api.js](./frontend/js/api.js)
 
 ### 🌐 STEP 5 — Create central-printing.js
 
-[central-printing.js](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/central-printing.js)
+[central-printing.js](./frontend/js/central-printing.js)
 
 ### 🌐 STEP 6 — Create role-guard.js
 
-[role-guard.js](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/role-guard.js)
+[role-guard.js](./frontend/js/role-guard.js)
 
 #### ✅ After This, You Must Verify
 
@@ -2274,7 +2271,7 @@ Click **Add**
 
 Paste THIS EXACT CODE ⬇️
 
-[CafeOrderProcessor.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project//☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Charlie%20Cafe%20-%20Order%20Backend%20Code/CafeOrderProcessor/CafeOrderProcessor.py)
+[CafeOrderProcessor.py](./backend/CafeOrderProcessor.py)
 
 Save Lambda
 
@@ -2783,7 +2780,7 @@ The difference is:
 
 ### 💻 MODERN CAFE-STYLE orders.php (Frontend Only Modified)
 
-[orders.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order.php/orders.php)
+[orders.php](./frontend/php/orders.php)
 
 **🔁 Replace with your real API Gateway URL**
 
@@ -3257,7 +3254,7 @@ Now we implement the logic.
 
 Use boto3 to fetch menu/prices before processing orders.
 
-[CafeMenuLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeMenuLambda.py)
+[CafeMenuLambda.py](./backend/CafeMenuLambda.py)
 
 **✔️ Click Deploy**
 
@@ -3466,7 +3463,7 @@ You now have:
 
 #### Below is the FINAL, READY-TO-DEPLOY Worker Lambda code with:
 
-[CafeOrderProcessor.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project//☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Charlie%20Cafe%20-%20Order%20Backend%20Code/CafeOrderProcessor/CafeOrderProcessor.py)
+[CafeOrderProcessor.py](./backend/CafeOrderProcessor.py)
 
 **⚠️ Already Updated, So skip this step**
 
@@ -3512,7 +3509,7 @@ Make sure Worker Lambda Role has:
 
 ### 2️⃣ Lambda Status Order Code
 
-[GetOrderStatusLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Charlie%20Cafe%20-%20Order%20Backend%20Code/GetOrderStatusLambda/GetOrderStatusLambda.py)
+[GetOrderStatusLambda.py](./backend/GetOrderStatusLambda.py)
 
 ### 3️⃣ Attach Layer to Lambda Function
 
@@ -3781,7 +3778,7 @@ https://a1053skr51.execute-api.us-east-1.amazonaws.com/prod/get-order-status
 ---
 ## PHASE 6️⃣ — FRONTEND ORDER STATUS PAGE
 
-[order-status.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order-status/CC%20-%20Order-Status_LIVE%20ADMIN%20DASHBOARD_many%20orders/order-status.html)
+[order-status.html](./frontend/html/order-status.html)
 
 **🔁 Replace with your real API Gateway URL**
 
@@ -3835,7 +3832,7 @@ Wait until status = Active
 
 > **⚠️ COPY EXACTLY — do NOT modify**
 
-[CafeOrderStatusLambda.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeOrderStatusLambda/CafeOrderStatusLambda.py)
+[CafeOrderStatusLambda.py](./backend/CafeOrderStatusLambda.py)
 
 Click Deploy
 
@@ -3919,7 +3916,7 @@ https://xxxx.execute-api.us-east-1.amazonaws.com/prod/cafe-order-status
 
 This file is frontend-only and SAFE
 
-[order-receipt.php](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-order-status/CC%20-%20Order-Status%20CUSTOMER%20ORDER%20RECEIPT_single%20order/order-receipt.php)
+[order-receipt.php](./frontend/php/order-receipt.php)
 
 #### ✅ WHAT YOU NEED TO REPLACE (VERY CLEAR)
 
