@@ -699,3 +699,5 @@ Unknown column 'payment_method'
 If needed, we can upgrade schema.sql safely (next step).
 
 ---
+## 🌐 modern DevOps territory
+
