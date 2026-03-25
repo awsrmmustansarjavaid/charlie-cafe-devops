@@ -1,23 +1,40 @@
+-- ==========================================================
+-- ☕ Charlie Cafe — VERIFICATION & ANALYTICS
+-- ==========================================================
+
 USE cafe_db;
 
--- 1. Check database
-SHOW DATABASES;
+-- =============================
+-- CHECK DATABASE
+-- =============================
+SELECT DATABASE();
 
--- 2. Check tables
+-- =============================
+-- SHOW TABLES
+-- =============================
 SHOW TABLES;
 
--- 3. Describe tables
+-- =============================
+-- DESCRIBE TABLES
+-- =============================
 DESCRIBE employees;
 DESCRIBE attendance;
 DESCRIBE leaves;
 DESCRIBE holidays;
 DESCRIBE orders;
 
--- 4. Check data
+-- =============================
+-- VIEW DATA
+-- =============================
 SELECT * FROM employees;
+SELECT * FROM attendance;
+SELECT * FROM leaves;
+SELECT * FROM holidays;
 SELECT * FROM orders;
 
--- 5. Foreign keys
+-- =============================
+-- FOREIGN KEYS CHECK
+-- =============================
 SELECT
     TABLE_NAME,
     COLUMN_NAME,
@@ -27,19 +44,23 @@ FROM information_schema.KEY_COLUMN_USAGE
 WHERE TABLE_SCHEMA = 'cafe_db'
 AND REFERENCED_TABLE_NAME IS NOT NULL;
 
--- 6. Indexes
+-- =============================
+-- INDEX CHECK
+-- =============================
 SHOW INDEX FROM orders;
 
--- 7. Row counts
+-- =============================
+-- ROW COUNT CHECK
+-- =============================
 SELECT
 (SELECT COUNT(*) FROM orders) AS total_orders,
 (SELECT COUNT(*) FROM employees) AS total_employees,
 (SELECT COUNT(*) FROM attendance) AS total_attendance,
 (SELECT COUNT(*) FROM holidays) AS total_holidays;
 
--- ===============================
--- ANALYTICS TESTS
--- ===============================
+-- =============================
+-- ANALYTICS
+-- =============================
 
 -- Paid Orders
 SELECT COUNT(*) AS paid_orders

@@ -98,3 +98,30 @@ infrastructure/rds/data.sql
 infrastructure/rds/verify.sql
 ```
 
+### ⚙️ HOW IT WORKS (STEP BY STEP)
+
+### ✅ Step 1 — Create schema
+
+```
+mysql -h <host> -u <user> -p < schema.sql
+```
+
+#### 👉 Creates:
+
+- database
+
+- tables
+
+- relationships
+
+### ✅ Step 2 — Insert data
+
+```
+mysql -h <host> -u <user> -p < data.sql
+```
+
+### ✅ Step 3 — Verify
+
+```
+mysql -h <host> -u <user> -p < verify.sql
+```
