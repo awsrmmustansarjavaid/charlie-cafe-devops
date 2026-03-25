@@ -100,6 +100,8 @@ infrastructure/rds/verify.sql
 
 ### ⚙️ HOW IT WORKS (STEP BY STEP)
 
+### Method 1 How to run your current files in production without Docker/CI/CD
+
 ### ✅ Step 1 — Create schema
 
 ```
@@ -125,6 +127,8 @@ mysql -h <host> -u <user> -p < data.sql
 ```
 mysql -h <host> -u <user> -p < verify.sql
 ```
+
+### Method 2 integrate schema.sql, data.sql, verify.sql into Docker + CI/CD
 
 ### Step 1 — Dockerize MySQL for local testing
 
