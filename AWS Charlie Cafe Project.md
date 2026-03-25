@@ -7545,7 +7545,7 @@ sudo nano /var/www/html/cafe-admin-dashboard.html
 
 #### 2️⃣ cafe-admin-dashboard.html Code
 
-[cafe-admin-dashboard.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script//Charlie-Cafe-%20Admin%20Dashboard%20(Order%2BHR)/cafe-admin-dashboard.html)
+[cafe-admin-dashboard.html](./frontend/html/cafe-admin-dashboard.html)
 
 #### 3️⃣ Set permissions:
 
@@ -7579,7 +7579,7 @@ CREATE INDEX idx_attendance_employee ON attendance(employee_id);
 
 #### 1️⃣ 📄 Lambda Name : cafe-attendance-admin-service
 
-[cafe-attendance-admin-service.py](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/Cafe-HR%20%26%20Attendance%20System/cafe-attendance-admin-service.py)
+[cafe-attendance-admin-service.py](./backend/cafe-attendance-admin-service.py)
 
 ### 🌐 Environment Variables
 
@@ -7661,7 +7661,7 @@ GET /hr-analytics?employee_id=EMP001&date=2026-02-25
 sudo nano /var/www/html/hr-attendance.html
 ```
 
-[hr-attendance.html](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Frontend%20Code%20Script/Charlie-Cafe%20-Secure%20HR%20%26%20Attendance%20System/hr-attendance.html)
+[hr-attendance.html](./frontend/html/hr-attendance.html)
 
 ### 2️⃣ BACKEND — HR ATTENDANCE DASHBOARD
 
