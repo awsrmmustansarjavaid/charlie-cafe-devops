@@ -72,7 +72,11 @@ charlie-cafe-devops
 ```
 
 
-### 📄 3. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
+### 🌐 3. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
+
+#### 📄 Read more here 
+
+[Charlie Cafe Readme_RDS_schema](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/3cc7be3a035c31c2f621682ac611a5dd9c5487d3/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/Charlie%20Cafe%20DevOPS/Readme_RDS_schema.md)
 
 #### ✅ ✅ FINAL SPLIT (PRODUCTION STYLE)
 
