@@ -79,9 +79,50 @@ Inside your project root (charlie-cafe-devops/), create:
 Dockerfile
 ```
 
+### 📦 2. Create .dockerignore (IMPORTANT)
+
+This prevents junk files from going into Docker image.
+
+```
+.dockerignore
+```
+
+```
+.git
+node_modules
+.env
+*.log
+```
+
+### ⚙️ 3. Build Your Docker Image
+
+SSH into EC2 and go to your project:
+
+```
+cd charlie-cafe-devops
+```
+
+Then run:
+
+```
+docker build -t charlie-cafe .
+```
+
+### ▶️ 4. Run Your Container
+
+```
+docker run -d -p 80:80 --name cafe-app charlie-cafe
+```
+
+### 🌐 Now test in browser:
+
+```
+http://YOUR-EC2-PUBLIC-IP
+```
 
 
-### 🌐 2. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
+
+### 🌐 3. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
 
 #### 📄 Read more here 
 
