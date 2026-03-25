@@ -491,7 +491,7 @@ RDS → Databases → Create database
 
 Read more about Charlie Cafe RDS
 
-[Charlie Cafe RDS](./AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Charlie%20Cafe%20%20RDS%20Project.md)
+[Charlie Cafe RDS](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/aa913d288d84c56bdddf5fa582a3077819cbf764/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20(Dev%20%2B%20Prod)/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Charlie%20Cafe%20%20RDS%20Project.md)
 
 ### 1️⃣ Create Schema in RDS
 
