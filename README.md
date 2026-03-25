@@ -1,2 +1,3 @@
-# charlie-cafe-devops
-DevOPS Lab Project
+# Charlie Cafe AWS DevOPS Project
+
+> ### DevOPS Lab Project
