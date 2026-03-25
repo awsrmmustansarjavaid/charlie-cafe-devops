@@ -71,3 +71,11 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
+
+### 📄 3. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
+
+#### 👉 Create this file:
+
+```
+infrastructure/rds/schema.sql
+```
