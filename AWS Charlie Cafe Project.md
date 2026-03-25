@@ -267,7 +267,7 @@ So in IAM it will appear as:
 
 You can paste this directly into IAM → Policies → Create policy → JSON
 
-[EC2-Cafe-Secrets-Role](../AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20AWS%20IAM%20Policy%20JSON%20Script/EC2-Cafe-Secrets-Role.json)
+[EC2-Cafe-Secrets-Role](./AWS%20IAM%20Policies/EC2-Cafe-Secrets-Role.json)
 
 **⚠️ Attach role to EC2 (NO reboot).**
 
@@ -353,7 +353,7 @@ This IAM policy is designed to support the backend services of the Charlie Cafe 
 
 You can paste this directly into IAM → Policies → Create policy → JSON
 
-[charlie-cafe-iam-policy](../AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/☕%20AWS%20CAFE%20—%20Front%20&%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20AWS%20IAM%20Policy%20JSON%20Script/charlie-cafe-iam-policy.json)
+[charlie-cafe-iam-policy](./AWS%20IAM%20Policies/charlie-cafe-iam-policy.json)
 
 **⚠️ JUST Replace 123456789012 with your real AWS account ID. with your own account ID**
 
