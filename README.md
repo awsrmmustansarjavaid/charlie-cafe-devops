@@ -365,9 +365,14 @@ This prevents junk files from going into Docker image.
 
 ```
 .git
+.gitignore
 node_modules
 .env
 *.log
+vendor
+docker-compose.yml
+.github
+README.md
 ```
 
 ### 6️⃣ ⚙️ 3. Build Your Docker Image
