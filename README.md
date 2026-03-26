@@ -135,17 +135,41 @@ mysql -h <host> -u <user> -p < verify.sql
 
 ### Step 1 — Dockerize MySQL for local testing
 
-#### docker/mysql/Dockerfile
+### 📦 1. Create a Dockerfile
+
+Inside your project root (charlie-cafe-devops/), create:
+
+### ✅ Dockerfile #1 → MySQL (database with schema.sql)
 
 ```
+docker/mysql/Dockerfile
+```
+
+```
+# -------------------------------------------------
+# ☕ Charlie Cafe - MySQL Dockerfile (FINAL)
+# Auto DB + Schema + Data Setup
+# -------------------------------------------------
+
 FROM mysql:8.0
 
+# -------------------------------------------------
+# Environment Variables
+# -------------------------------------------------
 ENV MYSQL_ROOT_PASSWORD=rootpassword
 ENV MYSQL_DATABASE=cafe_db
 
-# Copy schema and data
-COPY ../../infrastructure/rds/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
-COPY ../../infrastructure/rds/data.sql /docker-entrypoint-initdb.d/02-data.sql
+# -------------------------------------------------
+# Auto-run SQL files on container startup
+# (Executed in alphabetical order)
+# -------------------------------------------------
+COPY infrastructure/rds/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+COPY infrastructure/rds/data.sql /docker-entrypoint-initdb.d/02-data.sql
+
+# -------------------------------------------------
+# Expose MySQL port
+# -------------------------------------------------
+EXPOSE 3306
 ```
 
 - MySQL image runs the scripts automatically on first container startup.
@@ -153,13 +177,56 @@ COPY ../../infrastructure/rds/data.sql /docker-entrypoint-initdb.d/02-data.sql
 - verify.sql is not copied — you run it manually or via CI/CD test.
 
 
-### 📦 1. Create a Dockerfile
 
-Inside your project root (charlie-cafe-devops/), create:
+
+### ✅ Dockerfile #2 → Apache + PHP (frontend)
 
 ```
-Dockerfile
+docker/apache-php/Dockerfile
 ```
+
+```
+# -------------------------------------------------
+# ☕ Charlie Cafe - FINAL Dockerfile (PHP + Apache)
+# Production Ready | DevOps Standard
+# -------------------------------------------------
+
+# Use official PHP with Apache
+FROM php:8.2-apache
+
+# -------------------------------------------------
+# Install required PHP extensions
+# (For MySQL / RDS connectivity)
+# -------------------------------------------------
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# -------------------------------------------------
+# Enable Apache rewrite module (for clean URLs / routing)
+# -------------------------------------------------
+RUN a2enmod rewrite
+
+# -------------------------------------------------
+# Set working directory
+# -------------------------------------------------
+WORKDIR /var/www/html
+
+# -------------------------------------------------
+# Copy frontend code (NO modification required)
+# -------------------------------------------------
+COPY app/frontend/ /var/www/html/
+
+# -------------------------------------------------
+# Set proper permissions
+# -------------------------------------------------
+RUN chown -R www-data:www-data /var/www/html
+
+# -------------------------------------------------
+# Expose Apache port
+# -------------------------------------------------
+EXPOSE 80
+```
+
+
 
 ### 📦 2. Create .dockerignore (IMPORTANT)
 
