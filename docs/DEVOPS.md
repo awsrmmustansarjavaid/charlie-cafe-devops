@@ -163,5 +163,32 @@ README.md
 
 - Using both keeps your Charlie Cafe DevOps project clean, professional, and production-ready
 
+### ✅ 1. Can you ignore folders like AWS IAM Policies/ and docs/?
+
+👉 YES — your syntax is correct
+
+#### In both .dockerignore and .gitignore, you can ignore folders like this:
+
+```
+AWS IAM Policies/
+docs/
+```
+
+#### ✔ This will ignore:
+
+- The folder itself
+
+- All files inside it
+
+- All subfolders
+
+### ⚠️ 2. Important Issue in Your Case (Very Important)
+
+Your folder name has a space:
+
+```
+AWS IAM Policies/
+```
+
 ---
 

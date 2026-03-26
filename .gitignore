@@ -5,5 +5,5 @@ vendor/
 .DS_Store
 Thumbs.db
 docker/*.tar
-AWS IAM Policies/
+aws-iam-policies/
 docs/
