@@ -34,7 +34,7 @@ Developer → GitHub → Docker → Local Testing
 
 - GitHub Actions
 
-[AWS Charlie Cafe Project](./AWS%20Charlie%20Cafe%20Project.md)
+[AWS Charlie Cafe Project](./docs/AWS%20Charlie%20Cafe%20Project.md)
 
 ## 📁 Professional Repository Structure
 
