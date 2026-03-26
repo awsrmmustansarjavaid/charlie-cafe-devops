@@ -2,7 +2,59 @@
 
 > ### DevOPS Lab Project
 
-# Charlie Cafe Project 
+# ☕ Charlie Cafe DevOps Project
+
+### 🔹 Overview
+
+#### Full-stack cloud-based cafe ordering system using:
+
+- AWS Lambda
+
+- API Gateway
+
+- RDS MySQL
+
+- Docker (local dev)
+
+- GitHub CI/CD
+
+### 🔹 Architecture
+
+Include diagram (VERY IMPORTANT for job portfolio)
+
+```
+User → CloudFront → API Gateway → Lambda → RDS
+                     ↓
+                    S3
+```
+
+### 🔹 Features
+
+- Order system
+
+- Payment tracking
+
+- Admin panel
+
+- Live order status
+
+### 🔹 Local Setup (Docker)
+
+```
+docker-compose up --build
+```
+
+### 🔹 AWS Deployment
+
+- **Refer:** [AWS Charlie Cafe Project](./docs/AWS%20Charlie%20Cafe%20Project.md)
+
+### 🔹 DevOps Features
+
+- Dockerized frontend
+
+- GitHub CI/CD
+
+- Automated build pipeline
 
 ### 🚀 1. Final DevOps Architecture (Your Project Now)
 
@@ -34,7 +86,7 @@ Developer → GitHub → Docker → Local Testing
 
 - GitHub Actions
 
-[AWS Charlie Cafe Project](./docs/AWS%20Charlie%20Cafe%20Project.md)
+
 
 ## 📁 Professional Repository Structure
 
@@ -464,6 +516,9 @@ jobs:
     - name: 🎉 Deployment Success
       run: echo "Charlie Cafe CI/CD Pipeline Successful 🚀"
 ```
+
+
+
 
 
 
