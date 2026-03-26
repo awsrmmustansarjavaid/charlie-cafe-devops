@@ -631,6 +631,82 @@ jobs:
       run: echo "Charlie Cafe CI/CD Pipeline Successful 🚀"
 ```
 
+### 🧠 IMPORTANT: YOUR SQL FILES STATUS
+
+### 👉 GOOD NEWS:
+
+Your files are already correct and production-ready ✅
+No modification required.
+
+### ⚠️ BUT ONE CRITICAL FIX (VERY IMPORTANT)
+
+You previously got:
+
+```
+Unknown column 'payment_method'
+```
+
+👉 If your app/Lambda uses it → update schema:
+
+### ✅ MODIFY orders table
+
+```
+ALTER TABLE orders
+ADD COLUMN payment_method VARCHAR(20);
+```
+
+OR update schema.sql permanently:
+
+```
+payment_method VARCHAR(20),
+```
+
+### 🔐 4. SECURITY CHECK (VERY IMPORTANT)
+
+In your RDS Security Group:
+
+#### ✅ Allow:
+
+```
+Port: 3306
+Source: EC2-Web-SG
+Source: Lambda-SG
+```
+
+#### ❌ DO NOT allow:
+
+```
+0.0.0.0/0   ❌ (public access)
+```
+
+### 🧪 5. TEST FULL FLOW
+
+- Step 1
+
+```
+docker-compose up -d
+```
+
+- Step 2
+
+`- Open:
+
+```
+http://localhost:8080
+```
+
+- Step 3
+
+  - Trigger:
+
+    - Order page
+
+    - API
+
+    - Lambda
+
+👉 Data should go to RDS
+
 ### 🧠 HOW EVERYTHING WORKS (IMPORTANT)
 
 #### 🔹 Docker Flow
@@ -671,8 +747,15 @@ You now have:
 
 ✅ Clean DevOps structure
 
+✅ Docker for app only
 
+✅ AWS RDS as database
 
+✅ Clean production architecture
+
+✅ Secure connection
+
+✅ Reusable SQL schema
 
 
 
