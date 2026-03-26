@@ -86,8 +86,6 @@ Developer → GitHub → Docker → Local Testing
 
 - GitHub Actions
 
-
-
 ## 📁 Professional Repository Structure
 
 ### Create your repo like this:
