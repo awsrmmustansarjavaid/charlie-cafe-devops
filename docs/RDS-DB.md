@@ -757,6 +757,414 @@ You now have:
 
 ✅ Reusable SQL schema
 
+---
+## integrate AWS Secrets Manager directly into your Dockerized
+
+### 1️⃣ Store Your DB Secret in Secrets Manager
+
+You already did this:
+
+```
+{
+  "username": "cafe_user",
+  "password": "StrongPassword123",
+  "host": "your-rds-endpoint.amazonaws.com",
+  "dbname": "cafe_db"
+}
+```
+
+- Make note of the Secret ARN
+Example: arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123
+
+### 2️⃣ Update docker-compose.yml to use Secrets Manager
+
+#### Docker containers cannot directly fetch AWS Secrets, so the best approach is:
+
+- Pass the Secret ARN as an environment variable.
+
+- Inside the container, your PHP code calls AWS SDK to retrieve it at runtime.
+
+#### docker-compose.yml
+
+```
+version: "3.8"
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/apache-php/Dockerfile
+    container_name: charlie_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app/frontend:/var/www/html
+    environment:
+      DB_HOST: your-rds-endpoint.amazonaws.com
+      DB_USER: cafe_user
+      DB_PASS: StrongPassword123
+      DB_NAME: cafe_db
+    restart: always
+```
+
+#### ✅ Final Updated docker-compose.yml
+
+```
+version: "3.8"
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/apache-php/Dockerfile
+    container_name: charlie_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app/frontend:/var/www/html
+    environment:
+      AWS_REGION: us-east-1
+      RDS_SECRET_ARN: arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123
+    restart: always
+```
+
+✅ Remove all DB_USER / DB_PASS / DB_HOST / DB_NAME — now PHP will fetch them from Secrets Manager.
+
+### 3️⃣ Update PHP Connection to Use Secrets Manager
+
+#### Add this helper file, e.g., db.php:
+
+```
+<?php
+require 'vendor/autoload.php'; // AWS SDK for PHP
+
+use Aws\SecretsManager\SecretsManagerClient;
+use Aws\Exception\AwsException;
+
+$region = getenv('AWS_REGION');
+$secretName = getenv('RDS_SECRET_ARN');
+
+$client = new SecretsManagerClient([
+    'version' => 'latest',
+    'region' => $region
+]);
+
+try {
+    $result = $client->getSecretValue([
+        'SecretId' => $secretName,
+    ]);
+
+    if (isset($result['SecretString'])) {
+        $secret = json_decode($result['SecretString'], true);
+
+        $host = $secret['host'];
+        $user = $secret['username'];
+        $pass = $secret['password'];
+        $db   = $secret['dbname'];
+    } else {
+        throw new Exception('SecretString not found in Secret');
+    }
+
+} catch (AwsException $e) {
+    die("Error retrieving secret: " . $e->getMessage());
+}
+
+// Connect to RDS
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+```
+
+✅ Now your app never hardcodes passwords.
+
+### 4️⃣ Update GitHub Actions (deploy.yml) for RDS Secrets
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    # -------------------------------------------------
+    # 🐬 MySQL Service (for DB testing)
+    # -------------------------------------------------
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: cafe_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -prootpassword --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Clone Repository (AUTO)
+    # -------------------------------------------------
+    - name: 📥 Clone Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Install Dependencies
+    # -------------------------------------------------
+    - name: 🧰 Install MySQL Client
+      run: sudo apt-get update && sudo apt-get install -y mysql-client curl
+
+    # -------------------------------------------------
+    # 3️⃣ Wait for MySQL
+    # -------------------------------------------------
+    - name: ⏳ Wait for MySQL
+      run: |
+        until mysqladmin ping -h 127.0.0.1 -uroot -prootpassword --silent; do
+          echo "Waiting for MySQL..."
+          sleep 5
+        done
+
+    # -------------------------------------------------
+    # 4️⃣ Apply Database Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 5️⃣ Apply Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 6️⃣ Verify Database (QA)
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 7️⃣ Build Docker Image (APP)
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 8️⃣ Run Docker Container
+    # -------------------------------------------------
+    - name: 🚀 Run Container
+      run: docker run -d -p 8080:80 --name cafe-app charlie-cafe
+
+    # -------------------------------------------------
+    # 9️⃣ Test Container (Health Check)
+    # -------------------------------------------------
+    - name: ❤️ Test Application (Health Check)
+      run: |
+        sleep 10
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 🔟 Success Message
+    # -------------------------------------------------
+    - name: 🎉 Pipeline Success
+      run: echo "Charlie Cafe CI/CD Pipeline Completed Successfully 🚀"
+```
+
+#### Instead of using local MySQL for CI/CD tests, you can optionally:
+
+- Test locally with MySQL as before.
+
+- Or test against RDS directly using the secret ARN.
+
+#### Example step to fetch RDS credentials:
+
+```
+- name: 🗝️ Retrieve RDS Secret
+  run: |
+    SECRET_JSON=$(aws secretsmanager get-secret-value \
+      --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+      --region us-east-1 \
+      --query SecretString \
+      --output text)
+    echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+- name: 🧰 Parse RDS Secret
+  run: |
+    export DB_HOST=$(echo $DB_SECRET | jq -r '.host')
+    export DB_USER=$(echo $DB_SECRET | jq -r '.username')
+    export DB_PASS=$(echo $DB_SECRET | jq -r '.password')
+    export DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')
+```
+
+#### Then use these env vars for schema/data/verify steps:
+
+```
+- name: 🗄️ Apply Schema
+  run: mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+```
+
+### ✅ Fully Final Updated deploy.yml
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Clone Repository
+    # -------------------------------------------------
+    - name: 📥 Clone Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Install Dependencies
+    # -------------------------------------------------
+    - name: 🧰 Install MySQL Client, jq, curl, AWS CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client jq curl unzip
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        aws --version
+
+    # -------------------------------------------------
+    # 3️⃣ Retrieve RDS Secret from AWS Secrets Manager
+    # -------------------------------------------------
+    - name: 🗝️ Retrieve RDS Secret
+      run: |
+        SECRET_JSON=$(aws secretsmanager get-secret-value \
+          --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+          --region us-east-1 \
+          --query SecretString \
+          --output text)
+        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 4️⃣ Parse RDS Secret into environment variables
+    # -------------------------------------------------
+    - name: 🧰 Parse RDS Secret
+      run: |
+        export DB_HOST=$(echo $DB_SECRET | jq -r '.host')
+        export DB_USER=$(echo $DB_SECRET | jq -r '.username')
+        export DB_PASS=$(echo $DB_SECRET | jq -r '.password')
+        export DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')
+        echo "DB_HOST=$DB_HOST" >> $GITHUB_ENV
+        echo "DB_USER=$DB_USER" >> $GITHUB_ENV
+        echo "DB_PASS=$DB_PASS" >> $GITHUB_ENV
+        echo "DB_NAME=$DB_NAME" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 5️⃣ Wait for RDS to be reachable
+    # -------------------------------------------------
+    - name: ⏳ Wait for RDS
+      run: |
+        echo "Waiting for RDS connection..."
+        for i in {1..30}; do
+          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
+          echo "Retrying in 10s..."
+          sleep 10
+        done
+
+    # -------------------------------------------------
+    # 6️⃣ Apply Database Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 7️⃣ Apply Sample Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 8️⃣ Verify Database
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 9️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 🔟 Run Docker Container
+    # -------------------------------------------------
+    - name: 🚀 Run Container
+      run: docker run -d -p 8080:80 --name charlie_web \
+            -e RDS_SECRET_ARN=arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+            charlie-cafe
+
+    # -------------------------------------------------
+    # 11️⃣ Health Check
+    # -------------------------------------------------
+    - name: ❤️ Test Application (Health Check)
+      run: |
+        sleep 10
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 12️⃣ Success Message
+    # -------------------------------------------------
+    - name: 🎉 Pipeline Success
+      run: echo "Charlie Cafe CI/CD Pipeline Completed Successfully 🚀"
+```
+
+### ✅ Key Changes
+
+- Removed local MySQL service
+
+  - Pipeline now connects directly to your real RDS instance.
+
+- Secrets Manager integration
+
+  - Retrieves DB credentials at runtime.
+
+  - Passes them as environment variables.
+
+- RDS health check
+
+  - Loops until RDS is reachable before applying schema/data.
+
+- Docker container receives Secret ARN
+
+  - PHP app can use AWS SDK to fetch credentials securely.
+
+### 5️⃣ Summary of Changes
+
+| Component          | Change                                                           |
+| ------------------ | ---------------------------------------------------------------- |
+| docker-compose.yml | Removed hardcoded DB credentials, added `RDS_SECRET_ARN`         |
+| PHP                | Fetch credentials dynamically via AWS SDK                        |
+| CI/CD              | Retrieve secret with AWS CLI and inject env vars for MySQL steps |
+
+### 6️⃣ Optional: Add AWS IAM Role for ECS / EC2
+
+- If running PHP in ECS or EC2, assign an IAM role with SecretsManagerRead permission.
+
+- No need for credentials in container — it uses instance profile.
+---
 
 
 
