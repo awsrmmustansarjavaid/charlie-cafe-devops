@@ -88,7 +88,7 @@ git remote add origin https://github.com/YOUR_USERNAME/charlie-cafe-devops.git
 git branch -M main
 git push -u origin main
 ```
-### 2️⃣ FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
+### 2️⃣ Charlie Cafe RDS Schema
 
 #### 📄 Read more here 
 
@@ -120,7 +120,7 @@ infrastructure/rds/verify.sql
 
 ### ⚙️ HOW IT WORKS (STEP BY STEP)
 
-### Method 1 How to run your current files in production without Docker/CI/CD
+### Method 1️⃣ How to run your current files in production without Docker/CI/CD
 
 ### ✅ Step 1 — Create schema
 
@@ -148,15 +148,15 @@ mysql -h <host> -u <user> -p < data.sql
 mysql -h <host> -u <user> -p < verify.sql
 ```
 
-### Method 2 integrate schema.sql, data.sql, verify.sql into Docker + CI/CD
+### Method 2️⃣ integrate schema.sql, data.sql, verify.sql into Docker + CI/CD
 
 ### Step 1 — Dockerize MySQL for local testing
 
-### 📦 1. Create a Dockerfile
+### 1️⃣ Create a Dockerfile
 
 Inside your project root (charlie-cafe-devops/), create:
 
-### ✅ Dockerfile #1 → MySQL (database with schema.sql)
+### 📦 1. ✅ Dockerfile #1 → MySQL (database with schema.sql)
 
 ```
 docker/mysql/Dockerfile
@@ -193,7 +193,7 @@ EXPOSE 3306
 
 - verify.sql is not copied — you run it manually or via CI/CD test.
 
-### ✅ Dockerfile #2 → Apache + PHP (frontend)
+### 📦 2. ✅ Dockerfile #2 → Apache + PHP (frontend)
 
 ```
 docker/apache-php/Dockerfile
