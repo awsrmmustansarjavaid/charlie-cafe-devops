@@ -59,9 +59,9 @@ charlie-cafe-devops/
 
 - No edits needed
 
-## Initialize GitHub Repo
+### 1️⃣ Initialize GitHub Repo
 
-### 1. Create repo on GitHub
+### ✅ 1. Create repo on GitHub
 
 - Go to: 👉 https://github.com  → New Repo
 
@@ -71,7 +71,24 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### 🌐 3. FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
+### ✅ 2. Initialize locally
+
+```
+cd charlie-cafe
+
+git init
+git add .
+git commit -m "Initial commit - Charlie Cafe Project"
+```
+
+### ✅ 3. Connect to GitHub
+
+```
+git remote add origin https://github.com/YOUR_USERNAME/charlie-cafe-devops.git
+git branch -M main
+git push -u origin main
+```
+### 2️⃣ FINAL schema.sql (FROM YOUR SCRIPT — COMPLETE)
 
 #### 📄 Read more here 
 
