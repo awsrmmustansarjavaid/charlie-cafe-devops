@@ -1,4 +1,4 @@
-# Charlie Cafe - AWS RDS 
+# Charlie Cafe - RDS Database
 
 ### ✅ use:
 
@@ -11,6 +11,48 @@
 ```
 Browser → Apache/PHP (Docker) → AWS RDS (MySQL)
 ```
+
+### ✅ ✅ FINAL SPLIT (PRODUCTION STYLE)
+
+You will have:
+
+```
+schema.sql   → structure (DB + tables)
+data.sql     → sample/test data
+verify.sql   → testing + analytics
+```
+
+### 1. What is schema.sql (Simple Explanation)
+
+#### 👉 A schema.sql file is:
+
+A pure SQL file that defines your database structure (DB + tables + relationships)
+
+### ✅ Why it’s important
+
+| Without schema.sql      | With schema.sql   |
+| ----------------------- | ----------------- |
+| Manual setup            | One command setup |
+| Hard to reuse           | Easy reuse        |
+| Not DevOps friendly     | Industry standard |
+| Hidden logic in scripts | Clean separation  |
+
+### 🔥 2. Difference: Bash Script vs schema.sql
+
+#### Your Bash script:
+
+- Connects to AWS
+
+- Fetches secrets
+
+- Runs SQL
+
+#### 👉 But DevOps best practice:
+
+- Bash = automation
+
+- SQL file = database definition
+
 
 
 
