@@ -11,15 +11,9 @@ services:
       - "8080:80"
     volumes:
       - ./app/frontend:/var/www/html
-    depends_on:
-      - db
-    restart: always
-
-  db:
-    build:
-      context: .
-      dockerfile: docker/mysql/Dockerfile
-    container_name: charlie_db
-    ports:
-      - "3306:3306"
+    environment:
+      DB_HOST: your-rds-endpoint.amazonaws.com
+      DB_USER: cafe_user
+      DB_PASS: StrongPassword123
+      DB_NAME: cafe_db
     restart: always
