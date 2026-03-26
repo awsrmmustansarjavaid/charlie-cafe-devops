@@ -350,21 +350,28 @@ docker-compose up --build
 http://YOUR-EC2-PUBLIC-IP
 ```
 
-### 9️⃣ 6. Add verify.sql to CI/CD for QA
+### 9️⃣ GitHub Workflow (CI/CD)
 
-#### .github/workflows/deploy.yml
+#### Create:
 
 ```
-name: Deploy Charlie Cafe
+.github/workflows/deploy.yml
+```
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
 
 jobs:
-  deploy:
+  build-test-deploy:
     runs-on: ubuntu-latest
 
+    # -------------------------------------------------
+    # MySQL Service (for testing DB schema)
+    # -------------------------------------------------
     services:
       mysql:
         image: mysql:8.0
@@ -374,37 +381,80 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping --silent"
+          --health-cmd="mysqladmin ping -h localhost -uroot -prootpassword --silent"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
 
     steps:
-      - uses: actions/checkout@v3
 
-      - name: Wait for MySQL
-        run: |
-          until mysqladmin ping -h 127.0.0.1 -uroot -prootpassword; do
-            echo "Waiting for MySQL..."
-            sleep 5
-          done
+    # -------------------------------------------------
+    # Checkout Code
+    # -------------------------------------------------
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v3
 
-      - name: Apply schema
-        run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
+    # -------------------------------------------------
+    # Install MySQL Client
+    # -------------------------------------------------
+    - name: 🧰 Install MySQL Client
+      run: sudo apt-get update && sudo apt-get install -y mysql-client
 
-      - name: Apply sample data
-        run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
+    # -------------------------------------------------
+    # Wait for MySQL to be ready
+    # -------------------------------------------------
+    - name: ⏳ Wait for MySQL
+      run: |
+        until mysqladmin ping -h 127.0.0.1 -uroot -prootpassword --silent; do
+          echo "Waiting for MySQL..."
+          sleep 5
+        done
 
-      - name: Verify schema
-        run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
+    # -------------------------------------------------
+    # Apply Database Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # Apply Sample Data
+    # -------------------------------------------------
+    - name: 📊 Apply Sample Data
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # Run Verification Tests (QA)
+    # -------------------------------------------------
+    - name: ✅ Run DB Verification
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # Build Docker Image (PHP + Apache)
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # Run Container (Test)
+    # -------------------------------------------------
+    - name: 🚀 Run Docker Container
+      run: docker run -d -p 8080:80 charlie-cafe
+
+    # -------------------------------------------------
+    # Basic Health Check
+    # -------------------------------------------------
+    - name: 🌐 Test Web Server
+      run: |
+        sleep 10
+        curl -I http://localhost:8080 || exit 1
+
+    # -------------------------------------------------
+    # Success
+    # -------------------------------------------------
+    - name: 🎉 Deployment Success
+      run: echo "Charlie Cafe CI/CD Pipeline Successful 🚀"
 ```
 
-✅ This allows automatic DB creation + QA verification in CI/CD whenever you push code.
 
-### Step 3 — Production vs Local
 
-- Local development: Use Docker MySQL container + schema + data.
 
-- Production RDS: Run schema.sql only + optional verify.sql.
-
-- No Docker is needed on production RDS — RDS is fully managed by AWS.
