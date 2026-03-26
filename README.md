@@ -176,9 +176,6 @@ EXPOSE 3306
 
 - verify.sql is not copied — you run it manually or via CI/CD test.
 
-
-
-
 ### ✅ Dockerfile #2 → Apache + PHP (frontend)
 
 ```
@@ -226,6 +223,35 @@ RUN chown -R www-data:www-data /var/www/html
 EXPOSE 80
 ```
 
+### ⚙️ ✅ FINAL docker-compose.yml (FULLY CONNECTED)
+
+```
+version: "3.8"
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/apache-php/Dockerfile
+    container_name: charlie_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app/frontend:/var/www/html
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+    container_name: charlie_db
+    ports:
+      - "3306:3306"
+    restart: always
+```
 
 
 ### 📦 2. Create .dockerignore (IMPORTANT)
