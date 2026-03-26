@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # -------------------------------------------------
-    # MySQL Service (for testing DB schema)
+    # 🐬 MySQL Service (for DB testing)
     # -------------------------------------------------
     services:
       mysql:
@@ -28,19 +28,19 @@ jobs:
     steps:
 
     # -------------------------------------------------
-    # Checkout Code
+    # 1️⃣ Clone Repository (AUTO)
     # -------------------------------------------------
-    - name: 📥 Checkout Repository
+    - name: 📥 Clone Repository
       uses: actions/checkout@v3
 
     # -------------------------------------------------
-    # Install MySQL Client
+    # 2️⃣ Install Dependencies
     # -------------------------------------------------
     - name: 🧰 Install MySQL Client
-      run: sudo apt-get update && sudo apt-get install -y mysql-client
+      run: sudo apt-get update && sudo apt-get install -y mysql-client curl
 
     # -------------------------------------------------
-    # Wait for MySQL to be ready
+    # 3️⃣ Wait for MySQL
     # -------------------------------------------------
     - name: ⏳ Wait for MySQL
       run: |
@@ -50,45 +50,45 @@ jobs:
         done
 
     # -------------------------------------------------
-    # Apply Database Schema
+    # 4️⃣ Apply Database Schema
     # -------------------------------------------------
     - name: 🗄️ Apply Schema
       run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
 
     # -------------------------------------------------
-    # Apply Sample Data
+    # 5️⃣ Apply Data
     # -------------------------------------------------
-    - name: 📊 Apply Sample Data
+    - name: 📊 Apply Data
       run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
 
     # -------------------------------------------------
-    # Run Verification Tests (QA)
+    # 6️⃣ Verify Database (QA)
     # -------------------------------------------------
-    - name: ✅ Run DB Verification
+    - name: ✅ Verify Database
       run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
 
     # -------------------------------------------------
-    # Build Docker Image (PHP + Apache)
+    # 7️⃣ Build Docker Image (APP)
     # -------------------------------------------------
     - name: 🐳 Build Docker Image
       run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
-    # Run Container (Test)
+    # 8️⃣ Run Docker Container
     # -------------------------------------------------
-    - name: 🚀 Run Docker Container
-      run: docker run -d -p 8080:80 charlie-cafe
+    - name: 🚀 Run Container
+      run: docker run -d -p 8080:80 --name cafe-app charlie-cafe
 
     # -------------------------------------------------
-    # Basic Health Check
+    # 9️⃣ Test Container (Health Check)
     # -------------------------------------------------
-    - name: 🌐 Test Web Server
+    - name: ❤️ Test Application (Health Check)
       run: |
         sleep 10
-        curl -I http://localhost:8080 || exit 1
+        curl -f http://localhost:8080/health.php || exit 1
 
     # -------------------------------------------------
-    # Success
+    # 🔟 Success Message
     # -------------------------------------------------
-    - name: 🎉 Deployment Success
-      run: echo "Charlie Cafe CI/CD Pipeline Successful 🚀"
+    - name: 🎉 Pipeline Success
+      run: echo "Charlie Cafe CI/CD Pipeline Completed Successfully 🚀"

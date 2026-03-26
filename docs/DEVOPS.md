@@ -1,5 +1,104 @@
 # Charlie Cafe - DevOPS 
 
+### 📄 ✅ FINAL deploy.yml
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    # -------------------------------------------------
+    # MySQL Service (for testing DB schema)
+    # -------------------------------------------------
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: cafe_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -prootpassword --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+
+    # -------------------------------------------------
+    # Checkout Code
+    # -------------------------------------------------
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # Install MySQL Client
+    # -------------------------------------------------
+    - name: 🧰 Install MySQL Client
+      run: sudo apt-get update && sudo apt-get install -y mysql-client
+
+    # -------------------------------------------------
+    # Wait for MySQL to be ready
+    # -------------------------------------------------
+    - name: ⏳ Wait for MySQL
+      run: |
+        until mysqladmin ping -h 127.0.0.1 -uroot -prootpassword --silent; do
+          echo "Waiting for MySQL..."
+          sleep 5
+        done
+
+    # -------------------------------------------------
+    # Apply Database Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # Apply Sample Data
+    # -------------------------------------------------
+    - name: 📊 Apply Sample Data
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # Run Verification Tests (QA)
+    # -------------------------------------------------
+    - name: ✅ Run DB Verification
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # Build Docker Image (PHP + Apache)
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # Run Container (Test)
+    # -------------------------------------------------
+    - name: 🚀 Run Docker Container
+      run: docker run -d -p 8080:80 charlie-cafe
+
+    # -------------------------------------------------
+    # Basic Health Check
+    # -------------------------------------------------
+    - name: 🌐 Test Web Server
+      run: |
+        sleep 10
+        curl -I http://localhost:8080 || exit 1
+
+    # -------------------------------------------------
+    # Success
+    # -------------------------------------------------
+    - name: 🎉 Deployment Success
+      run: echo "Charlie Cafe CI/CD Pipeline Successful 🚀"
+```
+
 
 ### 1️⃣ Why You Need .gitignore and .dockerignore
 
@@ -294,6 +393,105 @@ aws-iam-policies/
 | aws-iam-policies/ | ❌ IGNORE | ❌ IGNORE |
 
 ---
+### 📄 ✅ FINAL deploy.yml (CLEAN + PROFESSIONAL)
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    # -------------------------------------------------
+    # 🐬 MySQL Service (for DB testing)
+    # -------------------------------------------------
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: cafe_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -prootpassword --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Clone Repository (AUTO)
+    # -------------------------------------------------
+    - name: 📥 Clone Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Install Dependencies
+    # -------------------------------------------------
+    - name: 🧰 Install MySQL Client
+      run: sudo apt-get update && sudo apt-get install -y mysql-client curl
+
+    # -------------------------------------------------
+    # 3️⃣ Wait for MySQL
+    # -------------------------------------------------
+    - name: ⏳ Wait for MySQL
+      run: |
+        until mysqladmin ping -h 127.0.0.1 -uroot -prootpassword --silent; do
+          echo "Waiting for MySQL..."
+          sleep 5
+        done
+
+    # -------------------------------------------------
+    # 4️⃣ Apply Database Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 5️⃣ Apply Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 6️⃣ Verify Database (QA)
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: mysql -h 127.0.0.1 -uroot -prootpassword < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 7️⃣ Build Docker Image (APP)
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 8️⃣ Run Docker Container
+    # -------------------------------------------------
+    - name: 🚀 Run Container
+      run: docker run -d -p 8080:80 --name cafe-app charlie-cafe
+
+    # -------------------------------------------------
+    # 9️⃣ Test Container (Health Check)
+    # -------------------------------------------------
+    - name: ❤️ Test Application (Health Check)
+      run: |
+        sleep 10
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 🔟 Success Message
+    # -------------------------------------------------
+    - name: 🎉 Pipeline Success
+      run: echo "Charlie Cafe CI/CD Pipeline Completed Successfully 🚀"
+```
+
 
 
 
