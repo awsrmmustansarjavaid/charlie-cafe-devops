@@ -352,6 +352,16 @@ http://YOUR-EC2-PUBLIC-IP
 
 ### 9️⃣ GitHub Workflow (CI/CD)
 
+#### 📁 GitHub Path Folder structure:
+
+```
+charlie-cafe-devops/
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml   ✅ (HERE)
+```
+
 #### Create:
 
 ```
