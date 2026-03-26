@@ -190,5 +190,111 @@ Your folder name has a space:
 AWS IAM Policies/
 ```
 
+####  👉 This works, but it’s not recommended because:
+
+- Can break scripts
+
+- Causes issues in CI/CD, Docker, Linux
+
+### 🔥 ✅ BEST PRACTICE (Fix This)
+
+Rename folder:
+
+```
+AWS-IAM-Policies/
+```
+
+or
+
+```
+aws-iam-policies/
+```
+
+#### 👉 Then update ignore files:
+
+```
+aws-iam-policies/
+docs/
+```
+
+### ✅ 3. FINAL .dockerignore (Clean Version)
+
+```
+.git
+.gitignore
+node_modules
+.env
+*.log
+vendor
+docker-compose.yml
+.github
+README.md
+aws-iam-policies/
+docs/
+```
+
+### ✅ 4. FINAL .gitignore (Clean Version)
+
+```
+node_modules/
+vendor/
+.env
+*.log
+.DS_Store
+Thumbs.db
+docker/*.tar
+aws-iam-policies/
+docs/
+```
+
+### 🧠 5. What Happens After This?
+.gitignore
+
+#### 👉 Git will:
+
+NOT upload docs/ and aws-iam-policies/ to GitHub
+.dockerignore
+
+#### 👉 Docker will:
+
+NOT include these folders in image
+Faster build
+Smaller image
+
+### ⚠️ 6. VERY IMPORTANT WARNING
+
+#### 👉 If you ignore docs/ in .gitignore:
+
+❌ Your documentation will NOT be uploaded to GitHub
+
+### 💡 Recommendation (SMART APPROACH)
+
+#### 👉 Use this:
+
+#### .dockerignore
+
+```
+docs/
+aws-iam-policies/
+```
+
+#### .gitignore
+
+```
+aws-iam-policies/
+```
+
+👉 Keep docs/ in GitHub (important for portfolio)
+
+### 🎯 Final Advice
+
+| Folder            | GitHub   | Docker   |
+| ----------------- | -------- | -------- |
+| docs/             | ✅ KEEP   | ❌ IGNORE |
+| aws-iam-policies/ | ❌ IGNORE | ❌ IGNORE |
+
 ---
+
+
+
 
