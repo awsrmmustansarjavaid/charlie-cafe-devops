@@ -1,4 +1,9 @@
 .git
+.gitignore
 node_modules
 .env
 *.log
+vendor
+docker-compose.yml
+.github
+README.md
