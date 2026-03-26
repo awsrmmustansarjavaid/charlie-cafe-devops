@@ -100,9 +100,10 @@ charlie-cafe-devops/
 ├── README.md
 ├── LICENSE
 ├── .gitignore
+├── .dockerignore                
 ├── docker-compose.yml
 │
-├── app/                        # Your original code (UNCHANGED)
+├── app/                         # Your original code (UNCHANGED)
 │   ├── frontend/
 │   │   ├── *.html
 │   │   ├── *.php
@@ -115,26 +116,33 @@ charlie-cafe-devops/
 │
 ├── infrastructure/
 │   ├── rds/
-│   │   └── schema.sql
+│   │   ├── schema.sql          
+│   │   ├── data.sql            ✅ (separate data)
+│   │   └── verify.sql          ✅ (for CI/CD testing)
+│   │
 │   ├── scripts/
 │   │   ├── setup_lamp.sh
 │   │   ├── setup_rds.sh
 │   │   ├── s3_to_ec2.sh
-│   │   └── ec2_to_s3.sh
+│   │   ├── ec2_to_s3.sh
+│   │   └── lambda_layer.sh     
 │
 ├── docker/
 │   ├── apache-php/
-│   │   └── Dockerfile
+│   │   └── Dockerfile          
+│   │
 │   └── mysql/
+│       └── Dockerfile          
 │
 ├── docs/
 │   ├── architecture.md
 │   ├── deployment.md
-│   └── your-original-guide.md  ✅ (your file)
+│   ├── docker.md               
+│   └── AWS Charlie Cafe Project.md
 │
 └── .github/
     └── workflows/
-        └── deploy.yml
+        └── deploy.yml          
 ```
 
 ### 👉 Important:
@@ -359,6 +367,8 @@ services:
 
 This prevents junk files from going into Docker image.
 
+#### Create:
+
 ```
 .dockerignore
 ```
@@ -374,6 +384,38 @@ docker-compose.yml
 .github
 README.md
 ```
+
+#### 🔍 Why these are added
+
+- .git, .github → not needed inside image
+
+- node_modules, vendor → heavy + rebuildable
+
+- .env → sensitive
+
+- logs → useless in image
+
+- docs/config → not required in runtime
+
+### 6️⃣ 📦 3. Create .gitignore (IMPORTANT)
+
+#### Create:
+
+```
+.gitignore
+```
+
+```
+node_modules/
+vendor/
+.env
+*.log
+.DS_Store
+Thumbs.db
+docker/*.tar
+```
+
+
 
 ### 6️⃣ ⚙️ 3. Build Your Docker Image
 
