@@ -240,7 +240,7 @@ RUN chown -R www-data:www-data /var/www/html
 EXPOSE 80
 ```
 
-### ⚙️ ✅ FINAL docker-compose.yml (FULLY CONNECTED)
+### 4️⃣ ⚙️ FINAL docker-compose.yml (FULLY CONNECTED)
 
 ```
 version: "3.8"
@@ -271,7 +271,7 @@ services:
 ```
 
 
-### 📦 2. Create .dockerignore (IMPORTANT)
+### 5️⃣ 📦 2. Create .dockerignore (IMPORTANT)
 
 This prevents junk files from going into Docker image.
 
@@ -286,7 +286,7 @@ node_modules
 *.log
 ```
 
-### ⚙️ 3. Build Your Docker Image
+### 6️⃣ ⚙️ 3. Build Your Docker Image
 
 SSH into EC2 and go to your project:
 
@@ -300,10 +300,16 @@ Then run:
 docker build -t charlie-cafe .
 ```
 
-### ▶️ 4. Run Your Container
+### 7️⃣ 4. Run Your Container
 
 ```
 docker run -d -p 80:80 --name cafe-app charlie-cafe
+```
+
+### 8️⃣ 5. Run Your Project Locally
+
+```
+docker-compose up --build
 ```
 
 ### 🌐 Now test in browser:
@@ -312,39 +318,7 @@ docker run -d -p 80:80 --name cafe-app charlie-cafe
 http://YOUR-EC2-PUBLIC-IP
 ```
 
-
-
-
-
-#### docker-compose.yml
-
-```
-version: "3.9"
-
-services:
-  mysql:
-    build: ./docker/mysql
-    container_name: charlie-cafe-mysql
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-    volumes:
-      - mysql_data:/var/lib/mysql
-
-  apache-php:
-    build: ./docker/apache-php
-    container_name: charlie-cafe-web
-    ports:
-      - "8080:80"
-    depends_on:
-      - mysql
-
-volumes:
-  mysql_data:
-```
-
-### Step 2 — Add verify.sql to CI/CD for QA
+### 9️⃣ 6. Add verify.sql to CI/CD for QA
 
 #### .github/workflows/deploy.yml
 
