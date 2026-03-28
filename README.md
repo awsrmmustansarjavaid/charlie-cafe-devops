@@ -1405,6 +1405,264 @@ This single feature shows:
 
 👉 Not just lab-level deployment
 
+## 🌐 Add Canary deployment + Auto rollback + CloudWatch alarms
+
+### 🎯 ✅ WHAT YOU ARE ADDING
+
+####  You are upgrading:
+
+```
+Blue/Green Deployment
+```
+
+#### ➡️ TO:
+
+```
+Canary Deployment + Auto Rollback + Monitoring
+```
+
+#### Using:
+
+- AWS CodeDeploy
+
+- Amazon CloudWatch
+
+- Amazon ECS
+
+### 🧠 ✅ BENEFIT (CLEAR & REAL)
+
+#### 🔥 1. Safe Deployment
+
+- Only small % of users get new version first (example: 10%)
+
+#### 🔥 2. Automatic Rollback
+
+- If something breaks → system auto switches back
+
+#### 🔥 3. Zero Downtime
+
+- Users never see failure
+
+#### 🔥 4. Production-Level Reliability
+
+- This is used in real companies (Netflix, Amazon, etc.)
+
+### 🚀 🧱 ENABLE CANARY DEPLOYMENT
+
+### ✅ Step 1 — Open CodeDeploy
+
+```
+CodeDeploy → Applications → charlie-app
+```
+
+### ✅ Step 2 — Edit Deployment Group
+
+```
+charlie-dg → Edit
+```
+
+### ✅ Step 3 — Change Deployment Type
+
+#### Find:
+
+```
+Deployment configuration
+```
+
+### ✅ Step 4 — Select Canary
+
+#### Choose:
+
+```
+CodeDeployDefault.ECSCanary10Percent5Minutes
+```
+
+### 🔍 Meaning:
+
+| Step  | Action              |
+| ----- | ------------------- |
+| First | 10% traffic → Green |
+| Wait  | 5 minutes           |
+| Then  | 100% traffic        |
+
+✅ Step 5 — Save
+
+### 🚀 🧱 ENABLE AUTO ROLLBACK
+
+### ✅ Step 1 — In Same Deployment Group
+
+#### Find:
+
+```
+Rollback configuration
+```
+
+### ✅ Step 2 — Enable
+
+✔ Enable rollback
+
+### ✅ Step 3 — Select Events
+
+✔ Deployment failure
+
+✔ Alarm threshold breached
+
+### ✅ Step 4 — Save
+
+### 🚀 🧱 CREATE CLOUDWATCH ALARM
+
+### ✅ Step 1 — Open CloudWatch
+
+```
+CloudWatch → Alarms → Create Alarm
+```
+
+### ✅ Step 2 — Select Metric
+
+#### Click:
+
+```
+Browse → ApplicationELB → TargetGroup
+```
+
+### ✅ Step 3 — Choose Metric
+
+#### Select:
+
+```
+UnHealthyHostCount
+```
+
+### ✅ Step 4 — Select Your Target Group
+
+#### 👉 Choose:
+
+```
+charlie-green
+```
+
+### ✅ Step 5 — Configure Condition
+
+| Field      | Value    |
+| ---------- | -------- |
+| Threshold  | >= 1     |
+| Period     | 1 minute |
+| Evaluation | 1        |
+
+👉 Meaning:
+
+If even 1 container fails → alarm triggers
+
+### ✅ Step 6 — Name Alarm
+
+```
+charlie-health-alarm
+```
+
+### ✅ Step 7 — Create Alarm
+
+### 🚀 🧱 ATTACH ALARM TO CODEDEPLOY
+
+### ✅ Step 1 — Go Back to CodeDeploy
+
+```
+charlie-dg → Edit
+```
+
+### ✅ Step 2 — Find:
+
+```
+CloudWatch alarms
+```
+
+### ✅ Step 3 — Add Alarm
+
+#### Select:
+
+```
+charlie-health-alarm
+```
+
+### ✅ Step 4 — Save
+
+### 🚀 🧱 VERIFY HEALTH CHECK
+
+### ✅ Ensure ALB uses:
+
+```
+/health.php
+```
+
+### ✅ Your health file must return:
+
+```
+status: OK
+```
+
+### 🚀 🧱 DEPLOY USING GITHUB
+
+### ✅ Push Code
+
+```
+git add .
+git commit -m "canary deployment test"
+git push
+```
+
+### 🧪 PHASE 7 — WHAT WILL HAPPEN
+
+#### Step-by-step:
+
+```
+1. GitHub builds Docker
+2. Push to ECR
+3. CodeDeploy starts
+4. New version = GREEN
+5. 10% traffic goes to GREEN
+6. CloudWatch monitors health
+```
+
+### ✅ IF EVERYTHING OK
+
+```
+After 5 minutes → 100% traffic → GREEN
+```
+
+### ❌ IF ERROR HAPPENS
+
+```
+CloudWatch Alarm triggers
+↓
+CodeDeploy detects failure
+↓
+AUTO ROLLBACK
+↓
+Traffic back to BLUE
+```
+
+### 🎯 FINAL RESULT
+
+You now have:
+
+✅ Canary 
+
+✅ Automatic rollback
+
+✅ Health monitoring
+
+✅ Zero downtime
+
+✅ Production-grade system
+
+### 🧠 FINAL UNDERSTANDING
+
+> #### This setup ensures that new versions are released gradually and safely, while continuously monitoring system health and automatically reverting changes if any issue is detected, making deployments reliable and risk-free.
+
+
+
+
+
+
 ---
 
 
