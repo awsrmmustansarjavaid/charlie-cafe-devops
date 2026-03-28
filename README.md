@@ -1086,7 +1086,7 @@ http://YOUR-ALB-DNS
 This setup transforms your project from a simple lab into a real production system by enabling automated building, testing, containerization, and deployment on scalable cloud infrastructure using ECS and ECR, which is how modern applications are deployed in industry.
 ```
 
-### Blue-Green Deployment on ECS (ZERO downtime)
+## 🌐 Blue-Green Deployment on ECS (ZERO downtime)
 
 ### 🚀 🎯 WHAT YOU ARE BUILDING
 
