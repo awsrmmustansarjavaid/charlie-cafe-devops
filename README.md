@@ -601,6 +601,66 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 ### ☁️ PHASE 2 — AWS DEVOPS UPgradion 
 
+### ✅ FULL AUTO DEPLOYMENT (GitHub → AWS)
+
+### 🚀 🎯 FINAL GOAL
+
+#### Every time you push code:
+
+```
+GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
+```
+
+### 🧱  — CREATE IAM USER FOR GITHUB
+
+### ✅ 1. Go to IAM
+
+- AWS Console → IAM → Users → Create User
+
+### ✅ 2. Configure
+
+- Username:
+
+```
+charlie-github-user
+```
+
+#### Enable:
+
+✔ Programmatic access
+
+### ✅ 3. Attach Policy
+
+#### Attach your merged policy:
+
+```
+charlie-cafe-iam-policy
+```
+
+### ✅ 4. Create User
+
+👉 Copy:
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+```
+
+### 🔐 STEP 2 — ADD GITHUB SECRETS
+
+- Go to your GitHub repo: 👉 Settings → Secrets → Actions → New repository secret
+
+#### ✅ Add these:
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION = us-east-1
+ECR_REPOSITORY = charlie-cafe
+ECS_CLUSTER = charlie-cluster
+ECS_SERVICE = charlie-service
+```
+
 ### 1️⃣ — CREATE ECR (DOCKER IMAGE STORAGE)
 
 ### ✅ Step 1 — Open AWS Console
