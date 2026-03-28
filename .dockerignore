@@ -7,5 +7,4 @@ vendor
 docker-compose.yml
 .github
 README.md
-aws-iam-policies/
 docs/
