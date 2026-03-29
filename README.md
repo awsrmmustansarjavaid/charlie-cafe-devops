@@ -240,48 +240,28 @@ mysql -h <host> -u <user> -p < verify.sql
 
 > ### Method 2️⃣ integrate schema.sql, data.sql, verify.sql into Docker + CI/CD
 
-### 1️⃣ Create a Dockerfile
+### 1️⃣ Create a devops-setup_rds.sh
 
-Inside your project root (charlie-cafe-devops/), create:
 
-### 📦 1. ✅ Dockerfile #1 → MySQL (database with schema.sql)
 
-```
-docker/mysql/Dockerfile
-```
+### 📦 1. ✅ devops-setup_rds.sh → MySQL (database with schema.sql)
 
 ```
-# -------------------------------------------------
-# ☕ Charlie Cafe - MySQL Dockerfile (FINAL)
-# Auto DB + Schema + Data Setup
-# -------------------------------------------------
-
-FROM mysql:8.0
-
-# -------------------------------------------------
-# Environment Variables
-# -------------------------------------------------
-ENV MYSQL_ROOT_PASSWORD=rootpassword
-ENV MYSQL_DATABASE=cafe_db
-
-# -------------------------------------------------
-# Auto-run SQL files on container startup
-# (Executed in alphabetical order)
-# -------------------------------------------------
-COPY infrastructure/rds/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
-COPY infrastructure/rds/data.sql /docker-entrypoint-initdb.d/02-data.sql
-
-# -------------------------------------------------
-# Expose MySQL port
-# -------------------------------------------------
-EXPOSE 3306
+nano devops-setup_rds.sh
 ```
 
-- MySQL image runs the scripts automatically on first container startup.
+[devops-setup_rds.sh](./infrastructure/scripts/devops-setup_rds.sh)
 
-- verify.sql is not copied — you run it manually or via CI/CD test.
 
-### 📦 2. ✅ Dockerfile #2 → Apache + PHP (frontend)
+### ✅ RUN SCRIPT
+
+```
+chmod +x devops-setup_rds.sh
+./devops-setup_rds.sh
+```
+
+
+### 📦 2. ✅ Dockerfile → Apache + PHP (frontend)
 
 ```
 docker/apache-php/Dockerfile

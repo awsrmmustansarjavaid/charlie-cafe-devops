@@ -1644,7 +1644,7 @@ echo -e "\n🎉 Your Charlie Cafe database is fully ready on AWS RDS!\n"
 
 ### ✅ Step 1 — Save file
 
-````
+```
 nano devops-setup_rds.sh
 ```
 
