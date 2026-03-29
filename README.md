@@ -344,17 +344,9 @@ services:
       - "8080:80"
     volumes:
       - ./app/frontend:/var/www/html
-    depends_on:
-      - db
-    restart: always
-
-  db:
-    build:
-      context: .
-      dockerfile: docker/mysql/Dockerfile
-    container_name: charlie_db
-    ports:
-      - "3306:3306"
+    environment:
+      AWS_REGION: us-east-1
+      RDS_SECRET_ARN: arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123
     restart: always
 ```
 
