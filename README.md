@@ -263,7 +263,7 @@ chmod +x devops-setup_rds.sh
 ### 📦 2. ✅ Dockerfile → Apache + PHP (frontend)
 
 ```
-docker/apache-php/Dockerfile
+nano docker/apache-php/Dockerfile
 ```
 
 [Dockerfile](./docker/apache-php/Dockerfile)
@@ -272,25 +272,10 @@ docker/apache-php/Dockerfile
 ### 4️⃣ ⚙️ FINAL docker-compose.yml (FULLY CONNECTED)
 
 ```
-version: "3.8"
-
-services:
-
-  web:
-    build:
-      context: .
-      dockerfile: docker/apache-php/Dockerfile
-    container_name: charlie_web
-    ports:
-      - "8080:80"
-    volumes:
-      - ./app/frontend:/var/www/html
-    environment:
-      AWS_REGION: us-east-1
-      RDS_SECRET_ARN: arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123
-    restart: always
+nano docker-compose.yml
 ```
 
+[docker-compose.yml](./docker-compose.yml)
 
 ### 5️⃣ 📦 2. Create .dockerignore (IMPORTANT)
 
