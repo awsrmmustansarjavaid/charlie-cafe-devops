@@ -1,6 +1,6 @@
 # ☕ Charlie Cafe DevOps Project
 
-### ### 🧱 PHASE 1 — Local Dockerize 
+### 🧱 PHASE 1 — Local Dockerize 
 
 ### 🔹 Overview
 
