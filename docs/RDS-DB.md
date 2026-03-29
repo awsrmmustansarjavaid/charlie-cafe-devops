@@ -1328,6 +1328,125 @@ charlie-cafe-devops/
 
 ✅ Real production architecture (RDS + Secrets Manager)
 
+### 🧠 CORE IDEA (VERY IMPORTANT)
+
+👉 AWS RDS does NOT auto-run SQL like Docker
+
+So you must:
+
+✅ Use your schema.sql manually OR via automation (CLI / CI/CD)
+
+### 🏆 FINAL PRODUCTION APPROACH (WITH SECRETS MANAGER)
+
+We will:
+
+- Store credentials in Secrets Manager ✅
+
+- Use AWS CLI + mysql client to apply schema ✅
+
+- Automate later via CI/CD ✅
+
+### 🧱 STEP 1 — Your Secrets Manager (Already Done ✅)
+
+```
+{
+  "username": "cafe_user",
+  "password": "StrongPassword123",
+  "host": "your-rds-endpoint.amazonaws.com",
+  "dbname": "cafe_db"
+}
+```
+
+###  🧱 STEP 2 — CREATE DATABASE IN RDS
+
+👉 Important: RDS does NOT create DB automatically (like Docker ENV)
+
+Run this ONE TIME:
+
+```
+mysql -h your-rds-endpoint.amazonaws.com -u cafe_user -p
+```
+
+Then:
+
+```
+CREATE DATABASE cafe_db;
+```
+
+### 🧱 STEP 3 — APPLY SCHEMA USING SECRETS MANAGER (FINAL WAY)
+
+### ✅ Create Script: setup_charlie_cafe_db_full.sh
+
+[setup_charlie_cafe_db_full.sh](../infrastructure/scripts/setup_charlie_cafe_db_full.sh)
+
+or
+
+### ✅ Create Script: devops-setup_rds.sh
+
+```
+#!/bin/bash
+
+# -------------------------------------------------
+# ☕ Charlie Cafe — RDS Setup via Secrets Manager
+# -------------------------------------------------
+
+set -e
+
+AWS_REGION="us-east-1"
+SECRET_ARN="arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123"
+
+echo "📡 Fetching DB credentials from Secrets Manager..."
+
+SECRET_JSON=$(aws secretsmanager get-secret-value \
+  --secret-id "$SECRET_ARN" \
+  --region "$AWS_REGION" \
+  --query SecretString \
+  --output text)
+
+DB_HOST=$(echo $SECRET_JSON | jq -r '.host')
+DB_USER=$(echo $SECRET_JSON | jq -r '.username')
+DB_PASS=$(echo $SECRET_JSON | jq -r '.password')
+DB_NAME=$(echo $SECRET_JSON | jq -r '.dbname')
+
+echo "✅ Credentials loaded"
+
+# -------------------------------------------------
+# CREATE DATABASE (SAFE)
+# -------------------------------------------------
+echo "🗄️ Creating database if not exists..."
+
+mysql -h $DB_HOST -u $DB_USER -p$DB_PASS -e "
+CREATE DATABASE IF NOT EXISTS $DB_NAME;
+"
+
+# -------------------------------------------------
+# APPLY SCHEMA
+# -------------------------------------------------
+echo "📦 Applying schema..."
+
+mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+# -------------------------------------------------
+# APPLY DATA (OPTIONAL)
+# -------------------------------------------------
+echo "📊 Applying sample data..."
+
+mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+# -------------------------------------------------
+# VERIFY
+# -------------------------------------------------
+echo "🔍 Running verification..."
+
+mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+echo "🎉 RDS setup completed successfully!"
+```
+
+
+
+
+
 ---
 
 
