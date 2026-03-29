@@ -1754,6 +1754,324 @@ AWS RDS (MySQL)
 
 ✔ Secrets Manager
 
+## Modidification of deploy.yml
+
+### Curent deploy.yml
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Clone Repository
+    # -------------------------------------------------
+    - name: 📥 Clone Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Install Dependencies
+    # -------------------------------------------------
+    - name: 🧰 Install MySQL Client, jq, curl, AWS CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client jq curl unzip
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        aws --version
+
+    # -------------------------------------------------
+    # 3️⃣ Retrieve RDS Secret from AWS Secrets Manager
+    # -------------------------------------------------
+    - name: 🗝️ Retrieve RDS Secret
+      run: |
+        SECRET_JSON=$(aws secretsmanager get-secret-value \
+          --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+          --region us-east-1 \
+          --query SecretString \
+          --output text)
+        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 4️⃣ Parse RDS Secret into environment variables
+    # -------------------------------------------------
+    - name: 🧰 Parse RDS Secret
+      run: |
+        export DB_HOST=$(echo $DB_SECRET | jq -r '.host')
+        export DB_USER=$(echo $DB_SECRET | jq -r '.username')
+        export DB_PASS=$(echo $DB_SECRET | jq -r '.password')
+        export DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')
+        echo "DB_HOST=$DB_HOST" >> $GITHUB_ENV
+        echo "DB_USER=$DB_USER" >> $GITHUB_ENV
+        echo "DB_PASS=$DB_PASS" >> $GITHUB_ENV
+        echo "DB_NAME=$DB_NAME" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 5️⃣ Wait for RDS to be reachable
+    # -------------------------------------------------
+    - name: ⏳ Wait for RDS
+      run: |
+        echo "Waiting for RDS connection..."
+        for i in {1..30}; do
+          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
+          echo "Retrying in 10s..."
+          sleep 10
+        done
+
+    # -------------------------------------------------
+    # 6️⃣ Apply Database Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 7️⃣ Apply Sample Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 8️⃣ Verify Database
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 9️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 🔟 Run Docker Container
+    # -------------------------------------------------
+    - name: 🚀 Run Container
+      run: docker run -d -p 8080:80 --name charlie_web \
+            -e RDS_SECRET_ARN=arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+            charlie-cafe
+
+    # -------------------------------------------------
+    # 11️⃣ Health Check
+    # -------------------------------------------------
+    - name: ❤️ Test Application (Health Check)
+      run: |
+        sleep 10
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 12️⃣ Success Message
+    # -------------------------------------------------
+    - name: 🎉 Pipeline Success
+      run: echo "Charlie Cafe CI/CD Pipeline Completed Successfully 🚀"
+```
+
+### 🧠 WHAT’S WRONG / MISSING
+
+### ❌ 1. You are NOT configuring AWS credentials
+
+Right now your pipeline calls:
+
+```
+aws secretsmanager get-secret-value
+```
+
+👉 But GitHub Actions has no AWS access yet
+
+### ❌ 2. You manually installed AWS CLI (not needed)
+
+You installed AWS CLI using curl — but GitHub already supports a better way.
+
+👉 Use official action:
+
+```
+aws-actions/configure-aws-credentials
+```
+
+### ❌ 3. Database creation step missing
+
+If DB doesn’t exist → your pipeline fails.
+
+### ❌ 4. Minor improvement
+
+- Pass AWS_REGION into container (important)
+
+- Clean environment handling
+
+### ✅ FINAL FIXED deploy.yml (PRODUCTION READY)
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Clone Repository
+    # -------------------------------------------------
+    - name: 📥 Clone Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Configure AWS Credentials (REQUIRED)
+    # -------------------------------------------------
+    - name: 🔐 Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    # -------------------------------------------------
+    # 3️⃣ Install Required Tools
+    # -------------------------------------------------
+    - name: 🧰 Install Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client jq
+
+    # -------------------------------------------------
+    # 4️⃣ Retrieve RDS Secret
+    # -------------------------------------------------
+    - name: 🗝️ Retrieve RDS Secret
+      run: |
+        SECRET_JSON=$(aws secretsmanager get-secret-value \
+          --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+          --region us-east-1 \
+          --query SecretString \
+          --output text)
+
+        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 5️⃣ Parse Secret
+    # -------------------------------------------------
+    - name: 🧰 Parse Secret
+      run: |
+        echo "DB_HOST=$(echo $DB_SECRET | jq -r '.host')" >> $GITHUB_ENV
+        echo "DB_USER=$(echo $DB_SECRET | jq -r '.username')" >> $GITHUB_ENV
+        echo "DB_PASS=$(echo $DB_SECRET | jq -r '.password')" >> $GITHUB_ENV
+        echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 6️⃣ Wait for RDS
+    # -------------------------------------------------
+    - name: ⏳ Wait for RDS
+      run: |
+        for i in {1..20}; do
+          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
+          echo "Waiting for RDS..."
+          sleep 5
+        done
+
+    # -------------------------------------------------
+    # 7️⃣ Create Database (SAFE)
+    # -------------------------------------------------
+    - name: 🗄️ Create Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS -e "
+        CREATE DATABASE IF NOT EXISTS $DB_NAME;
+        "
+
+    # -------------------------------------------------
+    # 8️⃣ Apply Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 9️⃣ Apply Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 🔟 Verify Database
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 11️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 12️⃣ Run Container
+    # -------------------------------------------------
+    - name: 🚀 Run Container
+      run: |
+        docker run -d -p 8080:80 --name charlie_web \
+        -e AWS_REGION=us-east-1 \
+        -e RDS_SECRET_ARN=arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+        charlie-cafe
+
+    # -------------------------------------------------
+    # 13️⃣ Health Check
+    # -------------------------------------------------
+    - name: ❤️ Test Application
+      run: |
+        sleep 10
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 14️⃣ Success
+    # -------------------------------------------------
+    - name: 🎉 Success
+      run: echo "Deployment completed successfully 🚀"
+```
+
+### 🧠 FINAL SUMMARY
+
+#### ✅ You SHOULD change:
+
+Add AWS credentials step ✔
+
+Remove manual AWS CLI install ✔
+
+Add DB creation step ✔
+
+Pass AWS_REGION to container ✔
+
+#### ❌ You should NOT change:
+
+Your docker-compose.yml → already correct ✅
+
+Your schema/data/verify files → already correct ✅
+
+### 🚀 WHAT YOU HAVE NOW
+
+#### You officially built:
+
+✅ Secure Secrets Manager integration
+
+✅ Auto RDS schema deployment
+
+✅ CI/CD pipeline
+
+✅ Dockerized app
+
+✅ Production-ready architecture
+
 ---
 
 
