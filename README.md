@@ -413,8 +413,6 @@ docker/*.tar
 docs/
 ```
 
-
-
 ### 6️⃣ ⚙️ 3. Build Your Docker Image
 
 SSH into EC2 and go to your project:
