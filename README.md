@@ -363,6 +363,15 @@ docker-compose up --build
 http://YOUR-EC2-PUBLIC-IP
 ```
 
+### 📁 Initialize DEVOPS SCRIPT
+
+```
+nano charlie-cafe-devops.sh
+```
+
+[charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
+
+
 ### 9️⃣ GitHub Workflow (CI/CD)
 
 #### 📁 GitHub Path Folder structure:
