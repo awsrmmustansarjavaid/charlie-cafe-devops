@@ -1231,6 +1231,49 @@ Browser → Docker (PHP) → AWS RDS
 
 ✅ No duplication
 
+
+### 1️⃣ Create a Dockerfile
+
+Inside your project root (charlie-cafe-devops/), create:
+
+### 📦 1. ✅ Dockerfile #1 → MySQL (database with schema.sql)
+
+```
+docker/mysql/Dockerfile
+```
+
+```
+# -------------------------------------------------
+# ☕ Charlie Cafe - MySQL Dockerfile (FINAL)
+# Auto DB + Schema + Data Setup
+# -------------------------------------------------
+
+FROM mysql:8.0
+
+# -------------------------------------------------
+# Environment Variables
+# -------------------------------------------------
+ENV MYSQL_ROOT_PASSWORD=rootpassword
+ENV MYSQL_DATABASE=cafe_db
+
+# -------------------------------------------------
+# Auto-run SQL files on container startup
+# (Executed in alphabetical order)
+# -------------------------------------------------
+COPY infrastructure/rds/schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+COPY infrastructure/rds/data.sql /docker-entrypoint-initdb.d/02-data.sql
+
+# -------------------------------------------------
+# Expose MySQL port
+# -------------------------------------------------
+EXPOSE 3306
+```
+
+- MySQL image runs the scripts automatically on first container startup.
+
+- verify.sql is not copied — you run it manually or via CI/CD test.
+
+
 ### 🧱 WHAT YOU SHOULD KEEP INSTEAD
 
 #### You already have:
