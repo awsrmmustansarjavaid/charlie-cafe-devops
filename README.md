@@ -379,6 +379,7 @@ vendor
 docker-compose.yml
 .github
 README.md
+docs/
 ```
 
 #### 🔍 Why these are added
@@ -409,6 +410,7 @@ vendor/
 .DS_Store
 Thumbs.db
 docker/*.tar
+docs/
 ```
 
 
