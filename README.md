@@ -1658,11 +1658,6 @@ You now have:
 
 > #### This setup ensures that new versions are released gradually and safely, while continuously monitoring system health and automatically reverting changes if any issue is detected, making deployments reliable and risk-free.
 
-
-
-
-
-
 ---
 
 
