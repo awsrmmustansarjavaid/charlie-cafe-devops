@@ -282,9 +282,9 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
 ```
 
-### 🧱  — IAM SETUP (GitHub Access)
+### 1️⃣  — IAM SETUP (GitHub Access)
 
-#### ✅ Create IAM User
+#### 1️⃣ Create IAM User
 
 - Go to: IAM → Users → Create User
 
@@ -292,7 +292,7 @@ GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
 
 - Enable: ✔ Programmatic Access
 
-#### ✅ Attach your merged policy:
+#### 2️⃣ Attach your merged policy:
 
 #### Attach:
 
@@ -300,10 +300,36 @@ GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
 charlie-cafe-iam-policy
 ```
 
-### ✅ Save Credentials
+#### 3️⃣ Save Credentials
 
 ```
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
+```
+
+### 2️⃣ CREATE ECR (DOCKER REGISTRY)
+
+### ✅ Step 1 — Open AWS Console
+
+- Go to: ECR → Repositories → Create repository
+
+### ✅ Step 2 — Create Repo
+
+- Name:
+
+```
+charlie-cafe
+```
+
+- Visibility: Private
+
+- Click Create
+
+### ✅ Step 3 — Copy Repository URI
+
+#### Example:
+
+```
+123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
 ```
 
