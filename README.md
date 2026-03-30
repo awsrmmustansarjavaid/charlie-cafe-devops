@@ -380,6 +380,62 @@ DB_USER = admin
 DB_PASS = ****
 ```
 
+### 5️⃣ ALB + ECS SERVICE
+
+> #### KEEP existing ALB and upgrade it for ECS.
+
+#### 1️⃣ Create NEW Target Groups (for ECS)
+
+- 👉 Go to: EC2 → Target Groups
+
+#### 🔵 Blue Target Group
+
+- Name: charlie-blue
+
+- Target type: IP (IMPORTANT)
+
+- Port: 80
+
+- Health check: /health.php
+
+#### 🟢 Green Target Group
+
+- Name: charlie-green
+
+- Same config as above
+
+#### 2️⃣ Update ALB Listener
+
+- Go to: EC2 → Load Balancer → Listeners
+
+- Edit HTTP:80
+
+#### 👉 Set default:
+
+```
+Forward → charlie-blue
+```
+
+#### 3️⃣ Create ECS Service
+Cluster: charlie-cluster
+Service: charlie-service
+Launch type: Fargate
+Load Balancer:
+Use existing ALB
+Listener: HTTP:80
+Target group: charlie-blue
+Container Mapping:
+Container: charlie-container
+Port: 80
+
+#### 4️⃣ Verify
+Go to: Target Group → charlie-blue
+You should see:
+IP addresses (NOT EC2)
+Status: Healthy
+
+#### 🌐 Access App
+
 
 
 
