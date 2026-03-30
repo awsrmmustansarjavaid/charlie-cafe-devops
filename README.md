@@ -159,23 +159,7 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### ✅ 2. Initialize locally
 
-```
-cd charlie-cafe
-
-git init
-git add .
-git commit -m "Initial commit - Charlie Cafe Project"
-```
-
-### ✅ 3. Connect to GitHub
-
-```
-git remote add origin https://github.com/YOUR_USERNAME/charlie-cafe-devops.git
-git branch -M main
-git push -u origin main
-```
 ### 2️⃣ Charlie Cafe RDS Schema
 
 #### 📄 Read more here 

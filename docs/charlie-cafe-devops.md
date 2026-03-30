@@ -1,5 +1,27 @@
 # Charlie Cafe - DEVOPS Bash Script
 
+### 1️⃣ Initialize GitHub Repo
+
+### ✅ 1. Initialize locally
+
+```
+cd charlie-cafe
+
+git init
+git add .
+git commit -m "Initial commit - Charlie Cafe Project"
+```
+
+### ✅ 2. Connect to GitHub
+
+```
+git remote add origin https://github.com/YOUR_USERNAME/charlie-cafe-devops.git
+git branch -M main
+git push -u origin main
+```
+
+
+
 ### 🧠 1. init-github.sh → Initialize Git & Push to GitHub
 
 ```
