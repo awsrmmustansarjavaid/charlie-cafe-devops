@@ -188,11 +188,42 @@ Before running:
 ```
 chmod +x charlie-cafe-devops.sh
 ```
-#### 🔴 MUST EDIT:
+
+### ⚠️ FINAL THINGS YOU MUST EDIT BEFORE RUN
+
+🔴 1. GitHub Username
+
 ```
 GITHUB_USERNAME="YOUR_USERNAME"
-SECRET_ARN="your-real-secret"
 ```
+
+🔴 2. AWS Secret ARN
+
+```
+SECRET_ARN="your-real-secret-arn"
+```
+
+🔴 3. Project Folder Name
+
+```
+PROJECT_DIR="charlie-cafe"
+```
+
+👉 Make sure your folder name matches EXACTLY
+
+🔴 4. (Optional) Port
+
+```
+PORT="80"
+```
+
+🔴 5. EC2 Security Group
+
+Make sure port is open:
+
+- HTTP → 80
+
+- Or 8080 if changed
 
 ### 🌐 Now test in browser:
 
