@@ -181,6 +181,19 @@ nano charlie-cafe-devops.sh
 
 [charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
 
+#### ⚠️ Final Quick Checklist
+
+Before running:
+
+```
+chmod +x charlie-cafe-devops.sh
+```
+#### 🔴 MUST EDIT:
+```
+GITHUB_USERNAME="YOUR_USERNAME"
+SECRET_ARN="your-real-secret"
+```
+
 ### 🌐 Now test in browser:
 
 ```
