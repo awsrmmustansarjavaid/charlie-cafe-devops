@@ -149,7 +149,7 @@ charlie-cafe-devops/
 
 ### 1️⃣ Initialize GitHub Repo
 
-### ✅ 1. Create repo on GitHub
+### 1️⃣ Create repo on GitHub
 
 - Go to: 👉 https://github.com  → New Repo
 
@@ -158,6 +158,19 @@ charlie-cafe-devops/
 ```
 charlie-cafe-devops
 ```
+
+### 2️⃣ Create DEVOPS Files
+
+#### 📑 1. [Dockerfile](./docker/apache-php/Dockerfile)
+
+#### 📑 2. [docker-compose.yml](./docker-compose.yml)
+
+#### 📑 3. [.dockerignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.dockerignore)
+
+#### 📑 4. [.gitignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.gitignore)
+
+#### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
+
 
 ### 🌐 Now test in browser:
 
@@ -174,7 +187,6 @@ nano charlie-cafe-devops.sh
 ```
 
 [charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
-
 
 
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
