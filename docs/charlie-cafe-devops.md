@@ -776,6 +776,33 @@ echo -e "\n🎉 ${GREEN}Charlie Cafe FULL DevOps Setup Completed!${NC}"
 echo -e "🌐 Access your app: http://YOUR_EC2_PUBLIC_IP\n"
 ```
 
+### 🧠 Key Improvements (Important)
+
+#### ✅ Correct execution order:
+
+- RDS setup
+
+- Git push
+
+- Docker deploy
+
+#### ✅ Safe for re-run:
+
+- git commit || true
+
+- git remote add || true
+
+- docker rm -f || true
+
+#### ✅ Production-style features:
+
+- set -euo pipefail
+
+- Color logs
+
+- Structured steps
+
+- Validation checks
 
 
 ---
