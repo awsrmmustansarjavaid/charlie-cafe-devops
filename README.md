@@ -344,7 +344,39 @@ docker tag charlie-cafe:latest YOUR_ECR_URI:latest
 docker push YOUR_ECR_URI:latest
 ```
 
+### 4️⃣ ECS SETUP
 
+#### 1️⃣ Create Cluster
+
+- ECS → Clusters → Create
+
+- Type: Fargate
+
+- Name: charlie-cluster
+
+#### 2️⃣ Create Task Definition
+
+- Name: charlie-task
+
+- CPU: 0.5 vCPU
+
+- Memory: 1 GB
+
+- Container Config:
+
+- Name: charlie-container
+
+- Image: ECR URI
+
+- Port: 80
+
+#### 3️⃣ (Optional Env Variables)
+
+```
+DB_HOST
+DB_USER
+DB_PASS
+```
 
 
 
