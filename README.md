@@ -417,24 +417,152 @@ Forward → charlie-blue
 ```
 
 #### 3️⃣ Create ECS Service
-Cluster: charlie-cluster
-Service: charlie-service
-Launch type: Fargate
-Load Balancer:
-Use existing ALB
-Listener: HTTP:80
-Target group: charlie-blue
-Container Mapping:
-Container: charlie-container
-Port: 80
+
+- Cluster: charlie-cluster
+
+- Service: charlie-service
+
+- Launch type: Fargate
+
+- Load Balancer:
+
+- Use existing ALB
+
+- Listener: HTTP:80
+
+- Target group: charlie-blue
+
+- Container Mapping:
+
+- Container: charlie-container
+
+- Port: 80
 
 #### 4️⃣ Verify
-Go to: Target Group → charlie-blue
-You should see:
-IP addresses (NOT EC2)
-Status: Healthy
+
+- Go to: Target Group → charlie-blue
+
+#### You should see:
+
+- IP addresses (NOT EC2)
+
+- Status: Healthy
 
 #### 🌐 Access App
+
+```
+http://YOUR-ALB-DNS
+```
+
+### 6️⃣ GITHUB CI/CD (AUTO DEPLOY)
+
+#### 1️⃣ Add GitHub Secrets
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+AWS_ACCOUNT_ID
+ECS_CLUSTER
+ECS_SERVICE
+ECR_REPO
+```
+
+#### 📄 FINAL deploy.yml
+
+```
+name: ☕ Charlie Cafe Full DevOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    - name: 🔐 Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        docker login --username AWS --password-stdin \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    - name: 🏗️ Build Image
+      run: docker build -t charlie-cafe .
+
+    - name: 🏷️ Tag Image
+      run: |
+        docker tag charlie-cafe:latest \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+
+    - name: 📤 Push Image
+      run: |
+        docker push \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+
+    - name: 🚀 Deploy ECS
+      run: |
+        aws ecs update-service \
+          --cluster ${{ secrets.ECS_CLUSTER }} \
+          --service ${{ secrets.ECS_SERVICE }} \
+          --force-new-deployment
+
+    - name: 🎉 Done
+      run: echo "Deployment successful 🚀"
+```
+
+### 7️⃣ TEST PIPELINE
+
+```
+git add .
+git commit -m "test deployment"
+git push
+```
+
+👉 Check: GitHub → Actions
+
+### 8️⃣ VERIFY DEPLOYMENT
+
+- ECS → Cluster → Service → Tasks → Running
+
+#### 🔍 Open:
+
+```
+http://YOUR-ALB-DNS
+```
+
+### 🎯 RESULT (PHASE 2 COMPLETE)
+
+#### You now have:
+
+✅ Dockerized app
+
+✅ ECR storage
+
+✅ ECS deployment
+
+✅ ALB routing
+
+✅ Health checks
+
+✅ GitHub CI/CD
+
+✅ Auto deployment
+
+---
+
 
 
 
