@@ -562,8 +562,133 @@ http://YOUR-ALB-DNS
 ✅ Auto deployment
 
 ---
+## 🌐 PHASE 3 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
 
+### 🎯 Flow
 
+```
+GitHub → ECR → ECS → CodeDeploy → ALB (Blue/Green)
+```
+
+### 1️⃣ Create CodeDeploy App
+
+- Name: charlie-app
+
+- Platform: ECS
+
+### 2️⃣ Create Deployment Group
+
+- Name: charlie-dg
+
+- Cluster: charlie-cluster
+
+- Service: charlie-service
+
+#### Load Balancer:
+
+- ALB: existing
+
+- Production: charlie-blue
+
+- Test: charlie-green
+
+### 3️⃣ appspec.yaml
+
+```
+version: 1
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "charlie-task"
+        LoadBalancerInfo:
+          ContainerName: "charlie-container"
+          ContainerPort: 80
+```
+
+### 4️⃣ Update CI/CD
+
+```
+- name: 🚀 Deploy with CodeDeploy
+  run: |
+    aws deploy create-deployment \
+      --application-name charlie-app \
+      --deployment-group-name charlie-dg \
+      --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+      --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+```
+
+---
+## 🌐 PHASE 4 — CANARY + AUTO ROLLBACK + MONITORING
+
+### ✅ Enable Canary Deployment
+
+#### Use:
+
+```
+CodeDeployDefault.ECSCanary10Percent5Minutes
+```
+
+### ✅ Enable Auto Rollback
+
+#### Enable:
+
+Deployment failure
+
+Alarm triggered
+
+### ✅ Create CloudWatch Alarm
+
+Metric: UnHealthyHostCount
+
+Target group: charlie-green
+
+Threshold: >= 1
+
+### ✅ Attach Alarm to CodeDeploy
+
+Add alarm: charlie-health-alarm
+
+### 🧪 FINAL FLOW
+
+```
+Push Code →
+Build →
+Push ECR →
+Deploy →
+10% Traffic →
+Health Check →
+✅ Success → 100%
+❌ Failure → Auto Rollback
+```
+
+### 🧠 FINAL UNDERSTANDING
+
+#### You now built a real production-grade DevOps system:
+
+✅ CI/CD automation
+
+✅ Containerized deployment
+
+✅ Load balancing
+
+✅ Zero downtime deployment
+
+✅ Canary releases
+
+✅ Auto rollback
+
+✅ Monitoring
+
+### 🚨 COMMON MISTAKES (FIXED)
+
+❌ Using Instance target type → Use IP
+
+❌ Using old EC2 target group → Ignore it
+
+❌ Missing /health.php → Required
+
+❌ Duplicate ALB configs → Now removed
 
 
 
