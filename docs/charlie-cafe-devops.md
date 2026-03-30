@@ -156,9 +156,7 @@ mysql -h <host> -u <user> -p < verify.sql
 
 ### 1️⃣ Create a devops-setup_rds.sh
 
-
-
-### 📦 1. ✅ devops-setup_rds.sh → MySQL (database with schema.sql)
+> #### 📦 1. ✅ devops-setup_rds.sh → MySQL (database with schema.sql)
 
 ```
 #!/bin/bash
