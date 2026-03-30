@@ -310,8 +310,31 @@ echo -e "${GREEN}✔ Verification Completed${NC}"
 echo -e "\n🎉 Your Charlie Cafe database is fully ready on AWS RDS!\n"
 ```
 
+### 6️⃣ ⚙️ 3. Build Your Docker Image
 
+SSH into EC2 and go to your project:
 
+```
+cd charlie-cafe-devops
+```
+
+Then run:
+
+```
+docker build -t charlie-cafe .
+```
+
+### 7️⃣ 4. Run Your Container
+
+```
+docker run -d -p 80:80 --name cafe-app charlie-cafe
+```
+
+### 8️⃣ 5. Run Your Project Locally
+
+```
+docker-compose up --build
+```
 
 ### 🧠 2. docker-setup.sh → Build & Run Container (EC2)
 
