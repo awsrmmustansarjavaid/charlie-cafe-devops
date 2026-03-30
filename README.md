@@ -272,3 +272,38 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 ## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
 
+### ✅ FULL AUTO DEPLOYMENT (GitHub → AWS)
+
+### 🚀 🎯 FINAL GOAL
+
+#### Every time you push code:
+
+```
+GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
+```
+
+### 🧱  — IAM SETUP (GitHub Access)
+
+#### ✅ Create IAM User
+
+- Go to: IAM → Users → Create User
+
+- Username: charlie-github-user
+
+- Enable: ✔ Programmatic Access
+
+#### ✅ Attach your merged policy:
+
+#### Attach:
+
+```
+charlie-cafe-iam-policy
+```
+
+### ✅ Save Credentials
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+```
+
