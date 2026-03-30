@@ -1,16 +1,19 @@
 #!/bin/bash
 
 # ==========================================================
-# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL)
+# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL v2)
 # ----------------------------------------------------------
 # ✔ Setup AWS RDS (DB + schema + data + verification)
 # ✔ Initialize Git & push to GitHub
-# ✔ Build Docker image
+# ✔ Build Docker image (custom Dockerfile path)
 # ✔ Run Docker container
-# ✔ Production-ready structure with safety checks
+# ✔ Production-ready with safety checks
 # ==========================================================
 
-# ❗ Exit on error, undefined variable, pipe failure
+# ❗ Exit on:
+# - any error (-e)
+# - undefined variable (-u)
+# - pipeline failure (pipefail)
 set -euo pipefail
 
 # ==========================================================
@@ -29,6 +32,9 @@ IMAGE_NAME="charlie-cafe"
 CONTAINER_NAME="cafe-app"
 PORT="80"
 
+# --- Dockerfile Path (UPDATED) ---
+DOCKERFILE_PATH="docker/apache-php/Dockerfile"
+
 # --- AWS RDS / Secrets ---
 AWS_REGION="us-east-1"
 SECRET_ARN="arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123"
@@ -38,7 +44,7 @@ DATA_FILE="infrastructure/rds/data.sql"
 VERIFY_FILE="infrastructure/rds/verify.sql"
 
 # ==========================================================
-# 🎨 COLORS FOR OUTPUT
+# 🎨 COLORS FOR OUTPUT (FOR READABILITY)
 # ==========================================================
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -65,7 +71,7 @@ print_error() {
 # ==========================================================
 print_header "Step 1 — Navigate to Project"
 
-cd $PROJECT_DIR || { print_error "Project folder not found"; exit 1; }
+cd "$PROJECT_DIR" || { print_error "Project folder not found"; exit 1; }
 
 print_success "Project directory ready"
 
@@ -101,7 +107,7 @@ DB_NAME=$(echo "$SECRET_JSON" | jq -r '.dbname')
 print_success "Database credentials loaded"
 
 # ==========================================================
-# 🧪 STEP 4 — TEST DB CONNECTION
+# 🧪 STEP 4 — TEST RDS CONNECTION
 # ==========================================================
 print_header "Step 4 — Testing RDS Connection"
 
@@ -131,7 +137,7 @@ if [ -f "$SCHEMA_FILE" ]; then
   mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$SCHEMA_FILE"
   print_success "Schema applied"
 else
-  print_error "Schema file missing"
+  print_error "Schema file missing: $SCHEMA_FILE"
   exit 1
 fi
 
@@ -176,20 +182,21 @@ git push -u origin main
 print_success "Code pushed to GitHub"
 
 # ==========================================================
-# 🐳 STEP 10 — DOCKER BUILD
+# 🐳 STEP 10 — DOCKER BUILD (UPDATED PATH)
 # ==========================================================
 print_header "Step 10 — Docker Build"
 
-docker build -t $IMAGE_NAME .
+# Build using custom Dockerfile path
+docker build -t "$IMAGE_NAME" -f "$DOCKERFILE_PATH" .
 
-print_success "Docker image built"
+print_success "Docker image built using $DOCKERFILE_PATH"
 
 # ==========================================================
 # 🧹 STEP 11 — REMOVE OLD CONTAINER
 # ==========================================================
 print_header "Step 11 — Cleanup Old Container"
 
-docker rm -f $CONTAINER_NAME 2>/dev/null || true
+docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
 
 print_success "Old container removed (if existed)"
 
@@ -198,7 +205,7 @@ print_success "Old container removed (if existed)"
 # ==========================================================
 print_header "Step 12 — Run Application"
 
-docker run -d -p $PORT:80 --name $CONTAINER_NAME $IMAGE_NAME
+docker run -d -p "$PORT:80" --name "$CONTAINER_NAME" "$IMAGE_NAME"
 
 print_success "Container is running"
 
