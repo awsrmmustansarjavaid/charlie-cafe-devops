@@ -362,6 +362,8 @@ docker push YOUR_ECR_URI:latest
 
 - Memory: 1 GB
 
+#### 3️⃣ Add Container
+
 - Container Config:
 
 - Name: charlie-container
@@ -370,12 +372,12 @@ docker push YOUR_ECR_URI:latest
 
 - Port: 80
 
-#### 3️⃣ (Optional Env Variables)
+#### 4️⃣ (Optional Env Variables)
 
 ```
-DB_HOST
-DB_USER
-DB_PASS
+DB_HOST = your-rds-endpoint
+DB_USER = admin
+DB_PASS = ****
 ```
 
 
