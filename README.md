@@ -238,6 +238,8 @@ http://YOUR-EC2-PUBLIC-IP
 
 ### 📁 Initialize DEVOPS SCRIPT
 
+Read More [Charlie Cafe DEVOPS](./docs/charlie-cafe-devops.md)
+
 ```
 nano charlie-cafe-devops.sh
 ```
