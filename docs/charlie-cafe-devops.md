@@ -407,6 +407,141 @@ docker run -d -p 80:80 --name cafe-app charlie-cafe
 docker-compose up --build
 ```
 
+
+### 9️⃣ GitHub Workflow (CI/CD)
+
+#### 📁 GitHub Path Folder structure:
+
+```
+charlie-cafe-devops/
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml   ✅ (HERE)
+```
+
+#### Create:
+
+```
+.github/workflows/deploy.yml
+```
+
+```
+name: ☕ Charlie Cafe DevOps CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Clone Repository
+    # -------------------------------------------------
+    - name: 📥 Clone Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Install Dependencies
+    # -------------------------------------------------
+    - name: 🧰 Install MySQL Client, jq, curl, AWS CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client jq curl unzip
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        aws --version
+
+    # -------------------------------------------------
+    # 3️⃣ Retrieve RDS Secret from AWS Secrets Manager
+    # -------------------------------------------------
+    - name: 🗝️ Retrieve RDS Secret
+      run: |
+        SECRET_JSON=$(aws secretsmanager get-secret-value \
+          --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+          --region us-east-1 \
+          --query SecretString \
+          --output text)
+        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 4️⃣ Parse RDS Secret into environment variables
+    # -------------------------------------------------
+    - name: 🧰 Parse RDS Secret
+      run: |
+        export DB_HOST=$(echo $DB_SECRET | jq -r '.host')
+        export DB_USER=$(echo $DB_SECRET | jq -r '.username')
+        export DB_PASS=$(echo $DB_SECRET | jq -r '.password')
+        export DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')
+        echo "DB_HOST=$DB_HOST" >> $GITHUB_ENV
+        echo "DB_USER=$DB_USER" >> $GITHUB_ENV
+        echo "DB_PASS=$DB_PASS" >> $GITHUB_ENV
+        echo "DB_NAME=$DB_NAME" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 5️⃣ Wait for RDS to be reachable
+    # -------------------------------------------------
+    - name: ⏳ Wait for RDS
+      run: |
+        echo "Waiting for RDS connection..."
+        for i in {1..30}; do
+          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
+          echo "Retrying in 10s..."
+          sleep 10
+        done
+
+    # -------------------------------------------------
+    # 6️⃣ Apply Database Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 7️⃣ Apply Sample Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 8️⃣ Verify Database
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 9️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 🔟 Run Docker Container
+    # -------------------------------------------------
+    - name: 🚀 Run Container
+      run: docker run -d -p 8080:80 --name charlie_web \
+            -e RDS_SECRET_ARN=arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+            charlie-cafe
+
+    # -------------------------------------------------
+    # 11️⃣ Health Check
+    # -------------------------------------------------
+    - name: ❤️ Test Application (Health Check)
+      run: |
+        sleep 10
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 12️⃣ Success Message
+    # -------------------------------------------------
+    - name: 🎉 Pipeline Success
+      run: echo "Charlie Cafe CI/CD Pipeline Completed Successfully 🚀"
+```
+
 ### 🧠 2. docker-setup.sh → Build & Run Container (EC2)
 
 ```
