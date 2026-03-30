@@ -804,6 +804,208 @@ echo -e "🌐 Access your app: http://YOUR_EC2_PUBLIC_IP\n"
 
 - Validation checks
 
+### 🌐 FINAL MERGED DEVOPS SCRIPT 
+
+> #### Update Version: 1.2
+
+✔ Dockerfile → ✅ Used by your script
+
+✔ docker-compose.yml → ⚠️ NOT used currently
+
+✔ GitHub Actions (deploy.yml) → ✅ Will work AFTER push
+
+### 🧠 What Happens When You Run Your Script
+
+### 1️⃣ Dockerfile
+
+Your script runs:
+
+```
+docker build -t charlie-cafe .
+```
+
+👉 This uses your Dockerfile automatically
+
+✔ No issue here
+
+✔ Just make sure path is correct
+
+⚠️ Important
+
+If your Dockerfile is inside:
+
+```
+docker/apache-php/Dockerfile
+```
+
+Then your script WILL FAIL ❌
+
+### ✅ Fix (choose ONE)
+
+#### Option A (Recommended)
+
+Move Dockerfile to root:
+
+```
+charlie-cafe/
+ ├── Dockerfile   ✅
+ ├── docker-compose.yml
+```
+
+#### Option B (Advanced)
+
+Update script:
+
+```
+docker build -t $IMAGE_NAME -f docker/apache-php/Dockerfile .
+```
+
+### 2️⃣ docker-compose.yml
+
+Right now your script uses:
+
+```
+docker run -d -p 80:80 ...
+```
+
+#### 👉 That means:
+
+❌ docker-compose.yml is NOT used
+
+❌ Multi-container setup ignored (DB, network, etc.)
+
+✅ If You WANT docker-compose (Recommended for DevOps)
+
+Replace this part in script:
+
+```
+docker run -d -p $PORT:80 --name $CONTAINER_NAME $IMAGE_NAME
+```
+
+👉 WITH:
+
+```
+docker-compose up --build -d
+```
+
+### 🔥 My Recommendation
+
+Since your project includes:
+
+✔ RDS
+
+✔ API
+
+✔ Frontend
+
+👉 Use docker-compose for local/dev
+
+👉 Use ECS for production
+
+### 3️⃣ GitHub Actions (deploy.yml)
+
+Your script does:
+
+```
+git push -u origin main
+```
+
+👉 This will trigger:
+
+➡️ .github/workflows/deploy.yml
+
+✔ So YES — it will run automatically
+
+✔ This is your CI/CD pipeline
+
+### ⚠️ Important DevOps Warning (Very Important)
+
+Right now your flow is:
+
+Script runs Docker on EC2
+
+GitHub Actions ALSO deploys
+
+#### 👉 This can cause:
+
+❌ Conflict
+
+❌ Duplicate deployments
+
+❌ Confusion (manual vs automated)
+
+### 🧠 Best Practice (Real DevOps Way)
+
+### 🔥 Choose ONE deployment method:
+
+#### ✅ Option 1 (Beginner)
+
+Use script only
+
+👉 Ignore GitHub Actions for now
+
+#### ✅ Option 2 (Professional DevOps) ⭐ RECOMMENDED
+
+Use:
+
+✔ Script → only for setup (RDS + Git push)
+
+✔ GitHub Actions → deployment
+
+✔ ECS → container hosting
+
+👉 Remove this from script:
+
+```
+docker run ...
+```
+
+### ✅ Final Recommendation (For YOU)
+
+Since you're learning AWS DevOps:
+
+👉 Modify your script like this:
+
+❌ REMOVE:
+
+```
+docker run -d -p $PORT:80 --name $CONTAINER_NAME $IMAGE_NAME
+```
+
+✅ ADD:
+
+```
+docker-compose up --build -d
+```
+
+### 🚀 Final Flow After Fix
+
+Run script
+
+RDS setup ✔
+
+Code pushed ✔
+
+GitHub Actions runs ✔
+
+Deploy to AWS ✔
+
+### 💡 Pro Tip (Game Changer)
+
+You are very close to real DevOps level
+
+Next step should be:
+
+👉 Docker → ECR
+
+👉 ECS (Fargate)
+
+👉 ALB integration
+
+👉 CI/CD automation
+
+
+
 
 ---
 
