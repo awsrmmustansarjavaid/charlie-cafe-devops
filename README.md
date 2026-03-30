@@ -270,7 +270,7 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 - Application Load Balancer
 
-### ☁️ PHASE 2 — AWS DEVOPS UPGRADE
+## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
 
 ### ✅ FULL AUTO DEPLOYMENT (GitHub → AWS)
 
