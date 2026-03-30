@@ -181,15 +181,16 @@ nano charlie-cafe-devops.sh
 
 [charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
 
-#### ⚠️ Final Quick Checklist
+### ⚠️ Final Quick Checklist
 
 Before running:
 
 ```
 chmod +x charlie-cafe-devops.sh
+./charlie-cafe-devops.sh
 ```
 
-### ⚠️ FINAL THINGS YOU MUST EDIT BEFORE RUN
+#### ⚠️ FINAL THINGS YOU MUST EDIT BEFORE RUN
 
 🔴 1. GitHub Username
 
