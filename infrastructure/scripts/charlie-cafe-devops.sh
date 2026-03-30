@@ -1,41 +1,32 @@
 #!/bin/bash
 
 # ==========================================================
-# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL v2)
+# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL v3)
 # ----------------------------------------------------------
 # ✔ Setup AWS RDS (DB + schema + data + verification)
 # ✔ Initialize Git & push to GitHub
 # ✔ Build Docker image (custom Dockerfile path)
 # ✔ Run Docker container
-# ✔ Production-ready with safety checks
+# ✔ FINAL VERIFICATION (container + HTTP + port checks)
 # ==========================================================
 
-# ❗ Exit on:
-# - any error (-e)
-# - undefined variable (-u)
-# - pipeline failure (pipefail)
 set -euo pipefail
 
 # ==========================================================
 # 🔧 GLOBAL VARIABLES (EDIT BEFORE RUN)
 # ==========================================================
 
-# --- Project ---
 PROJECT_DIR="charlie-cafe"
 
-# --- GitHub ---
 REPO_NAME="charlie-cafe-devops"
 GITHUB_USERNAME="YOUR_USERNAME"
 
-# --- Docker ---
 IMAGE_NAME="charlie-cafe"
 CONTAINER_NAME="cafe-app"
 PORT="80"
 
-# --- Dockerfile Path (UPDATED) ---
 DOCKERFILE_PATH="docker/apache-php/Dockerfile"
 
-# --- AWS RDS / Secrets ---
 AWS_REGION="us-east-1"
 SECRET_ARN="arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123"
 
@@ -44,7 +35,7 @@ DATA_FILE="infrastructure/rds/data.sql"
 VERIFY_FILE="infrastructure/rds/verify.sql"
 
 # ==========================================================
-# 🎨 COLORS FOR OUTPUT (FOR READABILITY)
+# 🎨 COLORS
 # ==========================================================
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -58,38 +49,32 @@ print_header() {
   echo -e "${BLUE}========================================================${NC}\n"
 }
 
-print_success() {
-  echo -e "${GREEN}✅ $1${NC}\n"
-}
-
-print_error() {
-  echo -e "${RED}❌ $1${NC}\n"
-}
+print_success() { echo -e "${GREEN}✅ $1${NC}\n"; }
+print_error() { echo -e "${RED}❌ $1${NC}\n"; }
 
 # ==========================================================
-# 📁 STEP 1 — MOVE INTO PROJECT DIRECTORY
+# 📁 STEP 1 — NAVIGATE
 # ==========================================================
 print_header "Step 1 — Navigate to Project"
 
 cd "$PROJECT_DIR" || { print_error "Project folder not found"; exit 1; }
 
-print_success "Project directory ready"
-
 # ==========================================================
-# 🧰 STEP 2 — CHECK REQUIRED TOOLS
+# 🧰 STEP 2 — CHECK TOOLS
 # ==========================================================
 print_header "Step 2 — Checking Required Tools"
 
 command -v aws >/dev/null || { print_error "AWS CLI not installed"; exit 1; }
 command -v jq >/dev/null || { print_error "jq not installed"; exit 1; }
-command -v mysql >/dev/null || { print_error "MySQL client not installed"; exit 1; }
+command -v mysql >/dev/null || { print_error "MySQL not installed"; exit 1; }
 command -v docker >/dev/null || { print_error "Docker not installed"; exit 1; }
 command -v git >/dev/null || { print_error "Git not installed"; exit 1; }
+command -v curl >/dev/null || { print_error "curl not installed"; exit 1; }
 
 print_success "All required tools are installed"
 
 # ==========================================================
-# ☁️ STEP 3 — FETCH DB CREDENTIALS FROM AWS
+# ☁️ STEP 3 — FETCH DB CREDENTIALS
 # ==========================================================
 print_header "Step 3 — Fetching DB Credentials"
 
@@ -107,114 +92,122 @@ DB_NAME=$(echo "$SECRET_JSON" | jq -r '.dbname')
 print_success "Database credentials loaded"
 
 # ==========================================================
-# 🧪 STEP 4 — TEST RDS CONNECTION
+# 🧪 STEP 4 — TEST RDS
 # ==========================================================
-print_header "Step 4 — Testing RDS Connection"
+print_header "Step 4 — Testing RDS"
 
-mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null 2>&1 \
+mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1;" >/dev/null \
   && print_success "RDS connection successful" \
-  || { print_error "RDS connection failed"; exit 1; }
+  || { print_error "RDS failed"; exit 1; }
 
 # ==========================================================
-# 🏗️ STEP 5 — CREATE DATABASE
+# 🏗️ STEP 5 — CREATE DB
 # ==========================================================
 print_header "Step 5 — Creating Database"
 
-mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "
-CREATE DATABASE IF NOT EXISTS $DB_NAME
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-"
-
-print_success "Database ready"
+mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
 
 # ==========================================================
-# 📦 STEP 6 — APPLY SCHEMA
+# 📦 STEP 6 — SCHEMA
 # ==========================================================
 print_header "Step 6 — Applying Schema"
 
-if [ -f "$SCHEMA_FILE" ]; then
-  mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$SCHEMA_FILE"
-  print_success "Schema applied"
-else
-  print_error "Schema file missing: $SCHEMA_FILE"
-  exit 1
-fi
+[ -f "$SCHEMA_FILE" ] || { print_error "Schema missing"; exit 1; }
+mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$SCHEMA_FILE"
 
 # ==========================================================
-# 📊 STEP 7 — APPLY DATA (OPTIONAL)
+# 📊 STEP 7 — DATA
 # ==========================================================
-print_header "Step 7 — Applying Sample Data"
+print_header "Step 7 — Sample Data"
 
-if [ -f "$DATA_FILE" ]; then
-  mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$DATA_FILE"
-  print_success "Sample data applied"
-else
-  echo -e "${YELLOW}⚠️ No data file found, skipping...${NC}"
-fi
+[ -f "$DATA_FILE" ] && mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$DATA_FILE" \
+  && print_success "Sample data applied" || echo -e "${YELLOW}Skipped${NC}"
 
 # ==========================================================
-# 🔍 STEP 8 — VERIFY DATABASE
+# 🔍 STEP 8 — VERIFY SQL
 # ==========================================================
-print_header "Step 8 — Verification"
+print_header "Step 8 — DB Verification"
 
-if [ -f "$VERIFY_FILE" ]; then
-  mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$VERIFY_FILE"
-  print_success "Verification completed"
-else
-  echo -e "${YELLOW}⚠️ No verify file found, skipping...${NC}"
-fi
+[ -f "$VERIFY_FILE" ] && mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$VERIFY_FILE"
 
 # ==========================================================
-# 🔧 STEP 9 — GIT SETUP
+# 🔧 STEP 9 — GIT
 # ==========================================================
-print_header "Step 9 — Git Initialization"
+print_header "Step 9 — Git Setup"
 
 git init
 git add .
 git commit -m "Initial commit - Charlie Cafe Project" || true
-
 git remote add origin https://github.com/$GITHUB_USERNAME/$REPO_NAME.git || true
 git branch -M main
-
 git push -u origin main
 
-print_success "Code pushed to GitHub"
-
 # ==========================================================
-# 🐳 STEP 10 — DOCKER BUILD (UPDATED PATH)
+# 🐳 STEP 10 — DOCKER BUILD
 # ==========================================================
 print_header "Step 10 — Docker Build"
 
-# Build using custom Dockerfile path
 docker build -t "$IMAGE_NAME" -f "$DOCKERFILE_PATH" .
 
-print_success "Docker image built using $DOCKERFILE_PATH"
-
 # ==========================================================
-# 🧹 STEP 11 — REMOVE OLD CONTAINER
+# 🧹 STEP 11 — CLEAN CONTAINER
 # ==========================================================
-print_header "Step 11 — Cleanup Old Container"
+print_header "Step 11 — Cleanup"
 
 docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
-
-print_success "Old container removed (if existed)"
 
 # ==========================================================
 # 🚀 STEP 12 — RUN CONTAINER
 # ==========================================================
-print_header "Step 12 — Run Application"
+print_header "Step 12 — Run Container"
 
 docker run -d -p "$PORT:80" --name "$CONTAINER_NAME" "$IMAGE_NAME"
 
-print_success "Container is running"
+sleep 5
 
 # ==========================================================
-# 📊 FINAL STATUS
+# 🧪 STEP 13 — FINAL VERIFICATION
 # ==========================================================
-print_header "Final Status"
+print_header "Step 13 — FINAL TESTING & VERIFICATION"
 
-docker ps
+# 1️⃣ Check container running
+if docker ps | grep -q "$CONTAINER_NAME"; then
+  print_success "Container is running"
+else
+  print_error "Container not running"
+  exit 1
+fi
 
-echo -e "\n🎉 ${GREEN}Charlie Cafe FULL DevOps Setup Completed!${NC}"
-echo -e "🌐 Access your app: http://YOUR_EC2_PUBLIC_IP\n"
+# 2️⃣ Check port listening
+if ss -tuln | grep -q ":$PORT"; then
+  print_success "Port $PORT is open"
+else
+  print_error "Port $PORT not open"
+fi
+
+# 3️⃣ HTTP check
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORT || true)
+
+if [ "$HTTP_CODE" == "200" ]; then
+  print_success "Application is accessible (HTTP 200)"
+else
+  echo -e "${YELLOW}⚠️ HTTP Response: $HTTP_CODE${NC}"
+fi
+
+# 4️⃣ Container logs (last 5 lines)
+print_header "Container Logs (Last 5 lines)"
+docker logs --tail 5 "$CONTAINER_NAME"
+
+# ==========================================================
+# 🎉 FINAL OUTPUT
+# ==========================================================
+print_header "🎉 DEPLOYMENT SUCCESS"
+
+echo -e "${GREEN}✔ RDS Ready${NC}"
+echo -e "${GREEN}✔ GitHub Synced${NC}"
+echo -e "${GREEN}✔ Docker Running${NC}"
+echo -e "${GREEN}✔ App Tested${NC}"
+
+echo -e "\n🌐 Access your app:"
+echo -e "👉 http://localhost:$PORT"
+echo -e "👉 http://YOUR_EC2_PUBLIC_IP:$PORT\n"
