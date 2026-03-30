@@ -309,27 +309,44 @@ AWS_SECRET_ACCESS_KEY
 
 ### 2️⃣ CREATE ECR (DOCKER REGISTRY)
 
-### ✅ Step 1 — Open AWS Console
+#### 1️⃣ Create Repository
 
-- Go to: ECR → Repositories → Create repository
+- Go to: ECR → Create Repository
 
-### ✅ Step 2 — Create Repo
-
-- Name:
-
-```
-charlie-cafe
-```
+- Name: charlie-cafe
 
 - Visibility: Private
 
-- Click Create
+#### 2️⃣ Copy Repository URI
 
-### ✅ Step 3 — Copy Repository URI
-
-#### Example:
+✅ Example:
 
 ```
 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
 ```
+
+### 3️⃣  PUSH DOCKER IMAGE TO ECR
+
+#### 🐳 PUSH DOCKER IMAGE (MANUAL TEST)
+
+```
+# Login
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS --password-stdin YOUR_ECR_URI
+
+# Build
+docker build -t charlie-cafe .
+
+# Tag
+docker tag charlie-cafe:latest YOUR_ECR_URI:latest
+
+# Push
+docker push YOUR_ECR_URI:latest
+```
+
+
+
+
+
+
 
