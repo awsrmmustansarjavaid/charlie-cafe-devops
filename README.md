@@ -171,16 +171,9 @@ charlie-cafe-devops
 
 #### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
 
+### 3️⃣ Initialize DEVOPS SCRIPT
 
-### 🌐 Now test in browser:
-
-```
-http://YOUR-EC2-PUBLIC-IP
-```
-
-### 📁 Initialize DEVOPS SCRIPT
-
-Read More [Charlie Cafe DEVOPS](./docs/charlie-cafe-devops.md)
+#### 📁 Read More [Charlie Cafe DEVOPS](./docs/charlie-cafe-devops.md)
 
 ```
 nano charlie-cafe-devops.sh
@@ -188,6 +181,11 @@ nano charlie-cafe-devops.sh
 
 [charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
 
+### 🌐 Now test in browser:
+
+```
+http://YOUR-EC2-PUBLIC-IP
+```
 
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
