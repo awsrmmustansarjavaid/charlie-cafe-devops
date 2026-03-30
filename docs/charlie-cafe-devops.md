@@ -310,6 +310,77 @@ echo -e "${GREEN}✔ Verification Completed${NC}"
 echo -e "\n🎉 Your Charlie Cafe database is fully ready on AWS RDS!\n"
 ```
 
+### 📦 2. ✅ Dockerfile → Apache + PHP (frontend)
+
+```
+nano docker/apache-php/Dockerfile
+```
+
+[Dockerfile](./docker/apache-php/Dockerfile)
+
+
+### 4️⃣ ⚙️ FINAL docker-compose.yml (FULLY CONNECTED)
+
+```
+nano docker-compose.yml
+```
+
+[docker-compose.yml](./docker-compose.yml)
+
+### 5️⃣ 📦 2. Create .dockerignore (IMPORTANT)
+
+This prevents junk files from going into Docker image.
+
+#### Create:
+
+```
+.dockerignore
+```
+
+```
+.git
+.gitignore
+node_modules
+.env
+*.log
+vendor
+docker-compose.yml
+.github
+README.md
+docs/
+```
+
+#### 🔍 Why these are added
+
+- .git, .github → not needed inside image
+
+- node_modules, vendor → heavy + rebuildable
+
+- .env → sensitive
+
+- logs → useless in image
+
+- docs/config → not required in runtime
+
+### 6️⃣ 📦 3. Create .gitignore (IMPORTANT)
+
+#### Create:
+
+```
+.gitignore
+```
+
+```
+node_modules/
+vendor/
+.env
+*.log
+.DS_Store
+Thumbs.db
+docker/*.tar
+docs/
+```
+
 ### 6️⃣ ⚙️ 3. Build Your Docker Image
 
 SSH into EC2 and go to your project:
