@@ -608,6 +608,8 @@ Resources:
 
 ### 4️⃣ Update CI/CD
 
+> #### Add this to deploy.yml:
+
 ```
 - name: 🚀 Deploy with CodeDeploy
   run: |
