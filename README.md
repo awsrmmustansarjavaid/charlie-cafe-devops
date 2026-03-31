@@ -272,16 +272,6 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 ## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
 
-### ✅ FULL AUTO DEPLOYMENT (GitHub → AWS)
-
-### 🚀 🎯 FINAL GOAL
-
-#### Every time you push code:
-
-```
-GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
-```
-
 ### 1️⃣  — IAM SETUP (GitHub Access)
 
 #### 1️⃣ Create IAM User
@@ -325,26 +315,7 @@ AWS_SECRET_ACCESS_KEY
 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
 ```
 
-### 3️⃣  PUSH DOCKER IMAGE TO ECR
-
-#### 🐳 PUSH DOCKER IMAGE (MANUAL TEST)
-
-```
-# Login
-aws ecr get-login-password --region us-east-1 | \
-docker login --username AWS --password-stdin YOUR_ECR_URI
-
-# Build
-docker build -t charlie-cafe .
-
-# Tag
-docker tag charlie-cafe:latest YOUR_ECR_URI:latest
-
-# Push
-docker push YOUR_ECR_URI:latest
-```
-
-### 4️⃣ ECS SETUP
+### 3️⃣ ECS SETUP
 
 #### 1️⃣ Create Cluster
 
@@ -380,7 +351,7 @@ DB_USER = admin
 DB_PASS = ****
 ```
 
-### 5️⃣ ALB + ECS SERVICE
+### 4️⃣ ALB + ECS SERVICE
 
 > #### KEEP existing ALB and upgrade it for ECS.
 
@@ -454,7 +425,7 @@ Forward → charlie-blue
 http://YOUR-ALB-DNS
 ```
 
-### 6️⃣ GITHUB CI/CD (AUTO DEPLOY)
+### 5️⃣ GITHUB CI/CD (AUTO DEPLOY)
 
 #### 1️⃣ Add GitHub Secrets
 
@@ -569,33 +540,7 @@ jobs:
       # Simple confirmation message after successful pipeline execution
 ```
 
-### 7️⃣ TEST PIPELINE
-
-```
-git add .
-git commit -m "test deployment"
-git push
-```
-
-👉 Check: GitHub → Actions
-
-### 8️⃣ VERIFY DEPLOYMENT
-
-- ECS → Cluster → Service → Tasks → Running
-
-#### 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
-
-✅ Login to ECR
-
-✅ Build Docker image
-
-✅ Tag image
-
-✅ Push to ECR
-
-✅ Trigger Git pipeline
-
-✅ Show ALB URL
+### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
 
 [ECR_CI-CD_TEST.sh](./infrastructure/scripts/ECR_CI-CD_TEST.sh)
 
@@ -622,26 +567,9 @@ chmod +x ECR_CI-CD_TEST.sh
 ./ECR_CI-CD_TEST.sh
 ```
 
-#### 💡 Pro Tips (DevOps Level 🔥 Optional)
+### 8️⃣ VERIFY DEPLOYMENT
 
-- Add version tagging:
-
-```
-IMAGE_TAG=$(git rev-parse --short HEAD)
-```
-
-- Push multiple tags:
-
-```
-docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
-docker push $ECR_URI:$IMAGE_TAG
-```
-
-- Auto-create ECR repo (optional):
-
-```
-aws ecr create-repository --repository-name charlie-cafe
-```
+- ECS → Cluster → Service → Tasks → Running
 
 #### 🔍 Open:
 

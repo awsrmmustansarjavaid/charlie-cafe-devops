@@ -1984,4 +1984,195 @@ echo -e "👉 http://YOUR_EC2_PUBLIC_IP:$PORT\n"
 👉 Similar to what DevOps engineers use in real companies
 
 ---
+## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
+
+### ✅ FULL AUTO DEPLOYMENT (GitHub → AWS)
+
+### 🚀 🎯 FINAL GOAL
+
+#### Every time you push code:
+
+```
+GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
+```
+### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
+
+
+#### 1️⃣  PUSH DOCKER IMAGE TO ECR
+
+#### 🐳 PUSH DOCKER IMAGE (MANUAL TEST)
+
+```
+# Login
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS --password-stdin YOUR_ECR_URI
+
+# Build
+docker build -t charlie-cafe .
+
+# Tag
+docker tag charlie-cafe:latest YOUR_ECR_URI:latest
+
+# Push
+docker push YOUR_ECR_URI:latest
+```
+
+#### 2️⃣ TEST PIPELINE
+
+```
+git add .
+git commit -m "test deployment"
+git push
+```
+
+👉 Check: GitHub → Actions
+
+✅ Login to ECR
+
+✅ Build Docker image
+
+✅ Tag image
+
+✅ Push to ECR
+
+✅ Trigger Git pipeline
+
+✅ Show ALB URL
+
+#### ✅ FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
+
+```
+#!/bin/bash
+
+# ==========================================================
+# 🚀 CHARLIE CAFE — ECR PUSH + CI/CD TEST SCRIPT
+# ----------------------------------------------------------
+# ✔ Login to AWS ECR
+# ✔ Build Docker Image
+# ✔ Tag Image
+# ✔ Push to ECR
+# ✔ Trigger GitHub Pipeline
+# ✔ Display ALB URL
+# ==========================================================
+
+# -------------------------------
+# 🔧 CONFIGURATION (EDIT THESE)
+# -------------------------------
+AWS_REGION="us-east-1"
+ECR_URI="YOUR_ECR_URI"              # e.g. 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
+IMAGE_NAME="charlie-cafe"
+IMAGE_TAG="latest"
+ALB_DNS="YOUR-ALB-DNS"             # e.g. charlie-alb-123.us-east-1.elb.amazonaws.com
+
+# -------------------------------
+# 1️⃣ LOGIN TO ECR
+# -------------------------------
+echo "🔐 Logging into AWS ECR..."
+
+aws ecr get-login-password --region $AWS_REGION | \
+docker login --username AWS --password-stdin $ECR_URI
+
+if [ $? -ne 0 ]; then
+  echo "❌ ECR Login Failed"
+  exit 1
+fi
+
+echo "✅ ECR Login Successful"
+echo "----------------------------------------"
+
+# -------------------------------
+# 2️⃣ BUILD DOCKER IMAGE
+# -------------------------------
+echo "🐳 Building Docker Image..."
+
+docker build -t $IMAGE_NAME .
+
+if [ $? -ne 0 ]; then
+  echo "❌ Docker Build Failed"
+  exit 1
+fi
+
+echo "✅ Docker Build Successful"
+echo "----------------------------------------"
+
+# -------------------------------
+# 3️⃣ TAG DOCKER IMAGE
+# -------------------------------
+echo "🏷️ Tagging Image..."
+
+docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
+
+if [ $? -ne 0 ]; then
+  echo "❌ Docker Tag Failed"
+  exit 1
+fi
+
+echo "✅ Image Tagged Successfully"
+echo "----------------------------------------"
+
+# -------------------------------
+# 4️⃣ PUSH TO ECR
+# -------------------------------
+echo "📤 Pushing Image to ECR..."
+
+docker push $ECR_URI:$IMAGE_TAG
+
+if [ $? -ne 0 ]; then
+  echo "❌ Docker Push Failed"
+  exit 1
+fi
+
+echo "✅ Image Pushed to ECR"
+echo "----------------------------------------"
+
+# -------------------------------
+# 5️⃣ TEST CI/CD PIPELINE
+# -------------------------------
+echo "🔄 Triggering CI/CD Pipeline..."
+
+git add .
+
+git commit -m "🚀 Auto deployment test $(date +'%Y-%m-%d %H:%M:%S')" || echo "⚠️ Nothing to commit"
+
+git push
+
+if [ $? -ne 0 ]; then
+  echo "❌ Git Push Failed"
+  exit 1
+fi
+
+echo "✅ Pipeline Triggered Successfully"
+echo "----------------------------------------"
+
+# -------------------------------
+# 6️⃣ ACCESS APPLICATION
+# -------------------------------
+echo "🌐 Application URL:"
+echo "http://$ALB_DNS"
+
+echo "----------------------------------------"
+echo "🎉 ALL TASKS COMPLETED SUCCESSFULLY"
+```
+
+
+#### 💡 Pro Tips (DevOps Level 🔥 Optional)
+
+- Add version tagging:
+
+```
+IMAGE_TAG=$(git rev-parse --short HEAD)
+```
+
+- Push multiple tags:
+
+```
+docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
+docker push $ECR_URI:$IMAGE_TAG
+```
+
+- Auto-create ECR repo (optional):
+
+```
+aws ecr create-repository --repository-name charlie-cafe
+```
 
