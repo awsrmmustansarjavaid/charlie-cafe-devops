@@ -102,8 +102,8 @@ charlie-cafe-devops/
 │
 ├── app/                         # Your original code (UNCHANGED)
 │   ├── frontend/
-│   │   ├── *.html
-│   │   ├── *.php
+│   │   ├── *.html/
+│   │   ├── *.php/
 │   │   ├── css/
 │   │   └── js/
 │   │
