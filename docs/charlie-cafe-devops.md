@@ -1984,6 +1984,234 @@ echo -e "👉 http://YOUR_EC2_PUBLIC_IP:$PORT\n"
 👉 Similar to what DevOps engineers use in real companies
 
 ---
+
+## health.php
+
+### 🧠 WHY /health.php IS REQUIRED
+
+When you use:
+
+- ECS (Fargate)
+
+- ALB (Application Load Balancer)
+
+- Blue/Green / Canary deployments
+
+👉 AWS must know if your app is healthy or broken
+
+### 🔍 What ALB Does Behind the Scenes
+
+#### Your ALB continuously checks your app like this:
+
+```
+GET /health.php
+```
+
+#### If response is:
+
+✅ 200 OK → App is healthy → Traffic allowed
+
+❌ 500 / timeout → App is unhealthy → Traffic blocked
+
+### 🚨 WITHOUT HEALTH CHECK
+
+If you don’t have /health.php:
+
+❌ ALB marks your container UNHEALTHY
+
+❌ ECS keeps restarting tasks
+
+❌ CodeDeploy FAILS deployment
+
+❌ Canary / Blue-Green breaks
+
+👉 Result: Your app never goes live
+
+### 🎯 WHY IT'S CRITICAL FOR YOUR PROJECT
+
+In your Charlie Cafe DevOps pipeline:
+
+- ALB → checks health
+
+- CodeDeploy → decides traffic shift
+
+- CloudWatch → triggers rollback
+
+👉 ALL depend on /health.php
+
+### ✅ WHAT YOUR /health.php SHOULD DO
+
+It should be:
+
+- Fast
+
+- Simple
+
+- Reliable
+
+- No heavy logic
+
+### ☕ FINAL health.php FOR CHARLIE CAFE
+
+Here is a production-ready version for your project 👇
+
+```
+<?php
+// ==========================================================
+// CHARLIE CAFE — HEALTH CHECK ENDPOINT
+// ----------------------------------------------------------
+// ✔ Used by ALB, ECS, CodeDeploy
+// ✔ Confirms app + database are working
+// ✔ Returns HTTP 200 if healthy
+// ✔ Returns HTTP 500 if unhealthy
+// ==========================================================
+
+// Set JSON header
+header('Content-Type: application/json');
+
+// -----------------------------
+// 1️⃣ BASIC APP CHECK
+// -----------------------------
+$app_status = "OK";
+
+// -----------------------------
+// 2️⃣ DATABASE CHECK (IMPORTANT)
+// -----------------------------
+$db_status = "OK";
+
+$host = getenv('DB_HOST') ?: 'localhost';
+$user = getenv('DB_USER') ?: 'admin';
+$pass = getenv('DB_PASS') ?: '';
+$db   = getenv('DB_NAME') ?: 'charlie_cafe';
+
+$conn = @new mysqli($host, $user, $pass, $db);
+
+// Check DB connection
+if ($conn->connect_error) {
+    $db_status = "FAIL";
+}
+
+// -----------------------------
+// 3️⃣ FINAL STATUS
+// -----------------------------
+if ($app_status === "OK" && $db_status === "OK") {
+
+    http_response_code(200);
+
+    echo json_encode([
+        "status" => "OK",
+        "app" => $app_status,
+        "database" => $db_status,
+        "timestamp" => date("Y-m-d H:i:s")
+    ]);
+
+} else {
+
+    http_response_code(500);
+
+    echo json_encode([
+        "status" => "FAIL",
+        "app" => $app_status,
+        "database" => $db_status,
+        "timestamp" => date("Y-m-d H:i:s")
+    ]);
+}
+?>
+```
+
+### 🔧 WHERE TO PLACE THIS FILE
+
+Put it in your project root:
+
+```
+charlie-cafe/
+ ├── index.php
+ ├── order.php
+ ├── order-receipt.php
+ ├── health.php   ✅ (THIS FILE)
+```
+
+### 🧪 HOW TO TEST (VERY IMPORTANT)
+
+Test locally:
+
+```
+curl http://localhost/health.php
+```
+
+Test via ALB:
+
+```
+http://YOUR-ALB-DNS/health.php
+```
+
+#### ✅ Expected Output
+
+```
+{
+  "status": "OK",
+  "app": "OK",
+  "database": "OK"
+}
+```
+
+### 🚀 PRO TIP (REAL DEVOPS INSIGHT)
+
+There are 2 types of health checks:
+
+#### 🔹 Basic (Simple)
+
+```
+echo "OK";
+```
+
+👉 Fast, but doesn’t check DB
+
+#### 🔹 Advanced (YOU ARE USING)
+
+✔ Checks database
+
+✔ Used in production
+
+✔ Required for safe deployments
+
+### ⚠️ COMMON MISTAKES
+
+❌ Using homepage / as health check
+
+❌ Slow DB queries inside health check
+
+❌ Returning HTML instead of status
+
+❌ Missing HTTP status codes
+
+### 🧠 FINAL UNDERSTANDING
+
+/health.php is not just a file…
+
+👉 It is the decision maker of your entire DevOps pipeline
+
+#### Without it:
+
+❌ Deployments fail
+
+❌ Traffic breaks
+
+❌ Auto rollback useless
+
+#### With it:
+
+✅ Safe deployments
+
+✅ Zero downtime
+
+✅ Production-ready system
+
+
+
+
+
+---
 ## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
 
 ### ✅ FULL AUTO DEPLOYMENT (GitHub → AWS)

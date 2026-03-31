@@ -555,10 +555,6 @@ jobs:
       run: echo "Deployment successful 🚀"
 ```
 
-
-
-
-
 ### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
 
 [ECR_CI-CD_TEST.sh](./infrastructure/scripts/ECR_CI-CD_TEST.sh)
