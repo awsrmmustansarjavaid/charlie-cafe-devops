@@ -629,17 +629,7 @@ GitHub → ECR → ECS → CodeDeploy → ALB (Blue/Green)
 
 ### 3️⃣ appspec.yaml
 
-```
-version: 1
-Resources:
-  - TargetService:
-      Type: AWS::ECS::Service
-      Properties:
-        TaskDefinition: "charlie-task"
-        LoadBalancerInfo:
-          ContainerName: "charlie-container"
-          ContainerPort: 80
-```
+[appspec.yaml](./appspec.yaml)
 
 ### 4️⃣ Update CI/CD
 
