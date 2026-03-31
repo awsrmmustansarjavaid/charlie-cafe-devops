@@ -583,6 +583,66 @@ git push
 
 - ECS → Cluster → Service → Tasks → Running
 
+#### 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
+
+✅ Login to ECR
+
+✅ Build Docker image
+
+✅ Tag image
+
+✅ Push to ECR
+
+✅ Trigger Git pipeline
+
+✅ Show ALB URL
+
+[ECR_CI-CD_TEST.sh](./infrastructure/scripts/ECR_CI-CD_TEST.sh)
+
+#### 🧠 Important Notes (Very Important)
+
+#### 🔹 Replace these values:
+
+```
+ECR_URI="YOUR_ECR_URI"
+ALB_DNS="YOUR-ALB-DNS"
+```
+
+Example:
+
+```
+ECR_URI="123456789012.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe"
+ALB_DNS="charlie-alb-123456.us-east-1.elb.amazonaws.com"
+```
+
+#### ▶️ How to Run
+
+```
+chmod +x ECR_CI-CD_TEST.sh
+./ECR_CI-CD_TEST.sh
+```
+
+#### 💡 Pro Tips (DevOps Level 🔥 Optional)
+
+- Add version tagging:
+
+```
+IMAGE_TAG=$(git rev-parse --short HEAD)
+```
+
+- Push multiple tags:
+
+```
+docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
+docker push $ECR_URI:$IMAGE_TAG
+```
+
+- Auto-create ECR repo (optional):
+
+```
+aws ecr create-repository --repository-name charlie-cafe
+```
+
 #### 🔍 Open:
 
 ```
