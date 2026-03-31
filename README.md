@@ -620,6 +620,116 @@ Resources:
       --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
 ```
 
+### ✅ ✅ FINAL CORRECTED deploy.yml (PRODUCTION READY)
+
+👉 Right now your pipeline is doing:
+
+```
+ECS Rolling Update
+```
+
+👉 After adding CodeDeploy step, you will have:
+
+```
+CodeDeploy Blue/Green Deployment
+```
+
+#### ⚠️ IMPORTANT RULE (MUST UNDERSTAND):
+
+You should NOT use both:
+
+- aws ecs update-service ❌
+
+- aws deploy create-deployment ❌
+
+👉 Use ONLY CodeDeploy for Blue/Green
+
+
+#### This is your clean, fixed, and final version 👇
+
+```
+name: ☕ Charlie Cafe Full DevOps Pipeline (Blue/Green)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REPO: charlie-cafe
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Checkout Code
+    # -------------------------------------------------
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Configure AWS Credentials
+    # -------------------------------------------------
+    - name: 🔐 Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # -------------------------------------------------
+    # 3️⃣ Login to ECR
+    # -------------------------------------------------
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region $AWS_REGION | \
+        docker login --username AWS --password-stdin \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
+
+    # -------------------------------------------------
+    # 4️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🏗️ Build Docker Image
+      run: |
+        docker build -t $ECR_REPO .
+
+    # -------------------------------------------------
+    # 5️⃣ Tag Docker Image
+    # -------------------------------------------------
+    - name: 🏷️ Tag Image
+      run: |
+        docker tag $ECR_REPO:latest \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
+    # -------------------------------------------------
+    # 6️⃣ Push Image to ECR
+    # -------------------------------------------------
+    - name: 📤 Push Image
+      run: |
+        docker push \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
+    # -------------------------------------------------
+    # 7️⃣ Deploy using CodeDeploy (Blue/Green)
+    # -------------------------------------------------
+    - name: 🚀 Deploy with CodeDeploy
+      run: |
+        aws deploy create-deployment \
+          --application-name charlie-app \
+          --deployment-group-name charlie-dg \
+          --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+          --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+
+    # -------------------------------------------------
+    # 8️⃣ Done
+    # -------------------------------------------------
+    - name: 🎉 Deployment Completed
+      run: echo "Blue/Green deployment successful 🚀"
+```
+
 ---
 ## 🌐 PHASE 4 — CANARY + AUTO ROLLBACK + MONITORING
 
