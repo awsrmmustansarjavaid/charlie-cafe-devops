@@ -471,56 +471,102 @@ ECR_REPO
 #### 📄 FINAL deploy.yml
 
 ```
+# ==========================================================
+# ☕ Charlie Cafe — FULL DEVOPS CI/CD PIPELINE
+# ----------------------------------------------------------
+# ✔ Trigger: Runs automatically when code is pushed to main branch
+# ✔ Builds Docker image
+# ✔ Pushes image to AWS ECR
+# ✔ Deploys updated image to AWS ECS
+# ==========================================================
+
 name: ☕ Charlie Cafe Full DevOps Pipeline
 
+# ----------------------------------------------------------
+# 🚀 TRIGGER CONFIGURATION
+# ----------------------------------------------------------
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" ]   # Run pipeline only when code is pushed to main branch
 
+# ----------------------------------------------------------
+# 🧱 JOB DEFINITION
+# ----------------------------------------------------------
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # Use GitHub-hosted Ubuntu runner
 
     steps:
 
+    # ------------------------------------------------------
+    # 1️⃣ CHECKOUT SOURCE CODE
+    # ------------------------------------------------------
     - name: 📥 Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3   # Pull latest code from GitHub repo
 
+    # ------------------------------------------------------
+    # 2️⃣ CONFIGURE AWS CREDENTIALS
+    # ------------------------------------------------------
     - name: 🔐 Configure AWS
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}         # AWS Access Key (stored securely in GitHub Secrets)
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS Secret Key (secure)
+        aws-region: ${{ secrets.AWS_REGION }}                       # AWS Region (e.g., us-east-1)
 
+    # ------------------------------------------------------
+    # 3️⃣ LOGIN TO AWS ECR (Elastic Container Registry)
+    # ------------------------------------------------------
     - name: 🐳 Login to ECR
       run: |
+        # Get temporary login password and authenticate Docker with ECR
         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
         docker login --username AWS --password-stdin \
         ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
+    # ------------------------------------------------------
+    # 4️⃣ BUILD DOCKER IMAGE
+    # ------------------------------------------------------
     - name: 🏗️ Build Image
       run: docker build -t charlie-cafe .
+      # Builds Docker image using Dockerfile in repo
+      # Tags it locally as "charlie-cafe:latest"
 
+    # ------------------------------------------------------
+    # 5️⃣ TAG IMAGE FOR ECR
+    # ------------------------------------------------------
     - name: 🏷️ Tag Image
       run: |
+        # Tag local image with ECR repository URI
         docker tag charlie-cafe:latest \
         ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
 
+    # ------------------------------------------------------
+    # 6️⃣ PUSH IMAGE TO AWS ECR
+    # ------------------------------------------------------
     - name: 📤 Push Image
       run: |
+        # Push Docker image to ECR repository
         docker push \
         ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
 
+    # ------------------------------------------------------
+    # 7️⃣ DEPLOY TO AWS ECS
+    # ------------------------------------------------------
     - name: 🚀 Deploy ECS
       run: |
+        # Force ECS service to pull new image and redeploy containers
         aws ecs update-service \
           --cluster ${{ secrets.ECS_CLUSTER }} \
           --service ${{ secrets.ECS_SERVICE }} \
           --force-new-deployment
 
+    # ------------------------------------------------------
+    # 8️⃣ SUCCESS MESSAGE
+    # ------------------------------------------------------
     - name: 🎉 Done
       run: echo "Deployment successful 🚀"
+      # Simple confirmation message after successful pipeline execution
 ```
 
 ### 7️⃣ TEST PIPELINE

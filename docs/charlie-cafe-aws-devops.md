@@ -313,6 +313,62 @@ charlie-task
 .github/workflows/deploy.yml
 ```
 
+#### 📄 FINAL deploy.yml
+
+```
+name: ☕ Charlie Cafe Full DevOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    - name: 🔐 Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        docker login --username AWS --password-stdin \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    - name: 🏗️ Build Image
+      run: docker build -t charlie-cafe .
+
+    - name: 🏷️ Tag Image
+      run: |
+        docker tag charlie-cafe:latest \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+
+    - name: 📤 Push Image
+      run: |
+        docker push \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+
+    - name: 🚀 Deploy ECS
+      run: |
+        aws ecs update-service \
+          --cluster ${{ secrets.ECS_CLUSTER }} \
+          --service ${{ secrets.ECS_SERVICE }} \
+          --force-new-deployment
+
+    - name: 🎉 Done
+      run: echo "Deployment successful 🚀"
+```
+
+
 #### ✅ COMPLETE FINAL FILE
 
 ```
