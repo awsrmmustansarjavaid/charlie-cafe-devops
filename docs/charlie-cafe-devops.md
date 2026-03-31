@@ -1986,8 +1986,6 @@ echo -e "👉 http://YOUR_EC2_PUBLIC_IP:$PORT\n"
 ---
 ## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
 
-
-
 ### ✅ FULL AUTO DEPLOYMENT (GitHub → AWS)
 
 ### 🚀 🎯 FINAL GOAL
@@ -1997,6 +1995,302 @@ echo -e "👉 http://YOUR_EC2_PUBLIC_IP:$PORT\n"
 ```
 GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
 ```
+
+### ### 5️⃣ GITHUB CI/CD (AUTO DEPLOY)
+
+#### 📄 deploy.yml
+
+```
+# ==========================================================
+# ☕ Charlie Cafe — FULL DEVOPS CI/CD PIPELINE
+# ----------------------------------------------------------
+# ✔ Trigger: Runs automatically when code is pushed to main branch
+# ✔ Builds Docker image
+# ✔ Pushes image to AWS ECR
+# ✔ Deploys updated image to AWS ECS
+# ==========================================================
+
+name: ☕ Charlie Cafe Full DevOps Pipeline
+
+# ----------------------------------------------------------
+# 🚀 TRIGGER CONFIGURATION
+# ----------------------------------------------------------
+on:
+  push:
+    branches: [ "main" ]   # Run pipeline only when code is pushed to main branch
+
+# ----------------------------------------------------------
+# 🧱 JOB DEFINITION
+# ----------------------------------------------------------
+jobs:
+  deploy:
+    runs-on: ubuntu-latest   # Use GitHub-hosted Ubuntu runner
+
+    steps:
+
+    # ------------------------------------------------------
+    # 1️⃣ CHECKOUT SOURCE CODE
+    # ------------------------------------------------------
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3   # Pull latest code from GitHub repo
+
+    # ------------------------------------------------------
+    # 2️⃣ CONFIGURE AWS CREDENTIALS
+    # ------------------------------------------------------
+    - name: 🔐 Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}         # AWS Access Key (stored securely in GitHub Secrets)
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS Secret Key (secure)
+        aws-region: ${{ secrets.AWS_REGION }}                       # AWS Region (e.g., us-east-1)
+
+    # ------------------------------------------------------
+    # 3️⃣ LOGIN TO AWS ECR (Elastic Container Registry)
+    # ------------------------------------------------------
+    - name: 🐳 Login to ECR
+      run: |
+        # Get temporary login password and authenticate Docker with ECR
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        docker login --username AWS --password-stdin \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    # ------------------------------------------------------
+    # 4️⃣ BUILD DOCKER IMAGE
+    # ------------------------------------------------------
+    - name: 🏗️ Build Image
+      run: docker build -t charlie-cafe .
+      # Builds Docker image using Dockerfile in repo
+      # Tags it locally as "charlie-cafe:latest"
+
+    # ------------------------------------------------------
+    # 5️⃣ TAG IMAGE FOR ECR
+    # ------------------------------------------------------
+    - name: 🏷️ Tag Image
+      run: |
+        # Tag local image with ECR repository URI
+        docker tag charlie-cafe:latest \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+
+    # ------------------------------------------------------
+    # 6️⃣ PUSH IMAGE TO AWS ECR
+    # ------------------------------------------------------
+    - name: 📤 Push Image
+      run: |
+        # Push Docker image to ECR repository
+        docker push \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+
+    # ------------------------------------------------------
+    # 7️⃣ DEPLOY TO AWS ECS
+    # ------------------------------------------------------
+    - name: 🚀 Deploy ECS
+      run: |
+        # Force ECS service to pull new image and redeploy containers
+        aws ecs update-service \
+          --cluster ${{ secrets.ECS_CLUSTER }} \
+          --service ${{ secrets.ECS_SERVICE }} \
+          --force-new-deployment
+
+    # ------------------------------------------------------
+    # 8️⃣ SUCCESS MESSAGE
+    # ------------------------------------------------------
+    - name: 🎉 Done
+      run: echo "Deployment successful 🚀"
+      # Simple confirmation message after successful pipeline execution
+```
+
+### 🧠 IMPORTANT
+
+👉 These are NOT written inside YAML directly
+
+❌ WRONG:
+
+```
+aws-access-key-id: AKIA...
+```
+
+✅ CORRECT:
+
+```
+aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+```
+
+### 🚀 PART 2 — BEST PRACTICE (USE VARIABLES AT TOP)
+
+Yes — 100% possible and recommended ✅
+This makes your file:
+
+- Clean
+
+- Easy to update
+
+- Professional
+
+### ✅ FINAL IMPROVED deploy.yml (WITH GLOBAL VARIABLES)
+
+Here is your clean + optimized version 👇
+
+```
+# ==========================================================
+# ☕ Charlie Cafe — FULL DEVOPS CI/CD PIPELINE
+# ==========================================================
+
+name: ☕ Charlie Cafe Full DevOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # ------------------------------------------------------
+    # 🌍 GLOBAL VARIABLES (BEST PRACTICE)
+    # ------------------------------------------------------
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      ECR_REPO: ${{ secrets.ECR_REPO }}
+      ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+      ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+
+    steps:
+
+    # ------------------------------------------------------
+    # 1️⃣ CHECKOUT CODE
+    # ------------------------------------------------------
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    # ------------------------------------------------------
+    # 2️⃣ CONFIGURE AWS
+    # ------------------------------------------------------
+    - name: 🔐 Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    # ------------------------------------------------------
+    # 3️⃣ LOGIN TO ECR
+    # ------------------------------------------------------
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region $AWS_REGION | \
+        docker login --username AWS --password-stdin \
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+    # ------------------------------------------------------
+    # 4️⃣ BUILD IMAGE
+    # ------------------------------------------------------
+    - name: 🏗️ Build Image
+      run: docker build -t $ECR_REPO .
+
+    # ------------------------------------------------------
+    # 5️⃣ TAG IMAGE
+    # ------------------------------------------------------
+    - name: 🏷️ Tag Image
+      run: |
+        docker tag $ECR_REPO:latest \
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
+    # ------------------------------------------------------
+    # 6️⃣ PUSH IMAGE
+    # ------------------------------------------------------
+    - name: 📤 Push Image
+      run: |
+        docker push \
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
+    # ------------------------------------------------------
+    # 7️⃣ DEPLOY TO ECS
+    # ------------------------------------------------------
+    - name: 🚀 Deploy ECS
+      run: |
+        aws ecs update-service \
+          --cluster $ECS_CLUSTER \
+          --service $ECS_SERVICE \
+          --force-new-deployment
+
+    # ------------------------------------------------------
+    # 8️⃣ SUCCESS
+    # ------------------------------------------------------
+    - name: 🎉 Done
+      run: echo "Deployment successful 🚀"
+```
+
+### 🔥 WHY THIS VERSION IS BETTER
+
+Before ❌
+
+```
+${{ secrets.AWS_REGION }}
+${{ secrets.AWS_REGION }}
+${{ secrets.AWS_REGION }}
+```
+
+👉 Repeated everywhere (messy)
+
+After ✅
+
+```
+$AWS_REGION
+```
+
+👉 Clean + reusable
+
+### 🧪 PART 3 — HOW TO TEST
+
+Run:
+
+```
+git add .
+git commit -m "add secrets + clean pipeline"
+git push
+```
+### ✅ Then check:
+
+👉 GitHub → Actions tab
+
+You should see:
+
+| Step         | Status |
+| ------------ | ------ |
+| Checkout     | ✅      |
+| Build Docker | ✅      |
+| Push ECR     | ✅      |
+| Deploy ECS   | ✅      |
+
+### ⚠️ COMMON MISTAKES
+
+| Mistake                | Result              |
+| ---------------------- | ------------------- |
+| Secret name typo       | ❌ Pipeline fails    |
+| Wrong AWS region       | ❌ ECR login fails   |
+| Missing AWS_ACCOUNT_ID | ❌ Docker push fails |
+| Hardcoding secrets     | ❌ Security risk     |
+
+### 🧠 FINAL UNDERSTANDING
+
+👉 GitHub Secrets = secure storage
+
+👉 env: = clean usage layer
+
+👉 Pipeline = automation engine
+
+### 🎯 FINAL ANSWER
+
+✔ Yes — you can and SHOULD use variables at top
+
+✔ Your updated deploy.yml above is now clean + professional
+
+✔ Secrets are NOT written in YAML, only referenced
+
+
+
+
 ### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
 
 

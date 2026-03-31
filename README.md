@@ -428,7 +428,7 @@ http://YOUR-ALB-DNS
 
 ### 5️⃣ GITHUB CI/CD (AUTO DEPLOY)
 
-#### 1️⃣ Add GitHub Secrets
+### 1️⃣ Add GitHub Secrets
 
 ```
 AWS_ACCESS_KEY_ID
@@ -440,106 +440,124 @@ ECS_SERVICE
 ECR_REPO
 ```
 
+### 🧱 PART 1 — HOW TO ADD GITHUB SECRETS (STEP-BY-STEP)
+
+#### 📍 Where to go 👉 Open your GitHub repository
+
+```
+Settings → Secrets and variables → Actions → New repository secret
+```
+
+#### ✅ REQUIRED SECRETS 
+
+Add each one manually:
+
+| Secret Name             | Value Example   | Where to Get    |
+| ----------------------- | --------------- | --------------- |
+| `AWS_ACCESS_KEY_ID`     | AKIA...         | IAM User        |
+| `AWS_SECRET_ACCESS_KEY` | xxxxx           | IAM User        |
+| `AWS_REGION`            | us-east-1       | Your AWS region |
+| `AWS_ACCOUNT_ID`        | 123456789012    | AWS Account     |
+| `ECS_CLUSTER`           | charlie-cluster | ECS Console     |
+| `ECS_SERVICE`           | charlie-service | ECS Console     |
+| `ECR_REPO`              | charlie-cafe    | ECR Repo Name   |
+
 #### 📄 FINAL deploy.yml
 
 ```
 # ==========================================================
 # ☕ Charlie Cafe — FULL DEVOPS CI/CD PIPELINE
-# ----------------------------------------------------------
-# ✔ Trigger: Runs automatically when code is pushed to main branch
-# ✔ Builds Docker image
-# ✔ Pushes image to AWS ECR
-# ✔ Deploys updated image to AWS ECS
 # ==========================================================
 
 name: ☕ Charlie Cafe Full DevOps Pipeline
 
-# ----------------------------------------------------------
-# 🚀 TRIGGER CONFIGURATION
-# ----------------------------------------------------------
 on:
   push:
-    branches: [ "main" ]   # Run pipeline only when code is pushed to main branch
+    branches: [ "main" ]
 
-# ----------------------------------------------------------
-# 🧱 JOB DEFINITION
-# ----------------------------------------------------------
 jobs:
   deploy:
-    runs-on: ubuntu-latest   # Use GitHub-hosted Ubuntu runner
+    runs-on: ubuntu-latest
+
+    # ------------------------------------------------------
+    # 🌍 GLOBAL VARIABLES (BEST PRACTICE)
+    # ------------------------------------------------------
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      ECR_REPO: ${{ secrets.ECR_REPO }}
+      ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+      ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
 
     steps:
 
     # ------------------------------------------------------
-    # 1️⃣ CHECKOUT SOURCE CODE
+    # 1️⃣ CHECKOUT CODE
     # ------------------------------------------------------
     - name: 📥 Checkout Code
-      uses: actions/checkout@v3   # Pull latest code from GitHub repo
+      uses: actions/checkout@v3
 
     # ------------------------------------------------------
-    # 2️⃣ CONFIGURE AWS CREDENTIALS
+    # 2️⃣ CONFIGURE AWS
     # ------------------------------------------------------
     - name: 🔐 Configure AWS
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}         # AWS Access Key (stored securely in GitHub Secrets)
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS Secret Key (secure)
-        aws-region: ${{ secrets.AWS_REGION }}                       # AWS Region (e.g., us-east-1)
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
 
     # ------------------------------------------------------
-    # 3️⃣ LOGIN TO AWS ECR (Elastic Container Registry)
+    # 3️⃣ LOGIN TO ECR
     # ------------------------------------------------------
     - name: 🐳 Login to ECR
       run: |
-        # Get temporary login password and authenticate Docker with ECR
-        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        aws ecr get-login-password --region $AWS_REGION | \
         docker login --username AWS --password-stdin \
-        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
     # ------------------------------------------------------
-    # 4️⃣ BUILD DOCKER IMAGE
+    # 4️⃣ BUILD IMAGE
     # ------------------------------------------------------
     - name: 🏗️ Build Image
-      run: docker build -t charlie-cafe .
-      # Builds Docker image using Dockerfile in repo
-      # Tags it locally as "charlie-cafe:latest"
+      run: docker build -t $ECR_REPO .
 
     # ------------------------------------------------------
-    # 5️⃣ TAG IMAGE FOR ECR
+    # 5️⃣ TAG IMAGE
     # ------------------------------------------------------
     - name: 🏷️ Tag Image
       run: |
-        # Tag local image with ECR repository URI
-        docker tag charlie-cafe:latest \
-        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+        docker tag $ECR_REPO:latest \
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
 
     # ------------------------------------------------------
-    # 6️⃣ PUSH IMAGE TO AWS ECR
+    # 6️⃣ PUSH IMAGE
     # ------------------------------------------------------
     - name: 📤 Push Image
       run: |
-        # Push Docker image to ECR repository
         docker push \
-        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/charlie-cafe:latest
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
 
     # ------------------------------------------------------
-    # 7️⃣ DEPLOY TO AWS ECS
+    # 7️⃣ DEPLOY TO ECS
     # ------------------------------------------------------
     - name: 🚀 Deploy ECS
       run: |
-        # Force ECS service to pull new image and redeploy containers
         aws ecs update-service \
-          --cluster ${{ secrets.ECS_CLUSTER }} \
-          --service ${{ secrets.ECS_SERVICE }} \
+          --cluster $ECS_CLUSTER \
+          --service $ECS_SERVICE \
           --force-new-deployment
 
     # ------------------------------------------------------
-    # 8️⃣ SUCCESS MESSAGE
+    # 8️⃣ SUCCESS
     # ------------------------------------------------------
     - name: 🎉 Done
       run: echo "Deployment successful 🚀"
-      # Simple confirmation message after successful pipeline execution
 ```
+
+
+
+
 
 ### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
 
