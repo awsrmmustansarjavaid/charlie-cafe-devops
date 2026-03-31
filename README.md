@@ -94,6 +94,7 @@ Developer → GitHub → Docker → Local Testing
 charlie-cafe-devops/
 │
 ├── README.md
+├── appspec.yaml              ✅ (NEW - REQUIRED)
 ├── LICENSE
 ├── .gitignore
 ├── .dockerignore                

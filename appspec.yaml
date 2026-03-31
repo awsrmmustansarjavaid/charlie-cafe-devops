@@ -1,0 +1,9 @@
+version: 1
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "charlie-task"
+        LoadBalancerInfo:
+          ContainerName: "charlie-container"
+          ContainerPort: 80
