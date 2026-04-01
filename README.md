@@ -160,97 +160,6 @@ charlie-cafe-devops/
 
 #### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
 
-### ✅ Pre-checks (tools & environment)
-
-Before running the script, make sure all required tools are installed:
-
-- Run:
-
-```
-ls -la
-aws --version
-jq --version
-mysql --version
-docker --version
-git --version
-curl --version
-docker --version
-docker info
-aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1
-```
-
-#### ✅ Expected output:
-
-```
-Docker version 24.x.x, build ...
-...
-Server:
- Containers: ...
- Images: ...
-```
-
-#### ✅ What this verifies:
-
-- EC2 has AWS CLI, Docker, Git, MySQL client, curl, jq installed
-
-- Docker daemon is running
-
-This confirms Docker is installed and the daemon is running.
-
-### ✅ Step 1 — Project directory & GitHub repo
-
-Script clones or navigates to your repo:
-
-```
-cd ~/charlie-cafe-devops
-git status
-ls -laR
-```
-
-#### ✅ What to check:
-
-- git status should show the branch (main) and any changes.
-
-- If the folder didn’t exist before, script cloned the repo automatically.
-
-### ✅ Step 2 — Tool check
-
-- Script checks for aws, jq, mysql, docker, git, curl.
-
-You already did:
-
-```
-aws --version
-jq --version
-mysql --version
-docker --version
-git --version
-curl --version
-```
-
-✅ Success criteria: All commands show version numbers.
-
-### ✅ Step 3 — Fetch DB credentials from Secrets Manager
-
-```
-aws secretsmanager get-secret-value \
-  --secret-id CafeDevDBSM \
-  --region us-east-1
-```
-
-#### ✅ What to check:
-
-- JSON output with username, password, host, dbname
-
-- Script extracts them using jq. You can test separately:
-
-```
-SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1 --query SecretString --output text)
-echo $SECRET_JSON | jq
-```
-
-
-
 ### 1️⃣ Initialize GitHub Repo
 
 ### 1️⃣ Create repo on GitHub
@@ -368,6 +277,110 @@ Run this command:
 ```
 sudo dnf install curl --allowerasing -y
 sudo dnf install -y unzip wget nano vim-enhanced tar
+```
+
+### ✅ Pre-checks (tools & environment)
+
+Before running the script, make sure all required tools are installed:
+
+- Run:
+
+```
+ls -la
+aws --version
+jq --version
+mysql --version
+docker --version
+git --version
+curl --version
+docker --version
+docker info
+aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1
+```
+
+#### ✅ Expected output:
+
+```
+Docker version 24.x.x, build ...
+...
+Server:
+ Containers: ...
+ Images: ...
+```
+
+#### ✅ What this verifies:
+
+- EC2 has AWS CLI, Docker, Git, MySQL client, curl, jq installed
+
+- Docker daemon is running
+
+This confirms Docker is installed and the daemon is running.
+
+### ✅ Step 1 — Project directory & GitHub repo
+
+Script clones or navigates to your repo:
+
+```
+cd ~/charlie-cafe-devops
+git status
+ls -laR
+```
+
+#### ✅ What to check:
+
+- git status should show the branch (main) and any changes.
+
+- If the folder didn’t exist before, script cloned the repo automatically.
+
+### ✅ Step 2 — Tool check
+
+- Script checks for aws, jq, mysql, docker, git, curl.
+
+You already did:
+
+```
+aws --version
+jq --version
+mysql --version
+docker --version
+git --version
+curl --version
+```
+
+✅ Success criteria: All commands show version numbers.
+
+### ✅ Step 3 — Fetch DB credentials from Secrets Manager
+
+```
+aws secretsmanager get-secret-value \
+  --secret-id CafeDevDBSM \
+  --region us-east-1
+```
+
+#### ✅ What to check:
+
+- JSON output with username, password, host, dbname
+
+- Script extracts them using jq. You can test separately:
+
+```
+SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1 --query SecretString --output text)
+echo $SECRET_JSON | jq
+```
+
+### 🚀 ✅ COMPLETE VERIFICATION SCRIPT
+
+Save this as:
+
+```
+nano verify-devops-env.sh
+```
+
+[verify-devops-env.sh](./infrastructure/scripts/verify-devops-env.sh)
+
+```
+chmod +x verify-devops-env.sh
+./verify-devops-env.sh
 ```
 
 ### 🌐 Now test in browser:
