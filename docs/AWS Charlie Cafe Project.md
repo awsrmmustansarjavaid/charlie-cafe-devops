@@ -414,7 +414,7 @@ ssh -i CafeDevKey.pem ec2-user@<PUBLIC-IP>
 sudo nano lamp-verify.sh
 ```
 
-[VERIFY LAMP + MySQL CLIENT](./scripts/lamp-verify.sh)
+[VERIFY LAMP + MySQL CLIENT](../infrastructure/scripts/Lamp%20Server%20Script.sh)
 
 ```
 sudo chmod +x lamp-verify.sh
