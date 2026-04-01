@@ -179,7 +179,7 @@ docker info
 aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1
 ```
 
-- Expected output:
+#### ✅ Expected output:
 
 ```
 Docker version 24.x.x, build ...
@@ -188,6 +188,12 @@ Server:
  Containers: ...
  Images: ...
 ```
+
+#### ✅ What this verifies:
+
+- EC2 has AWS CLI, Docker, Git, MySQL client, curl, jq installed
+
+- Docker daemon is running
 
 This confirms Docker is installed and the daemon is running.
 
