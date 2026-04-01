@@ -165,6 +165,7 @@ charlie-cafe-devops/
 - Run:
 
 ```
+ls -la
 docker --version
 docker info
 ```
