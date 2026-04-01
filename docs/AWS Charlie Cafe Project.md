@@ -515,7 +515,7 @@ mysql --version
 sudo nano connect-rds.sh
 ```
 
-[RDS Credentials to Secrets Manager ](./scripts/connect-rds.sh)
+[RDS Credentials to Secrets Manager ](../infrastructure/scripts/connect-rds.sh)
 
 
 ```
