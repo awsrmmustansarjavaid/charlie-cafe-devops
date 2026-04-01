@@ -160,6 +160,28 @@ charlie-cafe-devops/
 
 #### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
 
+### 1️⃣ Verify Docker is installed
+
+- Run:
+
+```
+docker --version
+docker info
+```
+
+- Expected output:
+
+```
+Docker version 24.x.x, build ...
+...
+Server:
+ Containers: ...
+ Images: ...
+```
+
+This confirms Docker is installed and the daemon is running.
+
+
 ### 1️⃣ Initialize GitHub Repo
 
 ### 1️⃣ Create repo on GitHub
