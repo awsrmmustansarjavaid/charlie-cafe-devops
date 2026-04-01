@@ -25,7 +25,7 @@ WORKDIR /var/www/html
 # -------------------------------------------------
 # Copy frontend code (NO modification required)
 # -------------------------------------------------
-COPY app/frontend/ /var/www/html/
+COPY ./app/frontend/ /var/www/html/
 
 # -------------------------------------------------
 # Set proper permissions
