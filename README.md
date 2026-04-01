@@ -316,6 +316,13 @@ chmod +x charlie-cafe-devops.sh
 ./charlie-cafe-devops.sh
 ```
 
+#### ⚠️ root privileges
+
+```
+sudo chmod +x charlie-cafe-devops.sh
+sudo ./charlie-cafe-devops.sh
+```
+
 #### ⚠️ FINAL THINGS YOU MUST EDIT BEFORE RUN
 
 🔴 1. GitHub Username
