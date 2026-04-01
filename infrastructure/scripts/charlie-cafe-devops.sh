@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # ==========================================================
-# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL v6)
+# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL v7)
 # ----------------------------------------------------------
-# ✔ Clone or use existing repo
-# ✔ Secure GitHub authentication (PAT)
-# ✔ Sync with GitHub (pull before push)
-# ✔ Setup AWS RDS (schema + data)
+# ✔ EC2 Bootstrap: OS update, Docker, Docker Compose, MySQL client, Git, DevOps tools
+# ✔ Clone / sync GitHub repo
+# ✔ Fetch AWS RDS credentials
+# ✔ Setup RDS (schema + data)
 # ✔ Build Docker image (custom Dockerfile)
-# ✔ Run container on port 8080 (avoids port 80 conflict)
+# ✔ Run container on port 80 (default HTTP port)
 # ✔ Full verification (container + HTTP)
 # ==========================================================
 
@@ -20,13 +20,11 @@ set -euo pipefail  # Exit on error, undefined variable, pipeline failure
 PROJECT_DIR="charlie-cafe-devops"
 REPO_NAME="charlie-cafe-devops"
 GITHUB_USERNAME="awsrmmustansarjavaid"
-
-# GitHub token must be exported
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 
 IMAGE_NAME="charlie-cafe"
 CONTAINER_NAME="cafe-app"
-PORT="8080"  # Changed to 8080 to avoid conflict with Apache
+PORT="80"  # Run Docker container on host port 80
 
 DOCKERFILE_PATH="docker/apache-php/Dockerfile"
 
@@ -49,6 +47,43 @@ NC='\033[0m'
 print_header() { echo -e "\n${BLUE}========================================================${NC}\n${BLUE}$1${NC}\n${BLUE}========================================================${NC}\n"; }
 print_success() { echo -e "${GREEN}✅ $1${NC}\n"; }
 print_error() { echo -e "${RED}❌ $1${NC}\n"; }
+
+# ==========================================================
+# 🔧 STEP 0 — EC2 BOOTSTRAP: Update OS & Install Tools
+# ==========================================================
+print_header "Step 0 — EC2 Bootstrap & Tool Installation"
+
+echo "🚀 Updating OS..."
+dnf update -y
+
+echo "🚀 Installing MySQL client (MariaDB)..."
+dnf install -y mariadb105
+
+echo "🚀 Installing Docker..."
+dnf install -y docker
+systemctl enable docker
+systemctl start docker
+
+echo "🚀 Adding ec2-user to Docker group..."
+usermod -aG docker ec2-user
+
+echo "🚀 Installing Docker Compose v2..."
+mkdir -p /usr/local/lib/docker/cli-plugins/
+curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+docker compose version
+
+echo "🚀 Installing Git..."
+dnf install -y git
+
+echo "🚀 Installing DevOps tools..."
+dnf install -y htop unzip curl wget nano vim tar
+
+echo "🚀 Installing AWS CLI..."
+dnf install -y awscli
+
+print_success "EC2 Bootstrap completed"
 
 # ==========================================================
 # 🔐 CHECK GITHUB TOKEN
@@ -158,11 +193,11 @@ docker build -t "$IMAGE_NAME" -f "$DOCKERFILE_PATH" .
 print_success "Docker image built"
 
 # ==========================================================
-# 🚀 STEP 8 — RUN CONTAINER (PORT 8080)
+# 🚀 STEP 8 — RUN CONTAINER (PORT 80)
 # ==========================================================
 print_header "Step 8 — Run Container"
 
-# Free port 8080 if in use
+# Free port 80 if in use
 if sudo lsof -i :$PORT >/dev/null 2>&1; then
   echo "⚠️ Port $PORT in use — freeing it..."
   sudo fuser -k ${PORT}/tcp || true
@@ -172,7 +207,7 @@ fi
 # Remove old container
 docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
 
-# Run container
+# Run container on host port 80
 docker run -d -p "$PORT:80" --name "$CONTAINER_NAME" "$IMAGE_NAME"
 sleep 5
 print_success "Container started on port $PORT"
