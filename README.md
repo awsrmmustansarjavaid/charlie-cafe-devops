@@ -359,6 +359,17 @@ Make sure port is open:
 
 - Or 8080 if changed
 
+### ⚠️ Curl issue 
+
+### ✅ ✅ BEST FIX (Recommended)
+
+Run this command:
+
+```
+sudo dnf install curl --allowerasing -y
+sudo dnf install -y unzip wget nano vim-enhanced tar
+```
+
 ### 🌐 Now test in browser:
 
 ```
