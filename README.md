@@ -148,6 +148,18 @@ charlie-cafe-devops/
 
 - No edits needed
 
+### 📝 Create DEVOPS Files
+
+#### 📑 1. [Dockerfile](./docker/apache-php/Dockerfile)
+
+#### 📑 2. [docker-compose.yml](./docker-compose.yml)
+
+#### 📑 3. [.dockerignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.dockerignore)
+
+#### 📑 4. [.gitignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.gitignore)
+
+#### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
+
 ### 1️⃣ Initialize GitHub Repo
 
 ### 1️⃣ Create repo on GitHub
@@ -160,17 +172,39 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### 2️⃣ Create DEVOPS Files
+### 2️⃣ 🔑 STEP 1 — Create GitHub Token
 
-#### 📑 1. [Dockerfile](./docker/apache-php/Dockerfile)
+- Go to: 👉 https://github.com/settings/tokens
 
-#### 📑 2. [docker-compose.yml](./docker-compose.yml)
+- Click: 👉 Generate new token (classic)
 
-#### 📑 3. [.dockerignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.dockerignore)
+- Select permissions:
 
-#### 📑 4. [.gitignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.gitignore)
+✔ repo
 
-#### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
+✔ workflow
+
+- Click: 👉 Generate token
+
+- Copy token (example):
+
+```
+ghp_abc123xyz456...
+```
+
+### 🔑 STEP 2 — Export in EC2 (SAFE)
+
+```
+export GITHUB_TOKEN="your_token_here"
+```
+
+### 🔧 STEP 3 — Use in Script
+
+We modify git remote:
+
+```
+https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME.git
+```
 
 ### 3️⃣ Initialize DEVOPS SCRIPT
 
