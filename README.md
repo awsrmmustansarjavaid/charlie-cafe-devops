@@ -967,5 +967,31 @@ Health Check →
 ❌ Duplicate ALB configs → Now removed
 
 
+## ✅ Charlie Cafe cleanup
+
+[ec2-cleanup.sh](./infrastructure/scripts/ec2-cleanup.sh)
+
+#### How to use:
+
+- Save this as ec2-cleanup.sh on your EC2.
+
+```
+nano ec2-cleanup.sh
+```
+
+- Make it executable:
+
+```
+chmod +x ec2-cleanup.sh
+```
+
+- Run it:
+
+```
+./ec2-cleanup.sh
+```
+
+---
+
 
 
