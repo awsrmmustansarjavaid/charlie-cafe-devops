@@ -1,38 +1,38 @@
 # -------------------------------------------------
-# ☕ Charlie Cafe - FINAL Dockerfile (PHP + Apache)
-# Production Ready | DevOps Standard
+# ☕ Charlie Cafe Dockerfile - PHP + Apache
+# Copy multiple frontend folders to Apache web root
 # -------------------------------------------------
 
-# Use official PHP with Apache
+# 1️⃣ Use official PHP + Apache image
 FROM php:8.2-apache
 
-# -------------------------------------------------
-# Install required PHP extensions
-# (For MySQL / RDS connectivity)
-# -------------------------------------------------
+# 2️⃣ Install required PHP extensions (MySQL / RDS)
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# -------------------------------------------------
-# Enable Apache rewrite module (for clean URLs / routing)
-# -------------------------------------------------
+# 3️⃣ Enable Apache rewrite module (for clean URLs)
 RUN a2enmod rewrite
 
-# -------------------------------------------------
-# Set working directory
-# -------------------------------------------------
+# 4️⃣ Set working directory inside container
 WORKDIR /var/www/html
 
-# -------------------------------------------------
-# Copy frontend code (NO modification required)
-# -------------------------------------------------
-COPY ./app/frontend/ /var/www/html/
+# 5️⃣ Copy HTML files to Apache root
+# Source: app/frontend/html/
+# Destination: /var/www/html/
+COPY ./app/frontend/html/ ./  
 
-# -------------------------------------------------
-# Set proper permissions
-# -------------------------------------------------
+# 6️⃣ Copy PHP files to Apache root
+# Source: app/frontend/php/
+# Destination: /var/www/html/
+COPY ./app/frontend/php/ ./  
+
+# 7️⃣ Copy CSS files (optional, for frontend styling)
+COPY ./app/frontend/css/ ./css/
+
+# 8️⃣ Copy JS files (optional, for frontend scripts)
+COPY ./app/frontend/js/ ./js/
+
+# 9️⃣ Set proper permissions for Apache
 RUN chown -R www-data:www-data /var/www/html
 
-# -------------------------------------------------
-# Expose Apache port
-# -------------------------------------------------
+# 🔟 Expose Apache port
 EXPOSE 80
