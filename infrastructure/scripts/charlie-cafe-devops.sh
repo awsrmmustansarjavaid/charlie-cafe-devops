@@ -16,7 +16,7 @@ set -euo pipefail
 
 PROJECT_DIR="charlie-cafe-devops"   # ✅ FIXED
 REPO_NAME="charlie-cafe-devops"
-GITHUB_USERNAME="awsrmmustansarjavaid"
+GITHUB_USERNAME="YOUR_USERNAME"
 
 # 🔐 GitHub Token (MUST export before running)
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
