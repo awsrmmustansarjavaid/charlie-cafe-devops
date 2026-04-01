@@ -160,7 +160,7 @@ charlie-cafe-devops/
 
 #### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
 
-### 1️⃣ Pre-checks (tools & environment)
+### ✅ Pre-checks (tools & environment)
 
 Before running the script, make sure all required tools are installed:
 
