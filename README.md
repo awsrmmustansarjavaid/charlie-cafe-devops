@@ -166,6 +166,12 @@ charlie-cafe-devops/
 
 ```
 ls -la
+aws --version
+jq --version
+mysql --version
+docker --version
+git --version
+curl --version
 docker --version
 docker info
 ```
