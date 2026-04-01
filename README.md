@@ -197,6 +197,59 @@ Server:
 
 This confirms Docker is installed and the daemon is running.
 
+### ✅ Step 1 — Project directory & GitHub repo
+
+Script clones or navigates to your repo:
+
+```
+cd ~/charlie-cafe-devops
+git status
+ls -laR
+```
+
+#### ✅ What to check:
+
+- git status should show the branch (main) and any changes.
+
+- If the folder didn’t exist before, script cloned the repo automatically.
+
+### ✅ Step 2 — Tool check
+
+- Script checks for aws, jq, mysql, docker, git, curl.
+
+You already did:
+
+```
+aws --version
+jq --version
+mysql --version
+docker --version
+git --version
+curl --version
+```
+
+✅ Success criteria: All commands show version numbers.
+
+### ✅ Step 3 — Fetch DB credentials from Secrets Manager
+
+```
+aws secretsmanager get-secret-value \
+  --secret-id CafeDevDBSM \
+  --region us-east-1
+```
+
+#### ✅ What to check:
+
+- JSON output with username, password, host, dbname
+
+- Script extracts them using jq. You can test separately:
+
+```
+SECRET_JSON=$(aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1 --query SecretString --output text)
+echo $SECRET_JSON | jq
+```
+
+
 
 ### 1️⃣ Initialize GitHub Repo
 
