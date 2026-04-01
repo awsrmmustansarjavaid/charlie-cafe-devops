@@ -174,6 +174,7 @@ git --version
 curl --version
 docker --version
 docker info
+aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1
 ```
 
 - Expected output:
