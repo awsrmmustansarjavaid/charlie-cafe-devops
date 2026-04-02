@@ -199,6 +199,20 @@ docker rm -f cafe-app
 docker run -d -p 80:80 --name cafe-app charlie-cafe
 ```
 
+### 🔥 OPTION 1 — Quick Fix (Recommended now)
+
+#### Run commands with sudo:
+
+```
+sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+sudo docker rm -f cafe-app
+sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
+```
+
+✔ Works instantly
+
+✔ No logout needed
+
 ### 🧠 PRO DEVOPS INSIGHT
 
 Now your container is:
