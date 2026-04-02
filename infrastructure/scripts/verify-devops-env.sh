@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # ==========================================================
-# ☕ Charlie Cafe — DevOps Environment Verification Script
+# ☕ Charlie Cafe — DevOps Environment Verification & RDS Analytics
 # ==========================================================
 # This script verifies:
-#   ✅ Required tools installation
-#   ✅ Tool versions
-#   ✅ Docker daemon status
-#   ✅ Project directory & Git status
+#   ✅ Required tools
+#   ✅ Docker daemon
+#   ✅ Project directory & Git
 #   ✅ AWS Secrets Manager connectivity
-#   ✅ Local application health (via curl)
+#   ✅ Local application health (curl)
+#   ✅ RDS database connectivity & analytics
 # ==========================================================
 
 echo "=================================================="
-echo "🚀 Starting DevOps Environment Verification"
+echo "🚀 Starting Environment Verification"
 echo "=================================================="
 
 PASS_COUNT=0
@@ -72,8 +72,6 @@ else
     ((FAIL_COUNT++))
 fi
 
-echo ""
-echo "Docker Info:"
 docker info >/dev/null 2>&1 && echo "✅ docker info OK" || echo "❌ docker info failed"
 
 # ----------------------------------------------------------
@@ -104,7 +102,7 @@ fi
 # Step 5: AWS Secrets Manager Check
 # ----------------------------------------------------------
 echo ""
-echo "🔎 Step 5: AWS Secrets Manager check..."
+echo "🔎 Step 5: Fetching RDS credentials from AWS Secrets Manager..."
 
 SECRET_NAME="CafeDevDBSM"
 REGION="us-east-1"
@@ -118,20 +116,14 @@ SECRET_JSON=$(aws secretsmanager get-secret-value \
 if [ $? -eq 0 ]; then
     echo "✅ Secret fetched successfully"
 
-    echo ""
-    echo "🔐 Parsed Secret:"
-    echo $SECRET_JSON | jq .
-
     DB_HOST=$(echo $SECRET_JSON | jq -r .host)
     DB_USER=$(echo $SECRET_JSON | jq -r .username)
+    DB_PASS=$(echo $SECRET_JSON | jq -r .password)
     DB_NAME=$(echo $SECRET_JSON | jq -r .dbname)
 
-    echo ""
-    echo "📊 Extracted Values:"
-    echo "Host: $DB_HOST"
-    echo "User: $DB_USER"
-    echo "DB Name: $DB_NAME"
-
+    echo "📊 Database Host: $DB_HOST"
+    echo "📊 Database User: $DB_USER"
+    echo "📊 Database Name: $DB_NAME"
     ((PASS_COUNT++))
 else
     echo "❌ Failed to fetch secret"
@@ -139,7 +131,7 @@ else
 fi
 
 # ----------------------------------------------------------
-# Step 6: Application Health Check (curl localhost)
+# Step 6: Application Health Check
 # ----------------------------------------------------------
 echo ""
 echo "🔎 Step 6: Checking Application Health (http://localhost)..."
@@ -154,6 +146,77 @@ elif [ "$HTTP_STATUS" == "000" ]; then
     ((FAIL_COUNT++))
 else
     echo "⚠️ Application responded with HTTP $HTTP_STATUS"
+    ((FAIL_COUNT++))
+fi
+
+# ----------------------------------------------------------
+# Step 7: RDS Verification & Analytics
+# ----------------------------------------------------------
+echo ""
+echo "🔎 Step 7: Verifying RDS database connectivity and running analytics..."
+
+if [ -n "$DB_HOST" ] && [ -n "$DB_USER" ] && [ -n "$DB_PASS" ]; then
+    # SQL commands for verification
+    SQL_QUERY="
+USE $DB_NAME;
+
+-- Check Database
+SELECT DATABASE();
+
+-- Show Tables
+SHOW TABLES;
+
+-- Describe Tables
+DESCRIBE employees;
+DESCRIBE attendance;
+DESCRIBE leaves;
+DESCRIBE holidays;
+DESCRIBE orders;
+
+-- Row Counts
+SELECT
+  (SELECT COUNT(*) FROM orders) AS total_orders,
+  (SELECT COUNT(*) FROM employees) AS total_employees,
+  (SELECT COUNT(*) FROM attendance) AS total_attendance,
+  (SELECT COUNT(*) FROM holidays) AS total_holidays;
+
+-- Paid Orders
+SELECT COUNT(*) AS paid_orders
+FROM orders
+WHERE payment_status='PAID';
+
+-- Today Sales
+SELECT COUNT(*) AS today_sales
+FROM orders
+WHERE payment_status='PAID'
+AND created_at >= CURDATE();
+
+-- Week Sales
+SELECT COUNT(*) AS week_sales
+FROM orders
+WHERE payment_status='PAID'
+AND created_at >= NOW() - INTERVAL 7 DAY;
+
+-- Month Sales
+SELECT COUNT(*) AS month_sales
+FROM orders
+WHERE payment_status='PAID'
+AND created_at >= DATE_FORMAT(NOW(),'%Y-%m-01');
+"
+
+    # Execute SQL using mysql CLI
+    echo "$SQL_QUERY" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" 2>/tmp/rds_error.log
+
+    if [ $? -eq 0 ]; then
+        echo "✅ RDS database connected and SQL executed successfully"
+        ((PASS_COUNT++))
+    else
+        echo "❌ Failed to connect or execute SQL on RDS"
+        cat /tmp/rds_error.log
+        ((FAIL_COUNT++))
+    fi
+else
+    echo "❌ RDS credentials not available, skipping RDS check"
     ((FAIL_COUNT++))
 fi
 
