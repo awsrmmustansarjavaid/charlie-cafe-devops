@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==========================================================
-# ☕ Charlie Cafe — DevOps Environment Verification & RDS Analytics
+# ☕ Charlie Cafe — FULL DevOps & Git/RDS Verification Script
 # ==========================================================
 # This script verifies:
 #   ✅ Required tools
@@ -11,10 +11,11 @@
 #   ✅ Local application health (curl)
 #   ✅ RDS database connectivity & analytics
 #   ✅ SSH configuration & GitHub access
+#   ✅ Git repo verification & optional test commit
 # ==========================================================
 
 echo "=================================================="
-echo "🚀 Starting Environment Verification"
+echo "🚀 Starting Full Environment Verification"
 echo "=================================================="
 
 PASS_COUNT=0
@@ -36,7 +37,6 @@ check_command() {
 
 echo ""
 echo "🔎 Step 1: Checking required tools..."
-
 check_command aws
 check_command jq
 check_command mysql
@@ -50,7 +50,6 @@ check_command ssh
 # ----------------------------------------------------------
 echo ""
 echo "🔎 Step 2: Checking versions..."
-
 echo "---- Versions ----"
 aws --version 2>/dev/null || echo "❌ aws failed"
 jq --version 2>/dev/null || echo "❌ jq failed"
@@ -65,7 +64,6 @@ ssh -V 2>/dev/null || echo "❌ ssh failed"
 # ----------------------------------------------------------
 echo ""
 echo "🔎 Step 3: Checking Docker daemon..."
-
 if sudo systemctl is-active --quiet docker
 then
     echo "✅ Docker daemon is running"
@@ -78,16 +76,15 @@ fi
 docker info >/dev/null 2>&1 && echo "✅ docker info OK" || echo "❌ docker info failed"
 
 # ----------------------------------------------------------
-# Step 4: Project Directory Check
+# Step 4: Project Directory & Git
 # ----------------------------------------------------------
 echo ""
 echo "🔎 Step 4: Checking project directory..."
-
-PROJECT_DIR=~/charlie-cafe-devops
+PROJECT_DIR="/home/ec2-user/charlie-cafe-devops"
 
 if [ -d "$PROJECT_DIR" ]; then
     echo "✅ Project directory exists: $PROJECT_DIR"
-    cd $PROJECT_DIR
+    cd "$PROJECT_DIR" || exit
 
     echo ""
     echo "📂 Git Status:"
@@ -96,6 +93,37 @@ if [ -d "$PROJECT_DIR" ]; then
     echo ""
     echo "📁 Directory structure:"
     ls -la
+
+    echo ""
+    echo "🔹 Checking Git remote URL..."
+    git remote -v || echo "❌ Cannot show remotes"
+
+    echo ""
+    echo "🔹 Verifying SSH connection to GitHub..."
+    ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | tee /tmp/github_ssh_test.log
+    if grep -q "successfully authenticated" /tmp/github_ssh_test.log; then
+        echo "✅ GitHub SSH authentication successful"
+        ((PASS_COUNT++))
+    else
+        echo "❌ GitHub SSH authentication failed"
+        ((FAIL_COUNT++))
+    fi
+
+    echo ""
+    echo "🔹 Checking Git status..."
+    git status || echo "❌ Cannot get git status"
+
+    # Optional test commit
+    TEST_FILE="test_auto_deploy.txt"
+    echo "# Test Deploy $(date)" >> $TEST_FILE
+    git add $TEST_FILE
+    git commit -m "Test auto-deploy $(date)" >/dev/null 2>&1 || echo "⚠️ Nothing to commit"
+    git push origin main >/dev/null 2>&1 && echo "✅ Test file pushed to GitHub" || echo "⚠️ Could not push test file"
+    rm -f $TEST_FILE
+    git add . >/dev/null 2>&1
+    git commit -m "Remove test file" >/dev/null 2>&1
+    git push origin main >/dev/null 2>&1
+
 else
     echo "❌ Project directory NOT found"
     ((FAIL_COUNT++))
@@ -105,12 +133,10 @@ fi
 # Step 5: SSH Verification
 # ----------------------------------------------------------
 echo ""
-echo "🔎 Step 5: Checking SSH configuration..."
-
+echo "🔎 Step 5: Checking SSH keys..."
 echo "📂 ~/.ssh contents:"
 ls -l ~/.ssh
 
-# Check if deploy key exists
 if [ -f ~/.ssh/id_deploy ]; then
     echo "✅ Deploy private key exists"
     ((PASS_COUNT++))
@@ -127,26 +153,11 @@ else
     ((FAIL_COUNT++))
 fi
 
-# Test GitHub SSH connection
-echo ""
-echo "🔐 Testing GitHub SSH connection..."
-
-ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | tee /tmp/github_ssh_test.log
-
-if grep -q "successfully authenticated" /tmp/github_ssh_test.log; then
-    echo "✅ GitHub SSH authentication successful"
-    ((PASS_COUNT++))
-else
-    echo "❌ GitHub SSH authentication failed"
-    ((FAIL_COUNT++))
-fi
-
 # ----------------------------------------------------------
 # Step 6: AWS Secrets Manager Check
 # ----------------------------------------------------------
 echo ""
 echo "🔎 Step 6: Fetching RDS credentials from AWS Secrets Manager..."
-
 SECRET_NAME="CafeDevDBSM"
 REGION="us-east-1"
 
@@ -158,7 +169,6 @@ SECRET_JSON=$(aws secretsmanager get-secret-value \
 
 if [ $? -eq 0 ]; then
     echo "✅ Secret fetched successfully"
-
     DB_HOST=$(echo $SECRET_JSON | jq -r .host)
     DB_USER=$(echo $SECRET_JSON | jq -r .username)
     DB_PASS=$(echo $SECRET_JSON | jq -r .password)
@@ -178,9 +188,7 @@ fi
 # ----------------------------------------------------------
 echo ""
 echo "🔎 Step 7: Checking Application Health (http://localhost)..."
-
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost)
-
 if [ "$HTTP_STATUS" == "200" ]; then
     echo "✅ Application is UP (HTTP 200)"
     ((PASS_COUNT++))
@@ -196,14 +204,10 @@ fi
 # Step 8: RDS Verification & Analytics
 # ----------------------------------------------------------
 echo ""
-echo "🔎 Step 8: Verifying RDS database connectivity and running analytics..."
-
+echo "🔎 Step 8: Verifying RDS database connectivity..."
 if [ -n "$DB_HOST" ] && [ -n "$DB_USER" ] && [ -n "$DB_PASS" ]; then
-
     SQL_QUERY="SELECT NOW();"
-
     echo "$SQL_QUERY" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" 2>/tmp/rds_error.log
-
     if [ $? -eq 0 ]; then
         echo "✅ RDS database connected successfully"
         ((PASS_COUNT++))
