@@ -240,13 +240,28 @@ chmod +x ~/charlie-cafe-devops/charlie-cafe-devops.sh
 
 ✅ This avoids duplicating Docker, DB, git commands in GitHub Actions.
 
-### 5️⃣ Create GitHub Actions Workflow
+### 5️⃣ Test Deployment
 
-- In your repo, create the folder .github/workflows/.
+- #### Push a commit to main:
 
-- Create a file: .github/workflows/deploy.yml.
+```
+git add .
+git commit -m "Test auto-deploy"
+git push origin main
+```
 
-- Add the following content (optimized to run your bash script):
+- Go to GitHub → Actions → Check the workflow logs.
+
+- #### On EC2, verify Docker:
+
+```
+sudo docker ps
+```
+
+- You should see your container cafe-app running.
+
+- Open your EC2 public IP in the browser — your app should be live.
+
 
 
 
