@@ -428,6 +428,12 @@ chmod +x verify-devops-env.sh
 ./verify-devops-env.sh
 ```
 
+### 🌐 Now test in browser:
+
+```
+http://YOUR-EC2-PUBLIC-IP
+```
+
 ### 🚀 After Any Change on EC2
 
 - #### 1️⃣ Go to your project directory
@@ -506,11 +512,84 @@ ssh-add -l        # lists loaded keys
 ssh -T git@github.com
 ```
 
-### 🌐 Now test in browser:
+### 🌐 View Github logs
+
+### Step 1️⃣ Install GitHub CLI (gh) on Amazon Linux 2023
+
+- Enable the GitHub CLI repo:
 
 ```
-http://YOUR-EC2-PUBLIC-IP
+sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
 ```
+
+- Install gh:
+
+```
+sudo dnf install -y gh
+```
+
+- Verify installation:
+
+```
+gh --version
+```
+
+#### ✅ You should see something like:
+
+```
+gh version 3.x.x (2026-xx-xx)
+```
+
+### Step 2️⃣ Authenticate GitHub CLI
+
+You need to authenticate so gh can access your repos:
+
+```
+gh auth login
+```
+
+  - Select GitHub.com
+
+  - Choose SSH for Git operations (matches your deploy key)
+
+  - Follow the prompts to authenticate (may open a browser link or use a token)
+
+### Step 3️⃣ Github Personal Access Token (PAT)
+
+- Go to GitHub Tokens Page → Personal Access Tokens → Fine-grained tokens
+
+- Click Generate new token
+
+- Set the repository access to your repo awsrmmustansarjavaid/charlie-cafe-devops
+
+- Minimum scopes for gh SSH login:
+
+  - repo (full access to repository)
+
+  - read:org (required by GitHub CLI even if you don’t use orgs)
+
+  - admin:public_key (to upload SSH keys)
+
+- Generate token → copy it
+
+
+### Step 4️⃣ Check authentication:
+
+```
+gh auth status
+```
+
+### Step 5️⃣ View GitHub Actions logs
+
+List workflows for your repo:
+
+```
+gh workflow list
+```
+
+
+
+
 
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
