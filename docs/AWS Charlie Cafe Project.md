@@ -395,7 +395,7 @@ CafeDevWebServer
 ### 1️⃣ LAMP Server USER DATA
 > **📍 File Location: AWS-LAMP Server-Bash-Script.md**
 
-[AWS-LAMP Server Bash-Script](../infrastructure/scripts/charlie-cafe-devops.sh)
+[charlie-cafe-devops](../infrastructure/scripts/charlie-cafe-devops.sh)
 
 ### 8️⃣ Development and Delopment LAMP Server 
 
@@ -414,7 +414,7 @@ ssh -i CafeDevKey.pem ec2-user@<PUBLIC-IP>
 sudo nano lamp-verify.sh
 ```
 
-[VERIFY LAMP + MySQL CLIENT](../infrastructure/scripts/verify-devops-env.sh)
+[VERIFY charlie-cafe-devops](../infrastructure/scripts/verify-devops-env.sh)
 
 ```
 sudo chmod +x lamp-verify.sh
