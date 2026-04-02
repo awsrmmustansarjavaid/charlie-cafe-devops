@@ -198,6 +198,20 @@ ls -la ~/.ssh
 
 - If not → you need to generate them (I’ll show below)
 
+### ✅ Check permissions (VERY IMPORTANT)
+
+```
+ls -l ~/.ssh
+```
+
+#### Fix permissions if needed:
+
+```
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_deploy
+chmod 644 ~/.ssh/id_deploy.pub
+```
+
 #### Generate an SSH key on your EC2 instance (if you don’t already have one):
 
 ```
@@ -205,6 +219,13 @@ ssh-keygen -t ed25519 -C "ec2-auto-deploy" -f ~/.ssh/id_deploy -N ""
 ```
 
 - This creates ~/.ssh/id_deploy (private) and ~/.ssh/id_deploy.pub (public).
+
+#### Then verify again:
+
+```
+ls ~/.ssh
+```
+
 
 #### 🔑 Copy the public key:
 
