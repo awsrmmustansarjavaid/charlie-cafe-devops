@@ -180,6 +180,24 @@ charlie-cafe-devops
 
 ### 1️⃣ Prepare EC2 for SSH Deployment
 
+### ✅ Check if keys already exist
+
+Run this on your EC2:
+
+```
+ls -la ~/.ssh
+```
+
+#### 🔍 What you should see:
+
+- id_deploy → ✅ private key
+
+- id_deploy.pub → ✅ public key
+
+- If both exist → you’re good
+
+- If not → you need to generate them (I’ll show below)
+
 #### Generate an SSH key on your EC2 instance (if you don’t already have one):
 
 ```
