@@ -3164,6 +3164,7 @@ docker push $ECR_URI:$IMAGE_TAG
 aws ecr create-repository --repository-name charlie-cafe
 ```
 ### Latest Updated charlie-cafe-devops.sh
+> #### Update Version 1.1
 
 ```
 #!/bin/bash
