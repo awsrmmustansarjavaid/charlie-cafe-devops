@@ -762,15 +762,39 @@ You are now doing:
 
 👉 This is mid-level DevOps Engineer skillset
 
-### 7️⃣ Push & Test
+### 7️⃣ Clone your repository first
 
-#### Commit & push the workflow:
+Navigate to a folder where you want your repo, e.g.:
 
 ```
-git add .github/workflows/deploy.yml
-git commit -m "Add auto-deploy workflow"
+cd ~
+git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
+```
+
+This will create a folder charlie-cafe-devops with a .git inside.
+
+### 8️⃣ Enter the repo
+
+```
+cd charlie-cafe-devops
+```
+
+### 9️⃣ Make changes, add, commit, push
+
+```
+# Make your changes in this folder
+git add .
+git commit -m "Test auto-deploy"
 git push origin main
 ```
+
+#### ⚡ Important Notes
+
+- git add / git commit / git push must always be run inside a Git repo (a folder that has a .git folder).
+
+- If you run them outside, Git has no idea what repository you mean → you get that error.
+
+- Your SSH key is already fine — GitHub will accept the push now.
 
 #### ✅ Update your GitHub Actions workflow
 

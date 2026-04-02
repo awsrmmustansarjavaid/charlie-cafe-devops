@@ -370,9 +370,16 @@ Hi <your-github-username>! You've successfully authenticated, but GitHub does no
 
 - SSH config not applied
 
-### 6️⃣ Test Deployment
+### 6️⃣ Clone your repository first
 
-- #### Push a commit to main:
+Navigate to a folder where you want your repo, e.g.:
+
+```
+cd ~
+git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
+```
+
+
 
 ```
 git add .
