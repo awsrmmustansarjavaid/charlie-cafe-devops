@@ -384,6 +384,7 @@ jobs:
 ```
 name: 🚀 Charlie Cafe Auto Deploy
 
+# Trigger auto-deploy on push to main branch
 on:
   push:
     branches: [ "main" ]
@@ -393,10 +394,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     # -------------------------------------------------
-    # 1️⃣ Checkout code
+    # 1️⃣ Checkout Code
     # -------------------------------------------------
-    - name: 📥 Checkout Code
+    - name: 📥 Checkout Repository
       uses: actions/checkout@v3
 
     # -------------------------------------------------
@@ -408,40 +410,29 @@ jobs:
         ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
     # -------------------------------------------------
-    # 3️⃣ Deploy to EC2
+    # 3️⃣ Deploy via Bash Script on EC2
     # -------------------------------------------------
-    - name: 🚀 Deploy to EC2
+    - name: 🚀 SSH & Run Deployment Script
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
 
-        # Go to project folder or clone if missing
+        # Go to project folder
         cd ~/charlie-cafe-devops || git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
         cd charlie-cafe-devops
 
-        # Pull latest code
-        git pull origin main
+        # Ensure bash script is executable
+        chmod +x charlie-cafe-devops.sh
 
-        # Stop & remove old Docker container/image
-        sudo docker rm -f cafe-app || true
-        sudo docker rmi charlie-cafe || true
-
-        # Build & run Docker container
-        sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
-        sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
+        # Run deployment
+        ./charlie-cafe-devops.sh
 
         EOF
 
     # -------------------------------------------------
-    # 4️⃣ Optional: Test the deployment
+    # 4️⃣ Success Notification
     # -------------------------------------------------
-    - name: ❤️ Test Application
-      run: |
-        echo "Waiting 10s for app to start..."
-        sleep 10
-        curl -f http://${{ secrets.EC2_HOST }}/ || exit 1
-
-    - name: 🎉 Deployment complete
-      run: echo "Charlie Cafe deployed successfully 🚀"
+    - name: 🎉 Deployment Success
+      run: echo "Charlie Cafe deployed successfully via SSH to EC2 🚀"
 ```
 
 
