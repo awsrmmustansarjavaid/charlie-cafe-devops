@@ -172,19 +172,7 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### 🔑 Method 1 Auto-deploy from GitHub → EC2 using SSH (Recommanded)
-
-> #### GitHub → GitHub Actions → EC2 → Docker → Auto Deploy
-
-### 🌐 Make sure SSH key exists on EC2
-
-Check if you already have an SSH key:
-
-```
-ls -al ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
-```
-
-#### ✅ If not, generate it:
+### 2️⃣ Auto-deploy from GitHub → EC2 using SSH (Recommanded)
 
 ### 1️⃣  Generate SSH Key on EC2 
 
@@ -230,8 +218,6 @@ cat ~/.ssh/id_rsa.pub
 
 - #### ✅ This allows GitHub to authenticate your EC2.
 
-- #### Note: There is no separate "Allow write access" checkbox here. That’s only for repo-level Deploy Keys. Using your personal account SSH key allows read/write.
-
 ### 3️⃣ Now test:
 
 ```
@@ -246,54 +232,9 @@ Hi awsrmmustansarjavaid! You've successfully authenticated, but GitHub does not 
 
 ✅ Perfect — SSH is working.
 
-#### ✅ Fix host key verification
-
-#### ✅ When you see:
-
-```
-The authenticity of host 'github.com (140.82.114.3)' can't be established.
-```
-
-- #### ✅ Add GitHub to known hosts:
-
-> #### GitHub is asking if it can trust the server. To fix permanently:
-
-```
-ssh-keyscan github.com >> ~/.ssh/known_hosts
-```
-
-- This adds GitHub’s public host key to your EC2 so it won’t ask again.
-
-#### ✅ Now test:
-
-```
-ssh -T git@github.com
-```
-
 ### 4️⃣ Add private key as GitHub secret
 
-#### 🔑 Step 1 Check if you already have a private key
-
-- Run:
-
-```
-ls -al ~/.ssh/
-```
-
-#### ✅ You should see something like:
-
-```
-id_rsa
-id_rsa.pub
-```
-
-- id_rsa → private key ✅
-
-- id_rsa.pub → public key (this is what you added to GitHub)
-
-#### 🔑 Step 2 View your private key
-
-> ⚠️ Important: Never share this key publicly. Keep it secret.
+#### 🔑 Copy your private key
 
 - Run:
 
@@ -335,119 +276,7 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 
 > These secrets will be referenced in the workflow YAML.
 
-### 6️⃣ Update GitHub Actions Workflow
 
-### Create a file:
-
-```
-.github/workflows/deploy.yml
-```
-
-#### ✅ With content:
-
-```
-name: 🚀 Auto Deploy to EC2
-
-on:
-  push:
-    branches: [ "main" ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v3
-
-    - name: 🔑 Setup SSH
-      uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-    - name: 🚀 Deploy to EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-
-        # Go to project folder or clone if not exists
-        cd ~/charlie-cafe-devops || git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
-        cd charlie-cafe-devops
-
-        # Pull latest code
-        git pull origin main
-
-        # Stop & remove old Docker container/image
-        sudo docker rm -f cafe-app || true
-        sudo docker rmi charlie-cafe || true
-
-        # Build & run new Docker container
-        sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
-        sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
-
-        EOF
-```
-
-✅ This workflow will auto-deploy every time you push to main.
-
-### 🌐 Fully Final deploy.yml
-
-```
-
-```
-
-### 7️⃣ Push & Test
-
-#### Commit & push the workflow:
-
-```
-git add .github/workflows/deploy.yml
-git commit -m "Add auto-deploy workflow"
-git push origin main
-```
-
-
-
-
-#### ✅ Update your GitHub Actions workflow
-
-Since you added your EC2 key to GitHub, use it as the secret EC2_SSH_KEY in your workflow. The workflow will SSH from GitHub Actions into your EC2 securely.
-
-
-### 🔑 Method 2 Auto deploy from GitHub → EC2 using Token
-
-### 1️⃣ Create GitHub Token
-
-- Go to: 👉 https://github.com/settings/tokens
-
-- Click: 👉 Generate new token (classic)
-
-- Select permissions:
-
-✔ repo
-
-✔ workflow
-
-- Click: 👉 Generate token
-
-- Copy token (example):
-
-```
-ghp_abc123xyz456...
-```
-
-### 2️⃣ Export in EC2 (SAFE)
-
-```
-export GITHUB_TOKEN="your_token_here"
-```
-
-### 3️⃣ Use in Script
-
-We modify git remote:
-
-```
-https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME.git
-```
 
 ### 3️⃣ Initialize DEVOPS SCRIPT
 
