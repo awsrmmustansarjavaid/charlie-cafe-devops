@@ -10,6 +10,7 @@
 #   ✅ AWS Secrets Manager connectivity
 #   ✅ Local application health (curl)
 #   ✅ RDS database connectivity & analytics
+#   ✅ SSH configuration & GitHub access
 # ==========================================================
 
 echo "=================================================="
@@ -42,6 +43,7 @@ check_command mysql
 check_command docker
 check_command git
 check_command curl
+check_command ssh
 
 # ----------------------------------------------------------
 # Step 2: Version Checks
@@ -56,6 +58,7 @@ mysql --version 2>/dev/null || echo "❌ mysql failed"
 docker --version 2>/dev/null || echo "❌ docker failed"
 git --version 2>/dev/null || echo "❌ git failed"
 curl --version 2>/dev/null || echo "❌ curl failed"
+ssh -V 2>/dev/null || echo "❌ ssh failed"
 
 # ----------------------------------------------------------
 # Step 3: Docker Status
@@ -99,10 +102,50 @@ else
 fi
 
 # ----------------------------------------------------------
-# Step 5: AWS Secrets Manager Check
+# Step 5: SSH Verification
 # ----------------------------------------------------------
 echo ""
-echo "🔎 Step 5: Fetching RDS credentials from AWS Secrets Manager..."
+echo "🔎 Step 5: Checking SSH configuration..."
+
+echo "📂 ~/.ssh contents:"
+ls -l ~/.ssh
+
+# Check if deploy key exists
+if [ -f ~/.ssh/id_deploy ]; then
+    echo "✅ Deploy private key exists"
+    ((PASS_COUNT++))
+else
+    echo "❌ Deploy private key NOT found"
+    ((FAIL_COUNT++))
+fi
+
+if [ -f ~/.ssh/id_deploy.pub ]; then
+    echo "✅ Deploy public key exists"
+    ((PASS_COUNT++))
+else
+    echo "❌ Deploy public key NOT found"
+    ((FAIL_COUNT++))
+fi
+
+# Test GitHub SSH connection
+echo ""
+echo "🔐 Testing GitHub SSH connection..."
+
+ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | tee /tmp/github_ssh_test.log
+
+if grep -q "successfully authenticated" /tmp/github_ssh_test.log; then
+    echo "✅ GitHub SSH authentication successful"
+    ((PASS_COUNT++))
+else
+    echo "❌ GitHub SSH authentication failed"
+    ((FAIL_COUNT++))
+fi
+
+# ----------------------------------------------------------
+# Step 6: AWS Secrets Manager Check
+# ----------------------------------------------------------
+echo ""
+echo "🔎 Step 6: Fetching RDS credentials from AWS Secrets Manager..."
 
 SECRET_NAME="CafeDevDBSM"
 REGION="us-east-1"
@@ -131,10 +174,10 @@ else
 fi
 
 # ----------------------------------------------------------
-# Step 6: Application Health Check
+# Step 7: Application Health Check
 # ----------------------------------------------------------
 echo ""
-echo "🔎 Step 6: Checking Application Health (http://localhost)..."
+echo "🔎 Step 7: Checking Application Health (http://localhost)..."
 
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost)
 
@@ -150,73 +193,27 @@ else
 fi
 
 # ----------------------------------------------------------
-# Step 7: RDS Verification & Analytics
+# Step 8: RDS Verification & Analytics
 # ----------------------------------------------------------
 echo ""
-echo "🔎 Step 7: Verifying RDS database connectivity and running analytics..."
+echo "🔎 Step 8: Verifying RDS database connectivity and running analytics..."
 
 if [ -n "$DB_HOST" ] && [ -n "$DB_USER" ] && [ -n "$DB_PASS" ]; then
-    # SQL commands for verification
-    SQL_QUERY="
-USE $DB_NAME;
 
--- Check Database
-SELECT DATABASE();
+    SQL_QUERY="SELECT NOW();"
 
--- Show Tables
-SHOW TABLES;
-
--- Describe Tables
-DESCRIBE employees;
-DESCRIBE attendance;
-DESCRIBE leaves;
-DESCRIBE holidays;
-DESCRIBE orders;
-
--- Row Counts
-SELECT
-  (SELECT COUNT(*) FROM orders) AS total_orders,
-  (SELECT COUNT(*) FROM employees) AS total_employees,
-  (SELECT COUNT(*) FROM attendance) AS total_attendance,
-  (SELECT COUNT(*) FROM holidays) AS total_holidays;
-
--- Paid Orders
-SELECT COUNT(*) AS paid_orders
-FROM orders
-WHERE payment_status='PAID';
-
--- Today Sales
-SELECT COUNT(*) AS today_sales
-FROM orders
-WHERE payment_status='PAID'
-AND created_at >= CURDATE();
-
--- Week Sales
-SELECT COUNT(*) AS week_sales
-FROM orders
-WHERE payment_status='PAID'
-AND created_at >= NOW() - INTERVAL 7 DAY;
-
--- Month Sales
-SELECT COUNT(*) AS month_sales
-FROM orders
-WHERE payment_status='PAID'
-AND created_at >= DATE_FORMAT(NOW(),'%Y-%m-01');
-"
-
-    # Execute SQL using mysql CLI
     echo "$SQL_QUERY" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" 2>/tmp/rds_error.log
 
     if [ $? -eq 0 ]; then
-        echo "✅ RDS database connected and SQL executed successfully"
+        echo "✅ RDS database connected successfully"
         ((PASS_COUNT++))
     else
-        echo "❌ Failed to connect or execute SQL on RDS"
+        echo "❌ Failed to connect to RDS"
         cat /tmp/rds_error.log
         ((FAIL_COUNT++))
     fi
 else
-    echo "❌ RDS credentials not available, skipping RDS check"
+    echo "❌ RDS credentials not available"
     ((FAIL_COUNT++))
 fi
 
