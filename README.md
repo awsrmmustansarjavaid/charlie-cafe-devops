@@ -352,8 +352,20 @@ ssh-add ~/.ssh/id_deploy
 
 #### ✅ Step 3  Test connection to GitHub
 
+Hardcode the identity file in SSH command in the script
+
+If you want the script to always work with sudo:
+
+Replace:
+
 ```
 ssh -T git@github.com
+```
+
+With:
+
+```
+ssh -i /home/ec2-user/.ssh/id_deploy -o IdentitiesOnly=yes -T git@github.com
 ```
 
 #### ✅ Expected output:
