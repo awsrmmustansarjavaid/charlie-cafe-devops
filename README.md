@@ -232,6 +232,12 @@ ls ~/.ssh
 cat ~/.ssh/id_deploy.pub
 ```
 
+#### Output looks like:
+
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... ec2-auto-deploy
+```
+
 You will add this to GitHub as a deploy key.
 
 ### 2️⃣ Add EC2 SSH Key to GitHub
