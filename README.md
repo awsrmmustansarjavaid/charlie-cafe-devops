@@ -370,21 +370,17 @@ Hi <your-github-username>! You've successfully authenticated, but GitHub does no
 
 - SSH config not applied
 
-### 6️⃣ Clone your repository first
-
-Navigate to a folder where you want your repo, e.g.:
+### 6️⃣ Git Auto Deploy
 
 ```
-cd ~
-git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
+nano ec2_git_auto_deploy.sh
 ```
 
-
+[ec2_git_auto_deploy.sh](./infrastructure/scripts/ec2_git_auto_deploy.sh)
 
 ```
-git add .
-git commit -m "Test auto-deploy"
-git push origin main
+chmod +x ec2_git_auto_deploy.sh
+./ec2_git_auto_deploy.sh
 ```
 
 - Go to GitHub → Actions → Check the workflow logs.
