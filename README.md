@@ -270,11 +270,7 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 ssh -T git@github.com
 ```
 
-### 4️⃣ Update your GitHub Actions workflow
-
-Since you added your EC2 key to GitHub, use it as the secret EC2_SSH_KEY in your workflow. The workflow will SSH from GitHub Actions into your EC2 securely.
-
-### 5️⃣ Add private key as GitHub secret
+### 4️⃣ Add private key as GitHub secret
 
 #### 🔑 Step 1 Check if you already have a private key
 
@@ -328,7 +324,7 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 
 > Now your GitHub Actions workflow can SSH into EC2 securely using this key.
 
-#### 🔑 Step 4 — Add EC2 connection details as GitHub secrets
+### 5️⃣ Add EC2 connection details as GitHub secrets
 
 - Add two more secrets:
 
@@ -339,10 +335,82 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 
 > These secrets will be referenced in the workflow YAML.
 
+### 6️⃣ Update GitHub Actions Workflow
+
+### Create a file:
+
+```
+.github/workflows/deploy.yml
+```
+
+#### ✅ With content:
+
+```
+name: 🚀 Auto Deploy to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    - name: 🔑 Setup SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+    - name: 🚀 Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+
+        # Go to project folder or clone if not exists
+        cd ~/charlie-cafe-devops || git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
+        cd charlie-cafe-devops
+
+        # Pull latest code
+        git pull origin main
+
+        # Stop & remove old Docker container/image
+        sudo docker rm -f cafe-app || true
+        sudo docker rmi charlie-cafe || true
+
+        # Build & run new Docker container
+        sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+        sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
+
+        EOF
+```
+
+✅ This workflow will auto-deploy every time you push to main.
+
+### 🌐 Fully Final deploy.yml
+
+```
+
+```
+
+### 7️⃣ Push & Test
+
+#### Commit & push the workflow:
+
+```
+git add .github/workflows/deploy.yml
+git commit -m "Add auto-deploy workflow"
+git push origin main
+```
 
 
 
-#### 🔑 Step 4 Add private key as GitHub secret
+
+#### ✅ Update your GitHub Actions workflow
+
+Since you added your EC2 key to GitHub, use it as the secret EC2_SSH_KEY in your workflow. The workflow will SSH from GitHub Actions into your EC2 securely.
 
 
 ### 🔑 Method 2 Auto deploy from GitHub → EC2 using Token
