@@ -320,13 +320,27 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 
 - Go to your GitHub repo → Settings → Secrets and Variables → Actions → New repository secret
 
-- Name it: EC2_SSH_KEY
+`- Name it: EC2_SSH_KEY
 
-- Paste the entire private key from cat ~/.ssh/id_rsa
+`- Paste the entire private key from cat ~/.ssh/id_rsa
 
 - Save the secret
 
 > Now your GitHub Actions workflow can SSH into EC2 securely using this key.
+
+#### 🔑 Step 4 — Add EC2 connection details as GitHub secrets
+
+- Add two more secrets:
+
+| Name     | Value                  |
+| -------- | ---------------------- |
+| EC2_HOST | `<your EC2 public IP>` |
+| EC2_USER | `ec2-user`             |
+
+> These secrets will be referenced in the workflow YAML.
+
+
+
 
 #### 🔑 Step 4 Add private key as GitHub secret
 
