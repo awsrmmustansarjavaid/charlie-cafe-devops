@@ -781,5 +781,315 @@ This is not required right now unless you move to Compose builds in CI.
 | EC2 local `docker compose up`  | ✅ Yes          | Local dev/test lab |
 | Multi-arch or advanced caching | ✅ Yes          | CI/CD & EC2        |
 
+### ✅ Fully Final Bash Script verify-devops-env.sh
+
+```
+#!/bin/bash
+
+# ==========================================================
+# ☕ Charlie Cafe — FULL DevOps, Git/RDS & Docker Buildx Verification Script
+# ==========================================================
+# This script verifies:
+#   ✅ Required tools (aws, jq, mysql, docker, git, curl, ssh)
+#   ✅ Docker daemon & Docker info
+#   ✅ Docker Buildx installation & docker-compose build
+#   ✅ Project directory & Git repo
+#   ✅ SSH configuration & GitHub access
+#   ✅ AWS Secrets Manager connectivity
+#   ✅ Local application health (curl)
+#   ✅ RDS database connectivity & analytics
+#   ✅ Optional test Git commit/push
+# ==========================================================
+
+echo "=================================================="
+echo "🚀 Starting Full Environment Verification"
+echo "=================================================="
+
+PASS_COUNT=0
+FAIL_COUNT=0
+
+# ----------------------------------------------------------
+# Function: Check if command exists
+# ----------------------------------------------------------
+check_command() {
+    if command -v $1 &> /dev/null
+    then
+        echo "✅ $1 is installed"
+        ((PASS_COUNT++))
+    else
+        echo "❌ $1 is NOT installed"
+        ((FAIL_COUNT++))
+    fi
+}
+
+# ==========================================================
+# Step 1: Required Tools
+# ==========================================================
+echo ""
+echo "🔎 Step 1: Checking required tools..."
+check_command aws
+check_command jq
+check_command mysql
+check_command docker
+check_command git
+check_command curl
+check_command ssh
+
+# ==========================================================
+# Step 2: Version Checks
+# ==========================================================
+echo ""
+echo "🔎 Step 2: Checking versions..."
+aws --version 2>/dev/null || echo "❌ aws failed"
+jq --version 2>/dev/null || echo "❌ jq failed"
+mysql --version 2>/dev/null || echo "❌ mysql failed"
+docker --version 2>/dev/null || echo "❌ docker failed"
+git --version 2>/dev/null || echo "❌ git failed"
+curl --version 2>/dev/null || echo "❌ curl failed"
+ssh -V 2>/dev/null || echo "❌ ssh failed"
+
+# ==========================================================
+# Step 3: Docker Status
+# ==========================================================
+echo ""
+echo "🔎 Step 3: Checking Docker daemon..."
+if sudo systemctl is-active --quiet docker
+then
+    echo "✅ Docker daemon is running"
+    ((PASS_COUNT++))
+else
+    echo "❌ Docker daemon is NOT running"
+    ((FAIL_COUNT++))
+fi
+
+docker info >/dev/null 2>&1 && echo "✅ docker info OK" || echo "❌ docker info failed"
+
+# ==========================================================
+# Step 4: Docker Buildx Setup (CLI Plugin)
+# ==========================================================
+echo ""
+echo "🔎 Step 4: Setting up Docker Buildx..."
+mkdir -p ~/.docker/cli-plugins
+DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep tag_name | cut -d '"' -f 4)
+echo "📦 Downloading Docker Buildx version: $DOCKER_BUILDX_VERSION"
+curl -Lo ~/.docker/cli-plugins/docker-buildx \
+https://github.com/docker/buildx/releases/download/$DOCKER_BUILDX_VERSION/buildx-$DOCKER_BUILDX_VERSION.linux-amd64
+
+chmod +x ~/.docker/cli-plugins/docker-buildx
+docker buildx version >/dev/null 2>&1 && echo "✅ Docker Buildx installed successfully" || echo "❌ Docker Buildx installation failed"
+
+# Test Docker Compose build
+echo ""
+echo "🔎 Step 4b: Testing Docker Compose build..."
+PROJECT_DIR="/home/ec2-user/charlie-cafe-devops"
+if [ -d "$PROJECT_DIR" ]; then
+    cd "$PROJECT_DIR" || exit
+    docker compose up -d --build >/dev/null 2>&1 && echo "✅ Docker Compose build completed" || echo "❌ Docker Compose build failed"
+    docker compose ps
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost)
+    if [ "$HTTP_STATUS" == "200" ]; then
+        echo "✅ Application container responding (HTTP 200)"
+        ((PASS_COUNT++))
+    else
+        echo "❌ Application container not responding, HTTP $HTTP_STATUS"
+        ((FAIL_COUNT++))
+    fi
+    docker compose down >/dev/null 2>&1
+fi
+
+# ==========================================================
+# Step 5: Project Directory & Git Verification
+# ==========================================================
+echo ""
+echo "🔎 Step 5: Checking project directory and Git..."
+if [ -d "$PROJECT_DIR" ]; then
+    echo "✅ Project directory exists: $PROJECT_DIR"
+    cd "$PROJECT_DIR" || exit
+
+    echo ""
+    echo "📂 Git Status:"
+    git status 2>/dev/null || echo "❌ Not a git repo"
+
+    echo ""
+    echo "📁 Directory structure:"
+    ls -la
+
+    echo ""
+    echo "🔹 Checking Git remote URL..."
+    git remote -v || echo "❌ Cannot show remotes"
+
+    echo ""
+    echo "🔹 Verifying SSH connection to GitHub..."
+    ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | tee /tmp/github_ssh_test.log
+    if grep -q "successfully authenticated" /tmp/github_ssh_test.log; then
+        echo "✅ GitHub SSH authentication successful"
+        ((PASS_COUNT++))
+    else
+        echo "❌ GitHub SSH authentication failed"
+        ((FAIL_COUNT++))
+    fi
+
+    echo ""
+    echo "🔹 Checking Git status..."
+    git status || echo "❌ Cannot get git status"
+
+    # Optional test commit
+    TEST_FILE="test_auto_deploy.txt"
+    echo "# Test Deploy $(date)" >> $TEST_FILE
+    git add $TEST_FILE
+    git commit -m "Test auto-deploy $(date)" >/dev/null 2>&1 || echo "⚠️ Nothing to commit"
+    git push origin main >/dev/null 2>&1 && echo "✅ Test file pushed to GitHub" || echo "⚠️ Could not push test file"
+    rm -f $TEST_FILE
+    git add . >/dev/null 2>&1
+    git commit -m "Remove test file" >/dev/null 2>&1
+    git push origin main >/dev/null 2>&1
+
+else
+    echo "❌ Project directory NOT found"
+    ((FAIL_COUNT++))
+fi
+
+# ==========================================================
+# Step 6: SSH Verification
+# ==========================================================
+echo ""
+echo "🔎 Step 6: Checking SSH keys..."
+echo "📂 ~/.ssh contents:"
+ls -l ~/.ssh
+
+if [ -f ~/.ssh/id_deploy ]; then
+    echo "✅ Deploy private key exists"
+    ((PASS_COUNT++))
+else
+    echo "❌ Deploy private key NOT found"
+    ((FAIL_COUNT++))
+fi
+
+if [ -f ~/.ssh/id_deploy.pub ]; then
+    echo "✅ Deploy public key exists"
+    ((PASS_COUNT++))
+else
+    echo "❌ Deploy public key NOT found"
+    ((FAIL_COUNT++))
+fi
+
+# ==========================================================
+# Step 7: AWS Secrets Manager Check
+# ==========================================================
+echo ""
+echo "🔎 Step 7: Fetching RDS credentials from AWS Secrets Manager..."
+SECRET_NAME="CafeDevDBSM"
+REGION="us-east-1"
+
+SECRET_JSON=$(aws secretsmanager get-secret-value \
+  --secret-id $SECRET_NAME \
+  --region $REGION \
+  --query SecretString \
+  --output text 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    echo "✅ Secret fetched successfully"
+    DB_HOST=$(echo $SECRET_JSON | jq -r .host)
+    DB_USER=$(echo $SECRET_JSON | jq -r .username)
+    DB_PASS=$(echo $SECRET_JSON | jq -r .password)
+    DB_NAME=$(echo $SECRET_JSON | jq -r .dbname)
+
+    echo "📊 Database Host: $DB_HOST"
+    echo "📊 Database User: $DB_USER"
+    echo "📊 Database Name: $DB_NAME"
+    ((PASS_COUNT++))
+else
+    echo "❌ Failed to fetch secret"
+    ((FAIL_COUNT++))
+fi
+
+# ==========================================================
+# Step 8: Application Health Check
+# ==========================================================
+echo ""
+echo "🔎 Step 8: Checking Application Health (http://localhost)..."
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost)
+if [ "$HTTP_STATUS" == "200" ]; then
+    echo "✅ Application is UP (HTTP 200)"
+    ((PASS_COUNT++))
+elif [ "$HTTP_STATUS" == "000" ]; then
+    echo "❌ Application is DOWN (No response)"
+    ((FAIL_COUNT++))
+else
+    echo "⚠️ Application responded with HTTP $HTTP_STATUS"
+    ((FAIL_COUNT++))
+fi
+
+# ==========================================================
+# Step 9: RDS Verification & Analytics
+# ==========================================================
+echo ""
+echo "🔎 Step 9: Verifying RDS database connectivity..."
+if [ -n "$DB_HOST" ] && [ -n "$DB_USER" ] && [ -n "$DB_PASS" ]; then
+    SQL_QUERY="SELECT NOW();"
+    echo "$SQL_QUERY" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" 2>/tmp/rds_error.log
+    if [ $? -eq 0 ]; then
+        echo "✅ RDS database connected successfully"
+        ((PASS_COUNT++))
+    else
+        echo "❌ Failed to connect to RDS"
+        cat /tmp/rds_error.log
+        ((FAIL_COUNT++))
+    fi
+else
+    echo "❌ RDS credentials not available"
+    ((FAIL_COUNT++))
+fi
+
+# ==========================================================
+# Final Result
+# ==========================================================
+echo ""
+echo "=================================================="
+echo "📊 FINAL RESULT"
+echo "=================================================="
+echo "✅ Passed: $PASS_COUNT"
+echo "❌ Failed: $FAIL_COUNT"
+
+if [ $FAIL_COUNT -eq 0 ]; then
+    echo "🎉 ALL CHECKS PASSED — ENVIRONMENT READY 🚀"
+else
+    echo "⚠️ Some checks failed — fix issues above"
+fi
+
+echo "=================================================="
+```
+
+### ✅ Features Added
+
+#### Docker Buildx Installation
+
+- Automatically creates ~/.docker/cli-plugins
+
+- Downloads latest Buildx binary
+
+- Makes it executable
+
+- Verifies version
+
+#### Docker Compose Test
+
+- Runs docker compose up -d --build
+
+- Checks container status
+
+- Verifies application responds on localhost
+
+- Stops containers afterward
+
+#### Full Lab Verification
+
+- AWS CLI, jq, MySQL, curl, Git, Docker, SSH
+
+- GitHub SSH auth & optional test commit
+
+- RDS connectivity using Secrets Manager
+
+- Application HTTP health check
 ---
 
