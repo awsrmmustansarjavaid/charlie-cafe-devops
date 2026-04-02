@@ -558,6 +558,8 @@ gh auth login
 
 - Go to GitHub Tokens Page → Personal Access Tokens → Fine-grained tokens
 
+- Token name: Github-logs
+
 - Click Generate new token
 
 - Set the repository access to your repo awsrmmustansarjavaid/charlie-cafe-devops
