@@ -3927,7 +3927,7 @@ set -euo pipefail
 # ==========================================================
 PROJECT_DIR="charlie-cafe-devops"
 REPO_NAME="charlie-cafe-devops"
-GITHUB_USERNAME="your github username"
+GITHUB_USER="awsrmmustansarjavaid"
 GITHUB_REPO="git@github.com:${GITHUB_USER}/${REPO_NAME}.git"
 
 IMAGE_NAME="charlie-cafe"
