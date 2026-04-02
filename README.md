@@ -629,8 +629,94 @@ gh run watch 173
 
 ✅ Now you can monitor CI/CD directly from EC2, no need to open GitHub web UI every time.
 
+### Capture GitHub Actions logs
 
+Step 1️⃣ Make sure gh is installed and authenticated
 
+Check:
+
+```
+gh --version
+gh auth status
+```
+
+You must be authenticated with GitHub CLI, otherwise you won’t be able to fetch logs.
+
+Step 2️⃣ List your workflow runs
+
+Navigate to your project folder (or anywhere you like):
+
+```
+cd ~/charlie-cafe-devops
+```
+
+Then list workflow runs:
+
+```
+gh run list
+```
+
+#### ✅ You’ll see output like:
+
+```
+STATUS  NAME                                  BRANCH  EVENT    ID
+✔       FULL CI/CD PIPELINE (FINAL)          main    push     173
+✔       FULL CI/CD PIPELINE (FINAL)          main    push     172
+```
+
+> Note the ID of the run you want to save. Let’s say it’s 173.
+
+Step 3️⃣ View logs (optional preview)
+
+```
+gh run view 173 --log
+```
+
+This shows logs directly in the terminal.
+
+Step 4️⃣ Save logs to a file
+
+You can redirect logs to a file using >:
+
+```
+gh run view 173 --log > github_logs.txt
+```
+
+This creates a file github_logs.txt in your current directory with all the logs.
+
+Step 5️⃣ Verify the file
+
+```
+ls -la github_logs.txt
+cat github_logs.txt | less
+```
+
+- less lets you scroll through the logs easily.
+
+- You can also use nano github_logs.txt or vim github_logs.txt to open it.
+
+Step 6️⃣ Optional: Include timestamp in filename
+
+```
+gh run view 173 --log > github_logs_$(date +%Y%m%d_%H%M%S).txt
+```
+
+This creates a new file like:
+
+```
+github_logs_20260402_151230.txt
+```
+
+Handy for keeping multiple log snapshots.
+
+💡 Tip: If you want to automate fetching latest workflow logs, you can combine:
+
+```
+LATEST_ID=$(gh run list --limit 1 --json databaseId -q '.[0].databaseId')
+gh run view $LATEST_ID --log > github_logs_latest.txt
+```
+
+This automatically fetches the latest run logs into github_logs_latest.txt.
 
 
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
