@@ -435,7 +435,6 @@ jobs:
       run: echo "Charlie Cafe deployed successfully via SSH to EC2 🚀"
 ```
 
-
 ### 7️⃣ Push & Test
 
 #### Commit & push the workflow:
@@ -445,9 +444,6 @@ git add .github/workflows/deploy.yml
 git commit -m "Add auto-deploy workflow"
 git push origin main
 ```
-
-
-
 
 #### ✅ Update your GitHub Actions workflow
 
