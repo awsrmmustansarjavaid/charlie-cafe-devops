@@ -262,6 +262,12 @@ You will add this to GitHub as a deploy key.
 cat ~/.ssh/id_deploy
 ```
 
+#### ✅ Verify UserName
+
+```
+whoami
+```
+
 - Go to your GitHub repo → Settings → Secrets → Actions → New repository secret:
 
 | Secret Name   | Value                                      |
