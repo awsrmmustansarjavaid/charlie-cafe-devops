@@ -188,7 +188,7 @@ ssh-keygen -t ed25519 -C "ec2-auto-deploy" -f ~/.ssh/id_deploy -N ""
 
 - This creates ~/.ssh/id_deploy (private) and ~/.ssh/id_deploy.pub (public).
 
-#### Copy the public key:
+#### 🔑 Copy the public key:
 
 ```
 cat ~/.ssh/id_deploy.pub
@@ -210,11 +210,9 @@ You will add this to GitHub as a deploy key.
 
 ### 3️⃣ Add EC2 Details as GitHub Secrets
 
-#### 🔑 View your private key
+#### 🔑 Copy the private key
 
 > ⚠️ Important: Never share this key publicly. Keep it secret.
-
-- Run:
 
 ```
 cat ~/.ssh/id_deploy
