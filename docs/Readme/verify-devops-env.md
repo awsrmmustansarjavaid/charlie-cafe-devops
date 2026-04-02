@@ -757,5 +757,29 @@ Container charlie_web is Up
 curl returns HTTP/1.1 200 OK
 
 ### 💡 Tip: Always create ~/.docker/cli-plugins before downloading CLI plugins on Linux. On Amazon Linux 2023 it doesn’t exist by default.
+
+### 6️⃣ Optional: future-proof your pipeline
+
+If you want to use docker compose build in Actions, then you would need:
+
+```
+- name: 🐳 Install Buildx
+  run: |
+    mkdir -p ~/.docker/cli-plugins
+    DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep tag_name | cut -d '"' -f 4)
+    curl -Lo ~/.docker/cli-plugins/docker-buildx https://github.com/docker/buildx/releases/download/$DOCKER_BUILDX_VERSION/buildx-$DOCKER_BUILDX_VERSION.linux-amd64
+    chmod +x ~/.docker/cli-plugins/docker-buildx
+    docker buildx version
+```
+This is not required right now unless you move to Compose builds in CI.
+
+### 💡 Summary
+
+| Use Case                       | Buildx Needed? | Where              |
+| ------------------------------ | -------------- | ------------------ |
+| GitHub Actions `docker build`  | ❌ No           | CI/CD pipeline     |
+| EC2 local `docker compose up`  | ✅ Yes          | Local dev/test lab |
+| Multi-arch or advanced caching | ✅ Yes          | CI/CD & EC2        |
+
 ---
 
