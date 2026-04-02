@@ -142,6 +142,28 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 
 #### 🔑 Step 3 Add private key as GitHub secret
 
+> you need to add each secret separately in GitHub. Each secret is a key-value pair. So for your EC2 auto-deploy setup, you’ll do 3 secrets in total:
+
+#### ✅ Secret 1 — Private Key
+
+    - Name: EC2_SSH_KEY
+
+    - Value: Entire content of your ~/.ssh/id_rsa (private key)
+
+#### ✅ Secret 2 — EC2 Host
+
+    - Name: EC2_HOST
+
+    - Value: Your EC2 public IP (something like 3.120.45.78)
+
+#### ✅ Secret 3 — EC2 User
+
+    - Name: EC2_USER
+
+    - Value: ec2-user (default user on Amazon Linux / Amazon Linux 2)
+
+✅ Each secret must be added one at a time:
+
 - Go to your GitHub repo → Settings → Secrets and Variables → Actions → New repository secret
 
 `- Name it: EC2_SSH_KEY
@@ -354,7 +376,66 @@ jobs:
 ### 🌐 Fully Final deploy.yml
 
 ```
+name: 🚀 Charlie Cafe Auto Deploy
 
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # -------------------------------------------------
+    # 1️⃣ Checkout code
+    # -------------------------------------------------
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Setup SSH to EC2
+    # -------------------------------------------------
+    - name: 🔑 Setup SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+    # -------------------------------------------------
+    # 3️⃣ Deploy to EC2
+    # -------------------------------------------------
+    - name: 🚀 Deploy to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+
+        # Go to project folder or clone if missing
+        cd ~/charlie-cafe-devops || git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
+        cd charlie-cafe-devops
+
+        # Pull latest code
+        git pull origin main
+
+        # Stop & remove old Docker container/image
+        sudo docker rm -f cafe-app || true
+        sudo docker rmi charlie-cafe || true
+
+        # Build & run Docker container
+        sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+        sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
+
+        EOF
+
+    # -------------------------------------------------
+    # 4️⃣ Optional: Test the deployment
+    # -------------------------------------------------
+    - name: ❤️ Test Application
+      run: |
+        echo "Waiting 10s for app to start..."
+        sleep 10
+        curl -f http://${{ secrets.EC2_HOST }}/ || exit 1
+
+    - name: 🎉 Deployment complete
+      run: echo "Charlie Cafe deployed successfully 🚀"
 ```
 
 
