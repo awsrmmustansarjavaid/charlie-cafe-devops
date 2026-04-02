@@ -488,13 +488,13 @@ https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME.gi
 
 ### 3️⃣ Initialize DEVOPS SCRIPT
 
-#### 📁 Read More [Charlie Cafe DEVOPS](./docs/charlie-cafe-devops.md)
+#### 📁 Read More [Charlie Cafe DEVOPS](/docs/charlie-cafe-devops.md)
 
 ```
 nano charlie-cafe-devops.sh
 ```
 
-[charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
+[charlie-cafe-devops.sh](../infrastructure/scripts/charlie-cafe-devops.sh)
 
 ### Option 1 — GitHub Actions auto-deploy
 
@@ -524,6 +524,16 @@ You could still SSH into EC2 and run the bash script manually:
 chmod +x charlie-cafe-devops.sh
 ./charlie-cafe-devops.sh
 ```
+
+✅ This works but defeats the purpose of automated deploy.
+
+#### Recommendation
+
+- Keep the bash script on EC2.
+
+- GitHub Actions should call the bash script via SSH.
+
+- This keeps your workflow clean and avoids duplicating Docker, DB setup, or git commands in the workflow YAML.
 
 #### ⚠️ root privileges
 
