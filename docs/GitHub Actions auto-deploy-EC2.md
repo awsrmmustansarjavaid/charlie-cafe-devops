@@ -438,84 +438,180 @@ jobs:
 ### ✅ Fully final latest Deploy.yml
 
 ```
-name: 🚀 Charlie Cafe Auto Deploy (EC2 via SSH)
+name: ☕ Charlie Cafe — FULL CI/CD PIPELINE (FINAL)
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  deploy:
+  build-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
 
     # -------------------------------------------------
-    # 1️⃣ Checkout Code (GitHub Runner)
+    # 1️⃣ Checkout Repository
     # -------------------------------------------------
-    - name: 📥 Checkout Repository
+    - name: 📥 Checkout Code
       uses: actions/checkout@v3
 
     # -------------------------------------------------
-    # 2️⃣ Setup SSH Key (from GitHub Secrets)
+    # 2️⃣ Configure AWS Credentials
+    # (Needed for RDS + Secrets Manager)
     # -------------------------------------------------
-    - name: 🔑 Setup SSH Access to EC2
+    - name: 🔐 Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    # -------------------------------------------------
+    # 3️⃣ Install Required Tools
+    # -------------------------------------------------
+    - name: 🧰 Install Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client jq curl
+
+    # -------------------------------------------------
+    # 4️⃣ Retrieve RDS Secret from AWS
+    # -------------------------------------------------
+    - name: 🗝️ Retrieve RDS Secret
+      run: |
+        SECRET_JSON=$(aws secretsmanager get-secret-value \
+          --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
+          --region us-east-1 \
+          --query SecretString \
+          --output text)
+
+        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 5️⃣ Parse DB Credentials
+    # -------------------------------------------------
+    - name: 🧰 Parse Secret
+      run: |
+        echo "DB_HOST=$(echo $DB_SECRET | jq -r '.host')" >> $GITHUB_ENV
+        echo "DB_USER=$(echo $DB_SECRET | jq -r '.username')" >> $GITHUB_ENV
+        echo "DB_PASS=$(echo $DB_SECRET | jq -r '.password')" >> $GITHUB_ENV
+        echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 6️⃣ Wait for RDS Availability
+    # -------------------------------------------------
+    - name: ⏳ Wait for RDS
+      run: |
+        for i in {1..20}; do
+          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
+          echo "Waiting for RDS..."
+          sleep 5
+        done
+
+    # -------------------------------------------------
+    # 7️⃣ Create Database (Safe)
+    # -------------------------------------------------
+    - name: 🗄️ Create Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS -e "
+        CREATE DATABASE IF NOT EXISTS $DB_NAME;
+        "
+
+    # -------------------------------------------------
+    # 8️⃣ Apply Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 9️⃣ Apply Sample Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 🔟 Verify Database
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 11️⃣ Build Docker Image (CI validation)
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 12️⃣ Run Container Locally (CI test)
+    # -------------------------------------------------
+    - name: 🚀 Run Container (Test)
+      run: |
+        docker run -d -p 8080:80 --name test_app charlie-cafe
+        sleep 10
+
+    # -------------------------------------------------
+    # 13️⃣ Health Check
+    # -------------------------------------------------
+    - name: ❤️ Test Application
+      run: |
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 14️⃣ Cleanup Test Container
+    # -------------------------------------------------
+    - name: 🧹 Cleanup
+      run: |
+        docker rm -f test_app || true
+
+    # -------------------------------------------------
+    # 15️⃣ Setup SSH for EC2 Deployment
+    # -------------------------------------------------
+    - name: 🔑 Setup SSH
       uses: webfactory/ssh-agent@v0.8.0
       with:
         ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
     # -------------------------------------------------
-    # 3️⃣ Deploy to EC2 Server
+    # 16️⃣ Deploy to EC2 (CD Step)
     # -------------------------------------------------
-    - name: 🚀 Deploy Application to EC2
+    - name: 🚀 Deploy to EC2
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
 
-        echo "🚀 Starting deployment on EC2..."
+        echo "🚀 Starting Deployment on EC2..."
 
-        # -------------------------------------------------
-        # 📁 Clone repo if not exists
-        # -------------------------------------------------
-        if [ ! -d "charlie-cafe-devops" ]; then
-          git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
-        fi
-
+        # Clone repo if not exists
+        cd ~/charlie-cafe-devops || git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
         cd charlie-cafe-devops
 
-        # -------------------------------------------------
-        # 🔄 Pull latest code
-        # -------------------------------------------------
+        # Pull latest changes
         git pull origin main
 
-        # -------------------------------------------------
-        # 🛑 Stop old container
-        # -------------------------------------------------
+        # Stop & remove old container
         sudo docker rm -f cafe-app || true
 
-        # -------------------------------------------------
-        # 🧹 Remove old image
-        # -------------------------------------------------
+        # Remove old image (optional cleanup)
         sudo docker rmi charlie-cafe || true
 
-        # -------------------------------------------------
-        # 🐳 Build new image
-        # -------------------------------------------------
+        # Build new image
         sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
-        # -------------------------------------------------
-        # 🚀 Run new container
-        # -------------------------------------------------
+        # Run container on port 80
         sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
 
-        # -------------------------------------------------
-        # 🧪 Health Check
-        # -------------------------------------------------
-        sleep 5
-        curl -f http://localhost || echo "⚠️ Health check failed"
-
-        echo "✅ Deployment completed successfully"
+        echo "✅ Deployment Completed!"
 
         EOF
+
+    # -------------------------------------------------
+    # 17️⃣ Final Success Message
+    # -------------------------------------------------
+    - name: 🎉 Success
+      run: echo "CI/CD Pipeline Completed Successfully 🚀"
 ```
 
 ### 7️⃣ Push & Test
