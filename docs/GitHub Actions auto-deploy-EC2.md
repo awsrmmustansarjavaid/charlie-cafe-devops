@@ -496,9 +496,29 @@ nano charlie-cafe-devops.sh
 
 [charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
 
-### ⚠️ Final Quick Checklist
+### Option 1 — GitHub Actions auto-deploy
 
-Before running:
+Your deploy.yml workflow in GitHub SSHes into your EC2 and runs the commands (or your bash script).
+
+#### You can either:
+
+- Copy all the commands from your bash script directly into the deploy.yml (inline), or
+
+- Keep the bash script on EC2 (recommended) and just call it in the workflow:
+
+```
+- name: 🚀 Deploy via Bash Script
+  run: |
+    ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'bash ~/charlie-cafe-devops/charlie-cafe-devops.sh'
+```
+
+- This way, every push to main automatically triggers deployment.
+
+- ✅ No need for GitHub token, no manual intervention.
+
+### Option 2 — Manual run
+
+You could still SSH into EC2 and run the bash script manually:
 
 ```
 chmod +x charlie-cafe-devops.sh
