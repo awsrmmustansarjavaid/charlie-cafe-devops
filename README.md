@@ -512,8 +512,9 @@ ssh-add -l        # lists loaded keys
 ssh -T git@github.com
 ```
 
+### 🧱 Charlie Cafe -- Github Logs
 
-
+[Charlie Cafe -- Github Logs](./docs/Charlie-cafe_github-logs.md)
 
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
