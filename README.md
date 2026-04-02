@@ -724,6 +724,59 @@ gh run view $LATEST_ID --log > github_logs_latest.txt
 
 This automatically fetches the latest run logs into github_logs_latest.txt.
 
+Step 7️⃣ Save all logs in separate files
+
+We can loop over all run IDs and save each log to a separate file:
+
+```
+mkdir -p github_logs
+
+for run_id in $(gh run list --limit 100 --json databaseId -q '.[].databaseId'); do
+    echo "Saving logs for run $run_id..."
+    gh run view $run_id --log > github_logs/github_logs_$run_id.txt
+done
+```
+
+✅ This will create a folder github_logs and save each workflow run log as:
+
+```
+github_logs_173.txt
+github_logs_172.txt
+github_logs_171.txt
+...
+```
+
+Step 8️⃣ Verify saved logs
+
+```
+ls -la github_logs
+```
+
+Open any log:
+
+```
+less github_logs/github_logs_173.txt
+```
+
+Step 4️⃣ Optional: Add timestamps to filenames
+
+If you want the file names to include the run time:
+
+```
+mkdir -p github_logs
+
+for run_id in $(gh run list --limit 100 --json databaseId,createdAt -q '.[].databaseId'); do
+    created=$(gh run view $run_id --json createdAt -q '.createdAt' | tr -d '"')
+    filename="github_logs/github_logs_${run_id}_$(date -d $created +%Y%m%d_%H%M%S).txt"
+    echo "Saving logs for run $run_id to $filename..."
+    gh run view $run_id --log > "$filename"
+done
+```
+
+- Each file now has both the run ID and timestamp.
+
+💡 Tip: You can wrap this into a Bash script save_all_github_logs.sh and just run it whenever you want to archive all workflow logs.
+
 
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
