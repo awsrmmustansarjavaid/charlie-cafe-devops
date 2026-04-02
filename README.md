@@ -176,6 +176,18 @@ charlie-cafe-devops
 
 > #### GitHub → GitHub Actions → EC2 → Docker → Auto Deploy
 
+### 🌐 Make sure SSH key exists on EC2
+
+Check if you already have an SSH key:
+
+```
+ls -al ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
+```
+
+#### ✅ If not, generate it:
+
+> Press Enter to accept default locations and leave passphrase empty.
+
 ### 1️⃣  Generate SSH Key on EC2 
 
 - #### Generate a new SSH key (no passphrase):
@@ -199,6 +211,8 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD...
 ```
 
 This will be added to GitHub.
+
+
 
 ### 2️⃣ Add Public Key to GitHub (for SSH)
 
