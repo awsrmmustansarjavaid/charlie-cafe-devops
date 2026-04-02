@@ -1,18 +1,10 @@
 #!/bin/bash
 
 # ==========================================================
-# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL v7)
-# ----------------------------------------------------------
-# ✔ EC2 Bootstrap: OS update, Docker, Docker Compose, MySQL client, Git, DevOps tools
-# ✔ Clone / sync GitHub repo
-# ✔ Fetch AWS RDS credentials
-# ✔ Setup RDS (schema + data)
-# ✔ Build Docker image (custom Dockerfile)
-# ✔ Run container on port 80 (default HTTP port)
-# ✔ Full verification (container + HTTP)
+# 🚀 CHARLIE CAFE — FULL DEVOPS AUTOMATION SCRIPT (FINAL v8)
 # ==========================================================
 
-set -euo pipefail  # Exit on error, undefined variable, pipeline failure
+set -euo pipefail
 
 # ==========================================================
 # 🔧 VARIABLES
@@ -24,12 +16,12 @@ GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 
 IMAGE_NAME="charlie-cafe"
 CONTAINER_NAME="cafe-app"
-PORT="80"  # Run Docker container on host port 80
+PORT="80"
 
 DOCKERFILE_PATH="docker/apache-php/Dockerfile"
 
 AWS_REGION="us-east-1"
-SECRET_NAME="CafeDevDBSM"  # Your Secrets Manager secret
+SECRET_NAME="CafeDevDBSM"
 
 SCHEMA_FILE="infrastructure/rds/schema.sql"
 DATA_FILE="infrastructure/rds/data.sql"
@@ -49,14 +41,22 @@ print_success() { echo -e "${GREEN}✅ $1${NC}\n"; }
 print_error() { echo -e "${RED}❌ $1${NC}\n"; }
 
 # ==========================================================
-# 🔧 STEP 0 — EC2 BOOTSTRAP: Update OS & Install Tools
+# 🔧 STEP 0 — EC2 BOOTSTRAP (FIXED)
 # ==========================================================
 print_header "Step 0 — EC2 Bootstrap & Tool Installation"
 
 echo "🚀 Updating OS..."
 dnf update -y
 
-echo "🚀 Installing MySQL client (MariaDB)..."
+# ✅ FIX: Resolve curl conflict (VERY IMPORTANT)
+echo "🚀 Fixing curl conflict (curl-minimal vs curl)..."
+dnf remove -y curl-minimal || true
+dnf install -y curl --allowerasing
+
+echo "🚀 Installing base tools..."
+dnf install -y unzip wget nano vim tar htop git jq awscli
+
+echo "🚀 Installing MySQL client..."
 dnf install -y mariadb105
 
 echo "🚀 Installing Docker..."
@@ -65,23 +65,15 @@ systemctl enable docker
 systemctl start docker
 
 echo "🚀 Adding ec2-user to Docker group..."
-usermod -aG docker ec2-user
+usermod -aG docker ec2-user || true
 
 echo "🚀 Installing Docker Compose v2..."
 mkdir -p /usr/local/lib/docker/cli-plugins/
 curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
   -o /usr/local/lib/docker/cli-plugins/docker-compose
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
 docker compose version
-
-echo "🚀 Installing Git..."
-dnf install -y git
-
-echo "🚀 Installing DevOps tools..."
-dnf install -y htop unzip curl wget nano vim tar
-
-echo "🚀 Installing AWS CLI..."
-dnf install -y awscli
 
 print_success "EC2 Bootstrap completed"
 
@@ -95,30 +87,30 @@ if [ -z "$GITHUB_TOKEN" ]; then
 fi
 
 # ==========================================================
-# 📁 STEP 1 — CLONE OR NAVIGATE PROJECT
+# 📁 STEP 1 — CLONE PROJECT
 # ==========================================================
 print_header "Step 1 — Prepare Project"
 
 if [ ! -d "$PROJECT_DIR" ]; then
-  echo "📥 Cloning repository..."
   git clone https://github.com/$GITHUB_USERNAME/$REPO_NAME.git
 fi
+
 cd "$PROJECT_DIR"
-print_success "Project directory ready"
+print_success "Project ready"
 
 # ==========================================================
-# 🧰 STEP 2 — CHECK REQUIRED TOOLS
+# 🧰 STEP 2 — CHECK TOOLS
 # ==========================================================
 print_header "Step 2 — Checking Tools"
 
 for cmd in aws jq mysql docker git curl; do
-  command -v $cmd >/dev/null || { print_error "$cmd not installed"; exit 1; }
+  command -v $cmd >/dev/null || { print_error "$cmd missing"; exit 1; }
 done
 
-print_success "All tools installed"
+print_success "All tools OK"
 
 # ==========================================================
-# ☁️ STEP 3 — FETCH DB CREDENTIALS
+# ☁️ STEP 3 — FETCH SECRETS
 # ==========================================================
 print_header "Step 3 — Fetching DB Credentials"
 
@@ -136,35 +128,26 @@ DB_NAME=$(echo "$SECRET_JSON" | jq -r '.dbname')
 print_success "DB credentials loaded"
 
 # ==========================================================
-# 🧪 STEP 4 — TEST RDS CONNECTION
+# 🧪 STEP 4 — TEST DB
 # ==========================================================
 print_header "Step 4 — Testing RDS"
 
 mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1;" \
-  && print_success "RDS connection successful" \
+  && print_success "RDS OK" \
   || { print_error "RDS failed"; exit 1; }
 
 # ==========================================================
-# 🏗️ STEP 5 — DATABASE SETUP
+# 🏗️ STEP 5 — DB SETUP
 # ==========================================================
 print_header "Step 5 — Database Setup"
 
 mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
 
-[ -f "$SCHEMA_FILE" ] || { print_error "Schema file missing"; exit 1; }
 mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$SCHEMA_FILE"
 
-if [ -f "$DATA_FILE" ]; then
-  mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$DATA_FILE"
-  print_success "Sample data applied"
-else
-  echo -e "${YELLOW}⚠️ No data file found, skipping${NC}"
-fi
+[ -f "$DATA_FILE" ] && mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$DATA_FILE"
 
-if [ -f "$VERIFY_FILE" ]; then
-  mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < "$VERIFY_FILE"
-  print_success "DB verification complete"
-fi
+print_success "Database ready"
 
 # ==========================================================
 # 🔧 STEP 6 — GIT SYNC
@@ -173,16 +156,15 @@ print_header "Step 6 — Git Sync"
 
 git init
 git add .
-git commit -m "Auto commit from script" || true
+git commit -m "Auto commit" || true
 
 git remote remove origin 2>/dev/null || true
 git remote add origin https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME.git
 
-git branch -M main
 git pull origin main --rebase || true
 git push -u origin main
 
-print_success "GitHub sync successful"
+print_success "Git synced"
 
 # ==========================================================
 # 🐳 STEP 7 — DOCKER BUILD
@@ -190,57 +172,40 @@ print_success "GitHub sync successful"
 print_header "Step 7 — Docker Build"
 
 docker build -t "$IMAGE_NAME" -f "$DOCKERFILE_PATH" .
-print_success "Docker image built"
+print_success "Image built"
 
 # ==========================================================
-# 🚀 STEP 8 — RUN CONTAINER (PORT 80)
+# 🚀 STEP 8 — RUN CONTAINER
 # ==========================================================
 print_header "Step 8 — Run Container"
 
-# Free port 80 if in use
-if sudo lsof -i :$PORT >/dev/null 2>&1; then
-  echo "⚠️ Port $PORT in use — freeing it..."
-  sudo fuser -k ${PORT}/tcp || true
-  sleep 2
-fi
-
-# Remove old container
+sudo fuser -k ${PORT}/tcp 2>/dev/null || true
 docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
 
-# Run container on host port 80
 docker run -d -p "$PORT:80" --name "$CONTAINER_NAME" "$IMAGE_NAME"
+
 sleep 5
-print_success "Container started on port $PORT"
+print_success "Container running"
 
 # ==========================================================
-# 🧪 STEP 9 — FINAL VERIFICATION
+# 🧪 STEP 9 — VERIFY
 # ==========================================================
 print_header "Step 9 — Verification"
 
 docker ps | grep -q "$CONTAINER_NAME" \
-  && print_success "Container is running" \
-  || { print_error "Container not running"; exit 1; }
+  && print_success "Container OK" \
+  || { print_error "Container failed"; exit 1; }
 
 HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORT || true)
-if [ "$HTTP_CODE" == "200" ]; then
-  print_success "Application working (HTTP 200)"
-else
-  echo -e "${YELLOW}⚠️ HTTP Response: $HTTP_CODE${NC}"
-fi
 
-print_header "Container Logs (Last 5 lines)"
+echo "HTTP Status: $HTTP_CODE"
+
+print_header "Logs"
 docker logs --tail 5 "$CONTAINER_NAME"
 
 # ==========================================================
-# 🎉 FINAL SUCCESS
+# 🎉 DONE
 # ==========================================================
 print_header "🎉 DEPLOYMENT SUCCESS"
 
-echo -e "${GREEN}✔ RDS Connected${NC}"
-echo -e "${GREEN}✔ GitHub Synced${NC}"
-echo -e "${GREEN}✔ Docker Running${NC}"
-echo -e "${GREEN}✔ App Verified${NC}"
-
-echo -e "\n🌐 Access your app:"
-echo -e "👉 http://localhost:$PORT"
-echo -e "👉 http://YOUR_EC2_PUBLIC_IP:$PORT\n"
+echo "👉 http://localhost:$PORT"

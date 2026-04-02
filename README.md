@@ -270,7 +270,7 @@ Make sure port is open:
 
 ### ⚠️ Curl issue 
 
-### ✅ ✅ BEST FIX (Recommended)
+#### ✅ ✅ BEST FIX (Recommended)
 
 Run this command:
 
