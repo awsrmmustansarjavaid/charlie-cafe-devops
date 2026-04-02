@@ -428,6 +428,31 @@ chmod +x verify-devops-env.sh
 ./verify-devops-env.sh
 ```
 
+### 🚀 Commit,Pull & Push After any modification on EC2
+
+```
+# Go to your repo folder
+cd ~/charlie-cafe-devops
+
+# Verify you are in the repo
+pwd
+# Should output: /home/ec2-user/charlie-cafe-devops
+ls -la
+# Should show .git folder
+
+# Stage changes
+git add .
+
+# Commit
+git commit -m "Test auto-deploy"
+
+# Pull latest remote changes (handle divergent branches)
+git pull --rebase origin main
+
+# Push your commits
+git push origin main
+```
+
 ### 🌐 Now test in browser:
 
 ```
