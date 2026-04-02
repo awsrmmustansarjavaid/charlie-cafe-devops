@@ -693,4 +693,61 @@ docker push <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe-app:la
 | GitHub Actions        | `gh run view <run_id> --log`          | Logs saved                  |
 | Permissions           | `chown/chmod`                         | No permission errors        |
 
+### 1️⃣ Create the cli-plugins directory for Docker Buildx 
+
+> Docker Buildx is a CLI plugin for advanced builds (multi-platform, caching, BuildKit features).
+
+```
+mkdir -p ~/.docker/cli-plugins
+```
+
+> -p ensures that the full path is created if it doesn't exist.
+
+### 2️⃣ Download the latest Buildx binary
+
+```
+# Get the latest Buildx version
+DOCKER_BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep tag_name | cut -d '"' -f 4)
+
+# Download binary into cli-plugins
+curl -Lo ~/.docker/cli-plugins/docker-buildx \
+https://github.com/docker/buildx/releases/download/$DOCKER_BUILDX_VERSION/buildx-$DOCKER_BUILDX_VERSION.linux-amd64
+```
+
+### 3️⃣ Make it executable
+
+```
+chmod +x ~/.docker/cli-plugins/docker-buildx
+```
+
+### 4️⃣ Verify installation
+
+```
+docker buildx version
+```
+
+#### Expected output:
+
+```
+github.com/docker/buildx 0.27.0 <commit> 2026-04-02
+```
+
+### ✅ 5️⃣ Test Docker Compose
+
+After Buildx is upgraded:
+
+```
+docker compose up -d --build
+docker compose ps
+curl -I http://localhost:8080
+```
+
+#### ✅ Expected:
+
+Build completes successfully
+Container charlie_web is Up
+curl returns HTTP/1.1 200 OK
+
+### 💡 Tip: Always create ~/.docker/cli-plugins before downloading CLI plugins on Linux. On Amazon Linux 2023 it doesn’t exist by default.
+---
 
