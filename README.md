@@ -172,7 +172,7 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### 🔑 Method 1 
+### 🔑 Method 1 Auto-deploy from GitHub → EC2 using SSH (Recommanded)
 
 > #### GitHub → GitHub Actions → EC2 → Docker → Auto Deploy
 
@@ -257,7 +257,7 @@ Since you added your EC2 key to GitHub, use it as the secret EC2_SSH_KEY in your
 
 
 
-### 🔑 Method 2
+### 🔑 Method 2 Auto deploy from GitHub → EC2 using Token
 
 ### 1️⃣ Create GitHub Token
 
