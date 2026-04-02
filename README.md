@@ -226,7 +226,6 @@ ssh-keygen -t ed25519 -C "ec2-auto-deploy" -f ~/.ssh/id_deploy -N ""
 ls ~/.ssh
 ```
 
-
 #### 🔑 Copy the public key:
 
 ```
