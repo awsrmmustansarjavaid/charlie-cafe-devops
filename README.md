@@ -566,11 +566,11 @@ gh auth login
 
 - Minimum scopes for gh SSH login:
 
-  - repo (full access to repository)
+  - Metadata
 
-  - read:org (required by GitHub CLI even if you don’t use orgs)
+  - Pull requests
 
-  - admin:public_key (to upload SSH keys)
+  - Workflows
 
 - Generate token → copy it
 
