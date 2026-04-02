@@ -186,8 +186,6 @@ ls -al ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
 
 #### ✅ If not, generate it:
 
-> Press Enter to accept default locations and leave passphrase empty.
-
 ### 1️⃣  Generate SSH Key on EC2 
 
 - #### Generate a new SSH key (no passphrase):
@@ -195,6 +193,8 @@ ls -al ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
 ```
 ssh-keygen -t rsa -b 4096 -C "github-actions"
 ```
+
+> Press Enter to accept default locations and leave passphrase empty.
 
 - Press Enter for all prompts.
 
