@@ -345,6 +345,7 @@ mysql --version
 docker --version
 git --version
 curl --version
+curl http://localhost
 ```
 
 ✅ Success criteria: All commands show version numbers.

@@ -3,6 +3,14 @@
 # ==========================================================
 # ☕ Charlie Cafe — DevOps Environment Verification Script
 # ==========================================================
+# This script verifies:
+#   ✅ Required tools installation
+#   ✅ Tool versions
+#   ✅ Docker daemon status
+#   ✅ Project directory & Git status
+#   ✅ AWS Secrets Manager connectivity
+#   ✅ Local application health (via curl)
+# ==========================================================
 
 echo "=================================================="
 echo "🚀 Starting DevOps Environment Verification"
@@ -11,6 +19,9 @@ echo "=================================================="
 PASS_COUNT=0
 FAIL_COUNT=0
 
+# ----------------------------------------------------------
+# Function: Check if command exists
+# ----------------------------------------------------------
 check_command() {
     if command -v $1 &> /dev/null
     then
@@ -32,6 +43,9 @@ check_command docker
 check_command git
 check_command curl
 
+# ----------------------------------------------------------
+# Step 2: Version Checks
+# ----------------------------------------------------------
 echo ""
 echo "🔎 Step 2: Checking versions..."
 
@@ -43,6 +57,9 @@ docker --version 2>/dev/null || echo "❌ docker failed"
 git --version 2>/dev/null || echo "❌ git failed"
 curl --version 2>/dev/null || echo "❌ curl failed"
 
+# ----------------------------------------------------------
+# Step 3: Docker Status
+# ----------------------------------------------------------
 echo ""
 echo "🔎 Step 3: Checking Docker daemon..."
 
@@ -59,6 +76,9 @@ echo ""
 echo "Docker Info:"
 docker info >/dev/null 2>&1 && echo "✅ docker info OK" || echo "❌ docker info failed"
 
+# ----------------------------------------------------------
+# Step 4: Project Directory Check
+# ----------------------------------------------------------
 echo ""
 echo "🔎 Step 4: Checking project directory..."
 
@@ -80,6 +100,9 @@ else
     ((FAIL_COUNT++))
 fi
 
+# ----------------------------------------------------------
+# Step 5: AWS Secrets Manager Check
+# ----------------------------------------------------------
 echo ""
 echo "🔎 Step 5: AWS Secrets Manager check..."
 
@@ -115,6 +138,28 @@ else
     ((FAIL_COUNT++))
 fi
 
+# ----------------------------------------------------------
+# Step 6: Application Health Check (curl localhost)
+# ----------------------------------------------------------
+echo ""
+echo "🔎 Step 6: Checking Application Health (http://localhost)..."
+
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost)
+
+if [ "$HTTP_STATUS" == "200" ]; then
+    echo "✅ Application is UP (HTTP 200)"
+    ((PASS_COUNT++))
+elif [ "$HTTP_STATUS" == "000" ]; then
+    echo "❌ Application is DOWN (No response)"
+    ((FAIL_COUNT++))
+else
+    echo "⚠️ Application responded with HTTP $HTTP_STATUS"
+    ((FAIL_COUNT++))
+fi
+
+# ----------------------------------------------------------
+# Final Result
+# ----------------------------------------------------------
 echo ""
 echo "=================================================="
 echo "📊 FINAL RESULT"
