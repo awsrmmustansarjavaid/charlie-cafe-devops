@@ -370,8 +370,6 @@ Hi <your-github-username>! You've successfully authenticated, but GitHub does no
 
 - SSH config not applied
 
-
-
 ### 6️⃣ Test Deployment
 
 - #### Push a commit to main:
