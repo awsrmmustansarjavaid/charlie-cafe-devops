@@ -119,7 +119,7 @@ gh run watch 173
 
 ### Capture GitHub Actions logs
 
-Step 1️⃣ Make sure gh is installed and authenticated
+### Step 1️⃣ Make sure gh is installed and authenticated
 
 Check:
 
@@ -130,7 +130,7 @@ gh auth status
 
 You must be authenticated with GitHub CLI, otherwise you won’t be able to fetch logs.
 
-Step 2️⃣ List your workflow runs
+### Step 2️⃣ List your workflow runs
 
 Navigate to your project folder (or anywhere you like):
 
@@ -160,7 +160,7 @@ gh run list --limit 100
 
 - --limit 100 fetches the latest 100 runs.
 
-Step 3️⃣ View logs (optional preview)
+### Step 3️⃣ View logs (optional preview)
 
 ```
 gh run view 173 --log
@@ -168,7 +168,7 @@ gh run view 173 --log
 
 This shows logs directly in the terminal.
 
-Step 4️⃣ Save logs to a file
+### Step 4️⃣ Save logs to a file
 
 You can redirect logs to a file using >:
 
@@ -178,7 +178,7 @@ gh run view 173 --log > github_logs.txt
 
 This creates a file github_logs.txt in your current directory with all the logs.
 
-Step 5️⃣ Verify the file
+### Step 5️⃣ Verify the file
 
 ```
 ls -la github_logs.txt
@@ -189,7 +189,7 @@ cat github_logs.txt | less
 
 - You can also use nano github_logs.txt or vim github_logs.txt to open it.
 
-Step 6️⃣ Optional: Include timestamp in filename
+### Step 6️⃣ Optional: Include timestamp in filename
 
 ```
 gh run view 173 --log > github_logs_$(date +%Y%m%d_%H%M%S).txt
@@ -203,7 +203,7 @@ github_logs_20260402_151230.txt
 
 Handy for keeping multiple log snapshots.
 
-💡 Tip: If you want to automate fetching latest workflow logs, you can combine:
+### 💡 Tip: If you want to automate fetching latest workflow logs, you can combine:
 
 ```
 LATEST_ID=$(gh run list --limit 1 --json databaseId -q '.[0].databaseId')
@@ -212,7 +212,7 @@ gh run view $LATEST_ID --log > github_logs_latest.txt
 
 This automatically fetches the latest run logs into github_logs_latest.txt.
 
-Step 7️⃣ Save all logs in separate files
+### Step 7️⃣ Save all logs in separate files
 
 We can loop over all run IDs and save each log to a separate file:
 
@@ -225,7 +225,7 @@ for run_id in $(gh run list --limit 100 --json databaseId -q '.[].databaseId'); 
 done
 ```
 
-✅ This will create a folder github_logs and save each workflow run log as:
+#### ✅ This will create a folder github_logs and save each workflow run log as:
 
 ```
 github_logs_173.txt
@@ -234,7 +234,7 @@ github_logs_171.txt
 ...
 ```
 
-Step 8️⃣ Verify saved logs
+### Step 8️⃣ Verify saved logs
 
 ```
 ls -la github_logs
@@ -246,7 +246,7 @@ Open any log:
 less github_logs/github_logs_173.txt
 ```
 
-Step 4️⃣ Optional: Add timestamps to filenames
+### Step 9️⃣ Optional: Add timestamps to filenames
 
 If you want the file names to include the run time:
 
@@ -263,9 +263,9 @@ done
 
 - Each file now has both the run ID and timestamp.
 
-💡 Tip: You can wrap this into a Bash script save_all_github_logs.sh and just run it whenever you want to archive all workflow logs.
+### 💡 Tip: You can wrap this into a Bash script save_all_github_logs.sh and just run it whenever you want to archive all workflow logs.
 
-### ✅ capture_github_logs
+### Step 🔟 capture_github_logs
 
 ```
 #!/bin/bash
@@ -317,34 +317,34 @@ echo "✅ All logs saved successfully!"
 echo "=================================================="
 ```
 
-✅ How to use
+### ✅ How to use
 
-- Save the script:
+- ### Save the script:
 
 ```
 nano ~/capture_github_logs.sh
 ```
 
-Make it executable:
+- #### Make it executable:
 
 ```
 chmod +x ~/capture_github_logs.sh
 ```
 
-Run it:
+- #### Run it:
 
 ```
 ~/capture_github_logs.sh
 ```
 
-Check logs:
+- #### Check logs:
 
 ```
 ls -la ~/charlie-cafe-devops/github_logs
 less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
 ```
 
-💡 Tip:
+### 💡 Tip:
 
 You can run this anytime to fetch logs of latest runs.
 The folder will keep all logs, separated by run ID and timestamp.
