@@ -5,7 +5,8 @@
 # ===============================
 
 # Set variables
-REPO="git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git"
+# GitHub repository SSH URL (example)
+REPO="git@github.com:your github username/charlie-cafe-devops.git"
 DIR="/home/ec2-user/charlie-cafe-devops"   # ⚠️ Use absolute path
 COMMIT_MSG="${1:-Auto-deploy update}"
 
