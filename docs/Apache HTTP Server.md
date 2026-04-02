@@ -204,6 +204,8 @@ docker run -d -p 80:80 --name cafe-app charlie-cafe
 #### Run commands with sudo:
 
 ```
+cd charlie-cafe-devops
+
 sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 sudo docker rm -f cafe-app
 sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
