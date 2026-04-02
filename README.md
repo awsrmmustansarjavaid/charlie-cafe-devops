@@ -234,7 +234,7 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 - This adds GitHub’s public host key to your EC2 so it won’t ask again.
 
-- #### ✅ Now test:
+### 4️⃣ Now test:
 
 ```
 ssh -T git@github.com
@@ -248,7 +248,7 @@ Hi awsrmmustansarjavaid! You've successfully authenticated, but GitHub does not 
 
 ✅ Perfect — SSH is working.
 
-### 4️⃣ Update your GitHub Actions workflow
+### 5️⃣ Update your GitHub Actions workflow
 
 Since you added your EC2 key to GitHub, use it as the secret EC2_SSH_KEY in your workflow. The workflow will SSH from GitHub Actions into your EC2 securely.
 
