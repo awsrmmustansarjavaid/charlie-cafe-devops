@@ -262,9 +262,6 @@ sudo docker ps
 
 - Open your EC2 public IP in the browser — your app should be live.
 
-
-
-
 ### ✅ Pre-checks (tools & environment)
 
 Before running the script, make sure all required tools are installed:
