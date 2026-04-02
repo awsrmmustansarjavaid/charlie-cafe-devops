@@ -485,3 +485,76 @@ We modify git remote:
 ```
 https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$REPO_NAME.git
 ```
+
+### 3️⃣ Initialize DEVOPS SCRIPT
+
+#### 📁 Read More [Charlie Cafe DEVOPS](./docs/charlie-cafe-devops.md)
+
+```
+nano charlie-cafe-devops.sh
+```
+
+[charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
+
+### ⚠️ Final Quick Checklist
+
+Before running:
+
+```
+chmod +x charlie-cafe-devops.sh
+./charlie-cafe-devops.sh
+```
+
+#### ⚠️ root privileges
+
+```
+sudo chmod +x charlie-cafe-devops.sh
+sudo ./charlie-cafe-devops.sh
+```
+
+#### ⚠️ FINAL THINGS YOU MUST EDIT BEFORE RUN
+
+🔴 1. GitHub Username
+
+```
+GITHUB_USERNAME="YOUR_USERNAME"
+```
+
+🔴 2. AWS Secret ARN
+
+```
+SECRET_ARN="your-real-secret-arn"
+```
+
+🔴 3. Project Folder Name
+
+```
+PROJECT_DIR="charlie-cafe"
+```
+
+👉 Make sure your folder name matches EXACTLY
+
+🔴 4. (Optional) Port
+
+```
+PORT="80"
+```
+
+🔴 5. EC2 Security Group
+
+Make sure port is open:
+
+- HTTP → 80
+
+- Or 8080 if changed
+
+### ⚠️ Curl issue 
+
+#### ✅ ✅ BEST FIX (Recommended)
+
+Run this command:
+
+```
+sudo dnf install curl --allowerasing -y
+sudo dnf install -y unzip wget nano vim-enhanced tar
+```
