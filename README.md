@@ -172,7 +172,94 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### 2️⃣ 🔑 STEP 1 — Create GitHub Token
+### 🔑 Method 1 
+
+> #### GitHub → GitHub Actions → EC2 → Docker → Auto Deploy
+
+### 1️⃣  Generate SSH Key on EC2 
+
+- #### Generate a new SSH key (no passphrase):
+
+```
+ssh-keygen -t rsa -b 4096 -C "github-actions"
+```
+
+- Press Enter for all prompts.
+
+- Copy the public key:
+
+```
+cat ~/.ssh/id_rsa.pub
+```
+
+- You will get a line like:
+
+```
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD...
+```
+
+This will be added to GitHub.
+
+### 2️⃣ Add Public Key to GitHub (for SSH)
+
+- Go to your GitHub repository → Settings → SSH and GPG keys → New SSH key
+
+- Give it a Title, e.g., EC2 Deploy Key.
+
+- Paste your EC2 public key:
+
+```
+cat ~/.ssh/id_rsa.pub
+```
+
+- Click Add SSH key ✅
+
+#### Note: There is no separate "Allow write access" checkbox here. That’s only for repo-level Deploy Keys. Using your personal account SSH key allows read/write.
+
+### 3️⃣ Fix host key verification
+
+#### ✅ When you see:
+
+```
+The authenticity of host 'github.com (140.82.114.3)' can't be established.
+```
+
+- #### ✅ Add GitHub to known hosts:
+
+> #### GitHub is asking if it can trust the server. To fix permanently:
+
+```
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+```
+
+- This adds GitHub’s public host key to your EC2 so it won’t ask again.
+
+- #### ✅ Now test:
+
+```
+ssh -T git@github.com
+```
+
+#### ✅ You should get:
+
+```
+Hi awsrmmustansarjavaid! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+✅ Perfect — SSH is working.
+
+### 4️⃣ Update your GitHub Actions workflow
+
+Since you added your EC2 key to GitHub, use it as the secret EC2_SSH_KEY in your workflow. The workflow will SSH from GitHub Actions into your EC2 securely.
+
+### 
+
+
+
+
+### 🔑 Method 2
+
+### 1️⃣ Create GitHub Token
 
 - Go to: 👉 https://github.com/settings/tokens
 
@@ -192,13 +279,13 @@ charlie-cafe-devops
 ghp_abc123xyz456...
 ```
 
-### 🔑 STEP 2 — Export in EC2 (SAFE)
+### 2️⃣ Export in EC2 (SAFE)
 
 ```
 export GITHUB_TOKEN="your_token_here"
 ```
 
-### 🔧 STEP 3 — Use in Script
+### 3️⃣ Use in Script
 
 We modify git remote:
 
