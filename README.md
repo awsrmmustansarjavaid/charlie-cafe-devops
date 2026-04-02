@@ -176,6 +176,25 @@ charlie-cafe-devops
 
 > #### Auto-deploy from GitHub → EC2 using SSH (Recommanded)
 
+
+### 1️⃣ Prepare EC2 for SSH Deployment
+
+#### Generate an SSH key on your EC2 instance (if you don’t already have one):
+
+```
+ssh-keygen -t ed25519 -C "ec2-auto-deploy" -f ~/.ssh/id_deploy -N ""
+```
+
+- This creates ~/.ssh/id_deploy (private) and ~/.ssh/id_deploy.pub (public).
+
+#### Copy the public key:
+
+```
+cat ~/.ssh/id_deploy.pub
+```
+
+You will add this to GitHub as a deploy key.
+
 ### 1️⃣  Generate SSH Key on EC2 
 
 - #### Generate a new SSH key (no passphrase):
