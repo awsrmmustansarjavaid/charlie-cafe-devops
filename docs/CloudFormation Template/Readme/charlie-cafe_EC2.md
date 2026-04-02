@@ -18,7 +18,7 @@
 
 #### Copy this into a file: 
 
-[cafe-ec2.yaml](./cafe-ec2.yaml)
+[cafe-ec2.yaml](../cafe-ec2.yaml)
 
 ### ⚠️ IMPORTANT (VERY IMPORTANT)
 
