@@ -174,7 +174,7 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 
 > Now your GitHub Actions workflow can SSH into EC2 securely using this key.
 
-### 5️⃣ Add EC2 connection details as GitHub secrets
+#### ✅ Add EC2 connection details as GitHub secrets
 
 - Add two more secrets:
 
@@ -183,9 +183,15 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 | EC2_HOST | `<your EC2 public IP>` |
 | EC2_USER | `ec2-user`             |
 
+#### ✅ Once all 3 secrets are added, your GitHub Actions workflow can reference them like this:
+
+```
+ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
+```
+
 > These secrets will be referenced in the workflow YAML.
 
-### 6️⃣ Update GitHub Actions Workflow
+### 5️⃣ Update GitHub Actions Workflow
 
 ### Create a file:
 
