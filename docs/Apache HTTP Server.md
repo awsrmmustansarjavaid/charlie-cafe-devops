@@ -194,7 +194,7 @@ HEALTHCHECK ...
 ### 🔄 REBUILD & RUN
 
 ```
-docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+docker build -t charlie-cafe -f docker/apache-php/Dockerfile
 docker rm -f cafe-app
 docker run -d -p 80:80 --name cafe-app charlie-cafe
 ```
@@ -206,7 +206,7 @@ docker run -d -p 80:80 --name cafe-app charlie-cafe
 ```
 cd charlie-cafe-devops
 
-sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile
 sudo docker rm -f cafe-app
 sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
 ```
