@@ -516,6 +516,24 @@ ssh -T git@github.com
 
 [Charlie Cafe -- Github Logs](./docs/Charlie-cafe_github-logs.md)
 
+```
+nano ~/github_logs_setup_capture.sh
+```
+
+[github_logs_setup_capture](./infrastructure/scripts/github_logs_setup_capture.sh)
+
+```
+chmod +x ~/github_logs_setup_capture.sh
+~/github_logs_setup_capture.sh
+```
+
+- #### Check logs:
+
+```
+ls -la ~/charlie-cafe-devops/github_logs
+less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
+```
+
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
 ✔ Dockerfile
