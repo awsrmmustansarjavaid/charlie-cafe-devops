@@ -697,6 +697,14 @@ docker push <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe-app:la
 
 > Docker Buildx is a CLI plugin for advanced builds (multi-platform, caching, BuildKit features).
 
+### Important 
+
+#### Buildx for EC2 local dev/test lab, because:
+
+- You want to use docker compose up -d --build.
+
+- Compose now requires Buildx 0.17+ for building images.
+
 ```
 mkdir -p ~/.docker/cli-plugins
 ```
