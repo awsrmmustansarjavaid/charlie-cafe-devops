@@ -435,6 +435,89 @@ jobs:
       run: echo "Charlie Cafe deployed successfully via SSH to EC2 🚀"
 ```
 
+### ✅ Fully final latest Deploy.yml
+
+```
+name: 🚀 Charlie Cafe Auto Deploy (EC2 via SSH)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Checkout Code (GitHub Runner)
+    # -------------------------------------------------
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Setup SSH Key (from GitHub Secrets)
+    # -------------------------------------------------
+    - name: 🔑 Setup SSH Access to EC2
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+    # -------------------------------------------------
+    # 3️⃣ Deploy to EC2 Server
+    # -------------------------------------------------
+    - name: 🚀 Deploy Application to EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+
+        echo "🚀 Starting deployment on EC2..."
+
+        # -------------------------------------------------
+        # 📁 Clone repo if not exists
+        # -------------------------------------------------
+        if [ ! -d "charlie-cafe-devops" ]; then
+          git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
+        fi
+
+        cd charlie-cafe-devops
+
+        # -------------------------------------------------
+        # 🔄 Pull latest code
+        # -------------------------------------------------
+        git pull origin main
+
+        # -------------------------------------------------
+        # 🛑 Stop old container
+        # -------------------------------------------------
+        sudo docker rm -f cafe-app || true
+
+        # -------------------------------------------------
+        # 🧹 Remove old image
+        # -------------------------------------------------
+        sudo docker rmi charlie-cafe || true
+
+        # -------------------------------------------------
+        # 🐳 Build new image
+        # -------------------------------------------------
+        sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+        # -------------------------------------------------
+        # 🚀 Run new container
+        # -------------------------------------------------
+        sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
+
+        # -------------------------------------------------
+        # 🧪 Health Check
+        # -------------------------------------------------
+        sleep 5
+        curl -f http://localhost || echo "⚠️ Health check failed"
+
+        echo "✅ Deployment completed successfully"
+
+        EOF
+```
+
 ### 7️⃣ Push & Test
 
 #### Commit & push the workflow:
