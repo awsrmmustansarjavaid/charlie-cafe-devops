@@ -462,4 +462,235 @@ sudo systemctl status docker
 docker run --rm hello-world
 ```
 
+#### Expected results:
+
+- docker --version → Something like Docker version 25.0.14, build 0bab007
+
+- systemctl status docker → Active (running)
+
+- docker run hello-world → Success message from Docker confirming container ran
+
+#### Notes: This ensures Docker is installed, the daemon is running, and the engine can launch containers.
+
+### 2️⃣ Verify Docker Compose
+
+#### Commands:
+
+```
+docker compose version
+docker compose config
+```
+
+#### Expected results:
+
+- Version output: e.g., Docker Compose version v2.x.x
+
+- docker compose config → Valid parsed configuration of your docker-compose.yml. No errors.
+
+#### Notes: This ensures your docker-compose.yml is syntactically correct.
+
+### 3️⃣ Verify Project Repository & Git
+
+#### Commands:
+
+```
+cd ~/charlie-cafe-devops
+pwd
+ls -la
+git status
+git remote -v
+ssh -T git@github.com
+```
+
+#### Expected results:
+
+- .git folder exists
+
+- Files from your repo exist (README.md, docker-compose.yml, etc.)
+
+- git status → On branch main, nothing to commit
+
+- git remote -v → Correct SSH URL
+
+- ssh -T git@github.com → Hi <username>/<repo>! You've successfully authenticated, but GitHub does not provide shell access.
+
+#### Notes: This ensures your repo is synced, SSH access works, and the deploy key is functional.
+
+### 4️⃣ Verify Local CI/CD Auto-Deploy Script
+
+#### Commands: 
+
+```
+./ec2_git_auto_deploy.sh
+```
+
+#### Expected results:
+
+- Repository is checked/pulled correctly
+
+- Nothing to commit if nothing changed
+
+- Logs showing: ✅ Auto-deploy complete!
+
+#### Notes: This confirms your GitHub deploy pipeline works locally on EC2.
+
+### 5️⃣ Verify Docker Services with Docker Compose
+
+#### Commands:
+
+```
+cd ~/charlie-cafe-devops
+docker compose up -d
+docker compose ps
+docker logs <container_name>   # Example: docker logs charlie-cafe-app
+docker compose down
+```
+
+#### Expected results:
+
+- docker compose up -d → No errors
+
+- docker compose ps → Shows all services running (STATUS: Up)
+
+- docker logs → Shows expected application logs (no errors)
+
+- docker compose down → Stops containers cleanly
+
+#### Notes: This ensures your app stack can run locally with Docker Compose.
+
+### 6️⃣ Verify Application Health (Local HTTP)
+
+#### Commands:
+
+```
+curl -I http://localhost:8080   # or the port you expose in docker-compose.yml
+```
+
+#### Expected results:
+
+- HTTP/1.1 200 OK → App is responding
+
+- No curl: (7) Failed to connect errors
+
+#### Notes: Confirms app is running and accessible.
+
+### 7️⃣ Verify AWS CLI & Secrets Manager (for RDS)
+
+#### Commands:
+
+```
+aws --version
+aws secretsmanager get-secret-value --secret-id CafeDevDBSM --region us-east-1
+```
+
+#### Expected results:
+
+- aws --version → e.g., aws-cli/2.12.1 Python/3.12.0 Linux/5.15.0-1031-aws exe/x86_64.amzn2023
+
+- Secret JSON returns DB credentials without error
+
+#### Notes: Ensures EC2 can connect to AWS APIs for secrets, required for ECS/ECR deployment.
+
+### 8️⃣ Verify Database Connectivity (RDS)
+
+#### Commands:
+
+```
+mysql -h <DB_HOST> -u <DB_USER> -p"<DB_PASS>" <DB_NAME> -e "SHOW TABLES;"
+```
+
+#### Expected results:
+
+- List of tables returned
+
+- No connection errors
+
+#### Notes: Confirms that RDS can be reached from EC2 and credentials from Secrets Manager work.
+
+### 9️⃣ Verify GitHub Actions & Logs (Local Fetch)
+
+#### Commands:
+
+```
+# Ensure gh CLI installed
+gh --version
+
+# Authenticated
+gh auth status
+
+# List workflows
+gh workflow list
+
+# List recent runs
+gh run list --limit 5
+
+# Fetch logs for latest run
+gh run view <run_id> --log > github_logs_run_<run_id>.txt
+```
+
+#### Expected results:
+
+- Workflows and run IDs listed
+
+- Logs captured successfully in files
+
+#### Notes: Ensures GitHub Actions are accessible and logs can be downloaded locally.
+
+### 🔟 Verify Permissions
+
+Sometimes push failures happen due to permissions on EC2 .git directory:
+
+#### Commands:
+
+```
+sudo chown -R ec2-user:ec2-user ~/charlie-cafe-devops
+chmod -R 755 ~/charlie-cafe-devops
+```
+
+#### Notes:This avoids errors like could not open '.git/COMMIT_EDITMSG': Permission denied.
+
+### Optional Tests (for ECS/ECR readiness)
+
+#### Build Docker images locally:
+
+```
+docker compose build
+docker images
+```
+
+#### Tag for ECR:
+
+```
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com
+docker tag charlie-cafe-app:latest <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe-app:latest
+docker push <aws_account_id>.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe-app:latest
+```
+
+### Verify ECS readiness:
+
+- Check task definitions, service definitions, clusters in AWS Console
+
+- Ensure proper IAM roles exist
+
+### ✅ Summary Table of Verification Checks
+
+| Step                  | Command                               | Expected Result             |
+| --------------------- | ------------------------------------- | --------------------------- |
+| Docker                | `docker --version`                    | Version info                |
+| Docker Daemon         | `sudo systemctl status docker`        | Active (running)            |
+| Docker Test           | `docker run hello-world`              | Container runs successfully |
+| Docker Compose        | `docker compose version`              | Version info                |
+| Docker Compose Config | `docker compose config`               | Valid YAML                  |
+| Git Repo              | `git status`                          | On branch main, clean       |
+| Git Remote            | `git remote -v`                       | Correct SSH URL             |
+| GitHub SSH            | `ssh -T git@github.com`               | Authenticated               |
+| Auto-deploy           | `./ec2_git_auto_deploy.sh`            | Pull/push works             |
+| Docker Services       | `docker compose up -d`                | Services up, logs okay      |
+| App Health            | `curl http://localhost`               | HTTP 200 OK                 |
+| AWS CLI               | `aws --version`                       | Version info                |
+| Secrets Manager       | `aws secretsmanager get-secret-value` | Secret JSON                 |
+| RDS                   | `mysql -h ...`                        | Tables listed               |
+| GitHub Actions        | `gh run view <run_id> --log`          | Logs saved                  |
+| Permissions           | `chown/chmod`                         | No permission errors        |
+
 
