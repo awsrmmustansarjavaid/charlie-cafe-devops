@@ -556,7 +556,7 @@ gh auth login
 
 ### Step 3️⃣ Github Personal Access Token (PAT)
 
-- Go to GitHub Tokens Page → Personal Access Tokens → Fine-grained tokens
+- Go to GitHub Tokens Page → Personal Access Tokens → classic tokens
 
 - Token name: Github-logs
 
