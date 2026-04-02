@@ -212,13 +212,11 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD...
 
 This will be added to GitHub.
 
-
-
 ### 2️⃣ Add Public Key to GitHub (for SSH)
 
 - Go to your GitHub repository → Settings → SSH and GPG keys → New SSH key
 
-- Give it a Title, e.g., EC2 Deploy Key.
+- Give it a Title, e.g., EC2 Auto Deploy
 
 - Paste your EC2 public key:
 
@@ -228,7 +226,9 @@ cat ~/.ssh/id_rsa.pub
 
 - Click Add SSH key ✅
 
-#### Note: There is no separate "Allow write access" checkbox here. That’s only for repo-level Deploy Keys. Using your personal account SSH key allows read/write.
+- #### ✅ This allows GitHub to authenticate your EC2.
+
+- #### Note: There is no separate "Allow write access" checkbox here. That’s only for repo-level Deploy Keys. Using your personal account SSH key allows read/write.
 
 ### 3️⃣ Fix host key verification
 
@@ -266,9 +266,59 @@ Hi awsrmmustansarjavaid! You've successfully authenticated, but GitHub does not 
 
 Since you added your EC2 key to GitHub, use it as the secret EC2_SSH_KEY in your workflow. The workflow will SSH from GitHub Actions into your EC2 securely.
 
-### 
+### 5️⃣ Add private key as GitHub secret
 
+#### 🔑 Step 1 Check if you already have a private key
 
+- Run:
+
+```
+ls -al ~/.ssh/
+```
+
+#### ✅ You should see something like:
+
+```
+id_rsa
+id_rsa.pub
+```
+
+- id_rsa → private key ✅
+
+- id_rsa.pub → public key (this is what you added to GitHub)
+
+#### 🔑 Step 2 View your private key
+
+> ⚠️ Important: Never share this key publicly. Keep it secret.
+
+- Run:
+
+```
+cat ~/.ssh/id_rsa
+```
+
+#### ✅ You should see something like:
+
+```
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
+...rest of key...
+-----END OPENSSH PRIVATE KEY-----
+```
+
+- This entire block (from -----BEGIN... to -----END...) is your private key.
+
+#### 🔑 Step 3 Add private key as GitHub secret
+
+- Go to your repo → Settings → Secrets → Actions → New repository secret
+
+  - Name: EC2_SSH_KEY
+
+  - Value: paste the private key
+
+> GitHub Actions will use this secret to SSH into EC2 securely.
+
+#### 🔑 Step 4 Add private key as GitHub secret
 
 
 ### 🔑 Method 2 Auto deploy from GitHub → EC2 using Token
