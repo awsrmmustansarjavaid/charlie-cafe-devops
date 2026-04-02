@@ -428,29 +428,82 @@ chmod +x verify-devops-env.sh
 ./verify-devops-env.sh
 ```
 
-### 🚀 Commit,Pull & Push After any modification on EC2
+### 🚀 After Any Change on EC2
+
+- #### 1️⃣ Go to your project directory
 
 ```
-# Go to your repo folder
 cd ~/charlie-cafe-devops
+```
 
-# Verify you are in the repo
-pwd
-# Should output: /home/ec2-user/charlie-cafe-devops
-ls -la
-# Should show .git folder
+- #### 2️⃣ Fix file ownership (if you ever used sudo accidentally)
 
-# Stage changes
-git add .
+```
+sudo chown -R ec2-user:ec2-user ~/charlie-cafe-devops
+```
 
-# Commit
-git commit -m "Test auto-deploy"
+This ensures Git can write files.
 
-# Pull latest remote changes (handle divergent branches)
+- #### 3️⃣ Pull latest remote changes
+
+Before committing your changes, make sure your branch is up-to-date:
+
+```
 git pull --rebase origin main
+```
 
-# Push your commits
+> If you prefer merge instead of rebase:
+
+```
+git pull origin main
+```
+
+This resolves divergent branches safely.
+
+- ####  4️⃣ Make your changes
+
+Edit files, add new ones, etc.
+
+- #### 5️⃣ Stage changes
+
+```
+git add .
+```
+
+- #### 6️⃣ Commit changes
+
+```
+git commit -m "Describe your change here"
+```
+
+- #### 7️⃣ Push to GitHub
+
+```
 git push origin main
+```
+
+- 8️⃣ Verify push
+
+```
+git status
+git log -1
+```
+
+- git status should show nothing to commit, working tree clean.
+
+- git log -1 shows your last commit pushed.
+
+### ⚠️ Important Notes
+
+- Never run Git commands with sudo inside ~/charlie-cafe-devops.
+
+- Always make sure your branch is synced (git pull --rebase) before pushing.
+
+- If you see "Permission denied" errors, check your SSH deploy key and ssh-agent:
+
+```
+ssh-add -l        # lists loaded keys
+ssh -T git@github.com
 ```
 
 ### 🌐 Now test in browser:
