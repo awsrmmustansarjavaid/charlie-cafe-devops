@@ -196,6 +196,49 @@ cat ~/.ssh/id_deploy.pub
 
 You will add this to GitHub as a deploy key.
 
+### 2️⃣ Add EC2 SSH Key to GitHub
+
+- Go to your GitHub repo → Settings → Deploy keys → Add deploy key.
+
+- Paste the public key from EC2.
+
+- Check Allow write access (so it can pull/push if needed).
+
+- Click Add key.
+
+✅ Now your EC2 can authenticate with GitHub without a token.
+
+### 3️⃣ Add EC2 Details as GitHub Secrets
+
+- Go to your GitHub repo → Settings → Secrets → Actions → New repository secret:
+
+| Secret Name   | Value                                      |
+| ------------- | ------------------------------------------ |
+| `EC2_SSH_KEY` | Paste **private key** (`~/.ssh/id_deploy`) |
+| `EC2_USER`    | `ec2-user`                                 |
+| `EC2_HOST`    | Your EC2 public IP or DNS                  |
+
+> These secrets will be used by GitHub Actions to SSH into EC2 securely.
+
+### 4️⃣ Keep Your Bash Script on EC2
+
+- Upload your charlie-cafe-devops.sh to EC2 (e.g., ~/charlie-cafe-devops/charlie-cafe-devops.sh).
+
+- Ensure it’s executable:
+
+```
+chmod +x ~/charlie-cafe-devops/charlie-cafe-devops.sh
+```
+
+✅ This avoids duplicating Docker, DB, git commands in GitHub Actions.
+
+### 5️⃣ Create GitHub Actions Workflow
+
+- In your repo, create the folder .github/workflows/.
+
+- Create a file: .github/workflows/deploy.yml.
+
+- Add the following content (optimized to run your bash script):
 
 
 
