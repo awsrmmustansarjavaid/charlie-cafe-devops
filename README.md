@@ -172,7 +172,9 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### 2️⃣ Auto-deploy from GitHub → EC2 using SSH (Recommanded)
+### 2️⃣ GitHub → EC2 Auto-Deploy Setup (Charlie Cafe)
+
+> #### Auto-deploy from GitHub → EC2 using SSH (Recommanded)
 
 ### 1️⃣  Generate SSH Key on EC2 
 
