@@ -346,6 +346,10 @@ less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
 
 ### 💡 Tip:
 
-You can run this anytime to fetch logs of latest runs.
-The folder will keep all logs, separated by run ID and timestamp.
-Perfect for auditing or debugging CI/CD pipelines directly from EC2.
+- You can run this anytime to fetch logs of latest runs.
+
+- The folder will keep all logs, separated by run ID and timestamp.
+
+- Perfect for auditing or debugging CI/CD pipelines directly from EC2.
+
+---
