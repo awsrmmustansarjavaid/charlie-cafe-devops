@@ -176,6 +176,7 @@ charlie-cafe-devops
 
 > #### Auto-deploy from GitHub → EC2 using SSH (Recommanded)
 
+- Read more here [GitHub Actions auto-deploy-EC2](./docs/GitHub%20Actions%20auto-deploy-EC2.md)
 
 ### 1️⃣ Prepare EC2 for SSH Deployment
 
@@ -194,109 +195,6 @@ cat ~/.ssh/id_deploy.pub
 ```
 
 You will add this to GitHub as a deploy key.
-
-### 1️⃣  Generate SSH Key on EC2 
-
-- #### Generate a new SSH key (no passphrase):
-
-```
-ssh-keygen -t rsa -b 4096 -C "github-actions"
-```
-
-> Press Enter to accept default locations and leave passphrase empty.
-
-- Press Enter for all prompts.
-
-- Copy the public key:
-
-```
-cat ~/.ssh/id_rsa.pub
-```
-
-- You will get a line like:
-
-```
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD...
-```
-
-This will be added to GitHub.
-
-### 2️⃣ Add Public Key to GitHub (for SSH)
-
-- Go to your GitHub repository → Settings → Deploy keys → Add deploy key
-
-- Give it a Title, e.g., EC2 Auto Deploy
-
-- Paste your EC2 public key:
-
-```
-cat ~/.ssh/id_rsa.pub
-```
-
-- Check Allow write access (so GitHub Actions can pull/push).
-
-- Click Add SSH key ✅
-
-- #### ✅ This allows GitHub to authenticate your EC2.
-
-### 3️⃣ Now test:
-
-```
-ssh -T git@github.com
-```
-
-#### ✅ You should get:
-
-```
-Hi awsrmmustansarjavaid! You've successfully authenticated, but GitHub does not provide shell access.
-```
-
-✅ Perfect — SSH is working.
-
-### 4️⃣ Add private key as GitHub secret
-
-#### 🔑 Copy your private key
-
-- Run:
-
-```
-cat ~/.ssh/id_rsa
-```
-
-#### ✅ You should see something like:
-
-```
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
-...rest of key...
------END OPENSSH PRIVATE KEY-----
-```
-
-- This entire block (from -----BEGIN... to -----END...) is your private key.
-
-#### 🔑 Step 3 Add private key as GitHub secret
-
-- Go to your GitHub repo → Settings → Secrets and Variables → Actions → New repository secret
-
-`- Name it: EC2_SSH_KEY
-
-`- Paste the entire private key from cat ~/.ssh/id_rsa
-
-- Save the secret
-
-> Now your GitHub Actions workflow can SSH into EC2 securely using this key.
-
-#### ✅ Add EC2 connection details as GitHub secrets
-
-- Add two more secrets:
-
-| Name     | Value                  |
-| -------- | ---------------------- |
-| EC2_HOST | `<your EC2 public IP>` |
-| EC2_USER | `ec2-user`             |
-
-> These secrets will be referenced in the workflow YAML.
-
 
 
 
