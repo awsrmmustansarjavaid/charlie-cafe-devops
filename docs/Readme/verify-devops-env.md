@@ -447,9 +447,9 @@ echo "=================================================="
 chmod +x verify-devops-env.sh
 ./verify-devops-env.sh
 ```
-1️⃣ Verify Docker Installation & Daemon
+### 1️⃣ Verify Docker Installation & Daemon
 
-Commands:
+#### Commands:
 
 ```
 # Check Docker version
