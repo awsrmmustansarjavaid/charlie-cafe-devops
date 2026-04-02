@@ -447,3 +447,19 @@ echo "=================================================="
 chmod +x verify-devops-env.sh
 ./verify-devops-env.sh
 ```
+1️⃣ Verify Docker Installation & Daemon
+
+Commands:
+
+```
+# Check Docker version
+docker --version
+
+# Check Docker daemon status
+sudo systemctl status docker
+
+# Test Docker run
+docker run --rm hello-world
+```
+
+
