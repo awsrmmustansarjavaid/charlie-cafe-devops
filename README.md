@@ -210,6 +210,16 @@ You will add this to GitHub as a deploy key.
 
 ### 3️⃣ Add EC2 Details as GitHub Secrets
 
+#### 🔑 View your private key
+
+> ⚠️ Important: Never share this key publicly. Keep it secret.
+
+- Run:
+
+```
+cat ~/.ssh/id_deploy
+```
+
 - Go to your GitHub repo → Settings → Secrets → Actions → New repository secret:
 
 | Secret Name   | Value                                      |
