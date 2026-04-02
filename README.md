@@ -265,7 +265,7 @@ b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAA...
 
 > Now your GitHub Actions workflow can SSH into EC2 securely using this key.
 
-### 5️⃣ Add EC2 connection details as GitHub secrets
+#### ✅ Add EC2 connection details as GitHub secrets
 
 - Add two more secrets:
 
