@@ -3188,7 +3188,7 @@ set -euo pipefail  # Exit on error, undefined variable, pipeline failure
 # ==========================================================
 PROJECT_DIR="charlie-cafe-devops"
 REPO_NAME="charlie-cafe-devops"
-GITHUB_USERNAME="awsrmmustansarjavaid"
+GITHUB_USERNAME="your github username"
 
 # GitHub token must be exported
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
@@ -3406,7 +3406,7 @@ set -euo pipefail  # Exit on error, undefined variable, pipeline failure
 # ==========================================================
 PROJECT_DIR="charlie-cafe-devops"
 REPO_NAME="charlie-cafe-devops"
-GITHUB_USERNAME="awsrmmustansarjavaid"
+GITHUB_USERNAME="your github username"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 
 IMAGE_NAME="charlie-cafe"
@@ -3708,7 +3708,7 @@ set -euo pipefail
 # ==========================================================
 PROJECT_DIR="charlie-cafe-devops"
 REPO_NAME="charlie-cafe-devops"
-GITHUB_USERNAME="awsrmmustansarjavaid"
+GITHUB_USERNAME="your github username"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 
 IMAGE_NAME="charlie-cafe"
@@ -3927,7 +3927,7 @@ set -euo pipefail
 # ==========================================================
 PROJECT_DIR="charlie-cafe-devops"
 REPO_NAME="charlie-cafe-devops"
-GITHUB_USER="awsrmmustansarjavaid"
+GITHUB_USERNAME="your github username"
 GITHUB_REPO="git@github.com:${GITHUB_USER}/${REPO_NAME}.git"
 
 IMAGE_NAME="charlie-cafe"
@@ -4082,6 +4082,8 @@ docker logs --tail 5 "$CONTAINER_NAME"
 print_header "🎉 DEPLOYMENT SUCCESS"
 echo "👉 http://localhost:$PORT"
 ```
+
+---
 
 
 
