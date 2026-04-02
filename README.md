@@ -666,6 +666,12 @@ STATUS  NAME                                  BRANCH  EVENT    ID
 
 > Note the ID of the run you want to save. Let’s say it’s 173.
 
+```
+gh run list --limit 100
+```
+
+- --limit 100 fetches the latest 100 runs.
+
 Step 3️⃣ View logs (optional preview)
 
 ```
