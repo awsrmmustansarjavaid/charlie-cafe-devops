@@ -98,6 +98,90 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 ssh -T git@github.com
 ```
 
+#### ✅ Step 1 Create SSH config for GitHub
+
+```
+nano ~/.ssh/config
+```
+
+#### Paste exactly:
+
+```
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_deploy
+  IdentitiesOnly yes
+```
+
+Save and exit (CTRL+O, ENTER, CTRL+X)
+
+> This tells SSH to always use id_deploy when connecting to GitHub.
+
+#### ✅ Step 2  Start the SSH agent and add the key
+
+```
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_deploy
+```
+-  You should see something like: Identity added: /home/ec2-user/.ssh/id_deploy (ec2-auto-deploy)
+
+#### ✅ Step 3  Test connection to GitHub
+
+```
+ssh -T git@github.com
+```
+
+#### ✅ Expected output:
+
+```
+Hi <your-github-username>! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+#### If you still get Permission denied, it usually means:
+
+- Public key not correctly added to GitHub
+
+- Wrong repository (deploy keys are repo-specific)
+
+- SSH config not applied
+
+#### ✅ Step 4 Use the correct repository URL
+
+Since deploy keys are repo-specific, your clone command must match the repo where the key is added:
+
+```
+git clone git@github.com:<YOUR-USERNAME>/<YOUR-REPO>.git
+```
+
+- <YOUR-USERNAME> → GitHub username or organization that owns the repo
+
+- <YOUR-REPO> → exact repo name
+
+If you added the key to repo charlie-cafe-devops, the command should be:
+
+```
+git clone git@github.com:YOUR-USERNAME/charlie-cafe-devops.git
+```
+
+#### ✅ Step 5 Verify permissions on the repo
+
+- Deploy keys by default are read-only
+
+- If you need git push from EC2 → check “Allow write access” when adding the key
+
+#### ⚡ Quick Checklist
+
+- ~/.ssh/id_deploy exists and has correct permissions → ✅
+
+- ~/.ssh/config points to id_deploy → ✅
+
+- SSH agent has key added → ✅
+
+- Public key added to exact repo as deploy key → ✅
+
+- Clone uses correct SSH URL → ✅
+
 ### 4️⃣ Add private key as GitHub secret
 
 #### 🔑 Step 1 Check if you already have a private key

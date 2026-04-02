@@ -284,7 +284,95 @@ chmod +x ~/charlie-cafe-devops/charlie-cafe-devops.sh
 
 ✅ This avoids duplicating Docker, DB, git commands in GitHub Actions.
 
-### 5️⃣ Test Deployment
+### 5️⃣ Now test:
+
+```
+ssh -T git@github.com
+```
+
+#### ✅ You should get:
+
+```
+Hi awsrmmustansarjavaid! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+✅ Perfect — SSH is working.
+
+#### ✅ Fix host key verification
+
+#### ✅ When you see:
+
+```
+The authenticity of host 'github.com (140.82.114.3)' can't be established.
+```
+
+- #### ✅ Add GitHub to known hosts:
+
+> #### GitHub is asking if it can trust the server. To fix permanently:
+
+```
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+```
+
+- This adds GitHub’s public host key to your EC2 so it won’t ask again.
+
+#### ✅ Now test:
+
+```
+ssh -T git@github.com
+```
+
+#### ✅ Step 1 Create SSH config for GitHub
+
+```
+nano ~/.ssh/config
+```
+
+#### Paste exactly:
+
+```
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_deploy
+  IdentitiesOnly yes
+```
+
+Save and exit (CTRL+O, ENTER, CTRL+X)
+
+> This tells SSH to always use id_deploy when connecting to GitHub.
+
+#### ✅ Step 2  Start the SSH agent and add the key
+
+```
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_deploy
+```
+-  You should see something like: Identity added: /home/ec2-user/.ssh/id_deploy (ec2-auto-deploy)
+
+#### ✅ Step 3  Test connection to GitHub
+
+```
+ssh -T git@github.com
+```
+
+#### ✅ Expected output:
+
+```
+Hi <your-github-username>! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+#### If you still get Permission denied, it usually means:
+
+- Public key not correctly added to GitHub
+
+- Wrong repository (deploy keys are repo-specific)
+
+- SSH config not applied
+
+
+
+### 6️⃣ Test Deployment
 
 - #### Push a commit to main:
 
