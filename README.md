@@ -589,6 +589,46 @@ List workflows for your repo:
 gh workflow list
 ```
 
+#### ✅ Output example:
+
+```
+NAME                                    STATE    ID
+☕ Charlie Cafe — FULL CI/CD PIPELINE    active   1234567
+```
+
+#### 🧱 View runs for a workflow:
+
+```
+gh run list
+```
+
+#### ✅ This will show the latest runs:
+
+```
+STATUS  NAME                                  BRANCH  EVENT    ID
+✔       FULL CI/CD PIPELINE (FINAL)          main    push     173
+✔       FULL CI/CD PIPELINE (FINAL)          main    push     172
+```
+
+#### 🧱 View logs of a specific run:
+
+```
+gh run view 173 --log
+```
+
+- Replace 173 with the run ID you want.
+- You’ll see the full step-by-step logs, just like GitHub Actions on the web.
+
+### Step 6️⃣ Optional: Stream logs live
+
+You can also watch the workflow logs in real-time:
+
+```
+gh run watch 173
+```
+
+✅ Now you can monitor CI/CD directly from EC2, no need to open GitHub web UI every time.
+
 
 
 
