@@ -155,6 +155,31 @@ git push origin main
 
 👉 DONE — Lambda auto updates 🎉
 
+### ✅ Step 6 — Add Lambda Layers
+
+#### For dependencies:
+
+```
+requests/
+numpy/
+```
+
+### ✅ Step 7 — Add Testing Before Deploy
+
+```
+- name: ✅ Run Tests
+  run: |
+    python -m unittest discover
+```
+
+### ✅ Step 8 — Deploy Different Environments
+
+```
+dev → staging → production
+```
+
+
+
 
 
 
