@@ -1,4 +1,4 @@
-# Charlie Cafe - AWS Lambda & Github 
+# Charlie Cafe - 👉 GitHub → Lambda + API Gateway
 
 
 ### ✅ Difference: Paste Code vs GitHub CI/CD
@@ -52,6 +52,49 @@ This is VERY important for interviews 👇
 | Rollback        | ❌          | ✅            |
 | Team work       | ❌          | ✅            |
 | Professional    | ❌          | ✅🔥          |
+
+### ✅ 1. Your Goal (Clarified Architecture)
+
+#### You already have:
+
+```
+API Gateway → Lambda → (Your backend logic)
+```
+
+#### Now upgrading to:
+
+```
+GitHub → GitHub Actions → AWS Lambda (auto update)
+                                  ↓
+                           API Gateway (no change needed)
+```
+
+#### 👉 Important:
+
+You DO NOT need to touch 
+API Gateway again if:
+
+- Function name stays same ✅
+
+- Handler stays same ✅
+
+### ✅ 2. ⚠️ IMPORTANT GAP in Your Current Setup
+
+Right now your repo has:
+
+```
+app/backend/lambda/
+    ├── *.py
+```
+
+But your CI/CD assumes:
+
+```
+
+```
+
+
+
 
 ### ✅ How to Deploy AWS Lambda from GitHub (CI/CD)
 
