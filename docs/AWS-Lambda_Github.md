@@ -90,13 +90,37 @@ app/backend/lambda/
 But your CI/CD assumes:
 
 ```
-
+ONE Lambda function
 ```
 
+#### 👉 ❗ Problem:
+
+You said:
+
+> “each lambda function has its own API endpoint”
+
+So you likely have multiple Lambda functions, not one.
+
+### ✅ 3. 🔥 REQUIRED CHANGE (Minimal but IMPORTANT)
+
+#### 👉 Option A (Recommended – Clean DevOps)
+
+Split each Lambda:
+
+```
+app/backend/lambda/
+    ├── getMenu/
+    │   └── handler.py
+    ├── createOrder/
+    │   └── handler.py
+    ├── payment/
+    │   └── handler.py
+```
+
+👉 Each folder = ONE Lambda function
 
 
-
-### ✅ How to Deploy AWS Lambda from GitHub (CI/CD)
+### ✅ 4. How to Deploy AWS Lambda from GitHub (CI/CD)
 
 Instead of copy-paste in AWS Lambda console, you’ll auto-deploy from GitHub → Lambda using GitHub Actions.
 
