@@ -1,59 +1,5 @@
 # ☕ Charlie Cafe — GitHub → Lambda → API Gateway (CI/CD)
 
-
-### ✅ Difference: Paste Code vs GitHub CI/CD
-
-This is VERY important for interviews 👇
-
-### 🔴 1. Manual Paste (Bad for DevOps)
-
-👉 You copy code → paste into AWS Lambda console
-
-#### ❌ Problems:
-
-- No version control
-
-- No history
-
-- Easy to break production
-
-- No automation
-
-- Not scalable
-
-- No team collaboration
-
-👉 This is NOT DevOps
-
-### 🟢 2. GitHub → Lambda (CI/CD) (Professional Way)
-
-👉 Code lives in GitHub → pipeline deploys automatically
-
-#### ✅ Benefits:
-
-- Version control (Git)
-
-- Automatic deployment
-
-- Rollback possible
-
-- Team collaboration
-
-- Production-safe
-
-- Real DevOps workflow
-
-### ⚔️ Quick Comparison
-
-| Feature         | Paste Code | GitHub CI/CD |
-| --------------- | ---------- | ------------ |
-| Version control | ❌          | ✅            |
-| Automation      | ❌          | ✅            |
-| Rollback        | ❌          | ✅            |
-| Team work       | ❌          | ✅            |
-| Professional    | ❌          | ✅🔥          |
-
-
 ### 🧠 Your Current Architecture
 
 ```
@@ -74,147 +20,118 @@ Y- our API Gateway is already connected to Lambda ✅
 
 - So when Lambda updates → API auto uses new code (NO change needed)
 
+### ✅ Difference: Paste Code vs GitHub CI/CD
 
+This is VERY important for interviews 👇
 
+### 🔴 1. Real Difference (Based on YOUR LAB) 
 
+#### Manual Paste (Your Old Way)
 
-### ✅ How to Deploy AWS Lambda from GitHub (CI/CD)
-
-Instead of copy-paste in AWS Lambda console, you’ll auto-deploy from GitHub → Lambda using GitHub Actions.
-
-### 🧠 Concept Flow
+You were doing:
 
 ```
-GitHub Repo → GitHub Actions → Zip Code → AWS Lambda Update
+GitHub → Copy code → AWS Lambda Console → Paste → Deploy
 ```
 
-### ✅ 1. Your Goal (Clarified Architecture)
+#### ❌ Problems in YOUR scenario:
+
+- Your repo (charlie-cafe-devops) becomes useless for backend versioning
+
+- If you break one Lambda → API Gateway breaks instantly
+
+- No rollback if API fails
+
+- Multiple Lambda functions = headache 😵
+
+### 🟢 GitHub CI/CD (Your New Way)
+
+Now you will do:
+
+```
+GitHub → Push Code → GitHub Actions → Auto Deploy → Lambda Updated
+```
+
+#### ✅ In YOUR lab:
+
+- Each Lambda function is deployed automatically
+
+- API Gateway endpoints stay SAME (no reconfiguration)
+
+- Your backend becomes production-grade DevOps system
+
+### ⚔️ Simple Comparison (Interview Ready)
+
+| Feature           | Paste Code | GitHub → Lambda |
+| ----------------- | ---------- | --------------- |
+| API Stability     | ❌ Risky    | ✅ Safe          |
+| Multi Lambda Mgmt | ❌ Hard     | ✅ Easy          |
+| Rollback          | ❌ No       | ✅ Yes           |
+| Automation        | ❌ No       | ✅ Yes 🔥        |
+| DevOps Level      | ❌ Basic    | ✅ Professional  |
+
+### 🚀 2. How to Implement (YOUR REPO STRUCTURE)
 
 #### You already have:
 
 ```
-API Gateway → Lambda → (Your backend logic)
-```
-
-#### Now upgrading to:
-
-```
-GitHub → GitHub Actions → AWS Lambda (auto update)
-                                  ↓
-                           API Gateway (no change needed)
-```
-
-#### 👉 Important:
-
-You DO NOT need to touch 
-API Gateway again if:
-
-- Function name stays same ✅
-
-- Handler stays same ✅
-
-### ✅ 2. ⚠️ IMPORTANT GAP in Your Current Setup
-
-Right now your repo has:
-
-```
 app/backend/lambda/
-    ├── *.py
+   ├── order.py
+   ├── menu.py
+   ├── payment.py
 ```
 
-But your CI/CD assumes:
+👉 Each file = one Lambda function (important!)
 
-```
-ONE Lambda function
-```
+### 🧠 3. Deployment Strategy (IMPORTANT DECISION)
 
-#### 👉 ❗ Problem:
+#### You have 2 options:
 
-You said:
+- ✅ Option A (BEST for your lab) → Deploy ALL Lambdas in one pipeline
 
-> “each lambda function has its own API endpoint”
+- ❌ Option B → Separate pipeline per Lambda (complex)
 
-So you likely have multiple Lambda functions, not one.
+👉 You should use Option A
 
-### ✅ 3. 🔥 REQUIRED CHANGE (Minimal but IMPORTANT)
+### 🔐 4. IAM Policy (Minimal Required)
 
-#### 👉 Option A (Recommended – Clean DevOps)
-
-Split each Lambda:
-
-```
-app/backend/lambda/
-    ├── getMenu/
-    │   └── handler.py
-    ├── createOrder/
-    │   └── handler.py
-    ├── payment/
-    │   └── handler.py
-```
-
-👉 Each folder = ONE Lambda function
-
-### ✅ Step 1 — Prepare Your Lambda Code
-
-Your structure already looks good:
-
-```
-app/backend/lambda/
-    ├── handler.py
-    ├── utils.py
-```
-
-👉 Make sure your main file has a handler like:
-
-```
-def lambda_handler(event, context):
-    return {
-        "statusCode": 200,
-        "body": "Hello from Charlie Cafe Lambda 🚀"
-    }
-```
-
-### ✅ Step 2 — Create IAM User for GitHub
-
-- In AWS: 👉 Go to IAM → Users → Create user
-
-- Attach policy:
+#### Attach this to your IAM user:
 
 ```
 {
   "Effect": "Allow",
   "Action": [
-    "lambda:UpdateFunctionCode",
-    "lambda:GetFunction"
+    "lambda:UpdateFunctionCode"
   ],
   "Resource": "*"
 }
 ```
 
-#### 👉 Save:
+### 🔑 5. GitHub Secrets
 
-- AWS_ACCESS_KEY_ID
-
-- AWS_SECRET_ACCESS_KEY
-
-### ✅ Step 3 — Add GitHub Secrets
-
-- In your repo: 👉 Settings → Secrets → Actions → Add:
+#### Add in GitHub:
 
 ```
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
-LAMBDA_FUNCTION_NAME
 ```
 
-### ✅ Step 4 — Update deploy.yml
+#### AND (important for multi-lambda):
 
-Add a new job OR step inside your existing pipeline:
+```
+LAMBDA_MENU
+LAMBDA_ORDER
+LAMBDA_PAYMENT
+```
+
+### ⚙️ 6. FINAL deploy.yml (FOR YOUR LAB)
+
+Add this inside your existing pipeline (don’t break ECS part)
 
 ```
 # ==========================================================
-# 🚀 Deploy Lambda Function (Charlie Cafe)
+# 🚀 Deploy ALL Lambda Functions (Charlie Cafe)
 # ==========================================================
 
 - name: 📦 Zip Lambda Code
@@ -229,50 +146,120 @@ Add a new job OR step inside your existing pipeline:
     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     aws-region: ${{ secrets.AWS_REGION }}
 
-- name: 🚀 Deploy to AWS Lambda
+# ----------------------------------------------------------
+# 🍽️ Deploy Menu Lambda
+# ----------------------------------------------------------
+- name: 🚀 Deploy Menu Lambda
   run: |
     aws lambda update-function-code \
-      --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} \
+      --function-name ${{ secrets.LAMBDA_MENU }} \
+      --zip-file fileb://app/backend/lambda/lambda.zip
+
+# ----------------------------------------------------------
+# 🧾 Deploy Order Lambda
+# ----------------------------------------------------------
+- name: 🚀 Deploy Order Lambda
+  run: |
+    aws lambda update-function-code \
+      --function-name ${{ secrets.LAMBDA_ORDER }} \
+      --zip-file fileb://app/backend/lambda/lambda.zip
+
+# ----------------------------------------------------------
+# 💳 Deploy Payment Lambda
+# ----------------------------------------------------------
+- name: 🚀 Deploy Payment Lambda
+  run: |
+    aws lambda update-function-code \
+      --function-name ${{ secrets.LAMBDA_PAYMENT }} \
       --zip-file fileb://app/backend/lambda/lambda.zip
 ```
 
-### ✅ Step 5 — Push Code
+### 🧠 7. IMPORTANT CONCEPT (Most People Miss This)
+
+#### ❗ You are deploying SAME zip to ALL Lambdas
+
+👉 That means:
+
+Each Lambda must use correct handler
+
+Example:
+
+| Lambda Name    | Handler Setting          |
+| -------------- | ------------------------ |
+| menu-function  | `menu.lambda_handler`    |
+| order-function | `order.lambda_handler`   |
+| payment        | `payment.lambda_handler` |
+
+👉 This is configured in AWS Lambda (not GitHub)
+
+### 🔗 8. API Gateway — DO YOU NEED CHANGE?
+
+#### 👉 ❌ NO CHANGE REQUIRED
+
+Because:
+
+- API Gateway → already linked to Lambda
+
+- Lambda code updates automatically reflect
+
+### 🧪 9. Optional (But Powerful)
+
+Add testing before deploy:
 
 ```
-git add .
-git commit -m "Deploy Lambda via CI/CD"
-git push origin main
-```
-
-👉 DONE — Lambda auto updates 🎉
-
-### ✅ Step 6 — Add Lambda Layers
-
-#### For dependencies:
-
-```
-requests/
-numpy/
-```
-
-### ✅ Step 7 — Add Testing Before Deploy
-
-```
-- name: ✅ Run Tests
+- name: ✅ Test Lambda Code
   run: |
-    python -m unittest discover
+    python -m unittest discover app/backend/lambda
 ```
 
-### ✅ Step 8 — Deploy Different Environments
+### 🔥 10. Final DevOps Flow (Your Lab)
 
 ```
-dev → staging → production
+Developer (You)
+   ↓
+Git Push
+   ↓
+GitHub Actions
+   ↓
+Zip Lambda Code
+   ↓
+Update Multiple Lambdas
+   ↓
+API Gateway (auto updated)
+   ↓
+Frontend calls API 🚀
 ```
 
+### 💡 PRO TIP (VERY IMPORTANT FOR YOUR CAREER)
 
+#### Right now your architecture becomes:
 
+✅ ECS (containers)
 
+✅ EC2 (LAMP)
 
+✅ Lambda (serverless)
 
+✅ API Gateway
 
+✅ GitHub CI/CD
 
+👉 This is FULL HYBRID AWS ARCHITECTURE
+
+💥 This is what companies ask for (DevOps + Cloud Engineer role)
+
+### ❓ If You Want Next Level Upgrade
+
+#### I can help you add:
+
+✅ Lambda versioning + rollback
+
+✅ Dev / Stage / Prod environments
+
+✅ Auto API testing after deploy
+
+✅ CloudWatch monitoring integration
+
+✅ Terraform (infra as code)
+
+---
