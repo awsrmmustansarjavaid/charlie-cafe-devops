@@ -951,4 +951,184 @@ sudo dnf install -y unzip wget nano vim-enhanced tar
 - Debugging: Check logs in GitHub Actions if deployment fails; your bash script prints colored logs, so it’s easy to track.
 
 ----
+## Method 2- GitHub → EC2 Auto-Deploy via AWS Access Keys (Charlie Cafe)
 
+### Tech Concept:
+
+> This is called “GitHub Actions → AWS CLI → EC2 Deployment using IAM credentials”.
+
+> Instead of SSH keys, we use AWS IAM user credentials with programmatic access. GitHub will authenticate via AWS Access Key ID & Secret Key, and execute commands on EC2 using SSM (AWS Systems Manager) or AWS CLI.
+
+### ✅ Recommended when:
+
+- You want centralized AWS authentication
+
+- Avoid managing SSH keys per instance
+
+- Enable multi-instance deployment
+
+- Keep CI/CD fully cloud-native
+
+### 1️⃣ Prepare EC2 for AWS Access Key Deployment
+
+- Check if EC2 IAM Role exists
+
+  - If you attach an IAM role to EC2 with AmazonEC2FullAccess or custom policy, your GitHub Actions can deploy without SSH.
+
+  - Otherwise, you can use AWS Access Key in GitHub secrets.
+
+- Install AWS CLI on EC2 (if not installed)
+
+```
+sudo apt update && sudo apt install -y awscli   # Ubuntu/Debian
+sudo yum install -y aws-cli                     # Amazon Linux
+aws --version
+```
+
+- Optional: Configure default AWS profile (for testing only)
+
+```
+aws configure
+# Enter AWS_ACCESS_KEY_ID
+# Enter AWS_SECRET_ACCESS_KEY
+# Default region: us-east-1 (or your region)
+```
+
+### 2️⃣ Create IAM User for GitHub Actions
+
+- Go to AWS → IAM → Users → Add user
+
+  - User type: Programmatic access
+
+- Attach policy (minimum required):
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ssm:SendCommand",
+        "ssm:ListCommandInvocations",
+        "ssm:GetCommandInvocation",
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+- Save the Access Key ID and Secret Key (you’ll put these in GitHub Secrets).
+
+### 3️⃣ Add GitHub Secrets for AWS Access Key
+
+- Go to GitHub Repo → Settings → Secrets → Actions → New repository secret:
+
+| Secret Name             | Value                              |
+| ----------------------- | ---------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | (your IAM user access key ID)      |
+| `AWS_SECRET_ACCESS_KEY` | (your IAM user secret access key)  |
+| `AWS_REGION`            | `us-east-1` (or your region)       |
+| `EC2_INSTANCE_ID`       | `i-0123456789abcdef0` (target EC2) |
+| `EC2_USER`              | `ec2-user` (default username)      |
+
+> 💡 Tip: Instead of hardcoding EC2 IP, use EC2 instance ID + AWS SSM to target instance — no SSH needed.
+
+### 4️⃣ Keep Deployment Script on EC2
+
+Place your charlie-cafe-devops.sh in EC2:
+
+```
+mkdir -p ~/charlie-cafe-devops
+nano ~/charlie-cafe-devops/charlie-cafe-devops.sh
+chmod +x ~/charlie-cafe-devops/charlie-cafe-devops.sh
+```
+
+#### Script can contain:
+
+- git pull (if repo cloned)
+
+- docker-compose up -d
+
+- service restart commands
+
+### 5️⃣ Update GitHub Actions (deploy.yml)
+
+Use AWS CLI + SSM to execute commands on EC2:
+
+```
+# ==========================================================
+# 🚀 GitHub → EC2 Deployment (AWS Access Key)
+# ==========================================================
+jobs:
+  deploy-ec2:
+    runs-on: ubuntu-latest
+    steps:
+
+      # 1️⃣ Configure AWS Credentials
+      - name: 🔐 Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 2️⃣ Run Deployment Script on EC2 via SSM
+      - name: 🚀 Deploy to EC2
+        run: |
+          aws ssm send-command \
+            --targets "Key=instanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy Charlie Cafe" \
+            --parameters 'commands=["cd ~/charlie-cafe-devops && ./charlie-cafe-devops.sh"]' \
+            --region ${{ secrets.AWS_REGION }}
+```
+
+#### ✅ Explanation:
+
+- aws-actions/configure-aws-credentials → allows GitHub to authenticate to AWS
+
+- aws ssm send-command → executes bash script remotely on EC2
+
+- No SSH key needed
+
+- Works on multiple EC2 instances by adding more IDs in Values=...
+
+### 6️⃣ Test Deployment
+
+```
+aws ssm list-command-invocations --region us-east-1
+```
+
+- Check if script executed successfully
+
+- Output logs available in AWS → Systems Manager → Run Command
+
+### 7️⃣ Key Concepts (Interview-Friendly)
+
+| Concept            | Old SSH Key Method     | New AWS Access Key Method       |
+| ------------------ | ---------------------- | ------------------------------- |
+| Authentication     | SSH private/public key | IAM Access Key + Secret Key     |
+| Security           | Keys on EC2            | IAM managed & auditable         |
+| Scalability        | Manual per server      | Multi-EC2 via SSM               |
+| GitHub Integration | Deploy key + SSH       | GitHub Secrets + AWS CLI        |
+| CI/CD DevOps Level | Medium                 | Full professional, cloud-native |
+| Rollback & Logs    | Manual                 | CloudWatch + SSM logs           |
+
+### ✅ Summary
+
+- You replace SSH key authentication with AWS IAM credentials.
+
+- Use AWS SSM to run scripts remotely → no open SSH ports required.
+
+- GitHub Actions uses secrets (AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY) to authenticate.
+
+- Multi-instance deployments become easy & secure.
+
+- Works for your Charlie Cafe lab without major architecture changes.
+
+---
