@@ -1,4 +1,4 @@
-# Charlie Cafe - 👉 GitHub → Lambda + API Gateway
+# ☕ Charlie Cafe — GitHub → Lambda → API Gateway (CI/CD)
 
 
 ### ✅ Difference: Paste Code vs GitHub CI/CD
@@ -52,6 +52,41 @@ This is VERY important for interviews 👇
 | Rollback        | ❌          | ✅            |
 | Team work       | ❌          | ✅            |
 | Professional    | ❌          | ✅🔥          |
+
+
+### 🧠 Your Current Architecture
+
+```
+GitHub Repo
+   ↓
+GitHub Actions (deploy.yml)
+   ↓
+AWS Lambda (multiple functions)
+   ↓
+API Gateway (already integrated)
+   ↓
+Frontend / Browser
+```
+
+#### 👉 IMPORTANT:
+
+Y- our API Gateway is already connected to Lambda ✅
+
+- So when Lambda updates → API auto uses new code (NO change needed)
+
+
+
+
+
+### ✅ How to Deploy AWS Lambda from GitHub (CI/CD)
+
+Instead of copy-paste in AWS Lambda console, you’ll auto-deploy from GitHub → Lambda using GitHub Actions.
+
+### 🧠 Concept Flow
+
+```
+GitHub Repo → GitHub Actions → Zip Code → AWS Lambda Update
+```
 
 ### ✅ 1. Your Goal (Clarified Architecture)
 
@@ -118,17 +153,6 @@ app/backend/lambda/
 ```
 
 👉 Each folder = ONE Lambda function
-
-
-### ✅ 4. How to Deploy AWS Lambda from GitHub (CI/CD)
-
-Instead of copy-paste in AWS Lambda console, you’ll auto-deploy from GitHub → Lambda using GitHub Actions.
-
-### 🧠 Concept Flow
-
-```
-GitHub Repo → GitHub Actions → Zip Code → AWS Lambda Update
-```
 
 ### ✅ Step 1 — Prepare Your Lambda Code
 
