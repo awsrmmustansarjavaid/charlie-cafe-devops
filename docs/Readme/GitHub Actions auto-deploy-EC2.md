@@ -949,3 +949,6 @@ sudo dnf install -y unzip wget nano vim-enhanced tar
 - Auto-update: Every push to main triggers the workflow automatically.
 
 - Debugging: Check logs in GitHub Actions if deployment fails; your bash script prints colored logs, so it’s easy to track.
+
+----
+
