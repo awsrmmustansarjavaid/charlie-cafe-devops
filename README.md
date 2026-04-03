@@ -176,7 +176,7 @@ charlie-cafe-devops
 
 > #### Auto-deploy from GitHub → EC2 using SSH (Recommanded)
 
-- Read more here [GitHub Actions auto-deploy-EC2](./docs/GitHub%20Actions%20auto-deploy-EC2.md)
+- Read more here [GitHub Actions auto-deploy-EC2](./docs/Readme/GitHub%20Actions%20auto-deploy-EC2.md)
 
 ### 1️⃣ Prepare EC2 for SSH Deployment
 
