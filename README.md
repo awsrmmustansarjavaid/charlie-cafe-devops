@@ -203,7 +203,7 @@ Provide user access to the AWS Management Console → ❌ UNCHECK
         "lambda:GetFunction",
         "ec2:DescribeInstances",
         "ssm:SendCommand",
-        "ssm:GetCommandInvocation"
+        "ssm:GetCommandInvocation",
         "secretsmanager:GetSecretValue"
       ],
       "Resource": "*"
