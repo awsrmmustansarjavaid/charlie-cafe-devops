@@ -738,4 +738,29 @@ jobs:
       run: echo "CI/CD Pipeline Completed Successfully 🚀"
 ```
 
+### 🧠 What You Learned (IMPORTANT)
+
+#### ✅ Correct Flow:
+
+```
+Checkout
+→ AWS Auth
+→ DB Setup
+→ Build
+→ Test
+→ Deploy (LAST)
+```
+
+#### Checkout
+
+→ AWS Auth
+
+→ DB Setup
+
+→ Build
+
+→ Test
+
+→ Deploy (LAST)
+
 ---
