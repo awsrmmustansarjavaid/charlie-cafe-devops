@@ -299,6 +299,19 @@ chmod +x deploy_via_ssm.sh
 ./deploy_via_ssm.sh
 ```
 
+### 6️⃣ Verification Test 
+
+```
+nano charlie_cafe_full_check.sh
+```
+
+[charlie_cafe_full_check.sh](./infrastructure/scripts/charlie_cafe_full_check.sh)
+
+```
+chmod +x charlie_cafe_full_check.sh
+./charlie_cafe_full_check.sh
+```
+
 - ### ✅ Method 2️⃣  Add GitHub Secrets for EC2 using SSH
 
 > #### Auto-deploy from GitHub → EC2 using SSH 
