@@ -299,7 +299,6 @@ chmod +x deploy_via_ssm.sh
 ./deploy_via_ssm.sh
 ```
 
-
 - ### ✅ Method 2️⃣  Add GitHub Secrets for EC2 using SSH
 
 > #### Auto-deploy from GitHub → EC2 using SSH 
