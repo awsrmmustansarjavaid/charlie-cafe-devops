@@ -1261,6 +1261,19 @@ jobs:
 
 - Works on multiple EC2 instances by adding more IDs in Values=...
 
+### ⚠️ What This Script Actually Does (Step-by-Step)
+
+#### 🧩 Inside EC2 (automatically):
+
+```
+cd /home/ec2-user/charlie-cafe
+git pull origin main
+docker stop app || true
+docker rm app || true
+docker build -t charlie-cafe .
+docker run -d -p 80:80 --name app charlie-cafe
+```
+
 ### ⚠️ VERY IMPORTANT REQUIREMENTS (SSM Setup)
 
 Before this works, your EC2 must have:
@@ -1268,6 +1281,34 @@ Before this works, your EC2 must have:
 #### ✅ 1. IAM Role attached to EC2
 
 - Policy required: AmazonSSMManagedInstanceCore
+
+- Use this:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "SSMDeploy",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:SendCommand",
+        "ssm:GetCommandInvocation",
+        "ssm:ListCommandInvocations"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EC2Describe",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
 
 #### ✅ 2. SSM Agent installed
 
@@ -1282,6 +1323,8 @@ sudo systemctl status amazon-ssm-agent
 #### ✅ 3. Instance must appear in SSM
 
 - Go to: 👉 AWS Console → Systems Manager → Managed Instances
+
+
 
 ### 6️⃣ Test Deployment
 
