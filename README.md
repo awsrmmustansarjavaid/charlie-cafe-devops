@@ -286,8 +286,18 @@ sudo systemctl enable amazon-ssm-agent
 
 - Status: Online
 
-### 5️⃣ SSM Agent
+### 5️⃣ Git Auto Deploy
 
+```
+nano deploy_via_ssm.sh
+```
+
+[deploy_via_ssm.sh](./infrastructure/scripts/deploy_via_ssm.sh)
+
+```
+chmod +x deploy_via_ssm.sh
+./deploy_via_ssm.sh
+```
 
 
 - ### ✅ Method 2️⃣  Add GitHub Secrets for EC2 using SSH
