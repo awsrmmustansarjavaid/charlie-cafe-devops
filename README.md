@@ -713,6 +713,21 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
 
+### 1️⃣ Configure AWS Secrets in GitHub
+
+- Go to GitHub repo → Settings → Secrets → Actions → Add the following secrets:
+
+| Secret Name             | Value                                |
+| ----------------------- | ------------------------------------ |
+| `AWS_ACCESS_KEY_ID`     | Your IAM user access key             |
+| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret key             |
+| `AWS_REGION`            | e.g., `us-east-1`                    |
+| `AWS_ACCOUNT_ID`        | Your AWS account ID                  |
+| `ECR_REPO`              | If using containerized Lambda or ECS |
+| `ECS_CLUSTER`           | If using ECS                         |
+| `ECS_SERVICE`           | If using ECS                         |
+
+### 2️⃣ 
 
 
 
