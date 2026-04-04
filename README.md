@@ -248,15 +248,17 @@ AWS_SECRET_ACCESS_KEY
 
 - #### Add: 
 
-```
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_REGION
-```
+| Secret Name             | Value                              |
+| ----------------------- | ---------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | (your IAM user access key ID)      |
+| `AWS_SECRET_ACCESS_KEY` | (your IAM user secret access key)  |
+| `AWS_REGION`            | `us-east-1` (or your region)       |
+| `EC2_INSTANCE_ID`       | `i-0123456789abcdef0` (target EC2) |
+| `EC2_USER`              | `ec2-user` (default username)      |
 
 ✅ Example: AWS_REGION = us-east-1
 
-
+> 💡 Tip: Instead of hardcoding EC2 IP, use EC2 instance ID + AWS SSM to target instance — no SSH needed.
 
 - ### ✅ Method 2️⃣  Add GitHub Secrets for EC2 using SSH
 
