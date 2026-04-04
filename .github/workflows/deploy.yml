@@ -2,7 +2,7 @@ name: ☕ Charlie Cafe — FULL CI/CD PIPELINE (FINAL)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build-test-deploy:
@@ -18,14 +18,13 @@ jobs:
 
     # -------------------------------------------------
     # 2️⃣ Configure AWS Credentials
-    # (Needed for RDS + Secrets Manager)
     # -------------------------------------------------
     - name: 🔐 Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
     # 3️⃣ Install Required Tools
@@ -36,13 +35,12 @@ jobs:
         sudo apt-get install -y mysql-client jq curl
 
     # -------------------------------------------------
-    # 4️⃣ Retrieve RDS Secret from AWS
+    # 4️⃣ Retrieve RDS Secret
     # -------------------------------------------------
     - name: 🗝️ Retrieve RDS Secret
       run: |
         SECRET_JSON=$(aws secretsmanager get-secret-value \
           --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
-          --region us-east-1 \
           --query SecretString \
           --output text)
 
@@ -59,7 +57,7 @@ jobs:
         echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 6️⃣ Wait for RDS Availability
+    # 6️⃣ Wait for RDS
     # -------------------------------------------------
     - name: ⏳ Wait for RDS
       run: |
@@ -70,7 +68,7 @@ jobs:
         done
 
     # -------------------------------------------------
-    # 7️⃣ Create Database (Safe)
+    # 7️⃣ Create Database
     # -------------------------------------------------
     - name: 🗄️ Create Database
       run: |
@@ -86,27 +84,27 @@ jobs:
         mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
 
     # -------------------------------------------------
-    # 9️⃣ Apply Sample Data
+    # 9️⃣ Apply Data
     # -------------------------------------------------
     - name: 📊 Apply Data
       run: |
         mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
 
     # -------------------------------------------------
-    # 🔟 Verify Database
+    # 🔟 Verify DB
     # -------------------------------------------------
     - name: ✅ Verify Database
       run: |
         mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
 
     # -------------------------------------------------
-    # 11️⃣ Build Docker Image (CI validation)
+    # 11️⃣ Build Docker Image
     # -------------------------------------------------
     - name: 🐳 Build Docker Image
       run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
-    # 12️⃣ Run Container Locally (CI test)
+    # 12️⃣ Run Container (Test)
     # -------------------------------------------------
     - name: 🚀 Run Container (Test)
       run: |
@@ -121,54 +119,32 @@ jobs:
         curl -f http://localhost:8080/health.php || exit 1
 
     # -------------------------------------------------
-    # 14️⃣ Cleanup Test Container
+    # 14️⃣ Cleanup
     # -------------------------------------------------
     - name: 🧹 Cleanup
       run: |
         docker rm -f test_app || true
 
     # -------------------------------------------------
-    # 15️⃣ Setup SSH for EC2 Deployment
+    # 15️⃣ Deploy via SSM (FINAL STEP)
     # -------------------------------------------------
-    - name: 🔑 Setup SSH
-      uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-    # -------------------------------------------------
-    # 16️⃣ Deploy to EC2 (CD Step)
-    # -------------------------------------------------
-    - name: 🚀 Deploy to EC2
+    - name: 🚀 Deploy via AWS SSM
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-
-        echo "🚀 Starting Deployment on EC2..."
-
-        # Clone repo if not exists
-        cd ~/charlie-cafe-devops || git clone git@github.com:awsrmmustansarjavaid/charlie-cafe-devops.git
-        cd charlie-cafe-devops
-
-        # Pull latest changes
-        git pull origin main
-
-        # Stop & remove old container
-        sudo docker rm -f cafe-app || true
-
-        # Remove old image (optional cleanup)
-        sudo docker rmi charlie-cafe || true
-
-        # Build new image
-        sudo docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
-
-        # Run container on port 80
-        sudo docker run -d -p 80:80 --name cafe-app charlie-cafe
-
-        echo "✅ Deployment Completed!"
-
-        EOF
+        aws ssm send-command \
+          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+          --document-name "AWS-RunShellScript" \
+          --comment "Deploy Charlie Cafe App" \
+          --parameters 'commands=[
+            "cd /home/ec2-user/charlie-cafe-devops",
+            "git pull origin main",
+            "docker rm -f cafe-app || true",
+            "docker build -t charlie-cafe -f docker/apache-php/Dockerfile .",
+            "docker run -d -p 80:80 --name cafe-app charlie-cafe"
+          ]' \
+          --region ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 17️⃣ Final Success Message
+    # 16️⃣ Success
     # -------------------------------------------------
     - name: 🎉 Success
       run: echo "CI/CD Pipeline Completed Successfully 🚀"
