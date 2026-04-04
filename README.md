@@ -236,13 +236,25 @@ AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 ```
 
-
 ### 3️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
 
 - Read more here [GitHub Actions auto-deploy-EC2](./docs/Readme/GitHub%20Actions%20auto-deploy.md)
 
 - ### ✅ Method 1️⃣  Add GitHub Secrets for AWS Access Key (Recommanded)
 
+#### 1️⃣ Add Keys to GitHub Secrets
+
+- Go to your repo: 👉 Settings → Secrets → Actions → New repository secret
+
+- #### Add: 
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+```
+
+✅ Example: AWS_REGION = us-east-1
 
 
 

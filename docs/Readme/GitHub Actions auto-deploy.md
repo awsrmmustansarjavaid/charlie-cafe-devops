@@ -1119,6 +1119,78 @@ AWS_SECRET_ACCESS_KEY
 
 - Go to GitHub Repo → Settings → Secrets → Actions → New repository secret:
 
+- #### Add: 
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+```
+
+✅ Example: AWS_REGION = us-east-1
+
+#### ✅ Use in GitHub Actions
+
+In your deploy.yml:
+
+```
+- name: 🔐 Configure AWS Credentials
+  uses: aws-actions/configure-aws-credentials@v2
+  with:
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    aws-region: ${{ secrets.AWS_REGION }}
+```
+
+### 🔥 Important Security Concepts
+
+#### ❗ Access Key = Password
+
+Treat it like:
+
+```
+Root password ❌ DO NOT SHARE
+```
+
+#### ❗ Never do this:
+
+❌ Don’t push keys to GitHub code
+
+❌ Don’t store in .env in repo
+
+❌ Don’t share in screenshots
+
+#### ✅ Best Practice (Pro Level)
+
+Later upgrade to:
+
+- IAM Roles + OIDC (no keys needed)
+
+- Temporary credentials
+
+### ⚔️ SSH vs AWS Access Key (Your Case)
+
+| Feature        | SSH Key (EC2)   | AWS Access Key        |
+| -------------- | --------------- | --------------------- |
+| Use Case       | Server login    | AWS API access        |
+| Used For       | EC2 deploy      | Lambda, EC2, ECS      |
+| GitHub Usage   | SSH into server | AWS CLI               |
+| Security Level | Medium          | High (IAM controlled) |
+
+### 💡 Final Understanding (VERY IMPORTANT)
+
+👉 Your setup now:
+
+```
+GitHub Actions
+   ↓ (Access Key)
+AWS API
+   ↓
+Lambda / EC2 / ECS
+```
+
+### ✅ More Professional and aviod EC2 SSH 
+
 | Secret Name             | Value                              |
 | ----------------------- | ---------------------------------- |
 | `AWS_ACCESS_KEY_ID`     | (your IAM user access key ID)      |
@@ -1128,6 +1200,8 @@ AWS_SECRET_ACCESS_KEY
 | `EC2_USER`              | `ec2-user` (default username)      |
 
 > 💡 Tip: Instead of hardcoding EC2 IP, use EC2 instance ID + AWS SSM to target instance — no SSH needed.
+
+
 
 ### 4️⃣ Keep Deployment Script on EC2
 
