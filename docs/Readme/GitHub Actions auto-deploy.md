@@ -1330,6 +1330,13 @@ Before this works, your EC2 must have:
 sudo systemctl status amazon-ssm-agent
 ```
 
+If NOT running:
+
+```
+sudo systemctl start amazon-ssm-agent
+sudo systemctl enable amazon-ssm-agent
+```
+
 #### ✅ 3. Verify SSM Connectivity
 
 ✅ Instance must appear in SSM

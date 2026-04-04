@@ -268,6 +268,13 @@ AWS_SECRET_ACCESS_KEY
 sudo systemctl status amazon-ssm-agent
 ```
 
+If NOT running:
+
+```
+sudo systemctl start amazon-ssm-agent
+sudo systemctl enable amazon-ssm-agent
+```
+
 #### ✅ 2. Verify SSM Connectivity
 
 - Go to: 👉 AWS Console → Systems Manager → Managed Instances
