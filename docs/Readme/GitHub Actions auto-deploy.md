@@ -1324,7 +1324,23 @@ sudo systemctl status amazon-ssm-agent
 
 - Go to: 👉 AWS Console → Systems Manager → Managed Instances
 
+### 🧠 6. Pro Upgrade (Next Level DevOps)
 
+Later you can enhance:
+
+#### 🔹 Add Docker pull from ECR instead of build:
+
+```
+docker pull <your-ecr-image>
+```
+
+#### 🔹 Add health check:
+
+```
+curl -f http://localhost || exit 1
+```
+
+#### 🔹 Add rollback logic
 
 ### 6️⃣ Test Deployment
 
