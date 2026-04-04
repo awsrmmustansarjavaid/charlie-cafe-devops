@@ -265,10 +265,188 @@ Frontend calls API 🚀
 ---
 ## ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
 
-> The goal of this task is to fully modernize the Charlie Cafe project by integrating AWS DevOps practices. Instead of manually uploading Lambda functions, RDS scripts, and Docker images, we’ll use GitHub as the single source of truth and automate deployment using CI/CD pipelines, Infrastructure-as-Code, and Lambda layers. This ensures scalable, repeatable, and self-healing deployments while maintaining full integration with API Gateway, RDS, DynamoDB, and S3.
+> This project upgrades the existing Charlie Cafe application into a fully automated AWS DevOps workflow using GitHub, CI/CD, and AWS services. The goal is to have automatic deployment for Lambda functions, API Gateway, RDS, DynamoDB, and LAMP components via GitHub Actions and scripts, ensuring version control, testing, and zero manual deployment steps. This setup allows you to maintain all Lambda code in your GitHub repo and deploy updates seamlessly across all integrated AWS services.
 
-Step 1️⃣ — Prepare GitHub Repository
-Ensure your repository structure is clean (as you’ve shared).
-Add all Lambda Python scripts under app/backend/lambda/.
-Include appspec.yaml for AWS CodeDeploy compatibility. Example minimal appspec.yaml:
+Step-by-Step AWS DevOps Configuration Guide
+
+### 1️⃣ Prerequisites
+
+- AWS Account with permissions: EC2, Lambda, API Gateway, DynamoDB, RDS, IAM, S3, CloudWatch, CloudFormation.
+
+- GitHub repository already containing your project structure (as listed).
+
+- AWS CLI installed locally or in your CI/CD runner.
+
+- Docker installed if using Lambda layers or containerized deployment.
+
+- AWS IAM user with programmatic access (Access Key & Secret Key) for GitHub Actions.
+
+### 2️⃣ GitHub Repository Setup
+
+- Ensure your repo structure matches the one you shared.
+
+- Add .gitignore for:
+
+```
+__pycache__/
+*.pyc
+.env
+.aws/
+```
+
+- Add .dockerignore in Docker folder to exclude unnecessary files.
+
+### 3️⃣ Prepare AWS IAM Roles and Policies
+
+- #### Lambda Execution Role
+
+   - Attach policies: AWSLambdaFullAccess, AmazonDynamoDBFullAccess, AmazonRDSFullAccess, AmazonS3FullAccess, CloudWatchLogsFullAccess.
+
+- #### GitHub CI/CD Role (for GitHub Actions)
+
+   - Policy allowing: lambda:UpdateFunctionCode, apigateway:*, s3:*, ec2:*, ecs:*.
+
+- Save Access Key & Secret Key securely (for GitHub Secrets).
+
+### 4️⃣ Configure AWS Secrets in GitHub
+
+- Go to GitHub repo → Settings → Secrets → Actions → Add the following secrets:
+
+| Secret Name             | Value                                |
+| ----------------------- | ------------------------------------ |
+| `AWS_ACCESS_KEY_ID`     | Your IAM user access key             |
+| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret key             |
+| `AWS_REGION`            | e.g., `us-east-1`                    |
+| `AWS_ACCOUNT_ID`        | Your AWS account ID                  |
+| `ECR_REPO`              | If using containerized Lambda or ECS |
+| `ECS_CLUSTER`           | If using ECS                         |
+| `ECS_SERVICE`           | If using ECS                         |
+
+### 5️⃣ Lambda Deployment Preparation
+
+- Ensure each Lambda function has a requirements.txt if using Python dependencies.
+
+- If using Lambda layers, place shared dependencies in a lambda_layer.sh script for automation.
+
+- Optional: Containerize Lambda for advanced CI/CD:
+
+```
+docker build -t lambda-name ./app/backend/lambda/
+```
+
+### 6️⃣ API Gateway Configuration
+
+- Each Lambda already has an API Gateway.
+
+- For CI/CD:
+
+   - Create a script to deploy/update API Gateway:
+
+```
+aws apigateway get-rest-apis
+aws apigateway import-rest-api --parameters endpointConfigurationTypes=REGIONAL --body 'swagger.json'
+```
+
+- This allows API Gateway to auto-update whenever Lambda code changes.
+
+### 7️⃣ RDS & DynamoDB Integration
+
+- #### RDS
+
+   - Keep schema.sql, data.sql, verify.sql under infrastructure/rds/.
+
+   - Add a CI/CD step to initialize or test RDS with:
+
+```
+mysql -h <RDS_ENDPOINT> -u <user> -p <password> < schema.sql
+```
+
+- #### DynamoDB
+
+- Use aws dynamodb put-item scripts to seed or verify tables.
+
+- Integrate in GitHub Actions for testing.
+
+### 8️⃣ Docker & LAMP Setup
+
+- Apache-PHP Dockerfile: Ensure all your PHP & HTML code runs inside.
+
+- MySQL Dockerfile: Ensure it uses schema.sql & data.sql.
+
+- docker-compose.yml: Make services linkable and networked.
+
+- CI/CD Step: Build and push Docker images to ECR:
+
+```
+docker build -t charlie-cafe ./docker/apache-php
+docker tag charlie-cafe:latest <ECR_URI>:latest
+docker push <ECR_URI>:latest
+```
+
+### 9️⃣ GitHub Actions — deploy.yml
+
+Your deploy.yml should include:
+
+- Trigger: On push to main.
+
+- #### Steps:
+
+   - Checkout repo
+
+   - Configure AWS credentials
+
+   - Build & push Docker images
+
+   - Deploy Lambda functions:
+
+```
+aws lambda update-function-code \
+    --function-name AdminMarkPaidLambda \
+    --zip-file fileb://app/backend/lambda/AdminMarkPaidLambda.zip
+```
+
+- Update API Gateway
+
+- Run RDS/DynamoDB tests
+
+- Optional: Restart EC2 LAMP containers or ECS service
+
+> This ensures every push automatically updates Lambda, APIs, and backend infrastructure.
+
+### 1️⃣0️⃣ Health Check & Monitoring
+
+- Add a monitoring script (e.g., health.php or Lambda) for:
+
+   - Lambda status
+
+   - API response
+
+   - RDS connection
+
+   - DynamoDB access
+
+- Integrate with CloudWatch Alarms for auto-restart / notifications.
+
+### 1️⃣1️⃣ Verification
+
+- Push a test commit to main.
+
+- Observe GitHub Actions run all steps.
+
+- Validate:
+
+   - Lambda updated
+
+   - API Gateway endpoints respond
+
+   - RDS / DynamoDB data is accessible
+
+   - Docker LAMP services are running
+
+---
+
+
+
+
+
 
