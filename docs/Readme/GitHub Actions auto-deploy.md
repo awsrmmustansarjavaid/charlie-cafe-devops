@@ -1024,7 +1024,7 @@ aws configure
 }
 ```
 
-- Policy Name: GitHub Actions
+- Policy Name: GitHub-Actions
 
 - Save the Access Key ID and Secret Key (you’ll put these in GitHub Secrets).
 
