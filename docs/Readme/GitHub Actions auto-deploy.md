@@ -998,6 +998,8 @@ aws configure
 
 - Go to AWS → IAM → Users → Add user
 
+  - UserName: Charelie-Cafe
+
   - User type: Programmatic access
 
 - Attach policy (minimum required):

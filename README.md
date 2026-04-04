@@ -176,7 +176,9 @@ charlie-cafe-devops
 
 - Go to AWS → IAM → Users → Add user
 
-- User type: Programmatic access
+  - UserName: Charelie-Cafe
+
+  - User type: Programmatic access
 
 - Attach policy (minimum required):
 
