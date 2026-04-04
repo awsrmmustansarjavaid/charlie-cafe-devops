@@ -172,11 +172,48 @@ charlie-cafe-devops/
 charlie-cafe-devops
 ```
 
-### 2️⃣ GitHub → EC2 Auto-Deploy Setup (Charlie Cafe)
+### 2️⃣ Create IAM User for GitHub Actions
 
-> #### Auto-deploy from GitHub → EC2 using SSH (Recommanded)
+- Go to AWS → IAM → Users → Add user
+
+- User type: Programmatic access
+
+- Attach policy (minimum required):
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ssm:SendCommand",
+        "ssm:ListCommandInvocations",
+        "ssm:GetCommandInvocation",
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+- Save the Access Key ID and Secret Key (you’ll put these in GitHub Secrets).
+
+### 3️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
 
 - Read more here [GitHub Actions auto-deploy-EC2](./docs/Readme/GitHub%20Actions%20auto-deploy-EC2.md)
+
+- ### ✅ Method 1️⃣  Add GitHub Secrets for AWS Access Key (Recommanded)
+
+
+
+
+- ### ✅ Method 2️⃣  Add GitHub Secrets for EC2 using SSH
+
+> #### Auto-deploy from GitHub → EC2 using SSH 
 
 ### 1️⃣ Prepare EC2 for SSH Deployment
 
