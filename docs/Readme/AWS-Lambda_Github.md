@@ -263,3 +263,12 @@ Frontend calls API 🚀
 ✅ Terraform (infra as code)
 
 ---
+## ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
+
+> The goal of this task is to fully modernize the Charlie Cafe project by integrating AWS DevOps practices. Instead of manually uploading Lambda functions, RDS scripts, and Docker images, we’ll use GitHub as the single source of truth and automate deployment using CI/CD pipelines, Infrastructure-as-Code, and Lambda layers. This ensures scalable, repeatable, and self-healing deployments while maintaining full integration with API Gateway, RDS, DynamoDB, and S3.
+
+Step 1️⃣ — Prepare GitHub Repository
+Ensure your repository structure is clean (as you’ve shared).
+Add all Lambda Python scripts under app/backend/lambda/.
+Include appspec.yaml for AWS CodeDeploy compatibility. Example minimal appspec.yaml:
+
