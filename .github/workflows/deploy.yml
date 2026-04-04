@@ -27,7 +27,7 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 3️⃣ Install Required Tools
+    # 3️⃣ Install Required Tools (for MySQL and jq)
     # -------------------------------------------------
     - name: 🧰 Install Tools
       run: |
@@ -35,15 +35,13 @@ jobs:
         sudo apt-get install -y mysql-client jq curl
 
     # -------------------------------------------------
-    # 4️⃣ Retrieve RDS Secret
+    # 4️⃣ Retrieve RDS Secret from Secrets Manager
     # -------------------------------------------------
     - name: 🗝️ Retrieve RDS Secret
       run: |
         SECRET_JSON=$(aws secretsmanager get-secret-value \
-          --secret-id arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123 \
-          --query SecretString \
-          --output text)
-
+          --secret-id "${{ secrets.RDS_SECRET_ARN }}" \
+          --query SecretString --output text)
         echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
 
     # -------------------------------------------------
@@ -57,7 +55,7 @@ jobs:
         echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 6️⃣ Wait for RDS
+    # 6️⃣ Wait for RDS to be ready
     # -------------------------------------------------
     - name: ⏳ Wait for RDS
       run: |
@@ -68,13 +66,11 @@ jobs:
         done
 
     # -------------------------------------------------
-    # 7️⃣ Create Database
+    # 7️⃣ Create Database if not exists
     # -------------------------------------------------
     - name: 🗄️ Create Database
       run: |
-        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS -e "
-        CREATE DATABASE IF NOT EXISTS $DB_NAME;
-        "
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
 
     # -------------------------------------------------
     # 8️⃣ Apply Schema
@@ -91,20 +87,20 @@ jobs:
         mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
 
     # -------------------------------------------------
-    # 🔟 Verify DB
+    # 🔟 Verify Database
     # -------------------------------------------------
     - name: ✅ Verify Database
       run: |
         mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
 
     # -------------------------------------------------
-    # 11️⃣ Build Docker Image
+    # 11️⃣ Build Docker Image locally (for testing)
     # -------------------------------------------------
     - name: 🐳 Build Docker Image
       run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
-    # 12️⃣ Run Container (Test)
+    # 12️⃣ Run Container locally (test)
     # -------------------------------------------------
     - name: 🚀 Run Container (Test)
       run: |
@@ -112,39 +108,44 @@ jobs:
         sleep 10
 
     # -------------------------------------------------
-    # 13️⃣ Health Check
+    # 13️⃣ Local Health Check
     # -------------------------------------------------
     - name: ❤️ Test Application
       run: |
         curl -f http://localhost:8080/health.php || exit 1
 
     # -------------------------------------------------
-    # 14️⃣ Cleanup
+    # 14️⃣ Cleanup local container
     # -------------------------------------------------
     - name: 🧹 Cleanup
       run: |
         docker rm -f test_app || true
 
     # -------------------------------------------------
-    # 15️⃣ Deploy via SSM (FINAL STEP)
+    # 15️⃣ Deploy to EC2 via SSM using new bash script
     # -------------------------------------------------
     - name: 🚀 Deploy via AWS SSM
       run: |
         aws ssm send-command \
-          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+          --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
           --document-name "AWS-RunShellScript" \
-          --comment "Deploy Charlie Cafe App" \
-          --parameters 'commands=[
-            "cd /home/ec2-user/charlie-cafe-devops",
-            "git pull origin main",
-            "docker rm -f cafe-app || true",
-            "docker build -t charlie-cafe -f docker/apache-php/Dockerfile .",
-            "docker run -d -p 80:80 --name cafe-app charlie-cafe"
-          ]' \
+          --comment "Deploy Charlie Cafe App via deploy_via_ssm.sh" \
+          --parameters commands=["$HOME/charlie-cafe-devops/deploy_via_ssm.sh"] \
           --region ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 16️⃣ Success
+    # 16️⃣ Health Check after deploy (remote)
+    # -------------------------------------------------
+    - name: 🌐 Remote Health Check
+      run: |
+        INSTANCE_IP=$(aws ec2 describe-instances \
+          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+          --query "Reservations[0].Instances[0].PublicIpAddress" \
+          --output text)
+        curl -f http://$INSTANCE_IP/health.php || exit 1
+
+    # -------------------------------------------------
+    # 17️⃣ Success
     # -------------------------------------------------
     - name: 🎉 Success
       run: echo "CI/CD Pipeline Completed Successfully 🚀"

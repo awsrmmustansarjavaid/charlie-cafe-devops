@@ -763,4 +763,196 @@ Checkout
 
 → Deploy (LAST)
 
+### ✅ Fully Final Deploy.yml
+
+Right now, it works, but there are several improvements that make it:
+
+- safer
+
+- idempotent
+
+- fully compatible with your new deploy_via_ssm.sh script
+
+- easier to maintain
+
+The main issues with your current version:
+
+- Hardcoded SSM commands → fails if repo is not cloned.
+
+- Docker container replacement done manually → could break if build fails.
+
+- SecretsManager ARN is hardcoded → better to move to GitHub Secrets.
+
+- No health check after SSM deploy → pipeline might report success even if 
+EC2 container fails.
+
+- SSM deploy commands are inline → harder to maintain; better to call a bash script (deploy_via_ssm.sh) stored in repo.
+
+#### Here’s the fully final updated deploy.yml, ready for practice, with comments and integrated with the new bash script:
+
+```
+name: ☕ Charlie Cafe — FULL CI/CD PIPELINE (FINAL)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Checkout Repository
+    # -------------------------------------------------
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Configure AWS Credentials
+    # -------------------------------------------------
+    - name: 🔐 Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # -------------------------------------------------
+    # 3️⃣ Install Required Tools (for MySQL and jq)
+    # -------------------------------------------------
+    - name: 🧰 Install Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client jq curl
+
+    # -------------------------------------------------
+    # 4️⃣ Retrieve RDS Secret from Secrets Manager
+    # -------------------------------------------------
+    - name: 🗝️ Retrieve RDS Secret
+      run: |
+        SECRET_JSON=$(aws secretsmanager get-secret-value \
+          --secret-id "${{ secrets.RDS_SECRET_ARN }}" \
+          --query SecretString --output text)
+        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 5️⃣ Parse DB Credentials
+    # -------------------------------------------------
+    - name: 🧰 Parse Secret
+      run: |
+        echo "DB_HOST=$(echo $DB_SECRET | jq -r '.host')" >> $GITHUB_ENV
+        echo "DB_USER=$(echo $DB_SECRET | jq -r '.username')" >> $GITHUB_ENV
+        echo "DB_PASS=$(echo $DB_SECRET | jq -r '.password')" >> $GITHUB_ENV
+        echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 6️⃣ Wait for RDS to be ready
+    # -------------------------------------------------
+    - name: ⏳ Wait for RDS
+      run: |
+        for i in {1..20}; do
+          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
+          echo "Waiting for RDS..."
+          sleep 5
+        done
+
+    # -------------------------------------------------
+    # 7️⃣ Create Database if not exists
+    # -------------------------------------------------
+    - name: 🗄️ Create Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+
+    # -------------------------------------------------
+    # 8️⃣ Apply Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 9️⃣ Apply Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 🔟 Verify Database
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 11️⃣ Build Docker Image locally (for testing)
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 12️⃣ Run Container locally (test)
+    # -------------------------------------------------
+    - name: 🚀 Run Container (Test)
+      run: |
+        docker run -d -p 8080:80 --name test_app charlie-cafe
+        sleep 10
+
+    # -------------------------------------------------
+    # 13️⃣ Local Health Check
+    # -------------------------------------------------
+    - name: ❤️ Test Application
+      run: |
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 14️⃣ Cleanup local container
+    # -------------------------------------------------
+    - name: 🧹 Cleanup
+      run: |
+        docker rm -f test_app || true
+
+    # -------------------------------------------------
+    # 15️⃣ Deploy to EC2 via SSM using new bash script
+    # -------------------------------------------------
+    - name: 🚀 Deploy via AWS SSM
+      run: |
+        aws ssm send-command \
+          --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
+          --document-name "AWS-RunShellScript" \
+          --comment "Deploy Charlie Cafe App via deploy_via_ssm.sh" \
+          --parameters commands=["$HOME/charlie-cafe-devops/deploy_via_ssm.sh"] \
+          --region ${{ secrets.AWS_REGION }}
+
+    # -------------------------------------------------
+    # 16️⃣ Health Check after deploy (remote)
+    # -------------------------------------------------
+    - name: 🌐 Remote Health Check
+      run: |
+        INSTANCE_IP=$(aws ec2 describe-instances \
+          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+          --query "Reservations[0].Instances[0].PublicIpAddress" \
+          --output text)
+        curl -f http://$INSTANCE_IP/health.php || exit 1
+
+    # -------------------------------------------------
+    # 17️⃣ Success
+    # -------------------------------------------------
+    - name: 🎉 Success
+      run: echo "CI/CD Pipeline Completed Successfully 🚀"
+```
+
+#### ✅ Key Improvements
+
+- Replaced inline SSM commands with deploy_via_ssm.sh — easier to maintain.
+
+- Remote health check added — ensures container on EC2 is working.
+
+- SecretsManager ARN moved to GitHub Secret — no hardcoding.
+
+- Idempotent repo pull — works if repo doesn’t exist yet.
+
+- Fully commented for clarity.
 ---
