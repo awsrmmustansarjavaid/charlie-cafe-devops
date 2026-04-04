@@ -1344,12 +1344,125 @@ sudo systemctl status amazon-ssm-agent
 
 ❌ If NOT:
 
+#### 🔴 1️⃣ Fix ssm agent
+
 ```
 sudo systemctl restart amazon-ssm-agent
 ```
 
+#### 🔴 2️⃣ Fix Your IAM Policy (Missing Permission ⚠️)
 
+Your pipeline uses:
 
+```
+aws ssm send-command
+```
+
+But sometimes it silently fails without this:
+
+👉 Add this to your IAM policy:
+
+```
+{
+  "Sid": "SSMExtras",
+  "Effect": "Allow",
+  "Action": [
+    "ssm:DescribeInstanceInformation"
+  ],
+  "Resource": "*"
+}
+```
+
+#### 🔴 3️⃣ Secrets Manager Permission (YOU MISSED THIS ❗)
+
+Your pipeline uses:
+
+```
+aws secretsmanager get-secret-value
+```
+
+But your IAM policy DOES NOT allow it.
+
+👉 Add this:
+
+```
+{
+  "Sid": "SecretsAccess",
+  "Effect": "Allow",
+  "Action": [
+    "secretsmanager:GetSecretValue"
+  ],
+  "Resource": "*"
+}
+```
+
+#### 🔴 4️⃣ Docker Must Be Installed on EC2
+
+SSH into EC2 and confirm:
+
+```
+docker --version
+```
+
+If not:
+
+```
+sudo yum install docker -y
+sudo systemctl start docker
+sudo usermod -aG docker ec2-user
+```
+
+#### 🔴 5️⃣ Git Must Be Installed on EC2
+
+```
+git --version
+```
+
+If not:
+
+```
+sudo yum install git -y
+```
+
+#### 🔴 6️⃣ Repo Must Exist on EC2 (VERY COMMON MISTAKE)
+
+Your script runs:
+
+```
+cd /home/ec2-user/charlie-cafe-devops
+git pull origin main
+```
+
+👉 You must already clone it:
+
+```
+cd /home/ec2-user
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git charlie-cafe-devops
+```
+
+#### 🔴 7️⃣ Security Group (Port 80 Open)
+
+- EC2 → Security Group
+
+- Allow:
+
+```
+HTTP (80) → 0.0.0.0/0
+```
+
+#### 🔴 8️⃣ Fix Hardcoded Secrets ARN
+
+Your pipeline has:
+
+```
+arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeRDSSecret-ABC123
+```
+
+⚠️ Replace:
+
+- Account ID
+
+- Secret name
 
 ### 🧠 6. Pro Upgrade (Next Level DevOps)
 
