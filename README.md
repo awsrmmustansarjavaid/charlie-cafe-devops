@@ -204,7 +204,7 @@ charlie-cafe-devops
 
 ### 3️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
 
-- Read more here [GitHub Actions auto-deploy-EC2](./docs/Readme/GitHub%20Actions%20auto-deploy-EC2.md)
+- Read more here [GitHub Actions auto-deploy-EC2](./docs/Readme/GitHub%20Actions%20auto-deploy.md)
 
 - ### ✅ Method 1️⃣  Add GitHub Secrets for AWS Access Key (Recommanded)
 
