@@ -1280,7 +1280,9 @@ Before this works, your EC2 must have:
 
 #### ✅ 1. IAM Role attached to EC2
 
-- Policy required: AmazonSSMManagedInstanceCore
+- Go to: EC2 → Instances → Select your instance → Actions → Security → Modify IAM Role
+
+- 👉 Attach role with this policy required: AmazonSSMManagedInstanceCore:
 
 - Use this:
 
@@ -1310,6 +1312,14 @@ Before this works, your EC2 must have:
 }
 ```
 
+#### ✔ This allows:
+
+- SSM connection
+
+- RunCommand execution
+
+- Instance visibility in Systems Manager
+
 #### ✅ 2. SSM Agent installed
 
 - For Amazon Linux: ✔ Already installed (usually)
@@ -1320,9 +1330,26 @@ Before this works, your EC2 must have:
 sudo systemctl status amazon-ssm-agent
 ```
 
-#### ✅ 3. Instance must appear in SSM
+#### ✅ 3. Verify SSM Connectivity
+
+✅ Instance must appear in SSM
 
 - Go to: 👉 AWS Console → Systems Manager → Managed Instances
+
+✅ You MUST see:
+
+- Your EC2 instance listed
+
+- Status: Online
+
+❌ If NOT:
+
+```
+sudo systemctl restart amazon-ssm-agent
+```
+
+
+
 
 ### 🧠 6. Pro Upgrade (Next Level DevOps)
 

@@ -260,6 +260,28 @@ AWS_SECRET_ACCESS_KEY
 
 > 💡 Tip: Instead of hardcoding EC2 IP, use EC2 instance ID + AWS SSM to target instance — no SSH needed.
 
+### 4️⃣ SSM Agent
+
+#### ✅ 1. SSM Agent installed 
+
+```
+sudo systemctl status amazon-ssm-agent
+```
+
+#### ✅ 2. Verify SSM Connectivity
+
+- Go to: 👉 AWS Console → Systems Manager → Managed Instances
+
+✅ You MUST see:
+
+- Your EC2 instance listed
+
+- Status: Online
+
+
+
+
+
 - ### ✅ Method 2️⃣  Add GitHub Secrets for EC2 using SSH
 
 > #### Auto-deploy from GitHub → EC2 using SSH 
