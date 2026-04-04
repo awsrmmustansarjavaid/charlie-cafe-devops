@@ -1042,6 +1042,7 @@ Provide user access to the AWS Management Console → ❌ UNCHECK
         "ec2:DescribeInstances",
         "ssm:SendCommand",
         "ssm:GetCommandInvocation"
+        "secretsmanager:GetSecretValue"
       ],
       "Resource": "*"
     }
