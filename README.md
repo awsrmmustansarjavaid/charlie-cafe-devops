@@ -176,9 +176,19 @@ charlie-cafe-devops
 
 - Go to AWS → IAM → Users → Add user
 
-  - UserName: Charelie-Cafe
+  - UserName: github-ci-cd-user
 
-  - User type: Programmatic access
+  - ✅ Select:
+
+```
+Provide user access to the AWS Management Console → ❌ UNCHECK
+```
+
+#### 👉 IMPORTANT:
+
+  - You only need programmatic access (API)
+
+  - NOT console login
 
 - Attach policy (minimum required):
 
@@ -189,12 +199,11 @@ charlie-cafe-devops
     {
       "Effect": "Allow",
       "Action": [
+        "lambda:UpdateFunctionCode",
+        "lambda:GetFunction",
         "ec2:DescribeInstances",
         "ssm:SendCommand",
-        "ssm:ListCommandInvocations",
-        "ssm:GetCommandInvocation",
-        "s3:GetObject",
-        "s3:PutObject"
+        "ssm:GetCommandInvocation"
       ],
       "Resource": "*"
     }
@@ -204,7 +213,29 @@ charlie-cafe-devops
 
 - Policy Name: GitHub-Actions
 
-- Save the Access Key ID and Secret Key (you’ll put these in GitHub Secrets).
+- 👉 Then attach this policy to your user
+
+### 3️⃣ 🔐 Create IAM User Access Key for GitHub
+
+- Go to AWS → IAM → Users → your user
+
+- Go to Security credentials → Access keys → Create Access key
+
+- #### Choose Use Case:
+
+  Select: 👉 Command Line Interface (CLI)
+
+- Click Next → Create
+
+- ### ✅ Save Keys (VERY IMPORTANT)
+
+You will get:
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+```
+
 
 ### 3️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
 

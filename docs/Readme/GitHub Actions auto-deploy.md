@@ -998,11 +998,60 @@ aws configure
 
 - Go to AWS → IAM → Users → Add user
 
-  - UserName: Charelie-Cafe
+  - UserName: github-ci-cd-user
 
-  - User type: Programmatic access
+  - ✅ Select:
 
-- Attach policy (minimum required):
+```
+Provide user access to the AWS Management Console → ❌ UNCHECK
+```
+
+- #### 👉 IMPORTANT:
+
+  - You only need programmatic access (API)
+
+  - NOT console login
+
+- #### ✅ Set Permissions (VERY IMPORTANT)
+
+  - Choose: 👉 Attach policies directly
+
+  For your Charlie Cafe lab (minimum working policy):
+
+  You can either:
+
+    - #### ✅ Option A (Simple - for learning)
+
+    Attach: AdministratorAccess (easy but not secure)
+
+    > 👉 Good for lab only
+
+    - #### ✅ Option B (Recommended - Professional)
+
+    Click Create policy → Use this:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:UpdateFunctionCode",
+        "lambda:GetFunction",
+        "ec2:DescribeInstances",
+        "ssm:SendCommand",
+        "ssm:GetCommandInvocation"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+    - #### ✅ Option c ( Professional)
+
+    Click Create policy → Use this:
 
 ```
 {
@@ -1026,7 +1075,45 @@ aws configure
 
 - Policy Name: GitHub-Actions
 
-- Save the Access Key ID and Secret Key (you’ll put these in GitHub Secrets).
+- 👉 Then attach this policy to your user
+
+### 🔐 Create IAM User Access Key for GitHub
+
+#### 🧠 What You Are Doing (Concept)
+
+You are creating:
+
+✅ IAM User with Programmatic Access
+→ Used by GitHub Actions to access AWS (Lambda, EC2, ECS, etc.)
+
+This is called:
+
+👉 “Machine-to-Machine Authentication using IAM Access Keys”
+
+- ### 1️⃣ Create Access Key 🔑
+
+- Go to AWS → IAM → Users → your user
+
+- Go to Security credentials → Access keys → Create Access key
+
+- #### Choose Use Case:
+
+  Select: 👉 Command Line Interface (CLI)
+
+- Click Next → Create
+
+- ### 2️⃣ Save Keys (VERY IMPORTANT)
+
+You will get:
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+```
+
+#### ⚠️ You will NOT see secret again!
+
+👉 Save it safely OR download .csv
 
 ### 3️⃣ Add GitHub Secrets for AWS Access Key
 
