@@ -1201,8 +1201,6 @@ Lambda / EC2 / ECS
 
 > 💡 Tip: Instead of hardcoding EC2 IP, use EC2 instance ID + AWS SSM to target instance — no SSH needed.
 
-
-
 ### 4️⃣ Keep Deployment Script on EC2
 
 Place your charlie-cafe-devops.sh in EC2:
@@ -1262,6 +1260,28 @@ jobs:
 - No SSH key needed
 
 - Works on multiple EC2 instances by adding more IDs in Values=...
+
+### ⚠️ VERY IMPORTANT REQUIREMENTS (SSM Setup)
+
+Before this works, your EC2 must have:
+
+#### ✅ 1. IAM Role attached to EC2
+
+- Policy required: AmazonSSMManagedInstanceCore
+
+#### ✅ 2. SSM Agent installed
+
+- For Amazon Linux: ✔ Already installed (usually)
+
+- Check:
+
+```
+sudo systemctl status amazon-ssm-agent
+```
+
+#### ✅ 3. Instance must appear in SSM
+
+- Go to: 👉 AWS Console → Systems Manager → Managed Instances
 
 ### 6️⃣ Test Deployment
 
