@@ -565,6 +565,259 @@ You already have:
 
 👉 Keep them as-is 👍
 
+### ✅ ✅ FINAL MERGED deploy.yml (WITH LAMBDA CI/CD)
+
+```
+name: ☕ Charlie Cafe — FULL CI/CD PIPELINE (FINAL)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Checkout Repository
+    # -------------------------------------------------
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Configure AWS Credentials
+    # -------------------------------------------------
+    - name: 🔐 Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # -------------------------------------------------
+    # 3️⃣ Install Required Tools
+    # -------------------------------------------------
+    - name: 🧰 Install Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client jq curl zip
+
+    # -------------------------------------------------
+    # 4️⃣ Retrieve RDS Secret
+    # -------------------------------------------------
+    - name: 🗝️ Retrieve RDS Secret
+      run: |
+        SECRET_JSON=$(aws secretsmanager get-secret-value \
+          --secret-id "${{ secrets.RDS_SECRET_ARN }}" \
+          --query SecretString --output text)
+        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 5️⃣ Parse DB Credentials
+    # -------------------------------------------------
+    - name: 🧰 Parse Secret
+      run: |
+        echo "DB_HOST=$(echo $DB_SECRET | jq -r '.host')" >> $GITHUB_ENV
+        echo "DB_USER=$(echo $DB_SECRET | jq -r '.username')" >> $GITHUB_ENV
+        echo "DB_PASS=$(echo $DB_SECRET | jq -r '.password')" >> $GITHUB_ENV
+        echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # 6️⃣ Wait for RDS
+    # -------------------------------------------------
+    - name: ⏳ Wait for RDS
+      run: |
+        for i in {1..20}; do
+          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
+          echo "Waiting for RDS..."
+          sleep 5
+        done
+
+    # -------------------------------------------------
+    # 7️⃣ Create Database
+    # -------------------------------------------------
+    - name: 🗄️ Create Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+
+    # -------------------------------------------------
+    # 8️⃣ Apply Schema
+    # -------------------------------------------------
+    - name: 🗄️ Apply Schema
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
+
+    # -------------------------------------------------
+    # 9️⃣ Apply Data
+    # -------------------------------------------------
+    - name: 📊 Apply Data
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
+
+    # -------------------------------------------------
+    # 🔟 Verify Database
+    # -------------------------------------------------
+    - name: ✅ Verify Database
+      run: |
+        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
+
+    # -------------------------------------------------
+    # 11️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🐳 Build Docker Image
+      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 12️⃣ Run Container (Test)
+    # -------------------------------------------------
+    - name: 🚀 Run Container
+      run: |
+        docker run -d -p 8080:80 --name test_app charlie-cafe
+        sleep 10
+
+    # -------------------------------------------------
+    # 13️⃣ Local Health Check
+    # -------------------------------------------------
+    - name: ❤️ Test Application
+      run: |
+        curl -f http://localhost:8080/health.php || exit 1
+
+    # -------------------------------------------------
+    # 14️⃣ Cleanup
+    # -------------------------------------------------
+    - name: 🧹 Cleanup
+      run: |
+        docker rm -f test_app || true
+
+    # =================================================
+    # 🔥 LAMBDA CI/CD STARTS HERE
+    # =================================================
+
+    # -------------------------------------------------
+    # 15️⃣ Package Lambda Functions
+    # -------------------------------------------------
+    - name: 📦 Package Lambda Functions
+      run: |
+        mkdir -p lambda_zips
+
+        # Loop through each .py file in lambda folder
+        for file in app/backend/lambda/*.py; do
+          fname=$(basename "$file" .py)
+
+          echo "Packaging $fname..."
+
+          # Create ZIP for each Lambda
+          zip -j lambda_zips/$fname.zip "$file"
+        done
+
+    # -------------------------------------------------
+    # 16️⃣ Deploy Lambda Functions
+    # -------------------------------------------------
+    - name: 🚀 Deploy Lambdas
+      run: |
+        for zip in lambda_zips/*.zip; do
+          fname=$(basename "$zip" .zip)
+
+          echo "Deploying Lambda: $fname"
+
+          aws lambda update-function-code \
+            --function-name "$fname" \
+            --zip-file "fileb://$zip"
+        done
+
+    # -------------------------------------------------
+    # 17️⃣ (Optional) Test One Lambda
+    # -------------------------------------------------
+    - name: 🧪 Test Lambda
+      run: |
+        aws lambda invoke \
+          --function-name CafeOrderProcessor \
+          --payload '{}' response.json
+
+        cat response.json
+
+    # =================================================
+    # 🔥 EC2 DEPLOYMENT CONTINUES
+    # =================================================
+
+    # -------------------------------------------------
+    # 18️⃣ Deploy to EC2 via SSM
+    # -------------------------------------------------
+    - name: 🚀 Deploy via AWS SSM
+      run: |
+        aws ssm send-command \
+          --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
+          --document-name "AWS-RunShellScript" \
+          --comment "Deploy Charlie Cafe App via deploy_via_ssm.sh" \
+          --parameters commands=["$HOME/charlie-cafe-devops/deploy_via_ssm.sh"] \
+          --region ${{ secrets.AWS_REGION }}
+
+    # -------------------------------------------------
+    # 19️⃣ Remote Health Check
+    # -------------------------------------------------
+    - name: 🌐 Remote Health Check
+      run: |
+        INSTANCE_IP=$(aws ec2 describe-instances \
+          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+          --query "Reservations[0].Instances[0].PublicIpAddress" \
+          --output text)
+
+        curl -f http://$INSTANCE_IP/health.php || exit 1
+
+    # -------------------------------------------------
+    # 20️⃣ Success
+    # -------------------------------------------------
+    - name: 🎉 Success
+      run: echo "CI/CD Pipeline Completed Successfully 🚀"
+```
+
+#### 🔥 WHAT YOU JUST ACHIEVED
+
+Now your pipeline:
+
+✅ RDS auto setup
+
+✅ Docker test
+
+✅ Lambda auto deployment 🔥
+
+✅ EC2 deployment
+
+✅ Health checks
+
+#### ⚠️ FINAL CHECKLIST (DON’T SKIP)
+
+Before running:
+
+✔ Lambda names must match filenames
+
+```
+CafeOrderProcessor.py → Lambda name = CafeOrderProcessor
+```
+
+✔ IAM must include
+
+```
+lambda:UpdateFunctionCode
+```
+
+✔ Region must match
+
+```
+GitHub secret AWS_REGION = Lambda region
+```
+
+✔ No external dependencies (IMPORTANT)
+
+If your Lambda uses:
+
+- pymysql
+
+- requests
+
+👉 tell me → I will upgrade this to Lambda Layers
 
 ### 1️⃣0️⃣ Health Check & Monitoring
 
