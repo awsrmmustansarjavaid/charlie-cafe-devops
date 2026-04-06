@@ -263,6 +263,62 @@ Frontend calls API 🚀
 ✅ Terraform (infra as code)
 
 ---
+### ✅ How CI/CD deployment works for Lambda
+
+- #### GitHub file:
+
+You have CafeOrderProcessor.py in your repo:
+
+```
+app/backend/lambda/CafeOrderProcessor.py
+```
+
+- #### GitHub Actions pipeline:
+
+Your deploy.yml does these two steps:
+
+```
+zip lambda_zips/CafeOrderProcessor.zip app/backend/lambda/CafeOrderProcessor.py
+aws lambda update-function-code --function-name CafeOrderProcessor --zip-file fileb://lambda_zips/CafeOrderProcessor.zip
+```
+
+#### What this does:
+
+- It zips the .py file
+
+- It uploads the zip to AWS Lambda
+
+- AWS Lambda code is replaced with this new zip
+
+### 🧩 What happens in AWS Lambda console
+
+After CI/CD runs successfully, if you go to AWS Lambda → CafeOrderProcessor → Code tab:
+
+✅ You will see the exact code from GitHub file inside the Lambda editor
+
+✅ It is identical to your GitHub file
+
+❌ No copy-paste required
+
+Lambda essentially syncs its code with the GitHub file via CI/CD.
+
+### ⚠️ Important Notes
+
+- No GitHub link: Lambda does not link to GitHub. It only gets the zip file.
+
+- Editable in Lambda: You can edit code in Lambda console, but next GitHub push → Lambda is overwritten.
+
+- Dependencies: Only the .py file itself is copied. If your Lambda uses external libraries (pymysql, requests), they must be included in the zip or via Lambda Layer.
+
+### ✅ TL;DR
+
+- After CI/CD runs, Lambda looks exactly like your GitHub file
+
+- No manual copy-paste needed
+
+- GitHub is now the source of truth
+
+---
 ## ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
 
 > This project upgrades the existing Charlie Cafe application into a fully automated AWS DevOps workflow using GitHub, CI/CD, and AWS services. The goal is to have automatic deployment for Lambda functions, API Gateway, RDS, DynamoDB, and LAMP components via GitHub Actions and scripts, ensuring version control, testing, and zero manual deployment steps. This setup allows you to maintain all Lambda code in your GitHub repo and deploy updates seamlessly across all integrated AWS services.
