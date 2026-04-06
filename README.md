@@ -740,7 +740,54 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 | `ECS_CLUSTER`           | If using ECS                         |
 | `ECS_SERVICE`           | If using ECS                         |
 
-### 3️⃣ 
+### 3️⃣ Basic Lambda Configurations
+
+#### ✅ STEP 1 — CHECK BASIC SETTINGS
+
+Inside Lambda → Configuration → General configuration
+
+Make sure:
+
+✔ Runtime
+
+```
+Python 3.10 or 3.11
+```
+
+✔ Timeout
+
+```
+10–30 seconds
+```
+
+👉 Click Edit → Save
+
+### ✅ STEP 2 — FIX HANDLER (VERY IMPORTANT)
+
+- Go to: 👉 Configuration → Runtime settings
+
+- Click Edit
+
+- Set Handler like this:
+
+```
+CafeOrderProcessor.lambda_handler
+```
+
+- RULE:
+
+```
+filename.function
+```
+
+So:
+
+| File              | Handler                       |
+| ----------------- | ----------------------------- |
+| CafeMenuLambda.py | CafeMenuLambda.lambda_handler |
+| hr-attendance.py  | hr-attendance.lambda_handler  |
+
+⚠️ If wrong → CI/CD works but Lambda FAILS
 
 
 
