@@ -933,10 +933,263 @@ You are now combining:
 
 👉 This is way stronger than basic frontend path
 
+### 👉 You must prepare each Lambda in AWS ONE TIME
+
+> After that → GitHub will handle everything automatically
+
+### 🚀 FULL STEP-BY-STEP
+
+Follow this exact order
+
+### 🧩 STEP 1 — Verify Lambda Names (CRITICAL)
+
+- Go to AWS: 👉 AWS Console → Lambda → Functions
+
+Now check each function name.
+
+✔ MUST MATCH THIS RULE:
+
+| GitHub File         | AWS Lambda Name  |
+| ------------------- | ---------------- |
+| `CafeMenuLambda.py` | `CafeMenuLambda` |
+| `hr-attendance.py`  | `hr-attendance`  |
+
+#### ❌ If names don’t match
+
+Example:
+
+- File = CafeOrderProcessor.py
+
+- Lambda = order-processor-prod
+
+### 👉 CI/CD will FAIL ❌
+
+#### ✅ FIX (if needed)
+
+Either:
+
+- Rename Lambda in AWS
+
+OR
+
+- Rename file in GitHub
+
+### 🧩 STEP 2 — Verify Runtime (VERY IMPORTANT)
+
+- Open each Lambda → check:
+
+Must be:
+
+```
+Runtime: Python 3.10 / 3.11
+```
+
+### 🧩 STEP 3 — Verify Handler
+
+Inside Lambda settings:
+
+👉 Example:
+
+| File                  | Handler                             |
+| --------------------- | ----------------------------------- |
+| CafeOrderProcessor.py | `CafeOrderProcessor.lambda_handler` |
+
+### ❌ Common mistake
+
+- #### Wrong:
+
+```
+lambda_function.lambda_handler
+```
+
+#### ✅ Fix:
+
+- Match filename:
+
+```
+<filename>.lambda_handler
+```
+
+### 🧩 STEP 4 — Test Manual Update (VERY IMPORTANT TEST)
+
+Before trusting CI/CD:
+
+Run this locally OR CloudShell:
+
+```
+zip test.zip CafeOrderProcessor.py
+
+aws lambda update-function-code \
+  --function-name CafeOrderProcessor \
+  --zip-file fileb://test.zip
+```
+
+- #### ✅ If this works:
+
+   - 👉 Your IAM + Lambda setup is correct
+
+- #### ❌ If fails:
+
+   - 👉 Fix permissions first
+
+### 🧩 STEP 5 — Check IAM Role of Lambda (NOT GitHub IAM)
+
+Each Lambda has its own role.
+
+- Go to: 👉 Lambda → Configuration → Permissions
+
+#### Ensure it has:
+
+- RDS access
+
+- DynamoDB access
+
+- CloudWatch logs
+
+Example:
+
+```
+{
+  "Effect": "Allow",
+  "Action": [
+    "logs:*",
+    "dynamodb:*",
+    "rds:*"
+  ],
+  "Resource": "*"
+}
+```
+
+### 🧩 STEP 6 — Environment Variables (VERY IMPORTANT)
+
+If your Lambda uses DB or API:
+
+- Go to: 👉 Lambda → Configuration → Environment variables
+
+Example:
+
+```
+DB_HOST = xxxx
+DB_USER = admin
+DB_PASS = ****
+DB_NAME = cafe_db
+```
+
+👉 CI/CD DOES NOT update env variables
+
+👉 You must configure once manually
+
+### 🧩 STEP 7 — API Gateway (NO CHANGE REQUIRED)
+
+You said:
+
+already integrated with API Gateway
+
+✅ GOOD — nothing to do
+
+Because:
+
+👉 API Gateway automatically uses updated Lambda code
+
+### 🧩 STEP 8 — First GitHub Test Run
+
+Now do this:
+
+- #### 👉 Make small change in any Lambda file
+
+Example:
+
+```
+print("CI/CD TEST SUCCESS")
+```
+
+- #### 👉 Push to GitHub:
+
+```
+git add .
+git commit -m "test lambda ci cd"
+git push origin main
+```
+
+- #### 👉 Go to GitHub Actions
+
+Watch:
+
+```
+📦 Package Lambda
+🚀 Deploy Lambda
+```
+
+### 🧩 STEP 9 — Verify in AWS
+
+- Go to Lambda → open function → check:
+
+👉 “Last modified”
+
+✔ Should be updated
+
+### 🧩 STEP 10 — Real API Test
+
+Call your API Gateway endpoint
+
+👉 If response works → DONE ✅
+
+### ⚠️ VERY IMPORTANT (REAL-WORLD ISSUES)
+
+- #### ❗ Issue 1: Dependencies
+
+If your Lambda uses:
+
+```
+import pymysql
+import requests
+```
+
+👉 Your current ZIP method will FAIL ❌
+
+Solution (tell me if needed):
+
+- Lambda Layer
+
+- OR build inside pipeline
+
+- #### ❗ Issue 2: Large file size
+
+Limit:
+
+```
+ZIP < 50 MB
+```
+
+- #### ❗ Issue 3: Timeout
+
+Check:
+
+```
+Timeout = 10–30 sec
+```
+
+### 🧠 FINAL RESULT (WHAT YOU BUILT)
+
+Now your system:
+
+```
+Developer → GitHub Push →
+   CI/CD Pipeline →
+      ✔ RDS
+      ✔ Docker
+      ✔ Lambda AUTO UPDATE 🔥
+      ✔ EC2 deploy
+      ✔ Health check
+```
+
+### check
+🔥 WHAT YOU DON'T NEED TO DO
+
+❌ No manual paste in Lambda anymore
+
+❌ No redeploy API Gateway
+
+❌ No Docker change needed
+
 ---
-
-
-
-
-
-
