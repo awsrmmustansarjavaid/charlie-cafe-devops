@@ -1,8 +1,19 @@
 # -----------------------------
-# System Files
+# Git
 # -----------------------------
-.DS_Store
-Thumbs.db
+.git
+.gitignore
+
+# -----------------------------
+# Node / PHP Dependencies
+# -----------------------------
+node_modules
+vendor
+
+# -----------------------------
+# Environment
+# -----------------------------
+.env
 
 # -----------------------------
 # Logs
@@ -10,36 +21,22 @@ Thumbs.db
 *.log
 
 # -----------------------------
-# Environment Variables
+# DevOps / CI-CD Files (NOT needed in container)
 # -----------------------------
-.env
-
-# -----------------------------
-# Node / PHP Dependencies
-# -----------------------------
-node_modules/
-vendor/
-
-# -----------------------------
-# Git (safety)
-# -----------------------------
-.git
-
-# -----------------------------
-# Build Artifacts (IMPORTANT 🔥)
-# -----------------------------
-layer/
+.github
+infrastructure/
 lambda_zips/
+layer/
 pymysql-layer.zip
-
-# -----------------------------
-# Docker / Local Files
-# -----------------------------
-docker/*.tar
-docker-compose.yml
 
 # -----------------------------
 # Docs
 # -----------------------------
 docs/
 README.md
+
+# -----------------------------
+# OS Files
+# -----------------------------
+.DS_Store
+Thumbs.db

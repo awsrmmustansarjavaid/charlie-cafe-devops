@@ -1769,9 +1769,166 @@ docs/
 ### ✅ FINAL .gitignore (CLEAN + CORRECT)
 
 ```
+# -----------------------------
+# System Files
+# -----------------------------
+.DS_Store
+Thumbs.db
 
+# -----------------------------
+# Logs
+# -----------------------------
+*.log
+
+# -----------------------------
+# Environment Variables
+# -----------------------------
+.env
+
+# -----------------------------
+# Node / PHP Dependencies
+# -----------------------------
+node_modules/
+vendor/
+
+# -----------------------------
+# Git (safety)
+# -----------------------------
+.git
+
+# -----------------------------
+# Build Artifacts (IMPORTANT 🔥)
+# -----------------------------
+layer/
+lambda_zips/
+pymysql-layer.zip
+
+# -----------------------------
+# Docker / Local Files
+# -----------------------------
+docker/*.tar
+docker-compose.yml
+
+# -----------------------------
+# Docs
+# -----------------------------
+docs/
+README.md
 ```
 
+### ✅ .dockerignore
+
+```
+.git
+.gitignore
+node_modules
+.env
+*.log
+vendor
+docker-compose.yml
+.github
+README.md
+docs/
+```
+
+### ✅ FINAL .dockerignore (OPTIMIZED)
+
+👉 Goal: make Docker image smaller + faster
+
+```
+# -----------------------------
+# Git
+# -----------------------------
+.git
+.gitignore
+
+# -----------------------------
+# Node / PHP Dependencies
+# -----------------------------
+node_modules
+vendor
+
+# -----------------------------
+# Environment
+# -----------------------------
+.env
+
+# -----------------------------
+# Logs
+# -----------------------------
+*.log
+
+# -----------------------------
+# DevOps / CI-CD Files (NOT needed in container)
+# -----------------------------
+.github
+infrastructure/
+lambda_zips/
+layer/
+pymysql-layer.zip
+
+# -----------------------------
+# Docs
+# -----------------------------
+docs/
+README.md
+
+# -----------------------------
+# OS Files
+# -----------------------------
+.DS_Store
+Thumbs.db
+```
+
+### 🔥 WHY THESE CHANGES MATTER
+
+#### ✅ .gitignore
+
+Prevents:
+
+- junk files
+
+- large zip files
+
+- unnecessary commits
+
+#### ✅ .dockerignore
+
+Prevents:
+
+- Lambda layer files inside Docker ❌
+
+- CI/CD files inside container ❌
+
+- Faster build ✅
+
+### ⚠️ COMMON MISTAKE (VERY IMPORTANT)
+
+Many people accidentally do this:
+
+```
+infrastructure/
+```
+
+👉 This breaks EVERYTHING ❌
+
+Because:
+
+your SQL scripts ❌
+
+your layer requirements ❌
 
 
+### 🧠 FINAL RESULT
 
+Now your project is:
+
+✅ Clean repo
+
+✅ Optimized Docker builds
+
+✅ Proper DevOps structure
+
+✅ No unnecessary files
+
+---
