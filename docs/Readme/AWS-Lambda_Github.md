@@ -1710,5 +1710,68 @@ You now have:
 
 👉 This is REAL production-level DevOps
 
+---
+### ✅ Update .gitignore & ✅ FINAL .gitignore
+
+### 🧠 IMPORTANT UNDERSTANDING
+
+You created:
+
+```
+infrastructure/lambda-layer/
+```
+
+Inside it:
+
+```
+requirements.txt
+```
+
+👉 This file MUST be tracked in GitHub ✅
+
+👉 Because CI/CD uses it to build the layer
+
+### ❌ WHAT YOU SHOULD NOT DO
+
+Do NOT ignore this folder:
+
+```
+infrastructure/lambda-layer/
+```
+
+Otherwise:
+
+👉 GitHub Actions will FAIL (no requirements.txt)
+
+### ✅ WHAT YOU SHOULD IGNORE
+
+You should ignore build artifacts created during CI/CD, like:
+
+- layer/
+
+- pymysql-layer.zip
+
+- lambda_zips/
+
+### ✅ .gitignore
+
+```
+node_modules/
+vendor/
+.env
+*.log
+.DS_Store
+Thumbs.db
+docker/*.tar
+docs/
+```
+
+### ✅ FINAL .gitignore (CLEAN + CORRECT)
+
+```
+
+```
+
+
 
 

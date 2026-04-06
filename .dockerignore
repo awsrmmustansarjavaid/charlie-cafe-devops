@@ -1,10 +1,45 @@
-.git
-.gitignore
-node_modules
-.env
+# -----------------------------
+# System Files
+# -----------------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------------
+# Logs
+# -----------------------------
 *.log
-vendor
+
+# -----------------------------
+# Environment Variables
+# -----------------------------
+.env
+
+# -----------------------------
+# Node / PHP Dependencies
+# -----------------------------
+node_modules/
+vendor/
+
+# -----------------------------
+# Git (safety)
+# -----------------------------
+.git
+
+# -----------------------------
+# Build Artifacts (IMPORTANT 🔥)
+# -----------------------------
+layer/
+lambda_zips/
+pymysql-layer.zip
+
+# -----------------------------
+# Docker / Local Files
+# -----------------------------
+docker/*.tar
 docker-compose.yml
-.github
-README.md
+
+# -----------------------------
+# Docs
+# -----------------------------
 docs/
+README.md
