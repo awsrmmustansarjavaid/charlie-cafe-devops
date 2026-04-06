@@ -1146,7 +1146,7 @@ http://YOUR-ALB-DNS
 ✅ Auto deployment
 
 ---
-## 🌐 PHASE 3 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
+## 🌐 PHASE 4 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
 
 ### 🎯 Flow
 
@@ -1305,7 +1305,7 @@ jobs:
 ```
 
 ---
-## 🌐 PHASE 4 — CANARY + AUTO ROLLBACK + MONITORING
+## 🌐 PHASE 5 — CANARY + AUTO ROLLBACK + MONITORING
 
 ### ✅ Enable Canary Deployment
 
