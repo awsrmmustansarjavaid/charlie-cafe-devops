@@ -323,7 +323,7 @@ should i add lambda .py inside deploy.yml?
 
 ### 🚀 FULL STEP-BY-STEP AWS DevOps Configuration Guide
 
-### 1️⃣ Prerequisites
+### 🌐 Prerequisites
 
 - AWS Account with permissions: EC2, Lambda, API Gateway, DynamoDB, RDS, IAM, S3, CloudWatch, CloudFormation.
 
@@ -334,6 +334,19 @@ should i add lambda .py inside deploy.yml?
 - Docker installed if using Lambda layers or containerized deployment.
 
 - AWS IAM user with programmatic access (Access Key & Secret Key) for GitHub Actions.
+
+### 1️⃣ Add Lambda Function Names (IMPORTANT)
+
+You must know exact AWS Lambda names.
+
+Example mapping:
+
+| File                  | Lambda Name in AWS |
+| --------------------- | ------------------ |
+| CafeOrderProcessor.py | CafeOrderProcessor |
+| CafeMenuLambda.py     | CafeMenuLambda     |
+
+👉 These names MUST match AWS exactly
 
 ### 2️⃣ GitHub Repository Setup
 
