@@ -1192,4 +1192,227 @@ Developer → GitHub Push →
 
 ❌ No Docker change needed
 
+### 🔥 GOAL:
+
+👉 Prepare AWS Lambda so GitHub can update it automatically
+
+
+### 🧩 STEP-BY-STEP AWS LAMBDA CONFIGURATION
+
+### ✅ STEP 1 — Open Your Lambda
+
+- Go to: 👉 AWS Console → Lambda → Functions
+
+Open your first function (example: CafeOrderProcessor)
+
+### ✅ STEP 2 — CHECK BASIC SETTINGS
+
+Inside Lambda → Configuration → General configuration
+
+Make sure:
+
+✔ Runtime
+
+```
+Python 3.10 or 3.11
+```
+
+✔ Timeout
+
+```
+10–30 seconds
+```
+
+👉 Click Edit → Save
+
+### ✅ STEP 3 — FIX HANDLER (VERY IMPORTANT)
+
+- Go to: 👉 Configuration → Runtime settings
+
+- Click Edit
+
+- Set Handler like this:
+
+```
+CafeOrderProcessor.lambda_handler
+```
+
+- RULE:
+
+```
+filename.function
+```
+
+So:
+
+| File              | Handler                       |
+| ----------------- | ----------------------------- |
+| CafeMenuLambda.py | CafeMenuLambda.lambda_handler |
+| hr-attendance.py  | hr-attendance.lambda_handler  |
+
+⚠️ If wrong → CI/CD works but Lambda FAILS
+
+### ✅ STEP 4 — CHECK FUNCTION NAME (CRITICAL)
+
+Top of Lambda page → function name
+
+👉 Must EXACTLY match your file name
+
+Example:
+
+| GitHub file           | Lambda name        |
+| --------------------- | ------------------ |
+| CafeOrderProcessor.py | CafeOrderProcessor |
+
+### ❌ If not matching:
+
+👉 Rename Lambda:
+
+Click Actions → Rename function
+
+### ✅ STEP 5 — SET EXECUTION ROLE
+
+- Go to: 👉 Configuration → Permissions
+
+- Click role name
+
+#### Now attach policies like:
+
+- AmazonRDSFullAccess
+
+- AmazonDynamoDBFullAccess
+
+- CloudWatchLogsFullAccess
+
+👉 This is Lambda’s own role, NOT GitHub IAM
+
+### ✅ STEP 6 — SET ENVIRONMENT VARIABLES
+ 
+- Go to: 👉 Configuration → Environment variables
+
+- Click Edit → Add variables
+
+Example:
+
+```
+DB_HOST = your-rds-endpoint
+DB_USER = admin
+DB_PASS = password
+DB_NAME = cafe_db
+```
+
+👉 Do this for ALL Lambdas that use DB/API
+
+### ✅ STEP 7 — TEST LAMBDA (VERY IMPORTANT)
+
+- Click: 👉 Test → Create test event
+
+- Use:
+
+```
+{}
+```
+
+- Click: 👉 Test
+
+✔ If success → GOOD
+
+❌ If error → fix before CI/CD
+
+### ✅ STEP 8 — REPEAT FOR ALL LAMBDAS
+
+You have:
+
+```
+AdminMarkPaidLambda
+CafeAnalyticsLambda
+CafeMenuLambda
+CafeOrderProcessor
+...
+```
+
+👉 Repeat Steps 1–7 for EACH
+
+### 🚀 STEP 9 — FINAL TEST (CI/CD)
+
+Now go to GitHub:
+
+1. Change any Lambda file
+
+```
+print("updated via ci cd")
+```
+
+2. Push:
+
+```
+git add .
+git commit -m "lambda test"
+git push
+```
+
+### 🔍 STEP 10 — VERIFY
+
+- Go to: 👉 GitHub Actions → watch pipeline
+
+Then:
+
+👉 AWS Lambda → check:
+
+✔ “Last modified” updated
+
+✔ Code updated
+
+### ⚠️ MOST COMMON PROBLEMS
+
+- #### ❌ Problem 1: Function not found
+
+Error:
+
+```
+ResourceNotFoundException
+```
+
+👉 Fix:
+
+Lambda name ≠ filename
+
+- #### ❌ Problem 2: Access denied
+
+Error:
+
+```
+AccessDeniedException
+```
+
+👉 Fix:
+
+Add IAM permission:
+
+```
+lambda:UpdateFunctionCode
+```
+
+- #### ❌ Problem 3: Import error
+
+Error:
+
+```
+No module named pymysql
+```
+
+👉 Tell me → I’ll fix with Lambda Layers
+
+###  FINAL RESULT
+
+After this setup:
+
+👉 You NEVER open Lambda console again
+
+Flow becomes:
+
+```
+Edit code → Push GitHub → Lambda auto updated 🔥
+```
+
 ---
