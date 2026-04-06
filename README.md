@@ -789,7 +789,21 @@ So:
 
 ⚠️ If wrong → CI/CD works but Lambda FAILS
 
+### 4️⃣ Git Auto Deploy
 
+#### 🧪 HOW TO USE
+
+#### 1️⃣ Give permission
+
+```
+chmod +x github-aws-devops-lambda-deploy.sh
+```
+
+#### 2️⃣ Run
+
+```
+./github-aws-devops-lambda-deploy.sh
+```
 
 ---
 ## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
