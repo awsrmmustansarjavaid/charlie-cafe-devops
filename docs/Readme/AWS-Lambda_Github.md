@@ -267,7 +267,61 @@ Frontend calls API 🚀
 
 > This project upgrades the existing Charlie Cafe application into a fully automated AWS DevOps workflow using GitHub, CI/CD, and AWS services. The goal is to have automatic deployment for Lambda functions, API Gateway, RDS, DynamoDB, and LAMP components via GitHub Actions and scripts, ensuring version control, testing, and zero manual deployment steps. This setup allows you to maintain all Lambda code in your GitHub repo and deploy updates seamlessly across all integrated AWS services.
 
-Step-by-Step AWS DevOps Configuration Guide
+### 🔥 First — What You MUST Understand (Very Important)
+
+Before touching anything, keep these rules in mind:
+
+- ### 1️⃣ Lambda code SHOULD be inside GitHub (✔ already done)
+
+You already have:
+
+```
+app/backend/lambda/*.py
+```
+
+✅ Perfect — DO NOT move them
+
+- ### 2️⃣ Each Lambda = separate deployment unit
+
+Every file like:
+
+CafeOrderProcessor.py
+hr-attendance.py
+
+👉 is a separate Lambda function in AWS
+
+So:
+
+❌ You cannot deploy all in one command
+
+✅ You must update each Lambda individually
+
+- ### 3️⃣ Two deployment methods (choose one)
+
+| Method          | Use case                      |
+| --------------- | ----------------------------- |
+| ZIP upload      | ✅ BEST for your current setup |
+| Container (ECR) | advanced (skip for now)       |
+
+👉 We will use ZIP method (simple + professional)
+
+### 🧠 Answer to Your Main Question
+
+should i add lambda .py inside deploy.yml?
+
+👉 ❌ NO (not directly inside YAML)
+
+👉 ✅ Instead:
+
+- Keep .py files in repo ✔
+
+- Use deploy.yml to:
+
+- Zip them
+
+- Upload to AWS Lambda
+
+### 🚀 FULL STEP-BY-STEP AWS DevOps Configuration Guide
 
 ### 1️⃣ Prerequisites
 
