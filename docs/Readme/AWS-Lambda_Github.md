@@ -500,6 +500,72 @@ aws lambda update-function-code \
 
 > This ensures every push automatically updates Lambda, APIs, and backend infrastructure.
 
+- #### ✳️ Modify deploy.yml
+
+👉 Add this NEW section after step 14️⃣ Cleanup
+
+- #### ✳️ PACKAGE LAMBDA CODE
+
+```
+    # -------------------------------------------------
+    # 15️⃣ Package Lambda Functions
+    # -------------------------------------------------
+    - name: 📦 Package Lambda Functions
+      run: |
+        mkdir lambda_zips
+
+        for file in app/backend/lambda/*.py; do
+          fname=$(basename "$file" .py)
+          zip lambda_zips/$fname.zip "$file"
+        done
+```
+
+- #### ✳️ DEPLOY LAMBDAS
+
+```
+    # -------------------------------------------------
+    # 16️⃣ Deploy Lambda Functions
+    # -------------------------------------------------
+    - name: 🚀 Deploy Lambdas
+      run: |
+        for zip in lambda_zips/*.zip; do
+          fname=$(basename "$zip" .zip)
+
+          echo "Deploying $fname..."
+
+          aws lambda update-function-code \
+            --function-name "$fname" \
+            --zip-file "fileb://$zip"
+        done
+```
+
+#### ⚠️ IMPORTANT RULE
+
+👉 Your Lambda name MUST match filename:
+
+Example:
+
+```
+CafeOrderProcessor.py → Lambda name = CafeOrderProcessor
+```
+
+If not → deployment FAIL ❌
+
+- #### ✳️ KEEP YOUR EXISTING STEPS
+
+After Lambda deployment:
+
+You already have:
+
+```
+15️⃣ Deploy to EC2 via SSM
+16️⃣ Health Check
+17️⃣ Success
+```
+
+👉 Keep them as-is 👍
+
+
 ### 1️⃣0️⃣ Health Check & Monitoring
 
 - Add a monitoring script (e.g., health.php or Lambda) for:
@@ -513,6 +579,19 @@ aws lambda update-function-code \
    - DynamoDB access
 
 - Integrate with CloudWatch Alarms for auto-restart / notifications.
+
+- #### Add Lambda Health Check
+
+```
+    - name: 🧪 Test Lambda
+      run: |
+        aws lambda invoke \
+          --function-name CafeOrderProcessor \
+          --payload '{}' response.json
+
+        cat response.json
+```
+
 
 ### 1️⃣1️⃣ Verification
 
@@ -529,6 +608,77 @@ aws lambda update-function-code \
    - RDS / DynamoDB data is accessible
 
    - Docker LAMP services are running
+
+### ⚠️ COMMON MISTAKES (VERY IMPORTANT)
+
+- ### ❌ Mistake 1: Dependencies missing
+
+If your Lambda uses:
+
+- requests
+
+- pymysql
+
+👉 This method will FAIL
+
+👉 Then you need:
+
+- Lambda Layer OR
+
+- package dependencies inside zip
+
+- ### ❌ Mistake 2: Wrong handler
+
+Example:
+
+```
+file: CafeOrderProcessor.py
+function: lambda_handler
+```
+
+AWS expects:
+
+```
+CafeOrderProcessor.lambda_handler
+```
+
+- ### ❌ Mistake 3: Wrong region
+
+Ensure:
+
+```
+AWS_REGION = same as Lambda region
+```
+
+### 🧠 FINAL ARCHITECTURE AFTER THIS
+
+You will have:
+
+```
+GitHub Push →
+   CI/CD →
+      ✔ RDS setup
+      ✔ Docker test
+      ✔ Lambda auto deploy 🔥
+      ✔ EC2 deploy
+      ✔ Health check
+```
+
+👉 This becomes a REAL DevOps project (interview-level strong)
+
+### 💬 FINAL ADVICE (IMPORTANT FOR YOUR CAREER)
+
+You are now combining:
+
+- DevOps ✅
+
+- Backend (Lambda) ✅
+
+- Database ✅
+
+- CI/CD ✅
+
+👉 This is way stronger than basic frontend path
 
 ---
 
