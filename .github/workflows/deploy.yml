@@ -27,15 +27,15 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 3️⃣ Install Required Tools (for MySQL and jq)
+    # 3️⃣ Install Required Tools
     # -------------------------------------------------
     - name: 🧰 Install Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y mysql-client jq curl
+        sudo apt-get install -y mysql-client jq curl zip
 
     # -------------------------------------------------
-    # 4️⃣ Retrieve RDS Secret from Secrets Manager
+    # 4️⃣ Retrieve RDS Secret
     # -------------------------------------------------
     - name: 🗝️ Retrieve RDS Secret
       run: |
@@ -55,7 +55,7 @@ jobs:
         echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 6️⃣ Wait for RDS to be ready
+    # 6️⃣ Wait for RDS
     # -------------------------------------------------
     - name: ⏳ Wait for RDS
       run: |
@@ -66,7 +66,7 @@ jobs:
         done
 
     # -------------------------------------------------
-    # 7️⃣ Create Database if not exists
+    # 7️⃣ Create Database
     # -------------------------------------------------
     - name: 🗄️ Create Database
       run: |
@@ -94,15 +94,15 @@ jobs:
         mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
 
     # -------------------------------------------------
-    # 11️⃣ Build Docker Image locally (for testing)
+    # 11️⃣ Build Docker Image
     # -------------------------------------------------
     - name: 🐳 Build Docker Image
       run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
-    # 12️⃣ Run Container locally (test)
+    # 12️⃣ Run Container (Test)
     # -------------------------------------------------
-    - name: 🚀 Run Container (Test)
+    - name: 🚀 Run Container
       run: |
         docker run -d -p 8080:80 --name test_app charlie-cafe
         sleep 10
@@ -115,14 +115,65 @@ jobs:
         curl -f http://localhost:8080/health.php || exit 1
 
     # -------------------------------------------------
-    # 14️⃣ Cleanup local container
+    # 14️⃣ Cleanup
     # -------------------------------------------------
     - name: 🧹 Cleanup
       run: |
         docker rm -f test_app || true
 
+    # =================================================
+    # 🔥 LAMBDA CI/CD STARTS HERE
+    # =================================================
+
     # -------------------------------------------------
-    # 15️⃣ Deploy to EC2 via SSM using new bash script
+    # 15️⃣ Package Lambda Functions
+    # -------------------------------------------------
+    - name: 📦 Package Lambda Functions
+      run: |
+        mkdir -p lambda_zips
+
+        # Loop through each .py file in lambda folder
+        for file in app/backend/lambda/*.py; do
+          fname=$(basename "$file" .py)
+
+          echo "Packaging $fname..."
+
+          # Create ZIP for each Lambda
+          zip -j lambda_zips/$fname.zip "$file"
+        done
+
+    # -------------------------------------------------
+    # 16️⃣ Deploy Lambda Functions
+    # -------------------------------------------------
+    - name: 🚀 Deploy Lambdas
+      run: |
+        for zip in lambda_zips/*.zip; do
+          fname=$(basename "$zip" .zip)
+
+          echo "Deploying Lambda: $fname"
+
+          aws lambda update-function-code \
+            --function-name "$fname" \
+            --zip-file "fileb://$zip"
+        done
+
+    # -------------------------------------------------
+    # 17️⃣ (Optional) Test One Lambda
+    # -------------------------------------------------
+    - name: 🧪 Test Lambda
+      run: |
+        aws lambda invoke \
+          --function-name CafeOrderProcessor \
+          --payload '{}' response.json
+
+        cat response.json
+
+    # =================================================
+    # 🔥 EC2 DEPLOYMENT CONTINUES
+    # =================================================
+
+    # -------------------------------------------------
+    # 18️⃣ Deploy to EC2 via SSM
     # -------------------------------------------------
     - name: 🚀 Deploy via AWS SSM
       run: |
@@ -134,7 +185,7 @@ jobs:
           --region ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 16️⃣ Health Check after deploy (remote)
+    # 19️⃣ Remote Health Check
     # -------------------------------------------------
     - name: 🌐 Remote Health Check
       run: |
@@ -142,10 +193,11 @@ jobs:
           --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
           --query "Reservations[0].Instances[0].PublicIpAddress" \
           --output text)
+
         curl -f http://$INSTANCE_IP/health.php || exit 1
 
     # -------------------------------------------------
-    # 17️⃣ Success
+    # 20️⃣ Success
     # -------------------------------------------------
     - name: 🎉 Success
       run: echo "CI/CD Pipeline Completed Successfully 🚀"
