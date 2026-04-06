@@ -201,6 +201,7 @@ Provide user access to the AWS Management Console → ❌ UNCHECK
       "Action": [
         "lambda:UpdateFunctionCode",
         "lambda:GetFunction",
+        "lambda:ListFunctions",
         "ec2:DescribeInstances",
         "ssm:SendCommand",
         "ssm:GetCommandInvocation",
