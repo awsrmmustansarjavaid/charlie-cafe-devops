@@ -28,8 +28,28 @@ GITHUB_USERNAME="your-github-username"
 GITHUB_PASSWORD="your-github-token"
 GITHUB_REPO="charlie-cafe-devops"
 ECR_REPO="your-ecr-repo-name"          # Optional
-PROJECT_DIR="$HOME/charlie-cafe-devops"
 SECRET_NAME="CafeDevDBSM"
+
+# ---------------- PROJECT DIRECTORIES ----------------
+# Add all possible paths to check
+PROJECT_DIRS=(
+  "/home/ec2-user/charlie-cafe-devops"
+  "/root/charlie-cafe-devops"
+)
+
+PROJECT_DIR_FOUND=""
+for DIR in "${PROJECT_DIRS[@]}"; do
+    if [ -d "$DIR/.git" ]; then
+        PROJECT_DIR_FOUND="$DIR"
+        break
+    fi
+done
+
+if [ -z "$PROJECT_DIR_FOUND" ]; then
+    PROJECT_DIR="${PROJECT_DIRS[0]}"  # fallback to first path for cloning
+else
+    PROJECT_DIR="$PROJECT_DIR_FOUND"
+fi
 
 # ---------------- COLORS ----------------
 GREEN='\033[0;32m'
@@ -127,7 +147,7 @@ docker rm -f $TEST_CONTAINER >/dev/null
 section "📂 Step 5: Project & Git"
 
 if [ -d "$PROJECT_DIR" ]; then
-    pass "Project directory exists"
+    pass "Project directory exists at $PROJECT_DIR"
     cd "$PROJECT_DIR" || exit
 
     git status &>/dev/null && pass "Git repo OK" || fail "Not a git repo"
