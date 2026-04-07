@@ -1946,3 +1946,180 @@ git push origin main
 
 - later convert to optional flag (--test-git)
 ---
+### verify_aws_github_env.sh
+
+> #### Update Version: 1.0
+
+- Verifies your AWS credentials.
+
+- Checks GitHub secrets and environment (username, password, repo link).
+
+- Ensures connectivity to GitHub.
+
+- Optionally sets up Git repo pull/push verification.
+
+#### Here’s the script:
+
+```
+#!/bin/bash
+
+# ==========================================================
+# 🚀 verify_aws_github_env.sh — AWS & GitHub Environment Verification
+# ==========================================================
+# This script verifies:
+#   ✅ AWS CLI and credentials
+#   ✅ GitHub repository access
+#   ✅ Required environment variables for CI/CD
+# ==========================================================
+
+set -e  # Exit immediately if a command exits with a non-zero status
+
+echo "=================================================="
+echo "🔍 Starting AWS & GitHub Environment Verification"
+echo "=================================================="
+
+# ----------------------------------------------------------
+# 1️⃣ Verify required tools
+# ----------------------------------------------------------
+echo "Checking required tools..."
+
+for cmd in aws git curl jq; do
+    if ! command -v $cmd &> /dev/null; then
+        echo "❌ $cmd is not installed. Please install it first."
+        exit 1
+    else
+        echo "✅ $cmd is installed"
+    fi
+done
+
+# ----------------------------------------------------------
+# 2️⃣ Verify AWS credentials
+# ----------------------------------------------------------
+echo "Checking AWS credentials..."
+
+if [[ -z "$AWS_ACCESS_KEY_ID" ]] || [[ -z "$AWS_SECRET_ACCESS_KEY" ]] || [[ -z "$AWS_REGION" ]]; then
+    echo "❌ AWS environment variables are not set!"
+    echo "Please export AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION"
+    exit 1
+fi
+
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text 2>/dev/null || echo "")
+if [[ -z "$AWS_ACCOUNT_ID" ]]; then
+    echo "❌ Unable to fetch AWS Account ID. Check your AWS credentials."
+    exit 1
+else
+    echo "✅ AWS Account ID: $AWS_ACCOUNT_ID"
+fi
+
+# ----------------------------------------------------------
+# 3️⃣ Verify GitHub environment variables
+# ----------------------------------------------------------
+echo "Checking GitHub environment variables..."
+
+if [[ -z "$GITHUB_USERNAME" ]] || [[ -z "$GITHUB_PASSWORD" ]] || [[ -z "$GITHUB_REPO" ]]; then
+    echo "❌ GitHub environment variables are missing!"
+    echo "Required: GITHUB_USERNAME, GITHUB_PASSWORD, GITHUB_REPO"
+    exit 1
+else
+    echo "✅ GitHub variables are set"
+    echo "   Repo: $GITHUB_REPO"
+fi
+
+# ----------------------------------------------------------
+# 4️⃣ Test GitHub connectivity
+# ----------------------------------------------------------
+echo "Testing GitHub connectivity..."
+
+GITHUB_API_URL="https://api.github.com/repos/$GITHUB_USERNAME/$GITHUB_REPO"
+
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "$GITHUB_USERNAME:$GITHUB_PASSWORD" $GITHUB_API_URL)
+
+if [[ "$HTTP_STATUS" -eq 200 ]]; then
+    echo "✅ GitHub repository is accessible"
+else
+    echo "❌ Cannot access GitHub repository. HTTP status: $HTTP_STATUS"
+    exit 1
+fi
+
+# ----------------------------------------------------------
+# 5️⃣ Test Git operations (clone/pull/push)
+# ----------------------------------------------------------
+echo "Testing Git operations on GitHub repo..."
+
+TMP_DIR=$(mktemp -d)
+git clone "https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git" "$TMP_DIR"
+
+if [[ $? -eq 0 ]]; then
+    echo "✅ Successfully cloned the repo"
+else
+    echo "❌ Failed to clone the repo"
+    exit 1
+fi
+
+cd "$TMP_DIR"
+
+# Pull latest changes
+git pull origin main 2>/dev/null || echo "⚠️ Pull failed (maybe repo is empty)"
+
+# Test push (dry run)
+git push origin main --dry-run 2>/dev/null && echo "✅ Git push test successful (dry run)"
+
+# Cleanup
+cd -
+rm -rf "$TMP_DIR"
+
+# ----------------------------------------------------------
+# 6️⃣ Verify AWS ECR (Optional if using containers)
+# ----------------------------------------------------------
+if [[ -n "$ECR_REPO" ]]; then
+    echo "Verifying ECR repository $ECR_REPO..."
+    aws ecr describe-repositories --repository-names "$ECR_REPO" --region "$AWS_REGION" >/dev/null 2>&1 \
+        && echo "✅ ECR repository exists" \
+        || echo "⚠️ ECR repository does not exist or cannot access"
+fi
+
+# ----------------------------------------------------------
+# ✅ Finished verification
+# ----------------------------------------------------------
+echo "=================================================="
+echo "🎉 AWS & GitHub environment verification completed successfully!"
+echo "=================================================="
+```
+
+### ✅ Instructions to use:
+
+- ### Upload the script to EC2:
+
+```
+scp verify_aws_github_env.sh ec2-user@<EC2-IP>:~
+```
+
+- ### Make it executable:
+
+```
+chmod +x verify_aws_github_env.sh
+```
+
+- ### Set environment variables on EC2:
+
+```
+export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY"
+export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+export AWS_REGION="us-east-1"
+export GITHUB_USERNAME="your-github-username"
+export GITHUB_PASSWORD="your-github-personal-access-token"
+export GITHUB_REPO="your-repo-name"
+export ECR_REPO="your-ecr-repo-name"   # Optional
+```
+
+- Run the script:
+
+```
+./verify_aws_github_env.sh
+```
+
+> This script fully verifies your AWS and GitHub setup, including credentials, connectivity, repo access, and optional ECR. It also uses comments for each section so you can expand it later.
+
+---
+
+
