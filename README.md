@@ -812,10 +812,22 @@ filename.function
 
 So:
 
-| File              | Handler                       |
-| ----------------- | ----------------------------- |
-| CafeMenuLambda.py | CafeMenuLambda.lambda_handler |
-| hr-attendance.py  | hr-attendance.lambda_handler  |
+
+
+| File Name                        | Handler (set in Lambda)                      |
+| -------------------------------- | -------------------------------------------- |
+| CafeOrderProcessor.py            | CafeOrderProcessor.lambda_handler            |
+| CafeMenuLambda.py                | CafeMenuLambda.lambda_handler                |
+| CafeOrderStatusLambda.py         | CafeOrderStatusLambda.lambda_handler         |
+| GetOrderStatusLambda.py          | GetOrderStatusLambda.lambda_handler          |
+| CafeOrderWorkerLambda.py         | CafeOrderWorkerLambda.lambda_handler         |
+| AdminMarkPaidLambda.py           | AdminMarkPaidLambda.lambda_handler           |
+| CafeAnalyticsLambda.py           | CafeAnalyticsLambda.lambda_handler           |
+| hr-attendance.py                 | hr-attendance.lambda_handler                 |
+| hr-employee-profile.py           | hr-employee-profile.lambda_handler           |
+| hr-attendance-history.py         | hr-attendance-history.lambda_handler         |
+| hr-leaves-holidays.py            | hr-leaves-holidays.lambda_handler            |
+| cafe-attendance-admin-service.py | cafe-attendance-admin-service.lambda_handler |
 
 ⚠️ If wrong → CI/CD works but Lambda FAILS
 
