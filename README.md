@@ -743,23 +743,23 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 ### 3️⃣ Basic Lambda Configurations
 
 ```
-nano setup_charlie_cafe_db_full.sh
+nano charlie_cafe_devops-rds_setup_full.sh
 ```
 
-[setup_charlie_cafe_db_full](./infrastructure/scripts/setup_charlie_cafe_db_full.sh)
+[charlie_cafe_devops-rds_setup_full.sh](./infrastructure/scripts/charlie_cafe_devops-rds_setup_full.sh)
 
 #### 🧪 HOW TO USE
 
 #### 1️⃣ Give permission
 
 ```
-chmod +x setup_charlie_cafe_db_full.sh
+chmod +x charlie_cafe_devops-rds_setup_full.sh
 ```
 
 #### 2️⃣ Run
 
 ```
-./setup_charlie_cafe_db_full.sh
+./charlie_cafe_devops-rds_setup_full.sh
 ```
 
 ### 3️⃣ Basic Lambda Configurations
