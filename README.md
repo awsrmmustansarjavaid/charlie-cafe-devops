@@ -781,32 +781,16 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 | hr-leaves-holidays               | hr-leaves-holidays.py                     |
 | cafe-attendance-admin-service    | cafe-attendance-admin-service.py          |
 
-
 - ### 2️⃣ Basic Lambda Configurations
 
+| Setting       | Value                          |
+|---------------|--------------------------------|
+| Runtime       | Python 3.10 or 3.11 or 3.12    |
+| Role          | Lambda-Cafe-Order-Role         |
+| Timeout       | 10–30 seconds                  |
 
 
-#### ✅ STEP 1 — CHECK BASIC SETTINGS
-
-Inside Lambda → Configuration → General configuration
-
-Make sure:
-
-✔ Runtime
-
-```
-Python 3.10 or 3.11
-```
-
-✔ Timeout
-
-```
-10–30 seconds
-```
-
-👉 Click Edit → Save
-
-### ✅ STEP 2 — FIX HANDLER (VERY IMPORTANT)
+- ### 3️⃣ FIX HANDLER (VERY IMPORTANT)
 
 - Go to: 👉 Configuration → Runtime settings
 
