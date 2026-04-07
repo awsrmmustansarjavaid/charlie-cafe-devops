@@ -1,163 +1,187 @@
 #!/bin/bash
 
 # ==========================================================
-# ☕ Charlie Cafe — FULL DevOps & Git/RDS Verification Script
-# ==========================================================
-# This script verifies:
-#   ✅ Required tools
-#   ✅ Docker daemon
-#   ✅ Project directory & Git
-#   ✅ AWS Secrets Manager connectivity
-#   ✅ Local application health (curl)
-#   ✅ RDS database connectivity & analytics
-#   ✅ SSH configuration & GitHub access
-#   ✅ Git repo verification & optional test commit
+# ☕ Charlie Cafe — COMPLETE DevOps Verification Script
 # ==========================================================
 
-echo "=================================================="
-echo "🚀 Starting Full Environment Verification"
-echo "=================================================="
+# ---------------- COLORS ----------------
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
 
 PASS_COUNT=0
 FAIL_COUNT=0
 
-# ----------------------------------------------------------
-# Function: Check if command exists
-# ----------------------------------------------------------
-check_command() {
-    if command -v $1 &> /dev/null
-    then
-        echo "✅ $1 is installed"
-        ((PASS_COUNT++))
-    else
-        echo "❌ $1 is NOT installed"
-        ((FAIL_COUNT++))
-    fi
+pass() { echo -e "${GREEN}✅ $1${NC}"; ((PASS_COUNT++)); }
+fail() { echo -e "${RED}❌ $1${NC}"; ((FAIL_COUNT++)); }
+warn() { echo -e "${YELLOW}⚠️ $1${NC}"; }
+
+section() {
+  echo ""
+  echo -e "${BLUE}==================================================${NC}"
+  echo -e "${BLUE}$1${NC}"
+  echo -e "${BLUE}==================================================${NC}"
 }
 
-echo ""
-echo "🔎 Step 1: Checking required tools..."
-check_command aws
-check_command jq
-check_command mysql
-check_command docker
-check_command git
-check_command curl
-check_command ssh
+echo -e "${BLUE}🚀 Starting Full Environment Verification${NC}"
 
-# ----------------------------------------------------------
-# Step 2: Version Checks
-# ----------------------------------------------------------
-echo ""
-echo "🔎 Step 2: Checking versions..."
-echo "---- Versions ----"
-aws --version 2>/dev/null || echo "❌ aws failed"
-jq --version 2>/dev/null || echo "❌ jq failed"
-mysql --version 2>/dev/null || echo "❌ mysql failed"
-docker --version 2>/dev/null || echo "❌ docker failed"
-git --version 2>/dev/null || echo "❌ git failed"
-curl --version 2>/dev/null || echo "❌ curl failed"
-ssh -V 2>/dev/null || echo "❌ ssh failed"
+# ==========================================================
+# 1️⃣ REQUIRED TOOLS
+# ==========================================================
+section "🔎 Step 1: Required Tools"
 
-# ----------------------------------------------------------
-# Step 3: Docker Status
-# ----------------------------------------------------------
-echo ""
-echo "🔎 Step 3: Checking Docker daemon..."
-if sudo systemctl is-active --quiet docker
-then
-    echo "✅ Docker daemon is running"
-    ((PASS_COUNT++))
+for cmd in aws jq mysql docker git curl ssh; do
+    command -v $cmd &>/dev/null && pass "$cmd installed" || fail "$cmd NOT installed"
+done
+
+# ==========================================================
+# 2️⃣ VERSION CHECKS
+# ==========================================================
+section "📦 Step 2: Versions"
+
+aws --version 2>/dev/null
+jq --version 2>/dev/null
+mysql --version 2>/dev/null
+docker --version 2>/dev/null
+git --version 2>/dev/null
+curl --version 2>/dev/null
+ssh -V 2>/dev/null
+
+# ==========================================================
+# 3️⃣ DOCKER STATUS + DETAILS
+# ==========================================================
+section "🐳 Step 3: Docker Verification"
+
+if systemctl is-active --quiet docker; then
+    pass "Docker running"
 else
-    echo "❌ Docker daemon is NOT running"
-    ((FAIL_COUNT++))
+    fail "Docker NOT running"
+    sudo systemctl start docker
 fi
 
-docker info >/dev/null 2>&1 && echo "✅ docker info OK" || echo "❌ docker info failed"
+docker info &>/dev/null && pass "Docker info OK" || fail "Docker info failed"
 
-# ----------------------------------------------------------
-# Step 4: Project Directory & Git
-# ----------------------------------------------------------
-echo ""
-echo "🔎 Step 4: Checking project directory..."
+echo "🔹 Docker Images:"
+docker images
+
+echo "🔹 Running Containers:"
+docker ps
+
+echo "🔹 All Containers:"
+docker ps -a
+
+# ==========================================================
+# 4️⃣ APACHE TEST CONTAINER
+# ==========================================================
+section "🌐 Step 4: Apache Container Test"
+
+TEST_CONTAINER="verify-apache-test"
+docker rm -f $TEST_CONTAINER >/dev/null 2>&1
+
+docker run -d --name $TEST_CONTAINER -p 8080:80 httpd:latest >/dev/null
+sleep 5
+
+curl -s http://localhost:8080 >/dev/null && pass "Apache 8080 OK" || fail "Apache 8080 failed"
+
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost)
+
+[ "$HTTP_STATUS" == "200" ] && pass "App running on port 80" || warn "App not on port 80"
+
+echo "🔹 Container Logs:"
+docker logs $TEST_CONTAINER | head -n 5
+
+docker rm -f $TEST_CONTAINER >/dev/null
+
+# ==========================================================
+# 5️⃣ PROJECT + GIT
+# ==========================================================
+section "📂 Step 5: Project & Git"
+
 PROJECT_DIR="/home/ec2-user/charlie-cafe-devops"
 
 if [ -d "$PROJECT_DIR" ]; then
-    echo "✅ Project directory exists: $PROJECT_DIR"
+    pass "Project directory exists"
     cd "$PROJECT_DIR" || exit
 
-    echo ""
-    echo "📂 Git Status:"
-    git status 2>/dev/null || echo "❌ Not a git repo"
+    git status &>/dev/null && pass "Git repo OK" || fail "Not a git repo"
 
-    echo ""
-    echo "📁 Directory structure:"
+    echo "🔹 Directory:"
     ls -la
 
-    echo ""
-    echo "🔹 Checking Git remote URL..."
-    git remote -v || echo "❌ Cannot show remotes"
-
-    echo ""
-    echo "🔹 Verifying SSH connection to GitHub..."
-    ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | tee /tmp/github_ssh_test.log
-    if grep -q "successfully authenticated" /tmp/github_ssh_test.log; then
-        echo "✅ GitHub SSH authentication successful"
-        ((PASS_COUNT++))
-    else
-        echo "❌ GitHub SSH authentication failed"
-        ((FAIL_COUNT++))
-    fi
-
-    echo ""
-    echo "🔹 Checking Git status..."
-    git status || echo "❌ Cannot get git status"
-
-    # Optional test commit
-    TEST_FILE="test_auto_deploy.txt"
-    echo "# Test Deploy $(date)" >> $TEST_FILE
-    git add $TEST_FILE
-    git commit -m "Test auto-deploy $(date)" >/dev/null 2>&1 || echo "⚠️ Nothing to commit"
-    git push origin main >/dev/null 2>&1 && echo "✅ Test file pushed to GitHub" || echo "⚠️ Could not push test file"
-    rm -f $TEST_FILE
-    git add . >/dev/null 2>&1
-    git commit -m "Remove test file" >/dev/null 2>&1
-    git push origin main >/dev/null 2>&1
+    echo "🔹 Git Remote:"
+    git remote -v
 
 else
-    echo "❌ Project directory NOT found"
-    ((FAIL_COUNT++))
+    fail "Project directory missing"
 fi
 
-# ----------------------------------------------------------
-# Step 5: SSH Verification
-# ----------------------------------------------------------
-echo ""
-echo "🔎 Step 5: Checking SSH keys..."
-echo "📂 ~/.ssh contents:"
+# ==========================================================
+# 6️⃣ SSH + GITHUB AUTH
+# ==========================================================
+section "🔐 Step 6: SSH & GitHub"
+
 ls -l ~/.ssh
 
-if [ -f ~/.ssh/id_deploy ]; then
-    echo "✅ Deploy private key exists"
-    ((PASS_COUNT++))
+[ -f ~/.ssh/id_deploy ] && pass "Private key exists" || fail "Private key missing"
+[ -f ~/.ssh/id_deploy.pub ] && pass "Public key exists" || fail "Public key missing"
+
+ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | grep -q "successfully authenticated"
+
+[ $? -eq 0 ] && pass "GitHub SSH OK" || fail "GitHub SSH failed"
+
+# ==========================================================
+# 7️⃣ GIT TEST (COMMIT + PUSH)
+# ==========================================================
+section "🧪 Step 7: Git Push Test"
+
+TEST_FILE="test_auto_deploy.txt"
+
+echo "# Test $(date)" >> $TEST_FILE
+git add $TEST_FILE
+git commit -m "Test commit $(date)" >/dev/null 2>&1
+
+if git push origin main >/dev/null 2>&1; then
+    pass "Git push successful"
 else
-    echo "❌ Deploy private key NOT found"
-    ((FAIL_COUNT++))
+    fail "Git push failed"
 fi
 
-if [ -f ~/.ssh/id_deploy.pub ]; then
-    echo "✅ Deploy public key exists"
-    ((PASS_COUNT++))
+rm -f $TEST_FILE
+git add . >/dev/null 2>&1
+git commit -m "Cleanup test file" >/dev/null 2>&1
+git push origin main >/dev/null 2>&1
+
+# ==========================================================
+# 8️⃣ GITHUB CLONE TEST
+# ==========================================================
+section "🌍 Step 8: GitHub Clone Test"
+
+TEST_DIR="$HOME/github_test_repo"
+rm -rf $TEST_DIR
+
+if git clone https://github.com/octocat/Hello-World.git $TEST_DIR; then
+    pass "GitHub clone OK"
+    cd $TEST_DIR
+    git pull
+    git log -1 --oneline
 else
-    echo "❌ Deploy public key NOT found"
-    ((FAIL_COUNT++))
+    fail "GitHub clone failed"
 fi
 
-# ----------------------------------------------------------
-# Step 6: AWS Secrets Manager Check
-# ----------------------------------------------------------
-echo ""
-echo "🔎 Step 6: Fetching RDS credentials from AWS Secrets Manager..."
+# ==========================================================
+# 9️⃣ NETWORK CHECK
+# ==========================================================
+section "🌐 Step 9: Network"
+
+ping -c 2 github.com >/dev/null 2>&1 && pass "Internet OK" || fail "No Internet"
+
+# ==========================================================
+# 🔟 AWS + RDS
+# ==========================================================
+section "🗄️ Step 10: AWS + RDS"
+
 SECRET_NAME="CafeDevDBSM"
 REGION="us-east-1"
 
@@ -168,73 +192,41 @@ SECRET_JSON=$(aws secretsmanager get-secret-value \
   --output text 2>/dev/null)
 
 if [ $? -eq 0 ]; then
-    echo "✅ Secret fetched successfully"
+    pass "AWS Secret fetched"
+
     DB_HOST=$(echo $SECRET_JSON | jq -r .host)
     DB_USER=$(echo $SECRET_JSON | jq -r .username)
     DB_PASS=$(echo $SECRET_JSON | jq -r .password)
-    DB_NAME=$(echo $SECRET_JSON | jq -r .dbname)
 
-    echo "📊 Database Host: $DB_HOST"
-    echo "📊 Database User: $DB_USER"
-    echo "📊 Database Name: $DB_NAME"
-    ((PASS_COUNT++))
 else
-    echo "❌ Failed to fetch secret"
-    ((FAIL_COUNT++))
+    fail "AWS Secret failed"
 fi
 
-# ----------------------------------------------------------
-# Step 7: Application Health Check
-# ----------------------------------------------------------
-echo ""
-echo "🔎 Step 7: Checking Application Health (http://localhost)..."
-HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost)
-if [ "$HTTP_STATUS" == "200" ]; then
-    echo "✅ Application is UP (HTTP 200)"
-    ((PASS_COUNT++))
-elif [ "$HTTP_STATUS" == "000" ]; then
-    echo "❌ Application is DOWN (No response)"
-    ((FAIL_COUNT++))
-else
-    echo "⚠️ Application responded with HTTP $HTTP_STATUS"
-    ((FAIL_COUNT++))
+if [ -n "$DB_HOST" ]; then
+    echo "SELECT NOW();" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" &>/dev/null \
+        && pass "RDS connection OK" \
+        || fail "RDS connection failed"
 fi
 
-# ----------------------------------------------------------
-# Step 8: RDS Verification & Analytics
-# ----------------------------------------------------------
-echo ""
-echo "🔎 Step 8: Verifying RDS database connectivity..."
-if [ -n "$DB_HOST" ] && [ -n "$DB_USER" ] && [ -n "$DB_PASS" ]; then
-    SQL_QUERY="SELECT NOW();"
-    echo "$SQL_QUERY" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" 2>/tmp/rds_error.log
-    if [ $? -eq 0 ]; then
-        echo "✅ RDS database connected successfully"
-        ((PASS_COUNT++))
-    else
-        echo "❌ Failed to connect to RDS"
-        cat /tmp/rds_error.log
-        ((FAIL_COUNT++))
-    fi
-else
-    echo "❌ RDS credentials not available"
-    ((FAIL_COUNT++))
-fi
+# ==========================================================
+# FINAL RESULT
+# ==========================================================
+section "📊 FINAL RESULT"
 
-# ----------------------------------------------------------
-# Final Result
-# ----------------------------------------------------------
-echo ""
-echo "=================================================="
-echo "📊 FINAL RESULT"
-echo "=================================================="
-echo "✅ Passed: $PASS_COUNT"
-echo "❌ Failed: $FAIL_COUNT"
+TOTAL=$((PASS_COUNT + FAIL_COUNT))
+SUCCESS=$((PASS_COUNT * 100 / TOTAL))
+
+echo -e "Total Checks : $TOTAL"
+echo -e "${GREEN}Passed       : $PASS_COUNT${NC}"
+echo -e "${RED}Failed       : $FAIL_COUNT${NC}"
+echo -e "${YELLOW}Success Rate : $SUCCESS%${NC}"
 
 if [ $FAIL_COUNT -eq 0 ]; then
-    echo "🎉 ALL CHECKS PASSED — ENVIRONMENT READY 🚀"
+    echo -e "${GREEN}🎉 ALL CHECKS PASSED — READY 🚀${NC}"
+elif [ $SUCCESS -ge 70 ]; then
+    echo -e "${YELLOW}⚠️ PARTIAL SUCCESS — NEED FIXES${NC}"
 else
-    echo "⚠️ Some checks failed — fix issues above"
+    echo -e "${RED}❌ SYSTEM NOT READY${NC}"
 fi
 
 echo "=================================================="
