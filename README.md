@@ -813,6 +813,10 @@ So:
 
 ### 4️⃣ Git Auto Deploy
 
+```
+nano github-aws-devops-lambda-deploy.sh
+```
+
 [github-aws-devops-lambda-deploy.sh](./infrastructure/scripts/github-aws-devops-lambda-deploy.sh)
 
 #### 🧪 HOW TO USE
