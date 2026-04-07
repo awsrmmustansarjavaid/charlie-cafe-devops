@@ -907,32 +907,7 @@ chmod +x github-aws-devops-lambda-deploy.sh
 ---
 ## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
 
-### 1️⃣  — IAM SETUP (GitHub Access)
-
-#### 1️⃣ Create IAM User
-
-- Go to: IAM → Users → Create User
-
-- Username: charlie-github-user
-
-- Enable: ✔ Programmatic Access
-
-#### 2️⃣ Attach your merged policy:
-
-#### Attach:
-
-```
-charlie-cafe-iam-policy
-```
-
-#### 3️⃣ Save Credentials
-
-```
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-```
-
-### 2️⃣ CREATE ECR (DOCKER REGISTRY)
+### 1️⃣ CREATE ECR (DOCKER REGISTRY)
 
 #### 1️⃣ Create Repository
 
@@ -950,7 +925,7 @@ AWS_SECRET_ACCESS_KEY
 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
 ```
 
-### 3️⃣ ECS SETUP
+### 2️⃣ ECS SETUP
 
 #### 1️⃣ Create Cluster
 
@@ -986,7 +961,7 @@ DB_USER = admin
 DB_PASS = ****
 ```
 
-### 4️⃣ ALB + ECS SERVICE
+### 3️⃣ ALB + ECS SERVICE
 
 > #### KEEP existing ALB and upgrade it for ECS.
 
@@ -1060,7 +1035,7 @@ Forward → charlie-blue
 http://YOUR-ALB-DNS
 ```
 
-### 5️⃣ GITHUB CI/CD (AUTO DEPLOY)
+### 4️⃣ GITHUB CI/CD (AUTO DEPLOY)
 
 ### 1️⃣ Add GitHub Secrets
 
