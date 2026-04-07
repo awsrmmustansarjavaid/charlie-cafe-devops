@@ -2676,6 +2676,34 @@ GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
 
 ---
 
+### 💡 Lambda Handler
+
+### ✅ What the Handler is
+
+The handler tells Lambda:
+
+“Which function inside which file should AWS invoke when this Lambda runs?”
+
+The format is:
+
+```
+<filename-without-extension>.<function_name>
+```
+
+- Example: CafeOrderProcessor.lambda_handler
+
+- File: CafeOrderProcessor.py
+
+- Function inside the file: lambda_handler(event, context)
+
+If this is not set correctly, several things happen:
+
+- The Lambda console shows “The editor could not be opened because the file was not found”
+
+- Your Bash script can attach layers and update code, but invocation fails
+
+- GitHub CI/CD updates will succeed, but Lambda never runs your function → InProgress / ResourceConflict / errors
+
 
 
 
