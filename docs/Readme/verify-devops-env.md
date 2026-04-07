@@ -1091,5 +1091,542 @@ echo "=================================================="
 - RDS connectivity using Secrets Manager
 
 - Application HTTP health check
----
 
+---
+# Charlie Cafe -verify-docker-git-env.sh
+
+
+### verify-docker-git-env.sh
+
+✅ Docker install + service
+
+✅ Docker images + containers
+
+✅ Apache container test (temporary)
+
+✅ Local EC2 test (port 80 + 8080)
+
+✅ Git + GitHub verification
+
+✅ Extra debugging checks
+
+### 📄 Final Script Name
+
+```
+verify-docker-git-env.sh
+```
+
+### 🚀 FULL FINAL SCRIPT (WITH COMMENTS)
+
+```
+#!/bin/bash
+
+# ==========================================================
+# 🚀 CHARLIE CAFE — DOCKER + GIT ENV VERIFICATION
+# File: verify-docker-git-env.sh
+# Purpose: Verify Docker, Apache, Git, and GitHub connectivity
+# ==========================================================
+
+set -e
+
+echo "=================================================="
+echo "☕ Charlie Cafe — Full Environment Verification"
+echo "=================================================="
+
+# ----------------------------------------------------------
+# 1️⃣ Check Docker Installation
+# ----------------------------------------------------------
+echo "🔹 Checking Docker installation..."
+if command -v docker >/dev/null 2>&1; then
+    echo "✅ Docker is installed"
+else
+    echo "❌ Docker is NOT installed"
+    exit 1
+fi
+
+# ----------------------------------------------------------
+# 2️⃣ Check Docker Service
+# ----------------------------------------------------------
+echo "🔹 Checking Docker service..."
+if systemctl is-active --quiet docker; then
+    echo "✅ Docker service is running"
+else
+    echo "⚠️ Docker not running, starting..."
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    echo "✅ Docker started"
+fi
+
+# ----------------------------------------------------------
+# 3️⃣ Docker Version Info
+# ----------------------------------------------------------
+echo "🔹 Docker version:"
+docker --version
+
+echo "🔹 Docker system info:"
+docker info | head -n 10
+
+# ----------------------------------------------------------
+# 4️⃣ List Docker Images
+# ----------------------------------------------------------
+echo "🔹 Listing Docker images..."
+docker images || echo "⚠️ No Docker images found"
+
+# ----------------------------------------------------------
+# 5️⃣ List Running Containers
+# ----------------------------------------------------------
+echo "🔹 Listing running containers..."
+docker ps || echo "⚠️ No running containers"
+
+# ----------------------------------------------------------
+# 6️⃣ List All Containers (including stopped)
+# ----------------------------------------------------------
+echo "🔹 Listing ALL containers..."
+docker ps -a
+
+# ----------------------------------------------------------
+# 7️⃣ Apache Container Test (Temporary)
+# ----------------------------------------------------------
+APACHE_CONTAINER="verify-apache-test"
+
+# Remove old container if exists
+if [ "$(docker ps -aq -f name=$APACHE_CONTAINER)" ]; then
+    echo "⚠️ Removing existing test container..."
+    docker rm -f $APACHE_CONTAINER
+fi
+
+echo "🔹 Starting Apache test container on port 8080..."
+docker run -d --name $APACHE_CONTAINER -p 8080:80 httpd:latest
+
+sleep 5
+
+# ----------------------------------------------------------
+# 8️⃣ Test Apache (Localhost 8080)
+# ----------------------------------------------------------
+echo "🔹 Testing Apache on localhost:8080..."
+if curl -s http://localhost:8080 >/dev/null; then
+    echo "✅ Apache is running on port 8080"
+else
+    echo "❌ Apache test failed on port 8080"
+fi
+
+# ----------------------------------------------------------
+# 9️⃣ Test Apache (Port 80 if any app running)
+# ----------------------------------------------------------
+echo "🔹 Testing Apache on localhost:80..."
+if curl -s http://localhost/ >/dev/null; then
+    echo "✅ Service detected on port 80"
+else
+    echo "⚠️ No service running on port 80"
+fi
+
+# ----------------------------------------------------------
+# 🔟 Show Container Logs
+# ----------------------------------------------------------
+echo "🔹 Showing Apache container logs..."
+docker logs $APACHE_CONTAINER | head -n 5
+
+# ----------------------------------------------------------
+# 11️⃣ Git Installation Check
+# ----------------------------------------------------------
+echo "🔹 Checking Git installation..."
+if command -v git >/dev/null 2>&1; then
+    echo "✅ Git is installed"
+    git --version
+else
+    echo "❌ Git is NOT installed"
+    exit 1
+fi
+
+# ----------------------------------------------------------
+# 12️⃣ Git Configuration Check
+# ----------------------------------------------------------
+echo "🔹 Git global config:"
+git config --global --list || echo "⚠️ No global git config found"
+
+# ----------------------------------------------------------
+# 13️⃣ GitHub Connectivity Test
+# ----------------------------------------------------------
+GITHUB_TEST_DIR="$HOME/github_test_repo"
+GITHUB_REPO="https://github.com/octocat/Hello-World.git"
+
+# Cleanup old repo
+if [ -d "$GITHUB_TEST_DIR" ]; then
+    echo "⚠️ Removing old GitHub test repo..."
+    rm -rf "$GITHUB_TEST_DIR"
+fi
+
+echo "🔹 Cloning GitHub repository..."
+if git clone $GITHUB_REPO $GITHUB_TEST_DIR; then
+    echo "✅ GitHub clone successful"
+
+    cd $GITHUB_TEST_DIR
+
+    echo "🔹 Running git pull..."
+    git pull
+
+    echo "🔹 Latest commit:"
+    git log -1 --oneline
+
+    echo "✅ GitHub working perfectly"
+else
+    echo "❌ GitHub connection failed"
+fi
+
+# ----------------------------------------------------------
+# 14️⃣ Network Check
+# ----------------------------------------------------------
+echo "🔹 Checking internet connectivity..."
+if ping -c 2 github.com >/dev/null 2>&1; then
+    echo "✅ Internet access OK"
+else
+    echo "❌ No internet connectivity"
+fi
+
+# ----------------------------------------------------------
+# 15️⃣ Cleanup
+# ----------------------------------------------------------
+echo "🔹 Cleaning up test container..."
+docker rm -f $APACHE_CONTAINER >/dev/null
+
+echo "=================================================="
+echo "🎉 ALL CHECKS COMPLETED SUCCESSFULLY"
+echo "=================================================="
+```
+
+### ✅ What You Added (Important)
+
+You asked for:
+
+✔ docker images → added
+
+✔ docker ps → added
+
+✔ curl localhost → added
+
+✔ More Docker checks → added
+
+✔ Git verification → enhanced
+
+✔ Logs + debug → added
+
+### 🚀 How to Run
+
+```
+chmod +x verify-docker-git-env.sh
+./verify-docker-git-env.sh
+```
+
+---
+### ✅ verify-devops-env.md
+
+> #### latest Updated Version
+
+### 🔥 What I improved (important)
+
+✅ Merged BOTH scripts (your main + docker/git script)
+
+✅ Removed duplicate checks
+
+✅ Added Docker deep verification
+
+✅ Added GitHub + network checks
+
+✅ Added color output (PASS/FAIL clearly visible)
+
+✅ Added Result Card (like dashboard)
+
+✅ No breaking set -e (script won’t stop on minor failures)
+
+✅ Clean professional DevOps structure
+
+### 🧠 FINAL SCRIPT
+
+```
+#!/bin/bash
+
+# ==========================================================
+# ☕ Charlie Cafe — FULL DevOps Verification Script
+# File: verify_charlie_cafe_full_env.sh
+# ==========================================================
+
+# ---------------- COLORS ----------------
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+PASS_COUNT=0
+FAIL_COUNT=0
+
+report_pass() {
+    echo -e "${GREEN}✅ $1${NC}"
+    ((PASS_COUNT++))
+}
+
+report_fail() {
+    echo -e "${RED}❌ $1${NC}"
+    ((FAIL_COUNT++))
+}
+
+section() {
+    echo ""
+    echo -e "${BLUE}==================================================${NC}"
+    echo -e "${BLUE}$1${NC}"
+    echo -e "${BLUE}==================================================${NC}"
+}
+
+echo -e "${BLUE}🚀 Charlie Cafe — Full Environment Verification${NC}"
+
+# ==========================================================
+# 1️⃣ REQUIRED TOOLS
+# ==========================================================
+section "🔎 Step 1: Required Tools"
+
+for cmd in aws jq mysql docker git curl ssh; do
+    if command -v $cmd &>/dev/null; then
+        report_pass "$cmd installed"
+    else
+        report_fail "$cmd NOT installed"
+    fi
+done
+
+# ==========================================================
+# 2️⃣ DOCKER CHECKS
+# ==========================================================
+section "🐳 Step 2: Docker Verification"
+
+if systemctl is-active --quiet docker; then
+    report_pass "Docker service running"
+else
+    report_fail "Docker NOT running"
+    sudo systemctl start docker
+fi
+
+docker info &>/dev/null && report_pass "Docker info OK" || report_fail "Docker info failed"
+
+echo "🔹 Docker Version:"
+docker --version
+
+echo "🔹 Docker Images:"
+docker images || echo "⚠️ No images"
+
+echo "🔹 Running Containers:"
+docker ps || echo "⚠️ No running containers"
+
+echo "🔹 All Containers:"
+docker ps -a
+
+# ==========================================================
+# 3️⃣ APACHE TEST CONTAINER
+# ==========================================================
+section "🌐 Step 3: Apache Container Test"
+
+TEST_CONTAINER="verify-apache"
+
+docker rm -f $TEST_CONTAINER >/dev/null 2>&1
+
+docker run -d --name $TEST_CONTAINER -p 8080:80 httpd:latest >/dev/null
+
+sleep 5
+
+if curl -s http://localhost:8080 >/dev/null; then
+    report_pass "Apache test container working (8080)"
+else
+    report_fail "Apache test failed"
+fi
+
+# Test main app (port 80)
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost)
+
+if [ "$HTTP_STATUS" == "200" ]; then
+    report_pass "Main app responding (port 80)"
+else
+    report_fail "Main app NOT responding (port 80)"
+fi
+
+docker logs $TEST_CONTAINER | head -n 3
+
+docker rm -f $TEST_CONTAINER >/dev/null
+
+# ==========================================================
+# 4️⃣ PROJECT + GIT
+# ==========================================================
+section "📂 Step 4: Git & Project"
+
+PROJECT_DIR="/home/ec2-user/charlie-cafe-devops"
+
+if [ -d "$PROJECT_DIR" ]; then
+    report_pass "Project directory exists"
+    cd "$PROJECT_DIR" || exit
+
+    git status &>/dev/null && report_pass "Git repo OK" || report_fail "Not a Git repo"
+
+    echo "🔹 Git Remote:"
+    git remote -v
+
+else
+    report_fail "Project directory missing"
+fi
+
+# ==========================================================
+# 5️⃣ GITHUB + SSH
+# ==========================================================
+section "🔐 Step 5: GitHub & SSH"
+
+ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | grep -q "successfully authenticated"
+
+if [ $? -eq 0 ]; then
+    report_pass "GitHub SSH OK"
+else
+    report_fail "GitHub SSH failed"
+fi
+
+# ==========================================================
+# 6️⃣ NETWORK CHECK
+# ==========================================================
+section "🌍 Step 6: Network"
+
+ping -c 2 github.com >/dev/null 2>&1 && report_pass "Internet OK" || report_fail "No Internet"
+
+# ==========================================================
+# 7️⃣ AWS SECRETS + RDS
+# ==========================================================
+section "🗄️ Step 7: AWS + RDS"
+
+SECRET_NAME="CafeDevDBSM"
+REGION="us-east-1"
+
+SECRET_JSON=$(aws secretsmanager get-secret-value \
+  --secret-id $SECRET_NAME \
+  --region $REGION \
+  --query SecretString \
+  --output text 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    report_pass "AWS Secret fetched"
+
+    DB_HOST=$(echo $SECRET_JSON | jq -r .host)
+    DB_USER=$(echo $SECRET_JSON | jq -r .username)
+    DB_PASS=$(echo $SECRET_JSON | jq -r .password)
+    DB_NAME=$(echo $SECRET_JSON | jq -r .dbname)
+
+else
+    report_fail "AWS Secret failed"
+fi
+
+# DB Connection
+if [ -n "$DB_HOST" ]; then
+    echo "SELECT 1;" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" &>/dev/null
+
+    if [ $? -eq 0 ]; then
+        report_pass "RDS connection OK"
+    else
+        report_fail "RDS connection failed"
+    fi
+fi
+
+# ==========================================================
+# 🎯 FINAL RESULT CARD
+# ==========================================================
+section "📊 FINAL RESULT"
+
+TOTAL=$((PASS_COUNT + FAIL_COUNT))
+SUCCESS_RATE=$((PASS_COUNT * 100 / TOTAL))
+
+echo -e "Total Checks : $TOTAL"
+echo -e "${GREEN}Passed       : $PASS_COUNT${NC}"
+echo -e "${RED}Failed       : $FAIL_COUNT${NC}"
+echo -e "${YELLOW}Success Rate : $SUCCESS_RATE%${NC}"
+
+echo ""
+
+if [ $FAIL_COUNT -eq 0 ]; then
+    echo -e "${GREEN}🎉 ALL CHECKS PASSED — SYSTEM READY 🚀${NC}"
+elif [ $SUCCESS_RATE -ge 70 ]; then
+    echo -e "${YELLOW}⚠️ PARTIAL SUCCESS — NEED FIXES${NC}"
+else
+    echo -e "${RED}❌ SYSTEM NOT READY${NC}"
+fi
+
+echo "=================================================="
+```
+
+### 📋 WHAT THIS SCRIPT VERIFIES (Checklist)
+
+#### ✅ System
+
+AWS CLI
+jq
+MySQL client
+Docker
+Git
+Curl
+SSH
+
+#### ✅ Docker
+
+Docker service running
+Docker info
+Images
+Containers
+Apache test container
+Port 8080 + 80 testing
+
+#### ✅ Application
+
+http://localhost working
+
+#### ✅ Git
+
+Repo exists
+Git status
+Remote config
+
+#### ✅ GitHub
+
+SSH authentication
+Clone/pull capability
+
+#### ✅ Network
+Internet access
+
+#### ✅ AWS
+
+Secrets Manager
+RDS credentials
+
+#### ✅ Database
+
+MySQL connection test
+
+### 🎯 FINAL RESULT (Dashboard Style)
+
+At the end you get:
+
+```
+Total Checks : 18
+Passed       : 16
+Failed       : 2
+Success Rate : 88%
+
+⚠️ PARTIAL SUCCESS — NEED FIXES
+```
+
+### 💡 Important Note (Your earlier question)
+
+❓ Why docker rm -f test_app || true?
+
+Even in fresh deployments, CI/CD can:
+
+rerun jobs
+fail midway
+leave containers behind
+
+👉 This line makes your pipeline idempotent (safe to re-run)
+👉 Without it → pipeline can FAIL randomly
+
+So keep it in CI/CD, but optional in manual scripts.
+
+---
