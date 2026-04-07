@@ -2165,7 +2165,7 @@ AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
 AWS_REGION="us-east-1"
 GITHUB_USERNAME="your-github-username"
 GITHUB_PASSWORD="your-github-personal-access-token"
-GITHUB_REPO="your-repo-name"
+GITHUB_REPO="charlie-cafe-devops"
 ECR_REPO="your-ecr-repo-name"          # Optional
 PROJECT_DIR="$HOME/project"            # Local project directory to sync
 
