@@ -762,7 +762,38 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 ./charlie_cafe_devops-rds_setup_full.sh
 ```
 
-### 3️⃣ Basic Lambda Configurations
+### 4️⃣ Create Lambda Function
+
+- ### 1️⃣ Lambda Function 
+
+- #### Name: 
+
+1. CafeOrderProcessor
+
+2. CafeMenuLambda
+
+3. CafeOrderStatusLambda
+
+4. GetOrderStatusLambda
+
+5. CafeOrderWorkerLambda
+
+6. AdminMarkPaidLambda
+
+7. CafeAnalyticsLambda
+
+8. hr-attendance
+
+9. hr-employee-profile
+
+10. hr-attendance-history
+
+11. hr-leaves-holidays
+
+12. cafe-attendance-admin-service
+
+
+- ### 2️⃣ Basic Lambda Configurations
 
 #### ✅ STEP 1 — CHECK BASIC SETTINGS
 
