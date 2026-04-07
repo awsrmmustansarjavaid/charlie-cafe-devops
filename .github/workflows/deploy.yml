@@ -27,7 +27,7 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 3️⃣ Install Required Tools + Python
+    # 3️⃣ Install Required Tools
     # -------------------------------------------------
     - name: 🧰 Install Tools
       run: |
@@ -100,143 +100,70 @@ jobs:
       run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
-    # 12️⃣ Run Container (Test)
+    # 12️⃣ Run Container (CI Test)
     # -------------------------------------------------
-    - name: 🚀 Run Container
+    - name: 🚀 Run Container (CI)
       run: |
+        docker rm -f test_app || true
         docker run -d -p 80:80 --name test_app charlie-cafe
         sleep 10
 
     # -------------------------------------------------
-    # 13️⃣ Local Health Check
+    # 13️⃣ Local Health Check (CI)
     # -------------------------------------------------
-    - name: ❤️ Test Application
+    - name: ❤️ Test Application (CI)
       run: |
         curl -f http://localhost/ || exit 1
 
     # -------------------------------------------------
-    # 14️⃣ Cleanup
+    # 14️⃣ Cleanup Test Container
     # -------------------------------------------------
     - name: 🧹 Cleanup
       run: |
         docker rm -f test_app || true
 
     # =================================================
-    # 🔥 LAMBDA LAYER (PyMySQL) CI/CD
-    # =================================================
-
-    # -------------------------------------------------
-    # 15️⃣ Build Lambda Layer
-    # -------------------------------------------------
-    - name: 🏗️ Build Lambda Layer
-      run: |
-        mkdir -p layer/python
-
-        pip3 install -r infrastructure/lambda-layer/requirements.txt -t layer/python
-
-        cd layer
-        zip -r ../pymysql-layer.zip python
-        cd ..
-
-    # -------------------------------------------------
-    # 16️⃣ Publish Lambda Layer
-    # -------------------------------------------------
-    - name: 🚀 Publish Layer
-      run: |
-        LAYER_VERSION=$(aws lambda publish-layer-version \
-          --layer-name pymysql-layer \
-          --zip-file fileb://pymysql-layer.zip \
-          --compatible-runtimes python3.10 python3.11 \
-          --query 'Version' \
-          --output text)
-
-        echo "LAYER_VERSION=$LAYER_VERSION" >> $GITHUB_ENV
-
-    # -------------------------------------------------
-    # 17️⃣ Attach Layer to ALL Lambdas
-    # -------------------------------------------------
-    - name: 🔗 Attach Layer
-      run: |
-        for file in app/backend/lambda/*.py; do
-          fname=$(basename "$file" .py)
-
-          echo "Attaching layer to $fname"
-
-          aws lambda update-function-configuration \
-            --function-name "$fname" \
-            --layers arn:aws:lambda:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:layer:pymysql-layer:$LAYER_VERSION
-        done
-
-    # =================================================
-    # 🔥 LAMBDA CODE DEPLOYMENT
-    # =================================================
-
-    # -------------------------------------------------
-    # 18️⃣ Package Lambda Functions
-    # -------------------------------------------------
-    - name: 📦 Package Lambda Functions
-      run: |
-        mkdir -p lambda_zips
-
-        for file in app/backend/lambda/*.py; do
-          fname=$(basename "$file" .py)
-          zip -j lambda_zips/$fname.zip "$file"
-        done
-
-    # -------------------------------------------------
-    # 19️⃣ Deploy Lambda Functions
-    # -------------------------------------------------
-    - name: 🚀 Deploy Lambdas
-      run: |
-        for zip in lambda_zips/*.zip; do
-          fname=$(basename "$zip" .zip)
-
-          echo "Deploying Lambda: $fname"
-
-          aws lambda update-function-code \
-            --function-name "$fname" \
-            --zip-file "fileb://$zip"
-        done
-
-    # -------------------------------------------------
-    # 20️⃣ Test Lambda
-    # -------------------------------------------------
-    - name: 🧪 Test Lambda
-      run: |
-        aws lambda invoke \
-          --function-name CafeOrderProcessor \
-          --payload '{}' response.json
-        cat response.json
-
-    # =================================================
     # 🔥 EC2 DEPLOYMENT
     # =================================================
 
     # -------------------------------------------------
-    # 21️⃣ Deploy to EC2 via SSM
+    # 15️⃣ Deploy to EC2 via SSM
     # -------------------------------------------------
-    - name: 🚀 Deploy via AWS SSM
+    - name: 🚀 Deploy to EC2
       run: |
         aws ssm send-command \
           --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
           --document-name "AWS-RunShellScript" \
-          --parameters commands=["$HOME/charlie-cafe-devops/deploy_via_ssm.sh"] \
+          --parameters commands=["/home/ec2-user/charlie-cafe-devops/deploy_via_ssm.sh"] \
           --region ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 22️⃣ Remote Health Check
+    # 16️⃣ Wait for Deployment
     # -------------------------------------------------
-    - name: 🌐 Remote Health Check
+    - name: ⏳ Wait for EC2 Deployment
+      run: sleep 30
+
+    # -------------------------------------------------
+    # 17️⃣ Get EC2 Public IP
+    # -------------------------------------------------
+    - name: 🌐 Get EC2 IP
       run: |
         INSTANCE_IP=$(aws ec2 describe-instances \
           --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
           --query "Reservations[0].Instances[0].PublicIpAddress" \
           --output text)
 
-        curl -f http://$INSTANCE_IP/health.php || exit 1
+        echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 23️⃣ Success
+    # 18️⃣ Remote Health Check (CD)
+    # -------------------------------------------------
+    - name: 🌐 Test Application (EC2)
+      run: |
+        curl -f http://$INSTANCE_IP/ || exit 1
+
+    # -------------------------------------------------
+    # 19️⃣ Success
     # -------------------------------------------------
     - name: 🎉 Success
       run: echo "CI/CD Pipeline Completed Successfully 🚀"
