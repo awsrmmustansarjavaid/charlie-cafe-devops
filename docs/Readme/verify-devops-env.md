@@ -2946,9 +2946,17 @@ fi
 echo "=================================================="
 ```
 
+### ✅ Key Features Now
 
+- Checks multiple possible paths for the project repo (PROJECT_DIRS).
 
+- Automatically picks the correct one for all Git operations.
 
+- Falls back to first path if repo missing (so cloning works).
+
+- Maintains all verifications from your original script.
+
+- Fully commented for clarity.
 
 ---
 
