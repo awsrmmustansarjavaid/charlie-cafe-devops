@@ -783,11 +783,13 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 
 - ### 2️⃣ Basic Lambda Configurations
 
-| Setting       | Value                          |
-|---------------|--------------------------------|
-| Runtime       | Python 3.10 or 3.11 or 3.12    |
-| Role          | Lambda-Cafe-Order-Role         |
-| Timeout       | 10–30 seconds                  |
+| Setting         | Value                          |
+|-----------------|--------------------------------|
+| Runtime         | Python 3.10, 3.11, or 3.12    |
+| Architecture    | x86_64                         |
+| Execution role  | Use existing role              |
+| Role            | Lambda-Cafe-Order-Role         |
+| Timeout         | 10–30 seconds                  |
 
 
 - ### 3️⃣ FIX HANDLER (VERY IMPORTANT)
