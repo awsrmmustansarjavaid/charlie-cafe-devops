@@ -2705,5 +2705,62 @@ If this is not set correctly, several things happen:
 - GitHub CI/CD updates will succeed, but Lambda never runs your function → InProgress / ResourceConflict / errors
 
 ---
+### Github Errors
+
+### 1️⃣ Git “divergent branches” error
+
+```
+fatal: Need to specify how to reconcile divergent branches.
+```
+
+- This happens because your EC2 repo and GitHub main branch have different commits that can’t be auto-merged.
+
+- Because of this, your Bash script cannot pull the latest code, so the .py files (like CafeMenuLambda.py) are not being updated or sent to Lambda.
+
+### Quick fix: run this manually once in your repo:
+
+```
+cd ~/charlie-cafe-devops
+git fetch origin
+git reset --hard origin/main
+```
+
+> ⚠ Warning: This will overwrite any local changes in your EC2 repo. Make sure you don’t have unsaved changes.
+
+After this, your repo is fully in sync with GitHub.
+
+### 2️⃣ Lambda code visibility
+
+- Even though the handler is set correctly, Lambda will only show code if the .py file was deployed.
+
+- Because your script failed at the git pull step, the new file CafeMenuLambda.py was never packaged and uploaded.
+
+#### Steps to fix after syncing repo:
+
+```
+# Go back to home
+cd ~
+
+# Run your deployment script again
+sudo ./github-aws-devops-lambda-deploy.sh
+```
+
+- This will package all .py files, including CafeMenuLambda.py
+
+- Update the existing Lambda functions
+
+- Attach the PyMySQL layer
+
+After this, you should see the .py code in the Lambda console.
+
+### ✅ Summary / Action Plan
+
+- Sync your EC2 repo with GitHub (git fetch + git reset --hard origin/main)
+
+- Run your Bash script again
+
+- Verify Lambda functions show the correct code
+---
+
 
 
