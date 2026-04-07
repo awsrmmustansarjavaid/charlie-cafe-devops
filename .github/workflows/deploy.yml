@@ -104,6 +104,7 @@ jobs:
     # -------------------------------------------------
     - name: 🚀 Run Container (CI)
       run: |
+        docker rm -f test_app || true
         docker run -d -p 80:80 --name test_app charlie-cafe
         sleep 10
 
