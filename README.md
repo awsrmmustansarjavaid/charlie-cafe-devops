@@ -742,6 +742,28 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 ### 3️⃣ Basic Lambda Configurations
 
+```
+nano setup_charlie_cafe_db_full.sh
+```
+
+[setup_charlie_cafe_db_full](./infrastructure/scripts/setup_charlie_cafe_db_full.sh)
+
+#### 🧪 HOW TO USE
+
+#### 1️⃣ Give permission
+
+```
+chmod +x setup_charlie_cafe_db_full.sh
+```
+
+#### 2️⃣ Run
+
+```
+./setup_charlie_cafe_db_full.sh
+```
+
+### 3️⃣ Basic Lambda Configurations
+
 #### ✅ STEP 1 — CHECK BASIC SETTINGS
 
 Inside Lambda → Configuration → General configuration
