@@ -791,6 +791,8 @@ So:
 
 ### 4️⃣ Git Auto Deploy
 
+[github-aws-devops-lambda-deploy.sh](./infrastructure/scripts/github-aws-devops-lambda-deploy.sh)
+
 #### 🧪 HOW TO USE
 
 #### 1️⃣ Give permission
