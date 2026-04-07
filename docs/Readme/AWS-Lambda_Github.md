@@ -2467,7 +2467,31 @@ echo "✅ Test completed"
 echo "🎉 Full GitHub + AWS DevOps + Lambda Deployment Completed!"
 ```
 
+### 🔹 Key Features Now
 
+- Automatically clones/pulls your GitHub repository into EC2.
+
+- Builds PyMySQL Lambda layer.
+
+- Automatically packages all .py Lambda files.
+
+- Creates Lambda functions if they don’t exist.
+
+- Attaches the PyMySQL layer to all Lambdas.
+
+- Fully dynamic AWS account detection.
+
+- Test one Lambda function at the end.
+
+### 💡 Important Notes:
+
+- Replace YOUR_GITHUB_USERNAME/YOUR_REPO.git with your GitHub repo URL.
+
+- Replace ROLE_ARN with the IAM role ARN that your Lambdas will use.
+
+- Each Lambda .py file must have a function called lambda_handler because that’s the default handler.
+
+- If your Lambda functions are already created in AWS manually, it will update code and attach the layer instead of creating new ones.
 ---
 
 
