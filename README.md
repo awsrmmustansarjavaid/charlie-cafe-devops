@@ -848,6 +848,48 @@ GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
 
 - Everything else is fully automated.
 
+### 🌐 Verification Test 
+
+#### 1️⃣ One-liner to list all Lambda functions in your region
+
+```
+aws lambda list-functions --region us-east-1 --query 'Functions[].FunctionName' --output table
+```
+
+✅ This will show a table of all Lambda function names. You can check if your functions (like CafeOrderProcessor or CafeMenuLambda) exist.
+
+#### 2️⃣ Optional: check if a specific Lambda exists before running script
+
+```
+LAMBDA_NAME="CafeOrderProcessor"
+aws lambda get-function --function-name $LAMBDA_NAME --region us-east-1 >/dev/null 2>&1 && echo "$LAMBDA_NAME exists ✅" || echo "$LAMBDA_NAME does not exist ❌"
+```
+
+- Replace CafeOrderProcessor with any function name
+
+- Returns exists / does not exist
+
+#### 3️⃣ Bash snippet to check all your functions at once
+
+```
+#!/bin/bash
+
+LAMBDA_LIST=("CafeOrderProcessor" "CafeMenuLambda" "CafeOrderStatusLambda" "GetOrderStatusLambda")
+
+for func in "${LAMBDA_LIST[@]}"; do
+    aws lambda get-function --function-name "$func" --region us-east-1 >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "✅ $func exists"
+    else
+        echo "❌ $func does not exist"
+    fi
+done
+```
+
+- This is a pre-check script you can run before your main deployment script
+
+- Ensures all Lambda functions exist and are ready to receive code and layers
+
 #### 🧪 HOW TO USE
 
 #### 1️⃣ Give permission
