@@ -819,6 +819,14 @@ nano github-aws-devops-lambda-deploy.sh
 
 [github-aws-devops-lambda-deploy.sh](./infrastructure/scripts/github-aws-devops-lambda-deploy.sh)
 
+#### 💡 What you only need to provide:
+
+```
+GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+```
+
+- Everything else is fully automated.
+
 #### 🧪 HOW TO USE
 
 #### 1️⃣ Give permission
