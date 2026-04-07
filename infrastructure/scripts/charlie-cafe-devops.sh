@@ -33,7 +33,10 @@ dnf install -y \
   htop \
   tar \
   awscli \
-  mariadb105
+  mariadb105 \
+  python3 \
+  python3-pip \
+  zip
 
 # ----------------------------------------------------------
 # 4️⃣ Start & enable Docker
