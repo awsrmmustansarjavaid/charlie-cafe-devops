@@ -1,8 +1,35 @@
 #!/bin/bash
 
 # ==========================================================
-# ☕ Charlie Cafe — COMPLETE DevOps Verification Script
+# ☕ Charlie Cafe — COMPLETE DevOps & AWS/GitHub Verification + Auto Sync
 # ==========================================================
+# This script performs all environment verifications:
+#   ✅ Required tools
+#   ✅ Versions
+#   ✅ Docker status & test container
+#   ✅ Project directory & Git
+#   ✅ SSH & GitHub authentication
+#   ✅ Git commit & push test
+#   ✅ GitHub clone test
+#   ✅ Network check
+#   ✅ AWS Secrets & RDS
+#   ✅ AWS CLI verification
+#   ✅ GitHub repo verification
+#   ✅ Auto-sync project with GitHub
+#   ✅ ECR repository verification
+# ==========================================================
+
+# ---------------- VARIABLES ----------------
+# Replace these with your own details
+AWS_ACCESS_KEY_ID="your access id"
+AWS_SECRET_ACCESS_KEY="your access key"
+AWS_REGION="us-east-1"
+GITHUB_USERNAME="your-github-username"
+GITHUB_PASSWORD="your-github-token"
+GITHUB_REPO="charlie-cafe-devops"
+ECR_REPO="your-ecr-repo-name"          # Optional
+PROJECT_DIR="$HOME/charlie-cafe-devops"
+SECRET_NAME="CafeDevDBSM"
 
 # ---------------- COLORS ----------------
 GREEN='\033[0;32m'
@@ -25,7 +52,7 @@ section() {
   echo -e "${BLUE}==================================================${NC}"
 }
 
-echo -e "${BLUE}🚀 Starting Full Environment Verification${NC}"
+echo -e "${BLUE}🚀 Starting Full Environment Verification + AWS/GitHub Sync${NC}"
 
 # ==========================================================
 # 1️⃣ REQUIRED TOOLS
@@ -98,8 +125,6 @@ docker rm -f $TEST_CONTAINER >/dev/null
 # 5️⃣ PROJECT + GIT
 # ==========================================================
 section "📂 Step 5: Project & Git"
-
-PROJECT_DIR="/home/ec2-user/charlie-cafe-devops"
 
 if [ -d "$PROJECT_DIR" ]; then
     pass "Project directory exists"
@@ -182,12 +207,11 @@ ping -c 2 github.com >/dev/null 2>&1 && pass "Internet OK" || fail "No Internet"
 # ==========================================================
 section "🗄️ Step 10: AWS + RDS"
 
-SECRET_NAME="CafeDevDBSM"
-REGION="us-east-1"
+export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION
 
 SECRET_JSON=$(aws secretsmanager get-secret-value \
   --secret-id $SECRET_NAME \
-  --region $REGION \
+  --region $AWS_REGION \
   --query SecretString \
   --output text 2>/dev/null)
 
@@ -206,6 +230,66 @@ if [ -n "$DB_HOST" ]; then
     echo "SELECT NOW();" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" &>/dev/null \
         && pass "RDS connection OK" \
         || fail "RDS connection failed"
+fi
+
+# ==========================================================
+# 11️⃣ AWS CLI VERIFICATION
+# ==========================================================
+section "☁️ Step 11: AWS CLI Verification"
+
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text 2>/dev/null || echo "")
+if [[ -z "$AWS_ACCOUNT_ID" ]]; then
+    fail "Unable to fetch AWS Account ID"
+else
+    pass "AWS Account ID: $AWS_ACCOUNT_ID"
+fi
+
+# ==========================================================
+# 12️⃣ GITHUB REPO VERIFICATION + AUTO SYNC
+# ==========================================================
+section "🔄 Step 12: GitHub Repo Verification & Auto Sync"
+
+GITHUB_API_URL="https://api.github.com/repos/$GITHUB_USERNAME/$GITHUB_REPO"
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "$GITHUB_USERNAME:$GITHUB_PASSWORD" $GITHUB_API_URL)
+
+if [[ "$HTTP_STATUS" -eq 200 ]]; then
+    pass "GitHub repository is accessible"
+else
+    fail "Cannot access GitHub repository. HTTP status: $HTTP_STATUS"
+fi
+
+echo "Syncing local project directory: $PROJECT_DIR"
+
+if [[ ! -d "$PROJECT_DIR/.git" ]]; then
+    echo "Repo not found locally. Cloning..."
+    git clone "https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git" "$PROJECT_DIR"
+else
+    echo "Repo exists. Pulling latest changes..."
+    cd "$PROJECT_DIR"
+    git pull origin main
+fi
+
+cd "$PROJECT_DIR"
+
+if [[ -n "$(git status --porcelain)" ]]; then
+    echo "Detected local changes. Committing and pushing..."
+    git add .
+    git commit -m "Auto-sync: $(date '+%Y-%m-%d %H:%M:%S')"
+    git push origin main
+    pass "Local changes pushed to GitHub"
+else
+    pass "No local changes detected. Nothing to push."
+fi
+
+# ==========================================================
+# 13️⃣ AWS ECR REPOSITORY VERIFICATION (OPTIONAL)
+# ==========================================================
+section "📦 Step 13: AWS ECR Verification"
+
+if [[ -n "$ECR_REPO" ]]; then
+    aws ecr describe-repositories --repository-names "$ECR_REPO" --region "$AWS_REGION" >/dev/null 2>&1 \
+        && pass "ECR repository exists" \
+        || warn "ECR repository does not exist or cannot access"
 fi
 
 # ==========================================================
