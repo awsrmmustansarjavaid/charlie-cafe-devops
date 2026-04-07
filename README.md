@@ -791,7 +791,6 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 | Role            | Lambda-Cafe-Order-Role         |
 | Timeout         | 10–30 seconds                  |
 
-
 - ### 3️⃣ FIX HANDLER (VERY IMPORTANT)
 
 - Go to: 👉 Configuration → Runtime settings
