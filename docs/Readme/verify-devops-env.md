@@ -2141,45 +2141,44 @@ export ECR_REPO="your-ecr-repo-name"   # Optional
 #!/bin/bash
 
 # ==========================================================
-# 🚀 aws_github_auto_sync.sh — AWS & GitHub Auto Sync Script
+# 🚀 aws_github_auto_sync.sh — AWS & GitHub Full Verification + Auto Commit/Push
 # ==========================================================
-# This script:
-#   ✅ Sets required environment variables
-#   ✅ Verifies AWS credentials
-#   ✅ Verifies GitHub repository access
-#   ✅ Pulls latest changes from GitHub
-#   ✅ Commits & pushes local changes automatically
-#   ✅ Optionally verifies AWS ECR repository
+# This script does the following:
+#   ✅ Verifies AWS CLI and credentials
+#   ✅ Checks GitHub repository access
+#   ✅ Clones/pulls repo if missing
+#   ✅ Automatically commits and pushes local changes
+#   ✅ Optionally verifies ECR repository
 # ==========================================================
 
-set -e  # Exit on any error
+set -e  # Exit immediately if a command fails
 
 echo "=================================================="
-echo "🔍 Starting AWS & GitHub Auto Sync Verification"
+echo "🔍 Starting AWS & GitHub Full Verification + Sync"
 echo "=================================================="
 
 # ----------------------------------------------------------
-# 1️⃣ Set Environment Variables (Change these to your values)
+# 1️⃣ Configure AWS & GitHub variables directly
 # ----------------------------------------------------------
-echo "Setting environment variables..."
-export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY"
-export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
-export AWS_REGION="us-east-1"
-export GITHUB_USERNAME="your-github-username"
-export GITHUB_PASSWORD="your-github-personal-access-token"
-export GITHUB_REPO="your-repo-name"
-export ECR_REPO="your-ecr-repo-name"       # Optional
-export PROJECT_DIR="$HOME/project"         # Your local project directory to sync
-echo "✅ Environment variables set"
+AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY"
+AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+AWS_REGION="us-east-1"
+GITHUB_USERNAME="your-github-username"
+GITHUB_PASSWORD="your-github-personal-access-token"
+GITHUB_REPO="your-repo-name"
+ECR_REPO="your-ecr-repo-name"          # Optional
+PROJECT_DIR="$HOME/project"            # Local project directory to sync
+
+# Export AWS variables for CLI usage
+export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION
 
 # ----------------------------------------------------------
 # 2️⃣ Verify required tools
 # ----------------------------------------------------------
 echo "Checking required tools..."
-
 for cmd in aws git curl jq; do
-    if ! command -v $cmd &>/dev/null; then
-        echo "❌ $cmd is not installed. Install it first."
+    if ! command -v $cmd &> /dev/null; then
+        echo "❌ $cmd is not installed. Please install it first."
         exit 1
     else
         echo "✅ $cmd is installed"
@@ -2189,11 +2188,10 @@ done
 # ----------------------------------------------------------
 # 3️⃣ Verify AWS credentials
 # ----------------------------------------------------------
-echo "Verifying AWS credentials..."
-
+echo "Checking AWS credentials..."
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text 2>/dev/null || echo "")
 if [[ -z "$AWS_ACCOUNT_ID" ]]; then
-    echo "❌ Cannot fetch AWS Account ID. Check AWS credentials."
+    echo "❌ Unable to fetch AWS Account ID. Check your AWS credentials."
     exit 1
 else
     echo "✅ AWS Account ID: $AWS_ACCOUNT_ID"
@@ -2202,8 +2200,7 @@ fi
 # ----------------------------------------------------------
 # 4️⃣ Verify GitHub repository access
 # ----------------------------------------------------------
-echo "Verifying GitHub repository access..."
-
+echo "Checking GitHub repository access..."
 GITHUB_API_URL="https://api.github.com/repos/$GITHUB_USERNAME/$GITHUB_REPO"
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "$GITHUB_USERNAME:$GITHUB_PASSWORD" $GITHUB_API_URL)
 
@@ -2215,39 +2212,36 @@ else
 fi
 
 # ----------------------------------------------------------
-# 5️⃣ Sync local project directory with GitHub
+# 5️⃣ Clone or update project repo
 # ----------------------------------------------------------
-echo "Syncing local project directory with GitHub..."
+echo "Syncing local project directory: $PROJECT_DIR"
 
-# Create project directory if it doesn't exist
-mkdir -p "$PROJECT_DIR"
-cd "$PROJECT_DIR"
-
-# Initialize Git repo if not already
-if [ ! -d ".git" ]; then
-    echo "Initializing Git repository..."
-    git init
-    git remote add origin "https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git"
+if [[ ! -d "$PROJECT_DIR/.git" ]]; then
+    echo "Repo not found locally. Cloning..."
+    git clone "https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git" "$PROJECT_DIR"
+else
+    echo "Repo exists. Pulling latest changes..."
+    cd "$PROJECT_DIR"
+    git pull origin main
 fi
 
-# Pull latest changes
-echo "Pulling latest changes from GitHub..."
-git fetch origin
-git reset --hard origin/main 2>/dev/null || echo "⚠️ No remote main branch yet"
+# ----------------------------------------------------------
+# 6️⃣ Auto-commit and push local changes
+# ----------------------------------------------------------
+cd "$PROJECT_DIR"
 
-# Add, commit, and push local changes
-echo "Adding local changes..."
-git add .
-
-# Commit with timestamp
-COMMIT_MSG="Auto-sync commit: $(date '+%Y-%m-%d %H:%M:%S')"
-git commit -m "$COMMIT_MSG" 2>/dev/null || echo "⚠️ No changes to commit"
-
-echo "Pushing changes to GitHub..."
-git push origin main 2>/dev/null || echo "⚠️ Push failed. Check repo permissions."
+if [[ -n "$(git status --porcelain)" ]]; then
+    echo "Detected local changes. Committing and pushing..."
+    git add .
+    git commit -m "Auto-sync: $(date '+%Y-%m-%d %H:%M:%S')"
+    git push origin main
+    echo "✅ Local changes pushed to GitHub"
+else
+    echo "✅ No local changes detected. Nothing to push."
+fi
 
 # ----------------------------------------------------------
-# 6️⃣ Verify AWS ECR repository (optional)
+# 7️⃣ Verify AWS ECR repository (Optional)
 # ----------------------------------------------------------
 if [[ -n "$ECR_REPO" ]]; then
     echo "Verifying ECR repository $ECR_REPO..."
@@ -2257,10 +2251,10 @@ if [[ -n "$ECR_REPO" ]]; then
 fi
 
 # ----------------------------------------------------------
-# ✅ Finished
+# ✅ Finished verification & sync
 # ----------------------------------------------------------
 echo "=================================================="
-echo "🎉 AWS & GitHub Auto Sync completed successfully!"
+echo "🎉 AWS & GitHub verification and auto-sync completed!"
 echo "=================================================="
 ```
 
