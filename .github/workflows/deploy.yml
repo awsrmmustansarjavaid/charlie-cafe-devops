@@ -104,7 +104,7 @@ jobs:
     # -------------------------------------------------
     - name: 🚀 Run Container
       run: |
-        docker run -d -p 8080:80 --name test_app charlie-cafe
+        docker run -d -p 80:80 --name test_app charlie-cafe
         sleep 10
 
     # -------------------------------------------------
@@ -112,7 +112,7 @@ jobs:
     # -------------------------------------------------
     - name: ❤️ Test Application
       run: |
-        curl -f http://localhost:8080/health.php || exit 1
+        curl -f http://localhost/ || exit 1
 
     # -------------------------------------------------
     # 14️⃣ Cleanup
