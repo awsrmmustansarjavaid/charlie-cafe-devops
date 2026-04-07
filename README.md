@@ -793,7 +793,7 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 
 - ### 3️⃣ FIX HANDLER (VERY IMPORTANT)
 
-- Go to: 👉 Configuration → Runtime settings
+- Go to: 👉 Scroll Down → Runtime settings
 
 - Click Edit
 
@@ -811,8 +811,6 @@ filename.function
 
 So:
 
-
-
 | File Name                        | Handler (set in Lambda)                      |
 | -------------------------------- | -------------------------------------------- |
 | CafeOrderProcessor.py            | CafeOrderProcessor.lambda_handler            |
@@ -829,6 +827,10 @@ So:
 | cafe-attendance-admin-service.py | cafe-attendance-admin-service.lambda_handler |
 
 ⚠️ If wrong → CI/CD works but Lambda FAILS
+
+- Save
+
+✅ You only need to do this once per function. After this, your Bash script can fully update the code and layers automatically.
 
 ### 4️⃣ Git Auto Deploy
 
