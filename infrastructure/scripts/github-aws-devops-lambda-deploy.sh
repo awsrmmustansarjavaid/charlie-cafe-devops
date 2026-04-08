@@ -1,150 +1,114 @@
 #!/bin/bash
 # ==========================================================
-# ☕ Charlie Cafe — Fully Automated GitHub + AWS Lambda Deploy
-# ----------------------------------------------------------
-# AUTOMATION FLOW:
-#   1️⃣ Clone/Pull GitHub repo
-#   2️⃣ Build PyMySQL Lambda Layer
-#   3️⃣ Create or update Lambda functions automatically
-#   4️⃣ Attach Layer to Lambdas
-#   5️⃣ Deploy Lambda .py files
-#   6️⃣ Test a Lambda function
-#
-# REQUIREMENTS:
-#   - AWS CLI configured or EC2 IAM role
-#   - Git installed
-#
-# USAGE:
-#   ./deploy_charlie_cafe.sh
+# ☕ Charlie Cafe — Fully Automated Lambda Deployment
+# ==========================================================
+# Features:
+# 1. Pull latest code from GitHub
+# 2. Build and publish PyMySQL Lambda layer
+# 3. Update existing Lambda functions code safely
+# 4. Attach PyMySQL layer to all Lambdas
+# 5. Waits properly to avoid ResourceConflictException
 # ==========================================================
 
-set -e
+set -euo pipefail
 
-# ----------------------------------------------------------
-# 🔧 CONFIGURATION
-# ----------------------------------------------------------
-AWS_REGION="${AWS_REGION:-us-east-1}"                # Can override with ENV
-GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
-LOCAL_REPO_DIR="charlie-cafe-devops"
-LAMBDA_SUBDIR="app/backend/lambda"                  # relative path inside repo
-LAYER_DIR="layer"
-ZIP_LAYER="pymysql-layer.zip"
-ZIP_OUTPUT_DIR="lambda_zips"
+# -------------------------------
+# CONFIGURATION
+# -------------------------------
+AWS_REGION="${AWS_REGION:-us-east-1}"
+GITHUB_REPO="https://github.com/your github username /charlie-cafe-devops.git"
+LOCAL_REPO="charlie-cafe-devops"
+LAMBDA_SUBDIR="app/backend/lambda"
 LAYER_NAME="pymysql-layer"
-TEST_LAMBDA="CafeOrderProcessor"                    # Lambda to test
-PYTHON_RUNTIME="python3.11"                         # Lambda runtime
+LAYER_PACKAGE="pymysql-layer.zip"
+PYTHON_RUNTIME="python3.10"
 
-# ----------------------------------------------------------
-# ⚡ DYNAMIC AWS ACCOUNT ID
-# ----------------------------------------------------------
-echo "⚡ Fetching AWS Account ID..."
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+LAMBDAS=(
+  "CafeOrderProcessor:CafeOrderProcessor.py"
+  "CafeMenuLambda:CafeMenuLambda.py"
+  "CafeOrderStatusLambda:CafeOrderStatusLambda.py"
+  "GetOrderStatusLambda:GetOrderStatusLambda.py"
+  "CafeOrderWorkerLambda:CafeOrderWorkerLambda.py"
+  "AdminMarkPaidLambda:AdminMarkPaidLambda.py"
+  "CafeAnalyticsLambda:CafeAnalyticsLambda.py"
+  "hr-attendance:hr-attendance.py"
+  "hr-employee-profile:hr-employee-profile.py"
+  "hr-attendance-history:hr-attendance-history.py"
+  "hr-leaves-holidays:hr-leaves-holidays.py"
+  "cafe-attendance-admin-service:cafe-attendance-admin-service.py"
+)
+
+# -------------------------------
+# FETCH AWS ACCOUNT ID
+# -------------------------------
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 echo "✅ AWS Account ID: $AWS_ACCOUNT_ID"
 
-# ----------------------------------------------------------
-# 📥 STEP 1 — CLONE OR UPDATE GITHUB REPO
-# ----------------------------------------------------------
-if [ -d "$LOCAL_REPO_DIR" ]; then
-    echo "📦 Repository exists, pulling latest changes..."
-    cd "$LOCAL_REPO_DIR"
-    git reset --hard
-    git pull origin main
-    cd ..
+# -------------------------------
+# CLONE OR UPDATE GITHUB
+# -------------------------------
+if [[ -d "$LOCAL_REPO" ]]; then
+  echo "📦 Updating repo..."
+  cd "$LOCAL_REPO"
+  git reset --hard
+  git pull origin main
+  cd ..
 else
-    echo "📦 Cloning GitHub repository..."
-    git clone "$GITHUB_REPO_URL" "$LOCAL_REPO_DIR"
+  echo "📦 Cloning repo..."
+  git clone "$GITHUB_REPO"
 fi
-echo "✅ GitHub repo ready"
+echo "✅ Repo ready"
 
-# ----------------------------------------------------------
-# 🧹 CLEAN OLD FILES
-# ----------------------------------------------------------
-echo "🧹 Cleaning old build files..."
-rm -rf "$LAYER_DIR" "$ZIP_LAYER" "$ZIP_OUTPUT_DIR"
-
-# ----------------------------------------------------------
-# 🏗️ STEP 2 — BUILD PYMYSQL LAMBDA LAYER
-# ----------------------------------------------------------
+# -------------------------------
+# BUILD PYMYSQL LAYER
+# -------------------------------
 echo "🏗️ Building PyMySQL Lambda Layer..."
-mkdir -p "$LAYER_DIR/python"
-pip3 install pymysql -t "$LAYER_DIR/python" --no-cache-dir
+rm -rf python "$LAYER_PACKAGE"
+mkdir python
+pip3 install pymysql -t python/ --no-cache-dir > /dev/null
+zip -r "$LAYER_PACKAGE" python > /dev/null
+rm -rf python
+echo "✅ Layer packaged"
 
-cd "$LAYER_DIR"
-zip -r "../$ZIP_LAYER" python > /dev/null
-cd ..
-echo "✅ Layer packaged: $ZIP_LAYER"
+# -------------------------------
+# PUBLISH LAYER
+# -------------------------------
+LAYER_ARN=$(aws lambda publish-layer-version \
+  --layer-name "$LAYER_NAME" \
+  --zip-file fileb://"$LAYER_PACKAGE" \
+  --compatible-runtimes python3.10 python3.11 python3.12 \
+  --query 'LayerVersionArn' --output text)
+echo "✅ Layer published: $LAYER_ARN"
 
-# ----------------------------------------------------------
-# 🚀 STEP 3 — PUBLISH LAYER
-# ----------------------------------------------------------
-echo "🚀 Publishing Lambda Layer..."
-LAYER_VERSION=$(aws lambda publish-layer-version \
-    --region "$AWS_REGION" \
-    --layer-name "$LAYER_NAME" \
-    --zip-file "fileb://$ZIP_LAYER" \
-    --compatible-runtimes python3.10 python3.11 \
-    --query 'Version' \
-    --output text)
-echo "✅ Layer published: Version $LAYER_VERSION"
+# -------------------------------
+# STEP 1: UPDATE ALL LAMBDA CODES
+# -------------------------------
+echo "🚀 Updating Lambda codes..."
+for FUNC in "${LAMBDAS[@]}"; do
+  FUNC_NAME="${FUNC%%:*}"
+  FILE_NAME="${FUNC##*:}"
+  ZIP_FILE="${FUNC_NAME}.zip"
 
-# ----------------------------------------------------------
-# 🔗 STEP 4 — PACKAGE, CREATE OR UPDATE LAMBDA FUNCTIONS
-# ----------------------------------------------------------
-echo "🔗 Creating/Updating Lambda functions..."
-mkdir -p "$ZIP_OUTPUT_DIR"
+  zip -j "$ZIP_FILE" "$LOCAL_REPO/$LAMBDA_SUBDIR/$FILE_NAME" > /dev/null
 
-LAMBDA_PATH="$LOCAL_REPO_DIR/$LAMBDA_SUBDIR"
+  echo "🔄 Updating code for $FUNC_NAME..."
+  aws lambda update-function-code --function-name "$FUNC_NAME" --zip-file fileb://"$ZIP_FILE"
+  aws lambda wait function-updated --function-name "$FUNC_NAME"  # WAIT until update finishes
 
-for file in "$LAMBDA_PATH"/*.py; do
-    fname=$(basename "$file" .py)
-    zip_file="$ZIP_OUTPUT_DIR/$fname.zip"
-
-    echo "➡️ Packaging $fname..."
-    zip -j "$zip_file" "$file" > /dev/null
-
-    # Check if Lambda exists
-    if aws lambda get-function --function-name "$fname" --region "$AWS_REGION" >/dev/null 2>&1; then
-        echo "   🔄 Function exists, updating code..."
-        aws lambda update-function-code \
-            --region "$AWS_REGION" \
-            --function-name "$fname" \
-            --zip-file "fileb://$zip_file"
-    else
-        echo "   ✨ Function does not exist, creating..."
-        # Use EC2 IAM Role automatically assigned to Lambda (no ARN hardcoding)
-        aws lambda create-function \
-            --region "$AWS_REGION" \
-            --function-name "$fname" \
-            --runtime "$PYTHON_RUNTIME" \
-            --role $(curl -s http://169.254.169.254/latest/meta-data/iam/security-credentials/) \
-            --handler "$fname.lambda_handler" \
-            --zip-file "fileb://$zip_file"
-    fi
-
-    # Attach the PyMySQL Layer dynamically
-    echo "   🔗 Attaching PyMySQL Layer..."
-    aws lambda update-function-configuration \
-        --region "$AWS_REGION" \
-        --function-name "$fname" \
-        --layers "arn:aws:lambda:$AWS_REGION:$AWS_ACCOUNT_ID:layer:$LAYER_NAME:$LAYER_VERSION"
+  rm -f "$ZIP_FILE"
+  echo "✅ Code updated: $FUNC_NAME"
 done
 
-echo "✅ All Lambdas created/updated and Layer attached"
+# -------------------------------
+# STEP 2: ATTACH LAYER TO ALL LAMBDAS
+# -------------------------------
+echo "🔗 Attaching PyMySQL Layer to all Lambdas..."
+for FUNC in "${LAMBDAS[@]}"; do
+  FUNC_NAME="${FUNC%%:*}"
+  echo "🔄 Updating configuration for $FUNC_NAME..."
+  aws lambda update-function-configuration --function-name "$FUNC_NAME" --layers "$LAYER_ARN"
+  aws lambda wait function-updated --function-name "$FUNC_NAME"
+  echo "✅ Layer attached: $FUNC_NAME"
+done
 
-# ----------------------------------------------------------
-# 🧪 STEP 5 — TEST ONE LAMBDA
-# ----------------------------------------------------------
-echo "🧪 Testing $TEST_LAMBDA..."
-aws lambda invoke \
-    --region "$AWS_REGION" \
-    --function-name "$TEST_LAMBDA" \
-    --payload '{}' response.json > /dev/null
-
-echo "📄 Lambda Response:"
-cat response.json
-echo "✅ Test completed"
-
-# ----------------------------------------------------------
-# 🎉 FINISHED
-# ----------------------------------------------------------
-echo "🎉 Full GitHub + AWS Lambda Deployment Completed!"
+echo "🎉 All Lambda functions updated and layer attached successfully!"
