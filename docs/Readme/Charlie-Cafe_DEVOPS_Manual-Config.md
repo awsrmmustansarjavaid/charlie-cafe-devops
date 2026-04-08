@@ -1,4 +1,106 @@
-# Docker Verification
+# GitHub Actions workflow directly on EC2
+
+### Step 1: Prepare your EC2
+
+Make sure EC2 has:
+
+- #### Docker installed and running:
+
+```
+sudo systemctl enable docker
+sudo systemctl start docker
+docker --version
+```
+
+- #### Git installed:
+
+```
+git --version
+```
+
+- #### AWS CLI configured with the same credentials you use in GitHub Actions:
+
+```
+aws configure
+# use same AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
+```
+
+### Step 2: Clone your repo
+
+```
+cd ~
+git clone https://github.com/<your_username>/charlie-cafe-devops.git
+cd charlie-cafe-devops
+```
+
+### Step 3: Simulate CI/CD steps on EC2
+
+You can run the Docker build and container test locally — this mirrors steps 11–14 in your deploy.yml.
+
+```
+# Go to repo root
+cd ~/charlie-cafe-devops
+
+# Optional: pull latest code
+git pull origin main
+
+# Build Docker image (simulate step 11)
+docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+# Remove old container (simulate step 12)
+docker rm -f test_app || true
+
+# Run new container (simulate step 12)
+docker run -d -p 80:80 --name test_app charlie-cafe
+
+# Wait a few seconds
+sleep 10
+
+# Test container (simulate step 13)
+curl -f http://localhost/ || { echo "Container failed"; exit 1; }
+
+# Cleanup (simulate step 14)
+docker rm -f test_app || true
+```
+
+✅ If all these commands succeed, your Docker-related steps in deploy.yml are safe to push.
+
+### Step 4: Test the EC2 deployment script
+
+Since your deploy.yml calls:
+
+```
+/home/ec2-user/charlie-cafe-devops/deploy_via_ssm.sh
+```
+
+You can run it manually to simulate step 15:
+
+```
+bash ~/charlie-cafe-devops/deploy_via_ssm.sh
+```
+
+- This will test EC2 deployment without GitHub Actions.
+
+- Make sure deploy_via_ssm.sh contains the correct Docker build/run commands.
+
+### Step 5: Optional Full Test via GitHub Actions
+
+- Push your branch to GitHub.
+
+- Go to Actions → Your workflow → Run workflow → main branch.
+
+- GitHub will run all steps in deploy.yml.
+
+- You can monitor logs for Docker build, container test, and EC2 deployment.
+
+### 💡 Pro tip:
+
+- Use a test EC2 instance (like t2.micro) to test the workflow before running it on production.
+
+- Ensure your docker/apache-php/Dockerfile paths and frontend files exist, otherwise Docker build fails.
+
+---
+## Docker Verification
 
 ### 1️⃣ Check Docker Service
 
