@@ -904,6 +904,22 @@ done
 
 - Ensures all Lambda functions exist and are ready to receive code and layers
 
+### EC2 Docker Health
+
+```
+nano ec2_docker_health.sh
+```
+
+[ec2_docker_health.sh](./infrastructure/scripts/ec2_docker_health.sh)
+
+#### 🔹 Usage
+
+```
+chmod +x ec2_docker_health.sh
+./ec2_docker_health.sh
+```
+
+✅ This will work every time on EC2, no matter where you run it from, as long as the repo is cloned in ~/charlie-cafe-devops.
 ---
 ## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
 
