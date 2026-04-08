@@ -249,5 +249,40 @@ echo -e "${YELLOW}=============================================${NC}"
 - It will run all 12 checks, show logs for the Apache container, and produce a clear report at the end.
 
 ---
+### 1️⃣ Verify Apache Docker Container Setup on EC2
+
+Before deploying anything, always run this short verification script:
+
+```
+#!/bin/bash
+# Quick Docker + Apache Health Check
+GREEN='\033[0;32m'; RED='\033[0;31m'; YELLOW='\033[1;33m'; NC='\033[0m'
+pass() { echo -e "${GREEN}✅ $1${NC}"; }
+fail() { echo -e "${RED}❌ $1${NC}"; }
+
+# Check Docker running
+systemctl is-active --quiet docker && pass "Docker running" || { fail "Docker not running"; exit 1; }
+
+# Remove old container
+docker rm -f charlie-cafe || true
+
+# Run new container
+docker run -d -p 80:80 --name charlie-cafe charlie-cafe
+
+# Wait a few seconds
+sleep 5
+
+# Test container port inside host
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/)
+if [ "$HTTP_STATUS" == "200" ]; then
+    pass "Apache container responding on host port 80"
+else
+    fail "Apache container NOT responding, HTTP status $HTTP_STATUS"
+    docker logs charlie-cafe | tail -n 20
+fi
+```
+
+✅ Why this works: This ensures every time before practice, you verify Docker + Apache, and see logs if it fails.
+
 
 
