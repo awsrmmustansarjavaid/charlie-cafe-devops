@@ -94,10 +94,13 @@ jobs:
         mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
 
     # -------------------------------------------------
-    # 11️⃣ Build Docker Image
+    # 11️⃣ Build Docker Image (Fixed)
     # -------------------------------------------------
     - name: 🐳 Build Docker Image
-      run: docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+      run: |
+        cd $GITHUB_WORKSPACE
+        echo "Building Docker image from $GITHUB_WORKSPACE/docker/apache-php/Dockerfile"
+        docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
     # 12️⃣ Run Container (CI Test)
