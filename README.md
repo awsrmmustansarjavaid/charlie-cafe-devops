@@ -848,6 +848,20 @@ GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
 
 - Everything else is fully automated.
 
+#### 🧪 HOW TO USE
+
+#### 1️⃣ Give permission
+
+```
+chmod +x github-aws-devops-lambda-deploy.sh
+```
+
+#### 2️⃣ Run
+
+```
+./github-aws-devops-lambda-deploy.sh
+```
+
 ### 🌐 Verification Test 
 
 #### 1️⃣ One-liner to list all Lambda functions in your region
@@ -889,20 +903,6 @@ done
 - This is a pre-check script you can run before your main deployment script
 
 - Ensures all Lambda functions exist and are ready to receive code and layers
-
-#### 🧪 HOW TO USE
-
-#### 1️⃣ Give permission
-
-```
-chmod +x github-aws-devops-lambda-deploy.sh
-```
-
-#### 2️⃣ Run
-
-```
-./github-aws-devops-lambda-deploy.sh
-```
 
 ---
 ## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
