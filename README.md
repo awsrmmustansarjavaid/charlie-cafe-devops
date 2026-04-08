@@ -240,6 +240,8 @@ AWS_SECRET_ACCESS_KEY
 
 ### 3️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
 
+> #### Optional Task 
+
 - Read more here [GitHub Auto-Deploy Config](./docs/GitHub_Auto-Deploy_Config.md)
 
 ### 🧱 Charlie Cafe -- Github Logs
