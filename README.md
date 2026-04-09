@@ -425,9 +425,35 @@ So:
 
 ✅ You only need to do this once per function. After this, your Bash script can fully update the code and layers automatically.
 
-- ### 4️⃣ FIX HANDLER (VERY IMPORTANT)
+- ### 4️⃣ Move Lambda Into VPC
 
+| Lambda Function Name             |
+|---------------------------------|
+| CafeOrderProcessor               | 
+| CafeOrderStatusLambda            | 
+| GetOrderStatusLambda             | 
+| CafeOrderWorkerLambda            | 
+| AdminMarkPaidLambda              | 
+| CafeAnalyticsLambda              | 
+| hr-attendance                    | 
+| hr-employee-profile              | 
+| hr-attendance-history            | 
+| hr-leaves-holidays               | 
+| cafe-attendance-admin-service    | 
 
+- AWS Console → Lambda → Your Function
+
+- Go to Configuration → Open VPC → Click Edit
+
+- Select:
+
+  - VPC → same as EC2
+
+  - Subnets → PRIVATE subnets (important)
+
+  - Security Group → Lambda SG
+
+- Save
 
 ### 4️⃣ Git Auto Deploy
 
