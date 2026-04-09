@@ -561,6 +561,17 @@ Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
 
 - Visibility: Private
 
+- Keep Mutable tags (default)
+
+- Click Create repository
+
+- You should now see your repo:
+
+```
+123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
+```
+
+
 #### 2️⃣ Copy Repository URI
 
 ✅ Example:
