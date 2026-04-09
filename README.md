@@ -669,7 +669,7 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 - Name: charlie-cluster
 
-#### 2️⃣ Create Task Definition
+### 3️⃣ Create Task Definition
 
 - Name: charlie-task
 
@@ -677,7 +677,7 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 - Memory: 1 GB
 
-#### 3️⃣ Add Container
+### 4️⃣ Add Container
 
 - Container Config:
 
@@ -687,7 +687,7 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 - Port: 80
 
-#### 4️⃣ (Optional Env Variables)
+### 🌐 (Optional Env Variables)
 
 ```
 DB_HOST = your-rds-endpoint
@@ -695,7 +695,7 @@ DB_USER = admin
 DB_PASS = ****
 ```
 
-### 3️⃣ ALB + ECS SERVICE
+### 5️⃣ ALB + ECS SERVICE
 
 > #### KEEP existing ALB and upgrade it for ECS.
 
