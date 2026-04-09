@@ -631,7 +631,35 @@ docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfi
 
 ### 2️⃣ ECS SETUP
 
-#### 1️⃣ Create Cluster
+#### 1️⃣ Create ECS Service-Linked IAM Role
+
+- Go to IAM → Roles → Create Role.
+
+- Choose AWS Service → Elastic Container Service.
+
+- Under Use Case, select Elastic Container Service (this is for ECS itself, not tasks or EC2).
+
+- Click Next: Permissions → You do not need to attach any extra policy (AWS adds AmazonECSServiceRolePolicy automatically).
+
+- Name the role: AWSServiceRoleForECS.
+
+- Click Create Role.
+
+✅ This is the official Service-Linked Role required by ECS.
+
+### Option B: Automatic (Easiest)
+
+Run this CLI command in your AWS CLI:
+
+```
+aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
+```
+
+✅ This automatically creates the required role: AWSServiceRoleForECS
+
+> Note: This requires your IAM user/role to have iam:CreateServiceLinkedRole permission.
+
+#### 2️⃣ Create Cluster
 
 - Go ECS → Clusters → Create Cluster
 
