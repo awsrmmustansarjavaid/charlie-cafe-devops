@@ -239,5 +239,12 @@ Optional Feature – Save generated links as .txt file (download).
 </html>
 ```
 
-
+### ✅ Enhancements in this version:
+Cafe-themed background image for styling.
+Font Awesome icons for better visual guidance.
+Clickable preview icons next to generated URLs.
+Reset button to clear all fields at once.
+Warm color palette: orange, brown, coffee tones.
+Responsive design for mobile and desktop.
+Inline comments for maintainability.
 ---
