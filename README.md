@@ -821,8 +821,6 @@ After your tasks can access ECR:
 
   - Verify container starts without errors
 
-
-
 - ### 7️⃣  Run Task in Cluster
 
 - Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
