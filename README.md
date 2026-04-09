@@ -374,7 +374,6 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 | hr-leaves-holidays            | hr-leaves-holidays.py            | hr-leaves-holidays.lambda_handler            |
 | cafe-attendance-admin-service | cafe-attendance-admin-service.py | cafe-attendance-admin-service.lambda_handler |
 
-
 - ### 2️⃣ Basic Lambda Configurations
 
 | Setting         | Value                          |
