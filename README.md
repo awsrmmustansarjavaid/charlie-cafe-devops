@@ -633,9 +633,11 @@ docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfi
 
 #### 1️⃣ Create Cluster
 
-- ECS → Clusters → Create
+- Go ECS → Clusters → Create Cluster
 
 - Type: Fargate
+
+> #### Networking Only (Fargate)
 
 - Name: charlie-cluster
 
