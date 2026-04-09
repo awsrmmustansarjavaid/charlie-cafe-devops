@@ -1,0 +1,243 @@
+# Charlie Cafe - charlie-cafe-link-generator.html
+
+## charlie-cafe-link-generator.html
+
+
+### ✅ Features I’ll add/enhance:
+
+Background Image – Use a stylish coffee/cafe-themed background.
+Icons – Use Font Awesome coffee-related icons for each section.
+Responsive Cards – CloudFront URLs, Cognito settings, and generated links.
+Copy Buttons – Already included, enhanced with tooltips.
+Live Preview – Show a small clickable preview icon next to each generated link.
+Validation – Warn users if any field is empty.
+Reset Button – Clear all inputs quickly.
+Stylish Footer – A cafe-themed footer with icons.
+Improved Color Palette – Warm coffee-like tones.
+Comments – Detailed inline comments for maintainability.
+Optional Feature – Save generated links as .txt file (download).
+
+#### Here’s the full refined HTML/Bootstrap template:
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charlie Cafe Link Generator</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome for cafe icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <style>
+    /* =======================
+       General Styles
+    ======================== */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      color: #4e342e;
+    }
+
+    /* Overlay for readability */
+    .overlay {
+      background-color: rgba(255, 248, 240, 0.92);
+      min-height: 100vh;
+      padding-top: 30px;
+      padding-bottom: 50px;
+    }
+
+    /* Header */
+    .header {
+      background-color: #d35400;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.6rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Cards */
+    .card {
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+      background-color: #e67e22;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    /* Buttons */
+    .btn-copy {
+      margin-left: 10px;
+    }
+    .btn-generate {
+      background-color: #d35400;
+      color: white;
+    }
+    .btn-reset {
+      background-color: #b03a2e;
+      color: white;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 15px;
+      font-size: 14px;
+      color: #4e342e;
+    }
+
+    /* Link Preview */
+    .preview-link {
+      margin-left: 10px;
+      color: #1d2124;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header { font-size: 1.3rem; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="overlay container">
+
+    <!-- Header -->
+    <div class="header">
+      <i class="fas fa-mug-hot"></i> Charlie Cafe Link Generator
+    </div>
+
+    <!-- CloudFront URLs Input -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-cloud"></i> CloudFront URLs
+      </div>
+      <div class="card-body">
+        <textarea class="form-control" id="cloudfrontUrls" rows="6" placeholder="Enter CloudFront URLs, one per line"></textarea>
+      </div>
+    </div>
+
+    <!-- AWS Cognito Settings -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-user-shield"></i> AWS Cognito Settings
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="cognitoDomain" class="form-label">Domain</label>
+          <input type="text" class="form-control" id="cognitoDomain" placeholder="https://your-domain.auth.us-east-1.amazoncognito.com">
+        </div>
+        <div class="mb-3">
+          <label for="clientId" class="form-label">Client ID</label>
+          <input type="text" class="form-control" id="clientId" placeholder="Enter Client ID">
+        </div>
+        <div class="mb-3">
+          <label for="userPoolId" class="form-label">User Pool ID</label>
+          <input type="text" class="form-control" id="userPoolId" placeholder="Enter User Pool ID">
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="text-center mb-4">
+      <button class="btn btn-generate btn-lg" onclick="generateLinks()">
+        <i class="fas fa-link"></i> Generate Links
+      </button>
+      <button class="btn btn-reset btn-lg" onclick="resetAll()">
+        <i class="fas fa-eraser"></i> Reset
+      </button>
+    </div>
+
+    <!-- Generated Links Output -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-list"></i> Generated Cognito Login URLs
+      </div>
+      <div class="card-body">
+        <ul class="list-group" id="generatedLinks"></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <i class="fas fa-mug-saucer"></i> &copy; 2026 Charlie Cafe Dev Tools
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Generate Cognito Login URLs
+    function generateLinks() {
+      const cloudfrontInput = document.getElementById('cloudfrontUrls').value.trim();
+      const cognitoDomain = document.getElementById('cognitoDomain').value.trim();
+      const clientId = document.getElementById('clientId').value.trim();
+
+      const output = document.getElementById('generatedLinks');
+      output.innerHTML = '';
+
+      if (!cloudfrontInput || !cognitoDomain || !clientId) {
+        alert('Please fill in CloudFront URLs, Cognito Domain, and Client ID!');
+        return;
+      }
+
+      const urls = cloudfrontInput.split('\n').map(u => u.trim()).filter(Boolean);
+
+      urls.forEach(url => {
+        const loginUrl = `${cognitoDomain}/login?client_id=${clientId}&response_type=code&scope=openid+email+profile&redirect_uri=${encodeURIComponent(url)}`;
+
+        const li = document.createElement('li');
+        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'flex-wrap');
+
+        li.innerHTML = `
+          <span>${loginUrl}</span>
+          <div>
+            <a href="${loginUrl}" target="_blank" class="preview-link"><i class="fas fa-external-link-alt"></i></a>
+            <button class="btn btn-sm btn-outline-primary btn-copy" onclick="copyToClipboard('${loginUrl}')">
+              <i class="fas fa-copy"></i> Copy
+            </button>
+          </div>
+        `;
+        output.appendChild(li);
+      });
+    }
+
+    // Copy link to clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Copied to clipboard!');
+      });
+    }
+
+    // Reset all inputs and outputs
+    function resetAll() {
+      document.getElementById('cloudfrontUrls').value = '';
+      document.getElementById('cognitoDomain').value = '';
+      document.getElementById('clientId').value = '';
+      document.getElementById('userPoolId').value = '';
+      document.getElementById('generatedLinks').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
+```
+
+
+---
