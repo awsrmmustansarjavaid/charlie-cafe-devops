@@ -715,35 +715,7 @@ This role will be used later in the task definition.
 
 - Click Next to add containers.
 
-- ### 3️⃣  NAT GW / VPC ENDPoint
-
-#### Option 1 — Use NAT Gateway (Internet Access)
-
-> If your ECS tasks are in a private subnet, you can use a NAT Gateway to allow outbound internet access:
-
-- Create a NAT Gateway
-
-- VPC → NAT Gateways → Create NAT Gateway
-
-- Assign an Elastic IP
-
-- Place it in a public subnet (with route to Internet Gateway)
-
-- Update Private Subnet Route Table
-
-- Route Table → Subnet associated with ECS task
-
-- Add route: Destination: 0.0.0.0/0 → Target: NAT Gateway
-
-- Ensure your ECS task’s security group allows outbound traffic:
-
-  - Type: HTTPS (TCP 443)
-
-  - Destination: 0.0.0.0/0 (or restrict to ECR CIDR 52.95.255.0/24 etc.)
-
-✅ This will let ECS tasks pull images from ECR via the internet.
-
-#### Option 2 — Add Container to Task
+#### Step 4 — Add Container to Task
 
 - Container Name: charlie-container.
 
@@ -779,7 +751,35 @@ This role will be used later in the task definition.
 
 - Click Add → Click Create Task Definition.
 
-#### 🔹 Step 4: Option 2 — Use VPC Endpoints (No Internet Needed)
+- ### 3️⃣  NAT GW / VPC ENDPoint
+
+#### Option 1 — Use NAT Gateway (Internet Access)
+
+> If your ECS tasks are in a private subnet, you can use a NAT Gateway to allow outbound internet access:
+
+- Create a NAT Gateway
+
+- VPC → NAT Gateways → Create NAT Gateway
+
+- Assign an Elastic IP
+
+- Place it in a public subnet (with route to Internet Gateway)
+
+- Update Private Subnet Route Table
+
+- Route Table → Subnet associated with ECS task
+
+- Add route: Destination: 0.0.0.0/0 → Target: NAT Gateway
+
+- Ensure your ECS task’s security group allows outbound traffic:
+
+  - Type: HTTPS (TCP 443)
+
+  - Destination: 0.0.0.0/0 (or restrict to ECR CIDR 52.95.255.0/24 etc.)
+
+✅ This will let ECS tasks pull images from ECR via the internet.
+
+#### Option 2 — Use VPC Endpoints (No Internet Needed)
 
 AWS supports VPC Endpoints to access ECR privately without NAT. This is recommended for security.
 
