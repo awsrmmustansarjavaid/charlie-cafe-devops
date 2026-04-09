@@ -659,7 +659,7 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 > Note: This requires your IAM user/role to have iam:CreateServiceLinkedRole permission.
 
-#### 2️⃣ Create Cluster
+#### 2️⃣ ECS Cluster
 
 Step 1 — Create ECS Cluster
 Go to ECS → Clusters → Create Cluster.
