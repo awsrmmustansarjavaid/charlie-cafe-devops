@@ -631,7 +631,7 @@ docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfi
 
 ### 2️⃣ ECS SETUP
 
-#### 1️⃣ Create ECS Service-Linked IAM Role
+- ### 1️⃣ Create ECS Service-Linked IAM Role
 
 - Go to IAM → Roles → Create Role.
 
@@ -659,61 +659,99 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 > Note: This requires your IAM user/role to have iam:CreateServiceLinkedRole permission.
 
-#### 2️⃣ ECS Cluster
+- ### 2️⃣ ECS Cluster
 
-Step 1 — Create ECS Cluster
-Go to ECS → Clusters → Create Cluster.
-Select Networking Only (Fargate).
-Click Next Step.
-Name your cluster: charlie-cluster.
-Leave other defaults (VPC, subnets) for now unless you have a specific setup.
-Click Create.
+#### Step 1 — Create ECS Cluster
+
+- Go to ECS → Clusters → Create Cluster.
+
+- Select Networking Only (Fargate).
+
+- Click Next Step.
+
+- Name your cluster: charlie-cluster.
+
+- Leave other defaults (VPC, subnets) for now unless you have a specific setup.
+
+- Click Create.
+
 Wait until the status shows Active.
 
 ✅ No need to attach EC2 instances since this is Fargate.
 
-Step 2 — Create Task Execution Role (if not exists)
+#### Step 2 — Create Task Execution Role (if not exists)
 
 The task execution role is needed for Fargate to pull images from ECR and write logs to CloudWatch.
 
-Go to IAM → Roles → Create Role → AWS Service → Elastic Container Service → Task Execution Role.
-Click Next: Permissions.
-Attach AmazonECSTaskExecutionRolePolicy.
-Name it: ecsTaskExecutionRole.
-Click Create Role.
+- Go to IAM → Roles → Create Role → AWS Service → Elastic Container Service → Task Execution Role.
+
+- Click Next: Permissions.
+
+- Attach AmazonECSTaskExecutionRolePolicy.
+
+- Name it: ecsTaskExecutionRole.
+
+- Click Create Role.
 
 This role will be used later in the task definition.
 
-Step 3 — Create Task Definition
-Go to ECS → Task Definitions → Create new Task Definition.
-Select Fargate → Click Next.
-Task Definition Family: charlie-task.
-Task Role: Leave None (for now).
-Task Execution Role: Select ecsTaskExecutionRole created in Step 2.
-Network Mode: awsvpc.
-CPU: 0.5 vCPU.
-Memory: 1 GB.
-Click Next to add containers.
-Step 4 — Add Container to Task
-Container Name: charlie-container.
-Image: 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest.
-Port Mapping:
-Container Port: 80
-Protocol: TCP
-Environment Variables (optional for now):
-DB_HOST = your-rds-endpoint
-DB_USER = admin
-DB_PASS = your-password
-Logging:
-Check Enable CloudWatch Logs
-Log group: /ecs/charlie-task
-Region: us-east-1
-Stream prefix: ecs
-Create log group: true
-Leave other optional settings (HealthCheck, Restart Policy, Storage) as default.
-Click Add → Click Create Task Definition.
+#### Step 3 — Create Task Definition
 
-🔹 Step 4: Option 2 — Use VPC Endpoints (No Internet Needed)
+- Go to ECS → Task Definitions → Create new Task Definition.
+
+- Select Fargate → Click Next.
+
+- Task Definition Family: charlie-task.
+
+- Task Role: Leave None (for now).
+
+- Task Execution Role: Select ecsTaskExecutionRole created in Step 2.
+
+- Network Mode: awsvpc.
+
+- CPU: 0.5 vCPU.
+
+- Memory: 1 GB.
+
+- Click Next to add containers.
+
+#### Step 4 — Add Container to Task
+
+- Container Name: charlie-container.
+
+- Image: 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest.
+
+- Port Mapping:
+
+- Container Port: 80
+
+- Protocol: TCP
+
+- Environment Variables (optional for now):
+
+  - DB_HOST = your-rds-endpoint
+
+  - DB_USER = admin
+
+  - DB_PASS = your-password
+
+- Logging:
+
+  - Check Enable CloudWatch Logs
+
+  - Log group: /ecs/charlie-task
+
+  - Region: us-east-1
+
+  - Stream prefix: ecs
+
+- Create log group: true
+
+- Leave other optional settings (HealthCheck, Restart Policy, Storage) as default.
+
+- Click Add → Click Create Task Definition.
+
+#### 🔹 Step 4: Option 2 — Use VPC Endpoints (No Internet Needed)
 
 AWS supports VPC Endpoints to access ECR privately without NAT. This is recommended for security.
 
