@@ -248,8 +248,18 @@ Warm color palette: orange, brown, coffee tones.
 Responsive design for mobile and desktop.
 Inline comments for maintainability.
 ---
+### ✅ charlie-cafe-link-generator.html
+
+> #### Update Version: 1.1
 
 
+All your 10–12 web pages should automatically prepend the CloudFront endpoint.
+Two special pages (login.html and employee-login.html) should generate separate AWS Cognito login URLs with copy buttons.
+You don’t want to manually edit each link — just paste the new CloudFront URL, and the tool generates all URLs.
+
+I’ve rewritten your HTML, CSS, and JS so it fully satisfies your requirements with copy buttons, separate boxes for Cognito login, stylish Charlie Cafe look, and preview links.
+
+### Here’s the complete updated code:
 
 ```
 <!DOCTYPE html>
@@ -463,3 +473,18 @@ function copyToClipboard(text){
 </body>
 </html>
 ```
+
+### ✅ Features implemented:
+
+Enter a single CloudFront URL and generate all 10 pages with copy buttons.
+
+Two separate boxes for login.html and employee-login.html Cognito login URLs.
+
+Each generated link has a preview button to open in new tab.
+
+Stylish Charlie Cafe background, icons, cards, and buttons.
+
+Fully dynamic — no hardcoding CloudFront URLs inside the code.
+
+
+---
