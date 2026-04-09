@@ -753,7 +753,7 @@ This role will be used later in the task definition.
 
 > #### NAT GW / VPC ENDPoint
 
-[Click on here for configuration](./docs/charlie-cafe-devops-Network%20Connectivity.md)
+[“Click here for configuration.”](./docs/charlie-cafe-devops-Network%20Connectivity.md)
 
 - ### 7️⃣  Run Task in Cluster
 
