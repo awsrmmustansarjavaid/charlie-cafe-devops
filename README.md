@@ -439,6 +439,21 @@ filename.function
 
 - Save
 
+- ### 5️⃣ 🌐 Environment Variables
+
+- #### 1️⃣ CafeOrderProcessor
+
+| Key           | Value                  |
+| ------------- | ---------------------- |
+| SQS_QUEUE_URL | (paste your Queue URL) |
+
+- #### 2️⃣ cafe-attendance-admin-service
+
+| Key              | Value            |
+|------------------|------------------|
+| DYNAMODB_TABLE   | CafeAttendance   |
+
+
 ### 4️⃣ Git Auto Deploy
 
 ```
