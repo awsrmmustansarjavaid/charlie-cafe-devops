@@ -542,6 +542,9 @@ chmod +x ec2_docker_health.sh
 ```
 
 ✅ This will work every time on EC2, no matter where you run it from, as long as the repo is cloned in ~/charlie-cafe-devops.
+
+
+
 ---
 ## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
 
