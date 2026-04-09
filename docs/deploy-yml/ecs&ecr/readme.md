@@ -231,6 +231,84 @@ You don’t need to pull deploy.yml to EC2 — GitHub Actions runs independently
 
 - The only thing EC2 sees is the SSM command in Step 15 (deploy_via_ssm.sh)
 
----
+### Step 5: Fix AWS_REGION Secret
+
+- Go to your GitHub repository in the browser.
+
+- Click Settings → Secrets and Variables → Actions → Repository secrets
+
+- Make sure you have all required secrets. At minimum for your workflow:
+
+| Secret Name             | Example Value                                              |
+| ----------------------- | ---------------------------------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | `AKIA...` (from AWS IAM user)                              |
+| `AWS_SECRET_ACCESS_KEY` | `xxxxxx` (from IAM user)                                   |
+| `AWS_REGION`            | `us-east-1` (your region)                                  |
+| `RDS_SECRET_ARN`        | `arn:aws:secretsmanager:us-east-1:123456789012:secret:...` |
+| `AWS_ACCOUNT_ID`        | `123456789012`                                             |
+| `ECR_REPO`              | `charlie-cafe`                                             |
+| `ECS_CLUSTER`           | `charlie-cluster`                                          |
+| `ECS_SERVICE`           | `charlie-service`                                          |
+| `EC2_INSTANCE_ID`       | `i-0123456789abcdef0`                                      |
+
+> Make sure AWS_REGION is exactly the same region your ECS/ECR/EC2 are in (us-east-1 in your logs).
+
+### Step 6: Trigger Workflow Manually
+
+- Go to GitHub repo → Actions tab
+
+- You’ll see a list of workflow runs (like #343, #342…)
+
+- On the right side, click “Run workflow” button
+
+- In the dropdown, select the main branch
+
+- Click Run workflow
+
+Now your workflow will start from scratch.
+
+### Step 7: Monitor Workflow
+
+- Click the running workflow (it will say “In progress”)
+
+- Expand each step to see logs. Important ones:
+
+🔐 Configure AWS Credentials → should say “Success”
+
+🐳 Login to ECR → should succeed, no auth errors
+
+🏗️ Build Docker Image → should build your image successfully
+
+📤 Push Docker Image → should push image to ECR
+
+🚀 Deploy to ECS → should show “service updated”
+
+- If any step fails, click the step → read error → fix secrets, Dockerfile, or IAM permissions.
+
+### Step 8: Verify ECS Deployment
+
+After workflow finishes:
+
+- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
+
+- Check Tasks: Status should be RUNNING
+
+- Check Target Groups → Targets: IPs should be Healthy
+
+- Open ALB DNS in browser → your app should load
+
+### Step 9: Optional EC2 Check
+
+- Step 15 of your workflow deploys via SSM, which runs deploy_via_ssm.sh on EC2.
+
+- You can SSH to EC2 and run:
+
+```
+docker ps
+docker images
+```
+
+- Make sure your test container is not left hanging.
+
 
 
