@@ -781,25 +781,39 @@ This role will be used later in the task definition.
 
 #### Option 2 — Use VPC Endpoints (No Internet Needed)
 
-AWS supports VPC Endpoints to access ECR privately without NAT. This is recommended for security.
+> AWS supports VPC Endpoints to access ECR privately without NAT. This is recommended for security.
 
 You need two endpoints:
 
-ECR API Endpoint
-Service Name: com.amazonaws.<region>.ecr.api
-Type: Interface
-Attach to the private subnet of your ECS tasks
-Assign security group allowing ECS outbound
-ECR Docker (registry) Endpoint
-Service Name: com.amazonaws.us-east-1.ecr.api
-Type: Interface
-Attach to same private subnet
-Security group similar to above
-Optional: S3 VPC Endpoint
-Because pulling images sometimes accesses S3 (ECR stores layers in S3)
-Type: Gateway
-Route table: private subnet
-Destination: S3 prefix list pl-xxxxxx
+- ECR API Endpoint
+
+  - Service Name: com.amazonaws.us-east-1.ecr.api
+
+  - Type: Interface
+
+  - Attach to the private subnet of your ECS tasks
+
+  - Assign security group allowing ECS outbound
+
+- ECR Docker (registry) Endpoint
+
+  - Service Name: com.amazonaws.us-east-1.ecr.api
+
+  - Type: Interface
+
+  - Attach to same private subnet
+
+  - Security group similar to above
+
+- Optional: S3 VPC Endpoint
+
+> Because pulling images sometimes accesses S3 (ECR stores layers in S3)
+
+  - Type: Gateway
+
+  - Route table: private subnet
+
+  - Destination: S3 prefix list pl-xxxxxx
 
 ✅ After endpoints are in place, ECS tasks can pull images privately, no NAT required.
 
