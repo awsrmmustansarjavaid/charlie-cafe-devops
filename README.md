@@ -659,9 +659,7 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 > Note: This requires your IAM user/role to have iam:CreateServiceLinkedRole permission.
 
-- ### 2️⃣ ECS Cluster
-
-#### Step 1 — Create ECS Cluster
+- ### 2️⃣ Create ECS Cluster
 
 - Go to ECS → Clusters → Create Cluster.
 
@@ -679,7 +677,7 @@ Wait until the status shows Active.
 
 ✅ No need to attach EC2 instances since this is Fargate.
 
-#### Step 2 — Create Task Execution Role (if not exists)
+- ### 3️⃣ Create Task Execution Role (if not exists)
 
 The task execution role is needed for Fargate to pull images from ECR and write logs to CloudWatch.
 
