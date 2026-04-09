@@ -3,14 +3,13 @@
 # ☕ Charlie Cafe — FULL RDS Setup & Verification Script
 # FINAL PRODUCTION VERSION
 #
-# ✔ Fix: "No database selected" issue
-# ✔ Uses database context properly
-# ✔ Safer inserts (avoids duplication logic discussion)
-# ✔ Clean structure
-# ✔ Fully commented for learning
+# ✅ Proper order_id handling
+# ✅ Safe table creation
+# ✅ Sample data insertion
+# ✅ Analytics checks
 # =============================================================
 
-set -euo pipefail
+set -euo pipefail  # Fail on errors, unset vars, or pipeline failures
 
 # =============================================================
 # 🎨 COLORS FOR OUTPUT
@@ -26,13 +25,8 @@ print_header() {
     echo -e "${BLUE}========================================================${NC}\n"
 }
 
-print_success() {
-    echo -e "${GREEN}✅ $1${NC}\n"
-}
-
-print_error() {
-    echo -e "${RED}❌ $1${NC}\n"
-}
+print_success() { echo -e "${GREEN}✅ $1${NC}\n"; }
+print_error()   { echo -e "${RED}❌ $1${NC}\n"; }
 
 # =============================================================
 # ⚙️ CONFIGURATION
@@ -88,9 +82,7 @@ user=$DB_USER
 password=$DB_PASS
 EOF
 
-# Auto cleanup on exit
 trap 'rm -f "$CREDENTIALS_FILE"' EXIT
-
 print_success "Temporary secure config created"
 
 # =============================================================
@@ -99,11 +91,10 @@ print_success "Temporary secure config created"
 print_header "Testing RDS Connection"
 
 mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "SELECT VERSION();"
-
 print_success "RDS connection successful"
 
 # =============================================================
-# 🗄️ CREATE DATABASE (SAFE)
+# 🗄️ CREATE DATABASE
 # =============================================================
 print_header "Ensuring Database Exists"
 
@@ -112,11 +103,10 @@ CREATE DATABASE IF NOT EXISTS $DB_NAME
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 "
-
 print_success "Database verified"
 
 # =============================================================
-# 📊 CREATE TABLES
+# 📊 CREATE TABLES WITH PROPER ORDER_ID
 # =============================================================
 print_header "Creating Tables"
 
@@ -159,9 +149,9 @@ CREATE TABLE IF NOT EXISTS holidays (
     description VARCHAR(100)
 );
 
--- Orders table
+-- Orders table with proper auto-increment
 CREATE TABLE IF NOT EXISTS orders (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
     table_number INT,
     customer_name VARCHAR(100),
     item VARCHAR(100),
@@ -178,41 +168,46 @@ EOF
 print_success "Tables created"
 
 # =============================================================
-# 📥 INSERT SAMPLE DATA (SAFE MODE)
+# 📥 INSERT SAMPLE DATA
 # =============================================================
 print_header "Inserting Sample Data"
 
 mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" <<'EOF'
 
+-- Employees
 INSERT IGNORE INTO employees
 (cognito_user_id,name,job_title,salary,start_date)
 VALUES
 ('emp-001','Ahmed','Barista',800,'2024-01-01'),
 ('emp-002','Hassan','Cashier',750,'2024-02-01');
 
+-- Attendance
 INSERT IGNORE INTO attendance
 (employee_id,attendance_date,checkin_time,checkout_time)
 VALUES
 (1,CURDATE(),'09:00:00','17:00:00'),
 (2,CURDATE(),'09:15:00','17:00:00');
 
+-- Leaves
 INSERT IGNORE INTO leaves
 (employee_id,leave_date,leave_type)
 VALUES
 (1,'2026-03-01','Sick Leave');
 
+-- Holidays
 INSERT IGNORE INTO holidays
 (holiday_date,description)
 VALUES
 ('2026-12-25','Christmas'),
 ('2026-01-01','New Year');
 
+-- Orders (total_amount = total_cost * quantity)
 INSERT INTO orders
 (table_number,customer_name,item,quantity,total_cost,total_amount,payment_status,status)
 VALUES
-(1,'Ali Khan','Espresso',2,4.00,8.00,'PAID','COMPLETED'),
-(2,'Sara Ahmed','Cappuccino',1,3.50,5.00,'PAID','COMPLETED'),
-(3,'Omar Ali','Latte',1,3.00,5.00,'PENDING','RECEIVED');
+(1,'Ali Khan','Espresso',2,4.00,2*4.00,'PAID','COMPLETED'),
+(2,'Sara Ahmed','Cappuccino',1,3.50,1*3.50,'PAID','COMPLETED'),
+(3,'Omar Ali','Latte',1,3.00,1*3.00,'PENDING','RECEIVED');
 
 EOF
 
@@ -222,8 +217,6 @@ print_success "Sample data inserted"
 # 🔍 FINAL VERIFICATION
 # =============================================================
 print_header "RDS Verification"
-
-# Always pass DB_NAME → FIXED BUG HERE
 
 echo "1️⃣ Database Check:"
 mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "SHOW DATABASES LIKE '$DB_NAME';"
