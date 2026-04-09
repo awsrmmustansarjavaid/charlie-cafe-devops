@@ -565,20 +565,38 @@ Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
 
 - Click Create repository
 
-- You should now see your repo:
+#### ✅ Copy Repository URI
+
+- ✅ Example: You should now see your repo:
 
 ```
 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
 ```
 
+#### 2️⃣ Login to ECR
 
-#### 2️⃣ Copy Repository URI
-
-✅ Example:
+On your local machine (or EC2):
 
 ```
-123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789.dkr.ecr.us-east-1.amazonaws.com
 ```
+
+#### 3️⃣ Build and Tag Docker Image
+
+From your project directory (where Dockerfile is):
+
+```
+docker build -t charlie-cafe .
+docker tag charlie-cafe:latest 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+#### 4️⃣ Push Image to ECR
+
+```
+docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+✅ Now your image is in ECR.
 
 ### 2️⃣ ECS SETUP
 
