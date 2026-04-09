@@ -749,72 +749,11 @@ This role will be used later in the task definition.
 
 - Click Add → Click Create Task Definition.
 
-- ### 6️⃣  NAT GW / VPC ENDPoint
+- ### 6️⃣  Network Connectivity
 
-#### Option 1 — Use NAT Gateway (Internet Access)
+> #### NAT GW / VPC ENDPoint
 
-> If your ECS tasks are in a private subnet, you can use a NAT Gateway to allow outbound internet access:
-
-- Create a NAT Gateway
-
-- VPC → NAT Gateways → Create NAT Gateway
-
-- Assign an Elastic IP
-
-- Place it in a public subnet (with route to Internet Gateway)
-
-- Update Private Subnet Route Table
-
-- Route Table → Subnet associated with ECS task
-
-- Add route: Destination: 0.0.0.0/0 → Target: NAT Gateway
-
-- Ensure your ECS task’s security group allows outbound traffic:
-
-  - Type: HTTPS (TCP 443)
-
-  - Destination: 0.0.0.0/0 (or restrict to ECR CIDR 52.95.255.0/24 etc.)
-
-✅ This will let ECS tasks pull images from ECR via the internet.
-
-#### Option 2 — Use VPC Endpoints (No Internet Needed)
-
-> AWS supports VPC Endpoints to access ECR privately without NAT. This is recommended for security.
-
-You need two endpoints:
-
-- ECR API Endpoint
-
-  - Service Name: com.amazonaws.us-east-1.ecr.api
-
-  - Type: Interface
-
-  - Attach to the private subnet of your ECS tasks
-
-  - Assign security group allowing ECS outbound
-
-- ECR Docker (registry) Endpoint
-
-  - Service Name: com.amazonaws.us-east-1.ecr.api
-
-  - Type: Interface
-
-  - Attach to same private subnet
-
-  - Security group similar to above
-
-- Optional: S3 VPC Endpoint
-
-> Because pulling images sometimes accesses S3 (ECR stores layers in S3)
-
-  - Type: Gateway
-
-  - Route table: private subnet
-
-  - Destination: S3 prefix list pl-xxxxxx
-
-✅ After endpoints are in place, ECS tasks can pull images privately, no NAT required.
-
+[Click on here for configuration](./docs/charlie-cafe-devops-Network%20Connectivity.md)
 
 - ### 7️⃣  Run Task in Cluster
 
