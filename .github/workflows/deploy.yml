@@ -170,3 +170,55 @@ jobs:
     # -------------------------------------------------
     - name: 🎉 Success
       run: echo "CI/CD Pipeline Completed Successfully 🚀"
+
+    # =================================================
+    # ⚡ ECR & ECS DEPLOYMENT
+    # =================================================
+
+    # -------------------------------------------------
+    # 20️⃣ Login to ECR
+    # -------------------------------------------------
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    # -------------------------------------------------
+    # 21️⃣ Build Docker Image for ECS
+    # -------------------------------------------------
+    - name: 🏗️ Build Docker Image for ECS
+      run: |
+        docker build -t ${{ secrets.ECR_REPO }} -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 22️⃣ Tag Docker Image
+    # -------------------------------------------------
+    - name: 🏷️ Tag Docker Image
+      run: |
+        docker tag ${{ secrets.ECR_REPO }}:latest \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:latest
+
+    # -------------------------------------------------
+    # 23️⃣ Push Docker Image to ECR
+    # -------------------------------------------------
+    - name: 📤 Push Docker Image
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:latest
+
+    # -------------------------------------------------
+    # 24️⃣ Update ECS Service (Deploy new image)
+    # -------------------------------------------------
+    - name: 🚀 Deploy to ECS
+      run: |
+        aws ecs update-service \
+          --cluster ${{ secrets.ECS_CLUSTER }} \
+          --service ${{ secrets.ECS_SERVICE }} \
+          --force-new-deployment
+
+    # -------------------------------------------------
+    # 25️⃣ Verify ECS Tasks
+    # -------------------------------------------------
+    - name: 🌐 Verify ECS Deployment
+      run: |
+        aws ecs list-tasks --cluster ${{ secrets.ECS_CLUSTER }} --service-name ${{ secrets.ECS_SERVICE }}
+        aws ecs describe-tasks --cluster ${{ secrets.ECS_CLUSTER }} --tasks $(aws ecs list-tasks --cluster ${{ secrets.ECS_CLUSTER }} --service-name ${{ secrets.ECS_SERVICE }} --query 'taskArns[*]' --output text)
