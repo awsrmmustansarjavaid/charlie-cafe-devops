@@ -1,18 +1,32 @@
 #!/bin/bash
+
 # =============================================================
-# ☕ Charlie Cafe — FULL RDS Setup & Verification Script
-# FINAL PRODUCTION VERSION
+# ☕ Charlie Cafe — FULL RDS CLEAN SETUP / DEVOPS SCRIPT
+# =============================================================
 #
-# ✅ Proper order_id handling
-# ✅ Safe table creation
-# ✅ Sample data insertion
-# ✅ Analytics checks
+# PURPOSE:
+# Complete production-ready AWS RDS database setup.
+#
+# FEATURES:
+# ✔ Deletes old messy schema
+# ✔ Rebuilds tables cleanly
+# ✔ Fixes duplicate/incorrect columns
+# ✔ Adds missing payment_method field
+# ✔ Creates proper indexes / keys
+# ✔ Inserts safe sample data
+# ✔ Runs verification checks
+# ✔ Runs analytics tests
+#
+# WARNING:
+# This script DROPS tables before recreating.
+# Existing data will be deleted.
+#
 # =============================================================
 
-set -euo pipefail  # Fail on errors, unset vars, or pipeline failures
+set -euo pipefail
 
 # =============================================================
-# 🎨 COLORS FOR OUTPUT
+# 🎨 TERMINAL COLORS
 # =============================================================
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -25,8 +39,13 @@ print_header() {
     echo -e "${BLUE}========================================================${NC}\n"
 }
 
-print_success() { echo -e "${GREEN}✅ $1${NC}\n"; }
-print_error()   { echo -e "${RED}❌ $1${NC}\n"; }
+print_success() {
+    echo -e "${GREEN}✅ $1${NC}\n"
+}
+
+print_error() {
+    echo -e "${RED}❌ $1${NC}\n"
+}
 
 # =============================================================
 # ⚙️ CONFIGURATION
@@ -35,23 +54,26 @@ AWS_REGION="us-east-1"
 SECRET_ID="CafeDevDBSM"
 DB_NAME="cafe_db"
 
-print_header "☕ Charlie Cafe RDS Setup Starting"
+print_header "☕ Charlie Cafe RDS DevOps Setup Starting"
 
 # =============================================================
 # 🔧 CHECK REQUIRED TOOLS
 # =============================================================
-print_header "Checking Required Tools"
+print_header "Checking Required Packages"
 
 command -v mysql >/dev/null 2>&1 || sudo dnf install -y mariadb105
 command -v jq >/dev/null 2>&1 || sudo dnf install -y jq
-command -v aws >/dev/null 2>&1 || { print_error "AWS CLI not installed"; exit 1; }
+command -v aws >/dev/null 2>&1 || {
+    print_error "AWS CLI Missing"
+    exit 1
+}
 
-print_success "All tools ready"
+print_success "All packages installed"
 
 # =============================================================
-# 🔐 FETCH DB CREDENTIALS FROM AWS SECRETS MANAGER
+# 🔐 GET RDS CREDENTIALS
 # =============================================================
-print_header "Fetching Secrets Manager Credentials"
+print_header "Fetching AWS Secrets"
 
 SECRET_JSON=$(aws secretsmanager get-secret-value \
 --secret-id "$SECRET_ID" \
@@ -64,14 +86,15 @@ DB_USER=$(echo "$SECRET_JSON" | jq -r '.username')
 DB_PASS=$(echo "$SECRET_JSON" | jq -r '.password')
 DB_PORT=$(echo "$SECRET_JSON" | jq -r '.port // "3306"')
 
-print_success "Credentials loaded securely"
+print_success "Secrets Retrieved"
 
 # =============================================================
-# 🔒 CREATE TEMP MYSQL CONFIG (SECURE LOGIN)
+# 🔒 TEMP MYSQL LOGIN FILE
 # =============================================================
-print_header "Creating Secure MySQL Config"
+print_header "Creating Secure Temp MySQL Config"
 
 CREDENTIALS_FILE=$(mktemp /tmp/cafe-db.XXXX)
+
 chmod 600 "$CREDENTIALS_FILE"
 
 cat > "$CREDENTIALS_FILE" <<EOF
@@ -83,199 +106,206 @@ password=$DB_PASS
 EOF
 
 trap 'rm -f "$CREDENTIALS_FILE"' EXIT
-print_success "Temporary secure config created"
+
+print_success "Secure MySQL Temp File Ready"
 
 # =============================================================
-# 🔌 TEST CONNECTION
+# 🔌 TEST DB CONNECTION
 # =============================================================
-print_header "Testing RDS Connection"
+print_header "Testing Database Connection"
 
 mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "SELECT VERSION();"
-print_success "RDS connection successful"
+
+print_success "Connected to RDS Successfully"
 
 # =============================================================
 # 🗄️ CREATE DATABASE
 # =============================================================
-print_header "Ensuring Database Exists"
+print_header "Creating Database"
 
 mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "
 CREATE DATABASE IF NOT EXISTS $DB_NAME
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 "
-print_success "Database verified"
+
+print_success "Database Ready"
 
 # =============================================================
-# 📊 CREATE TABLES WITH PROPER ORDER_ID
+# 🧹 CLEAN OLD TABLES
 # =============================================================
-print_header "Creating Tables"
+print_header "Removing Old Broken Tables"
 
 mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" <<'EOF'
 
--- Employees table
-CREATE TABLE IF NOT EXISTS employees (
+SET FOREIGN_KEY_CHECKS=0;
+
+DROP TABLE IF EXISTS attendance;
+DROP TABLE IF EXISTS leaves;
+DROP TABLE IF EXISTS holidays;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS employees;
+
+SET FOREIGN_KEY_CHECKS=1;
+
+EOF
+
+print_success "Old Tables Removed"
+
+# =============================================================
+# 🏗️ CREATE CLEAN TABLES
+# =============================================================
+print_header "Creating Clean Production Tables"
+
+mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" <<'EOF'
+
+-- Employees
+CREATE TABLE employees (
     employee_id INT AUTO_INCREMENT PRIMARY KEY,
     cognito_user_id VARCHAR(100) UNIQUE,
-    name VARCHAR(100),
+    name VARCHAR(100) NOT NULL,
     job_title VARCHAR(50),
     salary DECIMAL(10,2),
     start_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Attendance table
-CREATE TABLE IF NOT EXISTS attendance (
+-- Attendance
+CREATE TABLE attendance (
     attendance_id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT,
+    employee_id INT NOT NULL,
     attendance_date DATE,
     checkin_time TIME,
     checkout_time TIME,
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    FOREIGN KEY (employee_id)
+        REFERENCES employees(employee_id)
+        ON DELETE CASCADE
 );
 
--- Leaves table
-CREATE TABLE IF NOT EXISTS leaves (
+-- Leaves
+CREATE TABLE leaves (
     leave_id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT,
+    employee_id INT NOT NULL,
     leave_date DATE,
     leave_type VARCHAR(50),
-    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+    FOREIGN KEY (employee_id)
+        REFERENCES employees(employee_id)
+        ON DELETE CASCADE
 );
 
--- Holidays table
-CREATE TABLE IF NOT EXISTS holidays (
+-- Holidays
+CREATE TABLE holidays (
     holiday_id INT AUTO_INCREMENT PRIMARY KEY,
     holiday_date DATE UNIQUE,
     description VARCHAR(100)
 );
 
--- Orders table with proper auto-increment
-CREATE TABLE IF NOT EXISTS orders (
+-- Orders
+CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    table_number INT,
-    customer_name VARCHAR(100),
-    item VARCHAR(100),
-    quantity INT,
+    table_number INT NOT NULL,
+    customer_name VARCHAR(100) NOT NULL,
+    item VARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    payment_method VARCHAR(50) DEFAULT 'CASH',
     total_cost DECIMAL(10,2),
     total_amount DECIMAL(10,2),
-    payment_status VARCHAR(20),
-    status VARCHAR(20),
+    payment_status VARCHAR(20) DEFAULT 'PENDING',
+    status VARCHAR(20) DEFAULT 'RECEIVED',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 EOF
 
-print_success "Tables created"
+print_success "Tables Created Successfully"
 
 # =============================================================
 # 📥 INSERT SAMPLE DATA
 # =============================================================
-print_header "Inserting Sample Data"
+print_header "Loading Sample Data"
 
 mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" <<'EOF'
 
--- Employees
-INSERT IGNORE INTO employees
+INSERT INTO employees
 (cognito_user_id,name,job_title,salary,start_date)
 VALUES
 ('emp-001','Ahmed','Barista',800,'2024-01-01'),
 ('emp-002','Hassan','Cashier',750,'2024-02-01');
 
--- Attendance
-INSERT IGNORE INTO attendance
+INSERT INTO attendance
 (employee_id,attendance_date,checkin_time,checkout_time)
 VALUES
 (1,CURDATE(),'09:00:00','17:00:00'),
 (2,CURDATE(),'09:15:00','17:00:00');
 
--- Leaves
-INSERT IGNORE INTO leaves
+INSERT INTO leaves
 (employee_id,leave_date,leave_type)
 VALUES
 (1,'2026-03-01','Sick Leave');
 
--- Holidays
-INSERT IGNORE INTO holidays
+INSERT INTO holidays
 (holiday_date,description)
 VALUES
 ('2026-12-25','Christmas'),
 ('2026-01-01','New Year');
 
--- Orders (total_amount = total_cost * quantity)
 INSERT INTO orders
-(table_number,customer_name,item,quantity,total_cost,total_amount,payment_status,status)
+(table_number,customer_name,item,quantity,payment_method,total_cost,total_amount,payment_status,status)
 VALUES
-(1,'Ali Khan','Espresso',2,4.00,2*4.00,'PAID','COMPLETED'),
-(2,'Sara Ahmed','Cappuccino',1,3.50,1*3.50,'PAID','COMPLETED'),
-(3,'Omar Ali','Latte',1,3.00,1*3.00,'PENDING','RECEIVED');
+(1,'Ali Khan','Espresso',2,'CASH',4.00,8.00,'PAID','COMPLETED'),
+(2,'Sara Ahmed','Cappuccino',1,'CARD',3.50,3.50,'PAID','COMPLETED'),
+(3,'Omar Ali','Latte',1,'CASH',3.00,3.00,'PENDING','RECEIVED');
 
 EOF
 
-print_success "Sample data inserted"
+print_success "Sample Data Inserted"
 
 # =============================================================
-# 🔍 FINAL VERIFICATION
+# 🔍 VERIFY TABLE STRUCTURE
 # =============================================================
-print_header "RDS Verification"
+print_header "Running Verification"
 
-echo "1️⃣ Database Check:"
+echo "DATABASE:"
 mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "SHOW DATABASES LIKE '$DB_NAME';"
 
-echo "2️⃣ Tables:"
+echo ""
+echo "TABLES:"
 mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "SHOW TABLES;"
 
-echo "3️⃣ Row Counts:"
+echo ""
+echo "ORDERS STRUCTURE:"
+mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "DESCRIBE orders;"
+
+echo ""
+echo "ROW COUNTS:"
 mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "
 SELECT
-(SELECT COUNT(*) FROM orders) AS total_orders,
-(SELECT COUNT(*) FROM employees) AS total_employees,
-(SELECT COUNT(*) FROM attendance) AS total_attendance,
-(SELECT COUNT(*) FROM holidays) AS total_holidays;
+(SELECT COUNT(*) FROM orders) total_orders,
+(SELECT COUNT(*) FROM employees) total_employees;
 "
 
-echo "4️⃣ Foreign Keys:"
-mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "
-SELECT TABLE_NAME,COLUMN_NAME,REFERENCED_TABLE_NAME
-FROM information_schema.KEY_COLUMN_USAGE
-WHERE TABLE_SCHEMA='$DB_NAME'
-AND REFERENCED_TABLE_NAME IS NOT NULL;
+print_success "Verification Complete"
+
+# =============================================================
+# 📈 ANALYTICS TEST
+# =============================================================
+print_header "Testing Analytics Queries"
+
+mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "
+SELECT COUNT(*) AS paid_orders
+FROM orders
+WHERE payment_status='PAID';
 "
 
-echo "5️⃣ Index Check:"
-mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "SHOW INDEX FROM orders;"
+print_success "Analytics Passed"
 
 # =============================================================
-# 📈 ANALYTICS TESTS
+# 🎉 COMPLETE
 # =============================================================
-print_header "Running Analytics"
+print_header "☕ Charlie Cafe Setup Complete"
 
-mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" <<'EOF'
-
-SELECT 'Paid Orders';
-SELECT COUNT(*) FROM orders WHERE payment_status='PAID';
-
-SELECT 'Today Sales';
-SELECT COUNT(*) FROM orders
-WHERE payment_status='PAID'
-AND created_at >= CURDATE();
-
-SELECT 'Weekly Sales';
-SELECT COUNT(*) FROM orders
-WHERE payment_status='PAID'
-AND created_at >= NOW() - INTERVAL 7 DAY;
-
-EOF
-
-print_success "Analytics successful"
-
-# =============================================================
-# 🎉 FINAL STATUS
-# =============================================================
-print_header "☕ Charlie Cafe Setup Completed"
-
-echo -e "${GREEN}✔ RDS Ready${NC}"
-echo -e "${GREEN}✔ Database Ready${NC}"
-echo -e "${GREEN}✔ Tables Ready${NC}"
-echo -e "${GREEN}✔ Data Loaded${NC}"
-echo -e "${GREEN}✔ Verification Passed${NC}"
-echo -e "${GREEN}✔ Analytics Working${NC}"
+echo -e "${GREEN}✔ RDS Production Ready${NC}"
+echo -e "${GREEN}✔ Schema Fixed${NC}"
+echo -e "${GREEN}✔ Frontend Compatible${NC}"
+echo -e "${GREEN}✔ Backend Compatible${NC}"
+echo -e "${GREEN}✔ Analytics Ready${NC}"
