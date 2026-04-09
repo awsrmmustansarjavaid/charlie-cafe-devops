@@ -16,7 +16,19 @@
 
 > If your ECS tasks are in a private subnet, you can use a NAT Gateway to allow outbound internet access:
 
-- Create a NAT Gateway
+- ECS task in a private subnet with route to NAT Gateway
+
+- NAT Gateway in public subnet with Internet Gateway
+
+- Security group allows outbound TCP 443
+
+- Pros: Works immediately, easy to test
+
+- Cons: Cost for NAT Gateway
+
+#### Steps:
+
+- Create a NAT Gateway in a public subnet.
 
 - VPC → NAT Gateways → Create NAT Gateway
 
@@ -42,7 +54,17 @@
 
 > AWS supports VPC Endpoints to access ECR privately without NAT. This is recommended for security.
 
-You need two endpoints:
+- No internet needed, fully private
+
+- You need three endpoints:
+
+| Endpoint                        | Type      | Notes                                            |
+| ------------------------------- | --------- | ------------------------------------------------ |
+| com.amazonaws.us-east-1.ecr.api | Interface | ECS tasks → ECR API                              |
+| com.amazonaws.us-east-1.ecr.dkr | Interface | ECS tasks → Docker registry                      |
+| com.amazonaws.us-east-1.s3      | Gateway   | Needed because ECR image layers are stored in S3 |
+
+#### Steps:
 
 - ECR API Endpoint
 
@@ -127,6 +149,69 @@ curl -v https://<account-id>.dkr.ecr.us-east-1.amazonaws.com/v2/
 - Security group allows outbound HTTPS
 
 - If using private subnet without NAT, make sure VPC endpoints exist
+
+### 🔹 Step 7: Verify ECS Once Networking Works
+
+After your tasks can access ECR:
+
+- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
+
+- Check Tasks:
+
+  - Status: Running
+
+  - Last Status: RUNNING
+
+- Go to Target Groups → charlie-blue → Targets
+
+  - Status: Healthy
+
+  - Should see the private IP of the Fargate task
+
+- Open your ALB DNS in browser:
+
+  - You should see your app page served from the container
+
+- Logs:
+
+  - Go to CloudWatch Logs (if configured in task definition)
+
+  - Verify container starts without errors
+
+### 🔹 Step 8: Debug Common Remaining Issues
+
+- IAM role
+
+    - Task Role must allow:  
+
+```
+"Action": [
+  "ecr:GetAuthorizationToken",
+  "ecr:BatchCheckLayerAvailability",
+  "ecr:GetDownloadUrlForLayer"
+],
+"Resource": "*"
+```
+
+- Security Groups
+
+    - ECS task SG: outbound TCP 443 to NAT / Endpoint
+
+    - Endpoint SG: inbound TCP 443 from ECS task SG
+
+- Subnet Routes
+
+    - Private subnet → NAT Gateway OR VPC Endpoints
+
+    - Public subnet → Internet Gateway (for NAT)
+
+- Docker Image Tag
+
+    - Ensure latest exists in ECR
+
+### 💡 Bottom line:
+
+- Your ECS service looks fine, but it cannot start the container because networking blocks ECR access. Fix the network (NAT or VPC endpoints) and then verify tasks as shown above.
 
 ### ✅ Summary of Options
 

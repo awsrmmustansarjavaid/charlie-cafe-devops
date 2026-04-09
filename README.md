@@ -753,7 +753,75 @@ This role will be used later in the task definition.
 
 > #### NAT GW / VPC ENDPoint
 
-[“Click here for configuration.”](./docs/charlie-cafe-devops-Network%20Connectivity.md)
+Read more [“Click here for configuration.”](./docs/charlie-cafe-devops-Network%20Connectivity.md)
+
+#### 🔹 Step 1: VPC Endpoints (Private Access)
+
+| Endpoint                        | Type      | Notes                                            |
+| ------------------------------- | --------- | ------------------------------------------------ |
+| com.amazonaws.us-east-1.ecr.api | Interface | ECS tasks → ECR API                              |
+| com.amazonaws.us-east-1.ecr.dkr | Interface | ECS tasks → Docker registry                      |
+| com.amazonaws.us-east-1.s3      | Gateway   | Needed because ECR image layers are stored in S3 |
+
+- Steps:
+
+  - Go VPC → Endpoints → Create Endpoint
+
+  - Choose service (above)
+
+  - Attach private subnet of ECS tasks
+
+  - Security group: allows inbound HTTPS from ECS tasks
+
+  - Redeploy ECS service
+
+✅ This is recommended if you want production-level private networking.
+
+#### 🔹 Step 2: Quick Test Before Redeploy
+
+Use a temporary EC2 instance in the same subnet as your ECS tasks:
+
+```
+# Test ECR API
+curl -v https://api.ecr.us-east-1.amazonaws.com/
+
+# Test ECR Docker registry
+curl -v https://537236558357.dkr.ecr.us-east-1.amazonaws.com/v2/
+```
+
+- Timeout → network problem
+
+- JSON / HTTP 200 → network works
+
+#### 🔹 Step 3: Verify ECS Once Networking Works
+
+After your tasks can access ECR:
+
+- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
+
+- Check Tasks:
+
+  - Status: Running
+
+  - Last Status: RUNNING
+
+- Go to Target Groups → charlie-blue → Targets
+
+  - Status: Healthy
+
+  - Should see the private IP of the Fargate task
+
+- Open your ALB DNS in browser:
+
+  - You should see your app page served from the container
+
+- Logs:
+
+  - Go to CloudWatch Logs (if configured in task definition)
+
+  - Verify container starts without errors
+
+
 
 - ### 7️⃣  Run Task in Cluster
 
