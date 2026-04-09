@@ -661,39 +661,76 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 #### 2️⃣ Create Cluster
 
-- Go ECS → Clusters → Create Cluster
+Step 1 — Create ECS Cluster
+Go to ECS → Clusters → Create Cluster.
+Select Networking Only (Fargate).
+Click Next Step.
+Name your cluster: charlie-cluster.
+Leave other defaults (VPC, subnets) for now unless you have a specific setup.
+Click Create.
+Wait until the status shows Active.
 
-- Type: Fargate
+✅ No need to attach EC2 instances since this is Fargate.
 
-> #### Networking Only (Fargate)
+Step 2 — Create Task Execution Role (if not exists)
 
-- Name: charlie-cluster
+The task execution role is needed for Fargate to pull images from ECR and write logs to CloudWatch.
 
-### 3️⃣ Create Task Definition
+Go to IAM → Roles → Create Role → AWS Service → Elastic Container Service → Task Execution Role.
+Click Next: Permissions.
+Attach AmazonECSTaskExecutionRolePolicy.
+Name it: ecsTaskExecutionRole.
+Click Create Role.
 
-- Name: charlie-task
+This role will be used later in the task definition.
 
-- CPU: 0.5 vCPU
-
-- Memory: 1 GB
-
-### 4️⃣ Add Container
-
-- Container Config:
-
-- Name: charlie-container
-
-- Image: ECR URI
-
-- Port: 80
-
-### 🌐 (Optional Env Variables)
-
-```
+Step 3 — Create Task Definition
+Go to ECS → Task Definitions → Create new Task Definition.
+Select Fargate → Click Next.
+Task Definition Family: charlie-task.
+Task Role: Leave None (for now).
+Task Execution Role: Select ecsTaskExecutionRole created in Step 2.
+Network Mode: awsvpc.
+CPU: 0.5 vCPU.
+Memory: 1 GB.
+Click Next to add containers.
+Step 4 — Add Container to Task
+Container Name: charlie-container.
+Image: 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest.
+Port Mapping:
+Container Port: 80
+Protocol: TCP
+Environment Variables (optional for now):
 DB_HOST = your-rds-endpoint
 DB_USER = admin
-DB_PASS = ****
-```
+DB_PASS = your-password
+Logging:
+Check Enable CloudWatch Logs
+Log group: /ecs/charlie-task
+Region: us-east-1
+Stream prefix: ecs
+Create log group: true
+Leave other optional settings (HealthCheck, Restart Policy, Storage) as default.
+Click Add → Click Create Task Definition.
+Step 5 — Run Task in Cluster
+Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
+Launch Type: Fargate.
+Task Definition: charlie-task:1 (latest revision).
+Cluster VPC & Subnets: select defaults or your preferred VPC.
+Security group: allow TCP 80 (HTTP) from 0.0.0.0/0 if public access needed.
+Click Run Task.
+
+✅ Your container should start. Check Logs → CloudWatch → /ecs/charlie-task to verify the app is running.
+
+Step 6 — Verify Container
+Go to ECS → Cluster → Tasks.
+Click on your task → Containers → View Logs.
+Verify container started successfully, listening on port 80.
+Notes / Tips
+Task Role is optional unless your app inside the container needs AWS services (DynamoDB, S3, SecretsManager).
+Task Execution Role is required for Fargate to pull images and send logs.
+awsvpc network mode gives each task its own ENI, so make sure your security groups and subnets allow traffic.
+If you want environment secrets (like DB password) more securely, use Secrets Manager instead of plain text environment variables.
 
 ### 5️⃣ ALB + ECS SERVICE
 
