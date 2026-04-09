@@ -177,4 +177,60 @@ git pull origin main
 - Verify ALB → web app is working
 
 ---
+### Step 1: Fix GitHub Secrets
+
+- Go to your repo → Settings → Secrets and Variables → Actions → Repository secrets
+
+- Check if you have:
+
+| Secret Name           | Value Example                |
+| --------------------- | ---------------------------- |
+| AWS_ACCESS_KEY_ID     | `AKIA...`                    |
+| AWS_SECRET_ACCESS_KEY | `xxxx`                       |
+| AWS_REGION            | `us-east-1` (or your region) |
+| RDS_SECRET_ARN        | `arn:aws:secretsmanager:...` |
+| AWS_ACCOUNT_ID        | `123456789012`               |
+| ECR_REPO              | `charlie-cafe`               |
+| ECS_CLUSTER           | `charlie`                    |
+| ECS_SERVICE           | `charlie-service`            |
+| EC2_INSTANCE_ID       | `i-0123456789abcdef0`        |
+
+> If AWS_REGION is missing, add it exactly as your AWS region string (e.g., us-east-1).
+
+### Step 2: Trigger Workflow Again
+
+- After fixing secrets, go to Actions tab → click Run workflow → main branch
+
+- The workflow should start and proceed past Step 2.
+
+### Step 3: Verify Step-by-Step
+
+Step 2 ✅ Configure AWS credentials
+
+Step 3 ✅ Install tools
+
+Step 4 ✅ Retrieve RDS secret
+
+Step 5 ✅ Parse DB credentials
+
+Step 6 ⏳ Wait for RDS
+
+Step 11 🐳 Build Docker image
+
+Step 20 🐳 Login to ECR
+
+Step 24 🚀 Update ECS service
+
+- Watch any step that fails.
+
+- If Step 24 ECS deployment fails, check ECS logs for task errors.
+
+### Step 4: Optional EC2 Pull
+
+You don’t need to pull deploy.yml to EC2 — GitHub Actions runs independently.
+
+- The only thing EC2 sees is the SSM command in Step 15 (deploy_via_ssm.sh)
+
+---
+
 
