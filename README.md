@@ -693,7 +693,7 @@ The task execution role is needed for Fargate to pull images from ECR and write 
 
 This role will be used later in the task definition.
 
-#### Step 3 — Create Task Definition
+- ### 4️⃣ Create Task Definition
 
 - Go to ECS → Task Definitions → Create new Task Definition.
 
@@ -713,7 +713,7 @@ This role will be used later in the task definition.
 
 - Click Next to add containers.
 
-#### Step 4 — Add Container to Task
+- ### 5️⃣ Add Container to Task
 
 - Container Name: charlie-container.
 
@@ -749,7 +749,7 @@ This role will be used later in the task definition.
 
 - Click Add → Click Create Task Definition.
 
-- ### 3️⃣  NAT GW / VPC ENDPoint
+- ### 6️⃣  NAT GW / VPC ENDPoint
 
 #### Option 1 — Use NAT Gateway (Internet Access)
 
@@ -816,7 +816,8 @@ You need two endpoints:
 ✅ After endpoints are in place, ECS tasks can pull images privately, no NAT required.
 
 
-Step 5 — Run Task in Cluster
+- ### 7️⃣  Run Task in Cluster
+
 Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
 Launch Type: Fargate.
 Task Definition: charlie-task:1 (latest revision).
