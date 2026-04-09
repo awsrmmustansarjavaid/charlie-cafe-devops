@@ -610,13 +610,13 @@ docker build -t charlie-cafe .
 #### 5️⃣ Tag the Docker image for ECR
 
 ```
-docker tag charlie-cafe:latest 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+docker tag charlie-cafe:latest 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 ```
 
 #### 6️⃣ Push the Docker image to ECR
 
 ```
-docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+docker push 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 ```
 
 ✅ After this, your Docker image will be in ECR, ready for ECS or Fargate deployment.
