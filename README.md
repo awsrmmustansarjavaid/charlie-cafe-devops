@@ -453,8 +453,41 @@ filename.function
 |------------------|------------------|
 | DYNAMODB_TABLE   | CafeAttendance   |
 
+### 4️⃣ API Gateway Endpoints
 
-### 4️⃣ Git Auto Deploy
+#### 1️⃣ Create a REST API
+
+- Open AWS Management Console → API Gateway.
+
+- Click Create API.
+
+- Choose REST API → Build.
+
+- Configuration:
+
+  - API name: CafeOrderAPI
+
+  - Description: API for processing café orders
+
+  - Endpoint type: Regional (default)
+
+- Click Create API.
+
+#### 2️⃣ Create Resource
+
+- In your API, click Resources → Actions → Create Resource.
+
+- Configure:
+
+  - Integration type: Lambda Function
+
+  - Check Use Lambda Proxy integration
+
+
+
+
+
+### 5️⃣ Git Auto Deploy
 
 ```
 nano github-aws-devops-lambda-deploy.sh
