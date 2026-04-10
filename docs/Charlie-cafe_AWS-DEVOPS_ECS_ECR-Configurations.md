@@ -1274,6 +1274,18 @@ jobs:
 
 ### ✅ Fully Final deploy.yml
 
+#### ✅ Changes Made Only in Requested Areas
+
+- Added Short SHA step after checkout
+
+- Uses copied rendered task definition file instead of modifying original
+
+- Captures TASK_DEF_ARN from ECS register
+
+- Deploys ECS using latest registered revision ARN
+
+#### ✅ FINAL FIXED DEPLOY.YML
+
 ```
 name: ☕ Charlie Cafe — FULL CI/CD PIPELINE (FINAL)
 
@@ -1295,6 +1307,12 @@ jobs:
     # -------------------------------------------------
     - name: 📥 Checkout Code
       uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 1.5️⃣ Shorten Git SHA
+    # -------------------------------------------------
+    - name: 🔤 Shorten Git SHA
+      run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
     # -------------------------------------------------
     # 2️⃣ Configure AWS Credentials
@@ -1491,32 +1509,44 @@ jobs:
           ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
 
     # -------------------------------------------------
-    # 24️⃣ Inject New Image into Task Definition
+    # 24️⃣ Copy Task Definition Template
+    # -------------------------------------------------
+    - name: 📄 Copy Task Definition Template
+      run: |
+        cp .github/task-definition.json .github/task-definition-rendered.json
+
+    # -------------------------------------------------
+    # 25️⃣ Inject New Image into Rendered Task Definition
     # -------------------------------------------------
     - name: 🔄 Update Task Definition Image
       run: |
-        sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG|g" .github/task-definition.json
+        sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG|g" .github/task-definition-rendered.json
 
     # -------------------------------------------------
-    # 25️⃣ Register New ECS Task Definition
+    # 26️⃣ Register New ECS Task Definition
     # -------------------------------------------------
     - name: 📦 Register New Task Definition
       run: |
-        aws ecs register-task-definition \
-          --cli-input-json file://.github/task-definition.json
+        TASK_DEF_ARN=$(aws ecs register-task-definition \
+          --cli-input-json file://.github/task-definition-rendered.json \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+
+        echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 26️⃣ Deploy to ECS
+    # 27️⃣ Deploy to ECS
     # -------------------------------------------------
     - name: 🚀 Deploy ECS
       run: |
         aws ecs update-service \
           --cluster ${{ secrets.ECS_CLUSTER }} \
           --service ${{ secrets.ECS_SERVICE }} \
+          --task-definition $TASK_DEF_ARN \
           --force-new-deployment
 
     # -------------------------------------------------
-    # 27️⃣ Verify ECS Deployment
+    # 28️⃣ Verify ECS Deployment
     # -------------------------------------------------
     - name: 🌐 Verify ECS Deployment
       run: |
@@ -1532,6 +1562,33 @@ jobs:
           --query 'taskArns[*]' \
           --output text)
 ```
+
+#### ✅ Final Result
+
+Your pipeline is now:
+
+- Production Grade
+
+- Immutable deployments ✅
+
+- Safe task definition rendering ✅
+
+- Guaranteed latest ECS revision deploy ✅
+
+- Clean short Docker tags ✅
+
+#### ✅ My Small Professional Note
+
+You still technically have:
+
+```
+env:
+  IMAGE_TAG: ${{ github.sha }}
+```
+
+at top AND override later with short SHA.
+
+That is perfectly valid because GitHub ENV later overwrites it.
 
 #### 🚀 🔥 IMPORTANT REQUIRED GITHUB SECRETS
 
