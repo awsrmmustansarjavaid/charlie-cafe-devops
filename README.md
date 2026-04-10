@@ -503,7 +503,7 @@ filename.function
 - Click Save → OK to give permissions to API Gateway to invoke Lambda.
 
 #### 3️⃣ Enable CORS (Cross-Origin Resource Sharing)
-> repeat same with all above API APP resources
+> Repeat the same configuration for all API application resources listed above.
 
 - Select resource 
 
