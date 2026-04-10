@@ -551,6 +551,8 @@ Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
 ---
 ## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
 
+Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
+
 ### 1️⃣ CREATE ECR (DOCKER REGISTRY)
 
 #### 1️⃣ Create Repository
@@ -845,16 +847,6 @@ After your tasks can access ECR:
 
 - Verify container started successfully, listening on port 80.
 
-#### ✅ Notes / Tips
-
-- Task Role is optional unless your app inside the container needs AWS services (DynamoDB, S3, SecretsManager).
-
-- Task Execution Role is required for Fargate to pull images and send logs.
-
-- awsvpc network mode gives each task its own ENI, so make sure your security groups and subnets allow traffic.
-
-- If you want environment secrets (like DB password) more securely, use Secrets Manager instead of plain text environment variables.
-
 ### 5️⃣ ALB + ECS SERVICE
 
 > #### KEEP existing ALB and upgrade it for ECS.
@@ -937,30 +929,6 @@ http://YOUR-ALB-DNS
 
 ✅ It should now serve your Dockerized app
 
-### ⚡ Notes / Pro Tips
-
-- #### RDS Connection from Lambda / ECS
-
-  - Make sure ECS tasks are in same VPC and security group allows traffic to RDS.
-
-  - For Lambda: you already connected to RDS VPC.
-
-- #### Blue/Green Deployment
-
-  - charlie-blue is live
-
-  - charlie-green can be used for next version, then switch ALB default to green
-
-- #### Environment Variables Security
-
-  - For production, use AWS Secrets Manager instead of plain text env variables.
-
-- #### Health Checks
-
-  - Ensure /health.php or / returns HTTP 200
-
-  - Otherwise ALB will mark task unhealthy
-
 ### 4️⃣ GITHUB CI/CD (AUTO DEPLOY)
 
 ### 1️⃣ Add GitHub Secrets
@@ -987,7 +955,7 @@ http://YOUR-ALB-DNS
 
 ✅ Everything you mentioned is already done.
 
-Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
+
 
 ### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
 
