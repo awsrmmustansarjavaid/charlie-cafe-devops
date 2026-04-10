@@ -261,43 +261,87 @@ EOF
 print_success "Sample Data Inserted"
 
 # =============================================================
-# 🔍 VERIFY TABLE STRUCTURE
+# FINAL VERIFICATION
 # =============================================================
-print_header "Running Verification"
+print_header "RDS Verification Steps"
 
-echo "DATABASE:"
+# 1️⃣ Verify Database Exists
+echo "1️⃣ Verify Database Exists:"
 mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "SHOW DATABASES LIKE '$DB_NAME';"
 
-echo ""
-echo "TABLES:"
-mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "SHOW TABLES;"
+# 2️⃣ Verify Current Database
+echo "2️⃣ Verify Current Database:"
+mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "USE $DB_NAME; SELECT DATABASE();"
 
-echo ""
-echo "ORDERS STRUCTURE:"
-mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "DESCRIBE orders;"
+# 3️⃣ Show Tables
+echo "3️⃣ Show Tables:"
+mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "USE $DB_NAME; SHOW TABLES;"
 
-echo ""
-echo "ROW COUNTS:"
+# 4️⃣ Describe & SELECT for each table
+for table in orders employees attendance holidays leaves
+do
+    echo "---- DESCRIBE $table ----"
+    mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "USE $DB_NAME; DESCRIBE $table;"
+    
+    echo "---- SELECT * FROM $table ----"
+    mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "USE $DB_NAME; SELECT * FROM $table;"
+done
+
+# 5️⃣ Verify Foreign Keys
+echo "5️⃣ Verify Foreign Keys:"
+mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "
+SELECT
+    TABLE_NAME,
+    COLUMN_NAME,
+    CONSTRAINT_NAME,
+    REFERENCED_TABLE_NAME
+FROM
+    information_schema.KEY_COLUMN_USAGE
+WHERE
+    TABLE_SCHEMA = '$DB_NAME'
+    AND REFERENCED_TABLE_NAME IS NOT NULL;
+"
+
+# 6️⃣ Verify Indexes (example on orders)
+echo "6️⃣ Verify Indexes on orders:"
+mysql --defaults-extra-file="$CREDENTIALS_FILE" -e "USE $DB_NAME; SHOW INDEX FROM orders;"
+
+# 7️⃣ Row Count Verification
+echo "7️⃣ Verify Row Counts:"
 mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "
 SELECT
-(SELECT COUNT(*) FROM orders) total_orders,
-(SELECT COUNT(*) FROM employees) total_employees;
+(SELECT COUNT(*) FROM orders) AS total_orders,
+(SELECT COUNT(*) FROM employees) AS total_employees,
+(SELECT COUNT(*) FROM attendance) AS total_attendance,
+(SELECT COUNT(*) FROM holidays) AS total_holidays;
 "
 
-print_success "Verification Complete"
-
 # =============================================================
-# 📈 ANALYTICS TEST
+# ANALYTICS TESTS
 # =============================================================
-print_header "Testing Analytics Queries"
+print_header "Running Analytics Tests"
 
-mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" -e "
-SELECT COUNT(*) AS paid_orders
-FROM orders
-WHERE payment_status='PAID';
-"
+mysql --defaults-extra-file="$CREDENTIALS_FILE" "$DB_NAME" <<'EOF'
+SELECT 'Paid Orders' AS section;
+SELECT COUNT(*) FROM orders WHERE payment_status='PAID';
 
-print_success "Analytics Passed"
+SELECT 'Today Sales' AS section;
+SELECT COUNT(*) FROM orders
+WHERE payment_status='PAID'
+AND created_at >= CURDATE();
+
+SELECT 'Week Sales' AS section;
+SELECT COUNT(*) FROM orders
+WHERE payment_status='PAID'
+AND created_at >= NOW() - INTERVAL 7 DAY;
+
+SELECT 'Month Sales' AS section;
+SELECT COUNT(*) FROM orders
+WHERE payment_status='PAID'
+AND created_at >= DATE_FORMAT(NOW(),'%Y-%m-01');
+EOF
+
+print_success "Analytics verification completed"
 
 # =============================================================
 # 🎉 COMPLETE
@@ -309,3 +353,4 @@ echo -e "${GREEN}✔ Schema Fixed${NC}"
 echo -e "${GREEN}✔ Frontend Compatible${NC}"
 echo -e "${GREEN}✔ Backend Compatible${NC}"
 echo -e "${GREEN}✔ Analytics Ready${NC}"
+echo -e "${GREEN}✔ Full RDS Verification Completed${NC}"
