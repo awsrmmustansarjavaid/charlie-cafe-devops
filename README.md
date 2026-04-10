@@ -523,12 +523,72 @@ filename.function
 
 - Click Deploy.
 
-#### 5️⃣ Copy API Invoke URL
+#### 5️⃣ Cognito Authorizers
+
+- Go to Authorizers
+
+- Create new:
+
+  - Name: Cognito-Authorizer
+
+  - Type: Cognito
+
+  - User Pool: your pool
+
+  - Token source: Authorization
+
+- Attach authorizer to ALL endpoints:
+
+```
+/employee-profile
+/attendance-history
+/leaves-holidays
+```
+
+👉 Now API Gateway expects:
+
+```
+Authorization: Bearer <JWT>
+```
+
+#### 6️⃣ Copy API Invoke URL
 
 After deployment, you’ll see an Invoke URL at the top of the Stage page, e.g.:
 
 ```
-https://abcdef123.execute-api.us-east-1.amazonaws.com/prod/orders
+https://abcdefg123.execute-api.us-east-1.amazonaws.com/prod/
+```
+
+#### ✅ Final API Endpoint
+
+Your endpoint becomes:
+
+
+```
+https://xxxxx.execute-api.us-east-1.amazonaws.com/prod/orders
+
+https://xxxxx.execute-api.us-east-1.amazonaws.com/prod/get-order-status
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/cafe-order-status
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/order-update
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/admin/mark-paid
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/analytics
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/attendance/checkin
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/attendance/checkout
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/employee-profile
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/attendance-history
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/leaves-holidays
+
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/leaves-holidays
+
 ```
 
 ### 5️⃣ Git Auto Deploy
