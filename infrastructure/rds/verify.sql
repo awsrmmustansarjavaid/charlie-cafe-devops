@@ -1,11 +1,13 @@
 -- ==========================================================
 -- ☕ Charlie Cafe — VERIFICATION & ANALYTICS
+-- PURPOSE:
+-- Verify DB structure, data, foreign keys, and analytics.
 -- ==========================================================
 
 USE cafe_db;
 
 -- =============================
--- CHECK DATABASE
+-- VERIFY DATABASE
 -- =============================
 SELECT DATABASE();
 
@@ -24,7 +26,7 @@ DESCRIBE holidays;
 DESCRIBE orders;
 
 -- =============================
--- VIEW DATA
+-- VIEW ALL DATA
 -- =============================
 SELECT * FROM employees;
 SELECT * FROM attendance;
@@ -33,7 +35,7 @@ SELECT * FROM holidays;
 SELECT * FROM orders;
 
 -- =============================
--- FOREIGN KEYS CHECK
+-- VERIFY FOREIGN KEYS
 -- =============================
 SELECT
     TABLE_NAME,
@@ -45,12 +47,12 @@ WHERE TABLE_SCHEMA = 'cafe_db'
 AND REFERENCED_TABLE_NAME IS NOT NULL;
 
 -- =============================
--- INDEX CHECK
+-- VERIFY INDEXES
 -- =============================
 SHOW INDEX FROM orders;
 
 -- =============================
--- ROW COUNT CHECK
+-- ROW COUNTS
 -- =============================
 SELECT
 (SELECT COUNT(*) FROM orders) AS total_orders,
@@ -59,7 +61,7 @@ SELECT
 (SELECT COUNT(*) FROM holidays) AS total_holidays;
 
 -- =============================
--- ANALYTICS
+-- ANALYTICS TESTS
 -- =============================
 
 -- Paid Orders

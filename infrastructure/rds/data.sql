@@ -1,7 +1,7 @@
 -- ==========================================================
 -- ☕ Charlie Cafe — SAMPLE DATA
--- Purpose: Insert test data
--- Safe: YES (uses INSERT IGNORE)
+-- PURPOSE:
+-- Insert clean development/test sample data.
 -- ==========================================================
 
 USE cafe_db;
@@ -9,7 +9,7 @@ USE cafe_db;
 -- =============================
 -- EMPLOYEES
 -- =============================
-INSERT IGNORE INTO employees
+INSERT INTO employees
 (cognito_user_id,name,job_title,salary,start_date)
 VALUES
 ('emp-001','Ahmed','Barista',800,'2024-01-01'),
@@ -18,7 +18,7 @@ VALUES
 -- =============================
 -- ATTENDANCE
 -- =============================
-INSERT IGNORE INTO attendance
+INSERT INTO attendance
 (employee_id,attendance_date,checkin_time,checkout_time)
 VALUES
 (1,CURDATE(),'09:00:00','17:00:00'),
@@ -27,7 +27,7 @@ VALUES
 -- =============================
 -- LEAVES
 -- =============================
-INSERT IGNORE INTO leaves
+INSERT INTO leaves
 (employee_id,leave_date,leave_type)
 VALUES
 (1,'2026-03-01','Sick Leave');
@@ -35,7 +35,7 @@ VALUES
 -- =============================
 -- HOLIDAYS
 -- =============================
-INSERT IGNORE INTO holidays
+INSERT INTO holidays
 (holiday_date,description)
 VALUES
 ('2026-12-25','Christmas'),
@@ -44,9 +44,9 @@ VALUES
 -- =============================
 -- ORDERS
 -- =============================
-INSERT IGNORE INTO orders
-(table_number,customer_name,item,quantity,total_cost,total_amount,payment_status,status)
+INSERT INTO orders
+(table_number,customer_name,item,quantity,payment_method,total_cost,total_amount,payment_status,status)
 VALUES
-(1,'Ali Khan','Espresso',2,4.00,8.00,'PAID','COMPLETED'),
-(2,'Sara Ahmed','Cappuccino',1,3.50,5.00,'PAID','COMPLETED'),
-(3,'Omar Ali','Latte',1,3.00,5.00,'PENDING','RECEIVED');
+(1,'Ali Khan','Espresso',2,'CASH',4.00,8.00,'PAID','COMPLETED'),
+(2,'Sara Ahmed','Cappuccino',1,'CARD',3.50,3.50,'PAID','COMPLETED'),
+(3,'Omar Ali','Latte',1,'CASH',3.00,3.00,'PENDING','RECEIVED');
