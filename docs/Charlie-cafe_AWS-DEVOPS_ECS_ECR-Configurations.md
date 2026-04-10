@@ -1,5 +1,51 @@
 # Charlie Cafe - AWS DEVOPS ECS & ECR Configurations
 
+### 🚀 🎯 FINAL GOAL
+
+- #### Every time you push code:
+
+```
+GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
+```
+## Phase 1 - Pre-requisites
+
+### 🧱  — CREATE IAM USER FOR GITHUB
+
+### ✅ 1. Go to IAM
+
+- AWS Console → IAM → Users → Create User
+
+### ✅ 2. Configure
+
+- Username:
+
+```
+charlie-github-user
+```
+
+#### Enable:
+
+✔ Programmatic access
+
+### ✅ 3. Attach Policy
+
+#### Attach your merged policy:
+
+```
+charlie-cafe-iam-policy
+```
+
+### ✅ 4. Create User
+
+👉 Copy:
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+```
+
+## Phase 2
+
 ### 1️⃣ CREATE ECR (DOCKER REGISTRY)
 
 #### 1️⃣ Create Repository
