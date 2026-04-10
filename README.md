@@ -891,29 +891,35 @@ After your tasks can access ECR:
 
 #### 3️⃣ Create ECS Service
 
-- Cluster: charlie-cluster
+- Go ECS → Cluster → charlie-cluster → Create Service
 
-- Service: charlie-service
+- Service Name: charlie-service
 
 - Launch type: Fargate
 
-- Load Balancer:
+- Number of tasks: 1 (start small)
 
-- Use existing ALB
+- Load Balancer: Application Load Balancer
+
+  > Use existing ALB
 
 - Listener: HTTP:80
 
 - Target group: charlie-blue
 
-- Container Mapping:
+- Container Mapping: charlie-container port 80
 
-- Container: charlie-container
+  - Container: charlie-container
 
-- Port: 80
+  - Port: 80
 
-#### 4️⃣ Verify
+✅ Click Create Service → Wait for tasks to become Running
 
-- Go to: Target Group → charlie-blue
+#### 4️⃣ Verify Target Group
+
+- Go EC2 → Target Groups → charlie-blue → Targets
+
+> You should see IP addresses (Fargate tasks) and Status: Healthy
 
 #### You should see:
 
@@ -923,9 +929,13 @@ After your tasks can access ECR:
 
 #### 🌐 Access App
 
+- Go to your ALB DNS in browser
+
 ```
 http://YOUR-ALB-DNS
 ```
+
+✅ It should now serve your Dockerized app
 
 ### 4️⃣ GITHUB CI/CD (AUTO DEPLOY)
 
