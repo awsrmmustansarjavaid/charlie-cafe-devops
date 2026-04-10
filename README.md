@@ -551,7 +551,7 @@ filename.function
 
   - Token source: Authorization
 
-- Attach authorizer to ALL endpoints:
+- Attach authorizer to these 3 endpoints:
 
 ```
 /employee-profile
