@@ -965,28 +965,11 @@ http://YOUR-ALB-DNS
 
 ### 1️⃣ Add GitHub Secrets
 
-| Secret Name           | Value Example   |
-| --------------------- | --------------- |
-| AWS_ACCESS_KEY_ID     | AKIAxxxxxxxxxxx |
-| AWS_SECRET_ACCESS_KEY | xxxxxxx         |
-| AWS_REGION            | us-east-1       |
-| AWS_ACCOUNT_ID        | 123456789147    |
-| ECR_REPO              | charlie-cafe    |
-| ECS_CLUSTER           | charlie-cluster |
-| ECS_SERVICE           | charlie-service |
-
-
-### 🧱 PART 1 — HOW TO ADD GITHUB SECRETS (STEP-BY-STEP)
-
-#### 📍 Where to go 👉 Open your GitHub repository
-
-```
-Settings → Secrets and variables → Actions → New repository secret
-```
-
 #### ✅ REQUIRED SECRETS 
 
-Add each one manually:
+- Go to GitHub repo → Settings → Secrets and variables → Actions → Add the following secrets:
+
+- Add each one manually:
 
 | Secret Name             | Value Example   | Where to Get    |
 | ----------------------- | --------------- | --------------- |
@@ -997,6 +980,97 @@ Add each one manually:
 | `ECS_CLUSTER`           | charlie-cluster | ECS Console     |
 | `ECS_SERVICE`           | charlie-service | ECS Console     |
 | `ECR_REPO`              | charlie-cafe    | ECR Repo Name   |
+
+- ECR Repository created (charlie-cafe)
+
+- ECS Cluster and Service running
+
+✅ Everything you mentioned is already done.
+
+### 2️⃣ Add ECR & ECS deployment steps to your existing deploy.yml
+
+We will append the following steps at the end of your pipeline
+
+- #### Step 1️⃣ – Login to ECR
+
+```
+    # -------------------------------------------------
+    # 20️⃣ Login to ECR
+    # -------------------------------------------------
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+```
+
+- #### Step 2️⃣ – Build Docker Image
+
+```
+    # -------------------------------------------------
+    # 21️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🏗️ Build Docker Image for ECS
+      run: |
+        docker build -t ${{ secrets.ECR_REPO }} .
+```
+
+> You can reuse your existing Dockerfile path if needed:
+docker build -t ${{ secrets.ECR_REPO }} -f docker/apache-php/Dockerfile .
+
+- #### Step 3️⃣ – Tag Docker Image
+
+```
+    # -------------------------------------------------
+    # 22️⃣ Tag Docker Image
+    # -------------------------------------------------
+    - name: 🏷️ Tag Docker Image
+      run: |
+        docker tag ${{ secrets.ECR_REPO }}:latest \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:latest
+```
+
+- #### Step 4️⃣ – Push Docker Image to ECR
+
+```
+    # -------------------------------------------------
+    # 23️⃣ Push Docker Image to ECR
+    # -------------------------------------------------
+    - name: 📤 Push Docker Image
+      run: |
+        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:latest
+```
+
+- #### Step 5️⃣ – Force ECS Service Update
+
+```
+    # -------------------------------------------------
+    # 24️⃣ Update ECS Service (Deploy new image)
+    # -------------------------------------------------
+    - name: 🚀 Deploy to ECS
+      run: |
+        aws ecs update-service \
+          --cluster ${{ secrets.ECS_CLUSTER }} \
+          --service ${{ secrets.ECS_SERVICE }} \
+          --force-new-deployment
+```
+
+
+> This tells ECS to pull the new image from ECR and redeploy the tasks.
+
+- #### Step 6️⃣ – Optional ECS Health Check
+
+```
+    # -------------------------------------------------
+    # 25️⃣ Verify ECS Tasks
+    # -------------------------------------------------
+    - name: 🌐 Verify ECS Deployment
+      run: |
+        aws ecs list-tasks --cluster ${{ secrets.ECS_CLUSTER }} --service-name ${{ secrets.ECS_SERVICE }}
+        aws ecs describe-tasks --cluster ${{ secrets.ECS_CLUSTER }} --tasks $(aws ecs list-tasks --cluster ${{ secrets.ECS_CLUSTER }} --service-name ${{ secrets.ECS_SERVICE }} --query 'taskArns[*]' --output text)
+```
+
+> This step lists the running tasks so you can see if ECS picked up the new image.
+
 
 #### 📄 FINAL deploy.yml
 
