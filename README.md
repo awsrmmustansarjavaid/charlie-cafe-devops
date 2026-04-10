@@ -587,7 +587,7 @@ https://xxxx.execute-api.us-east-1.amazonaws.com/prod/attendance-history
 
 https://xxxx.execute-api.us-east-1.amazonaws.com/prod/leaves-holidays
 
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/leaves-holidays
+https://xxxx.execute-api.us-east-1.amazonaws.com/prod/hr-analytics
 
 ```
 
