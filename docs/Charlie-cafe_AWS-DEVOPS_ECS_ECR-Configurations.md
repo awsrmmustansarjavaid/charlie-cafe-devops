@@ -533,6 +533,16 @@ Make sure indentation matches your current YAML (two spaces per level in GitHub 
 
 [deploy.yml](./Readme/deploy-yml/ecs&ecr/deploy.yml)
 
+#### ✅ Key Points
+
+- Nothing from your current EC2/DB pipeline is removed
+
+- Steps 20–25 handle ECR login → push → ECS deployment
+
+- Dockerfile path is preserved (docker/apache-php/Dockerfile)
+
+- ECS service is forced to deploy the new image automatically
+
 ### 4️⃣ Commit & Push
 
 - Save the updated deploy.yml in .github/workflows/
