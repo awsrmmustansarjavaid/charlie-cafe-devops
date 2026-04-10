@@ -533,3 +533,44 @@ Make sure indentation matches your current YAML (two spaces per level in GitHub 
 
 [deploy.yml](./Readme/deploy-yml/ecs&ecr/deploy.yml)
 
+### 4️⃣ Commit & Push
+
+- Save the updated deploy.yml in .github/workflows/
+
+- Commit & push to main
+
+- GitHub Actions will automatically trigger
+
+- Check Actions tab → Logs for each step
+
+✅ If all steps succeed, your ECS service will be automatically updated whenever you push to main.
+
+### 5️⃣ Testing the ECS Deployment
+
+- Go to ECS → Cluster → charlie-cluster → Tasks
+
+- You should see new tasks running with the latest image
+
+- Go to ALB → Target Groups → charlie-blue → Targets
+
+- Status should be Healthy
+
+- Open your ALB DNS in the browser to test the live app
+
+### ⚡ Pro Tips
+
+- If ECS tasks don’t become healthy, check:
+
+    - Security groups (allow ALB → ECS → RDS traffic)
+
+    - Docker container port matches task definition
+
+    - Health check path /health.php exists
+
+- For faster deployments, use immutable tags instead of latest, e.g., Git commit SHA:
+
+```
+docker tag charlie-cafe:latest $ECR_REPO:$GITHUB_SHA
+```
+
+---
