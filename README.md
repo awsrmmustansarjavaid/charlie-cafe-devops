@@ -987,7 +987,7 @@ http://YOUR-ALB-DNS
 
 ✅ Everything you mentioned is already done.
 
-
+Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
 
 ### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
 
