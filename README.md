@@ -887,9 +887,7 @@ After your tasks can access ECR:
 
 #### 👉 Set default:
 
-```
-Forward → charlie-blue
-```
+- Default action: Forward → charlie-blue
 
 #### 3️⃣ Create ECS Service
 
