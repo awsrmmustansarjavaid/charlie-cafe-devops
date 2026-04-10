@@ -248,7 +248,7 @@ This role will be used later in the task definition.
 
 > #### NAT GW / VPC ENDPoint
 
-Read more [“Click here for configuration.”](./docs/charlie-cafe-devops-Network%20Connectivity.md)
+Read more [“Click here for configuration.”](./charlie-cafe-devops-Network%20Connectivity.md)
 
 #### 🔹 Step 1: VPC Endpoints (Private Access)
 
