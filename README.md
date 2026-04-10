@@ -575,8 +575,22 @@ https://abcdefg123.execute-api.us-east-1.amazonaws.com/prod/
 
 #### ✅ Final API Endpoint
 
-Your endpoint becomes:
+| Resource Name        | Full Endpoint URL                                      | Lambda Function                | Method | CORS |
+|---------------------|--------------------------------------------------------|-------------------------------|--------|------|
+| orders              | https://api.yourdomain.com/orders                     | CafeOrderProcessor            | POST   | Yes  |
+| get-order-status    | https://api.yourdomain.com/get-order-status          | GetOrderStatusLambda          | GET    | Yes  |
+| cafe-order-status   | https://api.yourdomain.com/cafe-order-status         | CafeOrderStatusLambda         | GET    | Yes  |
+| order-update        | https://api.yourdomain.com/order-update              | CafeOrderWorkerLambda         | POST   | Yes  |
+| mark-paid           | https://api.yourdomain.com/admin/mark-paid           | AdminMarkPaidLambda           | POST   | Yes  |
+| analytics           | https://api.yourdomain.com/analytics                 | CafeAnalyticsLambda           | GET    | Yes  |
+| attendance-checkin  | https://api.yourdomain.com/attendance/checkin        | hr-attendance                 | POST   | Yes  |
+| attendance-checkout | https://api.yourdomain.com/attendance/checkout       | hr-attendance                 | POST   | Yes  |
+| employee-profile    | https://api.yourdomain.com/employee-profile          | hr-employee-profile           | POST   | Yes  |
+| attendance-history  | https://api.yourdomain.com/attendance-history        | hr-attendance-history         | POST   | Yes  |
+| leaves-holidays     | https://api.yourdomain.com/leaves-holidays           | hr-leaves-holidays            | POST   | Yes  |
+| hr-analytics        | https://api.yourdomain.com/hr-analytics              | cafe-attendance-admin-service | GET    | Yes  |
 
+Your endpoint becomes:
 
 ```
 https://xxxxx.execute-api.us-east-1.amazonaws.com/prod/orders
