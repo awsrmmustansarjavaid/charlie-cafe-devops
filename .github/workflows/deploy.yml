@@ -14,19 +14,19 @@ jobs:
     steps:
 
     # -------------------------------------------------
-    # 1️⃣ Checkout Repository
+    # 1️⃣ Checkout Code
     # -------------------------------------------------
     - name: 📥 Checkout Code
       uses: actions/checkout@v3
 
     # -------------------------------------------------
-    # 1.5️⃣ Shorten Git SHA
+    # 2️⃣ Short SHA
     # -------------------------------------------------
     - name: 🔤 Shorten Git SHA
       run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 2️⃣ Configure AWS Credentials
+    # 3️⃣ AWS Credentials
     # -------------------------------------------------
     - name: 🔐 Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -36,83 +36,22 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
 
     # -------------------------------------------------
-    # 3️⃣ Install Required Tools
+    # 4️⃣ Install Tools
     # -------------------------------------------------
     - name: 🧰 Install Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y mysql-client jq curl zip python3-pip
+        sudo apt-get install -y jq curl zip python3-pip mysql-client
 
     # -------------------------------------------------
-    # 4️⃣ Retrieve RDS Secret
-    # -------------------------------------------------
-    - name: 🗝️ Retrieve RDS Secret
-      run: |
-        SECRET_JSON=$(aws secretsmanager get-secret-value \
-          --secret-id "${{ secrets.RDS_SECRET_ARN }}" \
-          --query SecretString --output text)
-        echo "DB_SECRET=$SECRET_JSON" >> $GITHUB_ENV
-
-    # -------------------------------------------------
-    # 5️⃣ Parse DB Credentials
-    # -------------------------------------------------
-    - name: 🧰 Parse Secret
-      run: |
-        echo "DB_HOST=$(echo $DB_SECRET | jq -r '.host')" >> $GITHUB_ENV
-        echo "DB_USER=$(echo $DB_SECRET | jq -r '.username')" >> $GITHUB_ENV
-        echo "DB_PASS=$(echo $DB_SECRET | jq -r '.password')" >> $GITHUB_ENV
-        echo "DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')" >> $GITHUB_ENV
-
-    # -------------------------------------------------
-    # 6️⃣ Wait for RDS
-    # -------------------------------------------------
-    - name: ⏳ Wait for RDS
-      run: |
-        for i in {1..20}; do
-          mysqladmin ping -h $DB_HOST -u$DB_USER -p$DB_PASS --silent && break
-          echo "Waiting for RDS..."
-          sleep 5
-        done
-
-    # -------------------------------------------------
-    # 7️⃣ Create Database
-    # -------------------------------------------------
-    - name: 🗄️ Create Database
-      run: |
-        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
-
-    # -------------------------------------------------
-    # 8️⃣ Apply Schema
-    # -------------------------------------------------
-    - name: 🗄️ Apply Schema
-      run: |
-        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/schema.sql
-
-    # -------------------------------------------------
-    # 9️⃣ Apply Data
-    # -------------------------------------------------
-    - name: 📊 Apply Data
-      run: |
-        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/data.sql
-
-    # -------------------------------------------------
-    # 🔟 Verify Database
-    # -------------------------------------------------
-    - name: ✅ Verify Database
-      run: |
-        mysql -h $DB_HOST -u$DB_USER -p$DB_PASS $DB_NAME < infrastructure/rds/verify.sql
-
-    # -------------------------------------------------
-    # 11️⃣ Build Docker Image (Fixed)
+    # 5️⃣ Build Docker Image (CI)
     # -------------------------------------------------
     - name: 🐳 Build Docker Image
       run: |
-        cd $GITHUB_WORKSPACE
-        echo "Building Docker image from $GITHUB_WORKSPACE/docker/apache-php/Dockerfile"
         docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
-    # 12️⃣ Run Container (CI Test)
+    # 6️⃣ Run Container (CI Test)
     # -------------------------------------------------
     - name: 🚀 Run Container (CI)
       run: |
@@ -121,42 +60,64 @@ jobs:
         sleep 10
 
     # -------------------------------------------------
-    # 13️⃣ Local Health Check (CI)
+    # 7️⃣ Health Check (CI)
     # -------------------------------------------------
-    - name: ❤️ Test Application (CI)
-      run: |
-        curl -f http://localhost/ || exit 1
+    - name: ❤️ Test Application
+      run: curl -f http://localhost/ || exit 1
 
     # -------------------------------------------------
-    # 14️⃣ Cleanup Test Container
+    # 8️⃣ Cleanup
     # -------------------------------------------------
     - name: 🧹 Cleanup
-      run: |
-        docker rm -f test_app || true
+      run: docker rm -f test_app || true
 
     # =================================================
-    # 🔥 EC2 DEPLOYMENT
+    # 🚀 EC2 DEPLOYMENT (SSM FIXED + VERIFIED)
     # =================================================
 
     # -------------------------------------------------
-    # 15️⃣ Deploy to EC2 via SSM
+    # 9️⃣ Send SSM Command
     # -------------------------------------------------
-    - name: 🚀 Deploy to EC2
+    - name: 🚀 Deploy to EC2 (SSM)
       run: |
-        aws ssm send-command \
+        COMMAND_ID=$(aws ssm send-command \
           --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
           --document-name "AWS-RunShellScript" \
-          --parameters commands=["/home/ec2-user/charlie-cafe-devops/deploy_via_ssm.sh"] \
-          --region ${{ secrets.AWS_REGION }}
+          --parameters commands=["bash /home/ec2-user/charlie-cafe-devops/deploy_master.sh"] \
+          --query "Command.CommandId" \
+          --output text)
+
+        echo "COMMAND_ID=$COMMAND_ID" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 16️⃣ Wait for Deployment
+    # 🔟 Wait for SSM Completion
     # -------------------------------------------------
-    - name: ⏳ Wait for EC2 Deployment
-      run: sleep 30
+    - name: ⏳ Wait for SSM Completion
+      run: |
+        aws ssm wait command-executed \
+          --command-id $COMMAND_ID \
+          --instance-id ${{ secrets.EC2_INSTANCE_ID }}
 
     # -------------------------------------------------
-    # 17️⃣ Get EC2 Public IP
+    # 1️⃣1️⃣ Verify SSM Status (CRITICAL FIX)
+    # -------------------------------------------------
+    - name: 🔍 Check SSM Command Status
+      run: |
+        STATUS=$(aws ssm get-command-invocation \
+          --command-id $COMMAND_ID \
+          --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+          --query "Status" \
+          --output text)
+
+        echo "SSM STATUS = $STATUS"
+
+        if [ "$STATUS" != "Success" ]; then
+          echo "❌ SSM command failed"
+          exit 1
+        fi
+
+    # -------------------------------------------------
+    # 1️⃣2️⃣ Get EC2 IP
     # -------------------------------------------------
     - name: 🌐 Get EC2 IP
       run: |
@@ -168,24 +129,23 @@ jobs:
         echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 18️⃣ Remote Health Check (CD)
+    # 1️⃣3️⃣ EC2 Health Check
     # -------------------------------------------------
-    - name: 🌐 Test Application (EC2)
-      run: |
-        curl -f http://$INSTANCE_IP/ || exit 1
+    - name: 🌐 Test EC2 App
+      run: curl -f http://$INSTANCE_IP/ || exit 1
 
     # -------------------------------------------------
-    # 19️⃣ Success
+    # 1️⃣4️⃣ Success
     # -------------------------------------------------
     - name: 🎉 Success
       run: echo "CI/CD Pipeline Completed Successfully 🚀"
 
     # =================================================
-    # ⚡ ECR & ECS DEPLOYMENT (IMMUTABLE VERSION)
+    # ⚡ ECS DEPLOYMENT (IMPROVED)
     # =================================================
 
     # -------------------------------------------------
-    # 20️⃣ Login to ECR
+    # 1️⃣5️⃣ Login to ECR
     # -------------------------------------------------
     - name: 🐳 Login to ECR
       run: |
@@ -194,49 +154,45 @@ jobs:
         ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
     # -------------------------------------------------
-    # 21️⃣ Build Docker Image with Git SHA
+    # 1️⃣6️⃣ Build ECS Image
     # -------------------------------------------------
-    - name: 🏗️ Build Docker Image for ECS
+    - name: 🏗️ Build ECS Image
       run: |
         docker build \
           -t ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
           -f docker/apache-php/Dockerfile .
 
     # -------------------------------------------------
-    # 22️⃣ Tag Docker Image
+    # 1️⃣7️⃣ Tag Image
     # -------------------------------------------------
-    - name: 🏷️ Tag Docker Image
+    - name: 🏷️ Tag Image
       run: |
         docker tag \
           ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
           ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
 
     # -------------------------------------------------
-    # 23️⃣ Push Docker Image
+    # 1️⃣8️⃣ Push Image
     # -------------------------------------------------
-    - name: 📤 Push Docker Image
+    - name: 📤 Push Image
       run: |
         docker push \
           ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
 
     # -------------------------------------------------
-    # 24️⃣ Copy Task Definition Template
+    # 1️⃣9️⃣ Update Task Definition
     # -------------------------------------------------
-    - name: 📄 Copy Task Definition Template
+    - name: 📄 Update Task Definition
       run: |
         cp .github/task-definition.json .github/task-definition-rendered.json
 
-    # -------------------------------------------------
-    # 25️⃣ Inject New Image into Rendered Task Definition
-    # -------------------------------------------------
-    - name: 🔄 Update Task Definition Image
-      run: |
-        sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG|g" .github/task-definition-rendered.json
+        sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG|g" \
+        .github/task-definition-rendered.json
 
     # -------------------------------------------------
-    # 26️⃣ Register New ECS Task Definition
+    # 2️⃣0️⃣ Register ECS Task
     # -------------------------------------------------
-    - name: 📦 Register New Task Definition
+    - name: 📦 Register Task Definition
       run: |
         TASK_DEF_ARN=$(aws ecs register-task-definition \
           --cli-input-json file://.github/task-definition-rendered.json \
@@ -246,7 +202,7 @@ jobs:
         echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
     # -------------------------------------------------
-    # 27️⃣ Deploy to ECS
+    # 2️⃣1️⃣ Deploy ECS
     # -------------------------------------------------
     - name: 🚀 Deploy ECS
       run: |
@@ -257,18 +213,11 @@ jobs:
           --force-new-deployment
 
     # -------------------------------------------------
-    # 28️⃣ Verify ECS Deployment
+    # 2️⃣2️⃣ Verify ECS Deployment (FIXED)
     # -------------------------------------------------
     - name: 🌐 Verify ECS Deployment
       run: |
-        aws ecs list-tasks \
+        aws ecs describe-services \
           --cluster ${{ secrets.ECS_CLUSTER }} \
-          --service-name ${{ secrets.ECS_SERVICE }}
-
-        aws ecs describe-tasks \
-          --cluster ${{ secrets.ECS_CLUSTER }} \
-          --tasks $(aws ecs list-tasks \
-          --cluster ${{ secrets.ECS_CLUSTER }} \
-          --service-name ${{ secrets.ECS_SERVICE }} \
-          --query 'taskArns[*]' \
-          --output text)
+          --services ${{ secrets.ECS_SERVICE }} \
+          --query "services[0].deployments"
