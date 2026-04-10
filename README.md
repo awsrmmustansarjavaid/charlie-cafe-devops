@@ -965,15 +965,16 @@ http://YOUR-ALB-DNS
 
 ### 1️⃣ Add GitHub Secrets
 
-```
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_REGION
-AWS_ACCOUNT_ID
-ECS_CLUSTER
-ECS_SERVICE
-ECR_REPO
-```
+| Secret Name           | Value Example   |
+| --------------------- | --------------- |
+| AWS_ACCESS_KEY_ID     | AKIAxxxxxxxxxxx |
+| AWS_SECRET_ACCESS_KEY | xxxxxxx         |
+| AWS_REGION            | us-east-1       |
+| AWS_ACCOUNT_ID        | 123456789147    |
+| ECR_REPO              | charlie-cafe    |
+| ECS_CLUSTER           | charlie-cluster |
+| ECS_SERVICE           | charlie-service |
+
 
 ### 🧱 PART 1 — HOW TO ADD GITHUB SECRETS (STEP-BY-STEP)
 
