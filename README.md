@@ -481,10 +481,33 @@ filename.function
 
   - Integration type: Lambda Function
 
+  - Lambda Region: us-east-1
+
   - Check Use Lambda Proxy integration
 
 
+- Click Save → OK to give permissions to API Gateway to invoke Lambda.
 
+#### 3️⃣ Enable CORS (Cross-Origin Resource Sharing)
+> repeat same with all above API APP resources
+
+- Select resource 
+
+> for example /orders
+
+- Click Actions → Enable CORS.
+
+- Configure:
+
+  - Allowed Methods: POST
+
+  - Allowed Headers: Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token
+
+  - Allow Credentials: unchecked
+
+- Click Enable CORS and replace existing CORS headers.
+
+- Click Yes, replace existing values if prompted.
 
 
 ### 5️⃣ Git Auto Deploy
