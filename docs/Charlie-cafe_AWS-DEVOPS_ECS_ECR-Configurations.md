@@ -814,6 +814,43 @@ You MUST update ECS task definition each deployment.
 }
 ```
 
+#### 📁 Put this inside:
+
+```
+{
+  "family": "charlie-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::537236558357:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "charlie-container",
+      "image": "IMAGE_PLACEHOLDER",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### 🔥 IMPORTANT
+
+Replace this:
+
+```
+537236558357
+```
+
+with YOUR AWS ACCOUNT ID if different.
+
 ### 8️⃣ — Replace Placeholder with New SHA Image During Pipeline
 
 - #### Add step before ECS deploy:
