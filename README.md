@@ -499,7 +499,7 @@ filename.function
 
 - Configure:
 
-  - Allowed Methods: POST
+  - Allowed Methods: Select method of paritcular resource
 
   - Allowed Headers: Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token
 
@@ -509,6 +509,27 @@ filename.function
 
 - Click Yes, replace existing values if prompted.
 
+#### 4️⃣ Deploy API
+
+- Click Actions → Deploy API.
+
+- Configure:
+
+  - Deployment stage: prod
+
+  - Stage description: Development stage
+
+  - Deployment description: Initial deployment
+
+- Click Deploy.
+
+#### 5️⃣ Copy API Invoke URL
+
+After deployment, you’ll see an Invoke URL at the top of the Stage page, e.g.:
+
+```
+https://abcdef123.execute-api.us-east-1.amazonaws.com/prod/orders
+```
 
 ### 5️⃣ Git Auto Deploy
 
