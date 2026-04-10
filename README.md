@@ -485,6 +485,20 @@ filename.function
 
   - Check Use Lambda Proxy integration
 
+| Resource Name        | Resource Path           | Lambda Function                | API Method | Enable CORS |
+|---------------------|------------------------|-------------------------------|------------|-------------|
+| orders              | /orders               | CafeOrderProcessor            | POST       | Yes         |
+| get-order-status    | /get-order-status     | GetOrderStatusLambda          | GET        | Yes         |
+| cafe-order-status   | /cafe-order-status    | CafeOrderStatusLambda         | GET        | Yes         |
+| order-update        | /order-update         | CafeOrderWorkerLambda         | POST       | Yes         |
+| mark-paid           | /admin/mark-paid      | AdminMarkPaidLambda           | POST       | Yes         |
+| analytics           | /analytics            | CafeAnalyticsLambda           | GET        | Yes         |
+| Attendance          | /attendance/checkin   | hr-attendance                 | POST       | Yes         |
+| Attendance          | /attendance/checkout  | hr-attendance                 | POST       | Yes         |
+| Employee Profile    | /employee-profile     | hr-employee-profile           | POST       | Yes         |
+| Attendance History  | /attendance-history   | hr-attendance-history         | POST       | Yes         |
+| Leaves & Holidays   | /leaves-holidays      | hr-leaves-holidays            | POST       | Yes         |
+| hr-analytics        | /hr-analytics         | cafe-attendance-admin-service | GET        | Yes         |
 
 - Click Save → OK to give permissions to API Gateway to invoke Lambda.
 
