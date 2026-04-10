@@ -7,7 +7,7 @@
 ```
 GitHub → Build Docker → Push to ECR → Deploy to ECS → Live App Updated
 ```
-## Phase 1 - Pre-requisites
+## Pre-requisites
 
 ### 🧱  — CREATE IAM USER FOR GITHUB
 
@@ -44,8 +44,7 @@ AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 ```
 
-## Phase 2
-
+---
 ### 1️⃣ CREATE ECR (DOCKER REGISTRY)
 
 #### 1️⃣ Create Repository
@@ -630,3 +629,265 @@ docker tag charlie-cafe:latest $ECR_REPO:$GITHUB_SHA
 ```
 
 ---
+## 🚀 Implement Immutable Docker Image Versioning Using Git Commit SHA in GitHub CI/CD Pipeline
+
+> Configure Unique Docker Image Tags with Git Commit SHA for Safe ECS Deployments
+
+### 📘 Why We Do This (Explainable Reason)
+
+- Right now your pipeline uses: :latest
+
+- #### 🛑 Problem:
+
+
+    - every deployment overwrites same image
+
+    - ECS may cache old image
+
+    -,rollback becomes difficult
+
+    - impossible to know which code version is deployed
+
+- #### ✅ Using Git Commit SHA means:
+
+```
+charlie-cafe:a34fd91
+charlie-cafe:b88d112
+charlie-cafe:cc91ff2
+```
+
+- Every deployment gets unique version.
+
+- #### ✅ Benefits:
+
+
+    - Immutable deployments
+
+    - Easy rollback
+
+    - Better debugging
+
+    - Production best practice
+
+    - No cache issues
+
+### 🛠 STEP-BY-STEP GUIDE TO IMPLEMENT GIT SHA TAGGING
+
+### 1️⃣ — Understand What Git SHA Means
+
+- #### GitHub automatically provides: ${{ github.sha }}
+
+- #### Example: a84d92f22c99183abf
+
+- #### We usually shorten it: ${GITHUB_SHA::7}
+
+- #### Output: a84d92f
+
+This becomes Docker tag.
+
+### 2️⃣ — Add Image Tag Environment Variable in deploy.yml
+
+Find near top of your workflow:
+
+- ✅ #### Current:
+
+```
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+```
+
+- ✅ #### Replace with:
+
+```
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+```
+
+### 3️⃣ — Update Docker Build Step
+
+Find your ECS docker build step.
+
+- ✅ #### Current:
+
+```
+- name: 🏗️ Build Docker Image for ECS
+  run: |
+    docker build -t ${{ secrets.ECR_REPO }} -f docker/apache-php/Dockerfile .
+```
+
+- ✅ #### Replace with:
+
+```
+- name: 🏗️ Build Docker Image for ECS
+  run: |
+    docker build \
+      -t ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
+      -f docker/apache-php/Dockerfile .
+```
+
+### 4️⃣ — Update Docker Tag Step
+
+- ✅ #### Current:
+
+```
+docker tag repo:latest repo:latest
+```
+
+- ✅ #### Replace with:
+
+```
+- name: 🏷️ Tag Docker Image
+  run: |
+    docker tag \
+      ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
+      ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
+```
+
+### 5️⃣ — Update Docker Push Step
+
+- ✅ #### Current:
+
+```
+docker push repo:latest
+```
+
+- ✅ #### Replace with:
+
+```
+- name: 📤 Push Docker Image
+  run: |
+    docker push \
+      ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
+```
+
+### 6️⃣ — IMPORTANT ECS ISSUE (Very Important)
+
+#### 🛑 Problem:
+
+Your ECS task definition still points to:
+
+```
+latest
+```
+
+If ECS task definition says latest:
+
+it won't use SHA automatically.
+
+You MUST update ECS task definition each deployment.
+
+### 7️⃣ — Create ECS Task Definition Template File
+
+- #### Create file: 
+
+```
+.github/task-definition.json
+```
+
+- #### Example:
+
+```
+{
+  "family": "charlie-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "charlie-container",
+      "image": "IMAGE_PLACEHOLDER",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ],
+      "essential": true
+    }
+  ]
+}
+```
+
+### 8️⃣ — Replace Placeholder with New SHA Image During Pipeline
+
+- #### Add step before ECS deploy:
+
+```
+- name: 🔄 Update Task Definition Image
+  run: |
+    sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG|g" .github/task-definition.json
+```
+
+### STEP 9 — Register New ECS Task Definition
+
+- #### Add:
+
+```
+- name: 📦 Register New Task Definition
+  run: |
+    aws ecs register-task-definition \
+      --cli-input-json file://.github/task-definition.json
+```
+
+### STEP 10 — Update ECS Service
+
+- #### Deploy:
+
+```
+- name: 🚀 Deploy ECS
+  run: |
+    aws ecs update-service \
+      --cluster ${{ secrets.ECS_CLUSTER }} \
+      --service ${{ secrets.ECS_SERVICE }} \
+      --force-new-deployment
+```
+
+### ✅ FINAL RESULT
+
+Every push to GitHub creates:
+
+```
+charlie-cafe:a8f22d1
+charlie-cafe:9bb71e2
+charlie-cafe:f22cd98
+```
+
+instead of:
+
+```
+charlie-cafe:latest
+```
+
+### 🎯 Bonus Pro Tip (Interview/Practice Explanation)
+
+When your friends ask WHY:
+
+Say:
+
+> “Using Git SHA for Docker image tags ensures immutable deployments, version traceability, safer rollbacks, and prevents ECS image caching issues compared to mutable latest tags.”
+
+That sounds like senior DevOps engineer language 😄
+
+### ⚠ My Honest Recommendation For Tomorrow Practice
+
+Since you're just practicing tomorrow, I recommend:
+
+- Keep current latest version first
+
+    - because it's simpler.
+
+    - Then after basic ECS works:
+
+- Upgrade to SHA tagging.
+
+    - Because SHA tagging adds task-definition complexity.
+
+### ✅ 
+
+
