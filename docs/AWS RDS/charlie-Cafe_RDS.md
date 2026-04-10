@@ -1,5 +1,4 @@
-# Charlie Cafe - RDS
-
+# Charlie Cafe - AWS RDS & Security 
 
 ### verify_rds.sh
 
