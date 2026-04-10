@@ -888,6 +888,18 @@ Since you're just practicing tomorrow, I recommend:
 
     - Because SHA tagging adds task-definition complexity.
 
-### ✅ 
+### ✅ Deploy.yml
 
+- #### ⚠️ Before Deploy.yml
 
+```
+
+```
+
+- #### ✅ After Updated Deploy.yml
+
+```
+
+```
+
+---
