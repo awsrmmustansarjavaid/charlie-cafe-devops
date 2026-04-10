@@ -937,6 +937,30 @@ http://YOUR-ALB-DNS
 
 ✅ It should now serve your Dockerized app
 
+### ⚡ Notes / Pro Tips
+
+- #### RDS Connection from Lambda / ECS
+
+  - Make sure ECS tasks are in same VPC and security group allows traffic to RDS.
+
+  - For Lambda: you already connected to RDS VPC.
+
+- #### Blue/Green Deployment
+
+  - charlie-blue is live
+
+  - charlie-green can be used for next version, then switch ALB default to green
+
+- #### Environment Variables Security
+
+  - For production, use AWS Secrets Manager instead of plain text env variables.
+
+- #### Health Checks
+
+  - Ensure /health.php or / returns HTTP 200
+
+  - Otherwise ALB will mark task unhealthy
+
 ### 4️⃣ GITHUB CI/CD (AUTO DEPLOY)
 
 ### 1️⃣ Add GitHub Secrets
