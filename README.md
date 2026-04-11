@@ -1177,6 +1177,110 @@ http://YOUR-ALB-DNS
 ---
 ## 🚀 Enterprise Zero-Downtime CI/CD Pipeline (ECS + CodeDeploy + Immutable Images)
 
+### ✅ Prerequisites
+
+- Application Load Balancer (ALB) is configured
+
+- Two target groups created:
+
+  - charlie-blue
+
+  - charlie-green
+
+- Health check endpoint configured: /health.php
+
+- ALB Listener (HTTP:80) is set to forward traffic to charlie-blue
+
+> #### 👉 “ALB with blue/green target groups is already configured, with traffic currently routed to charlie-blue and health checks on /health.php.”
+
+### 1️⃣ — ECS SERVICE (CRITICAL)
+
+- Go to ECS → Service
+
+- Click Update
+
+- Change:
+
+  ❌ Rolling update
+
+  ✅ Blue/Green (CodeDeploy)
+
+### 2️⃣ — CREATE CODEDEPLOY APP
+
+- Name: charlie-ecs-app
+
+- Platform: ECS
+
+### 3️⃣ — CREATE DEPLOYMENT GROUP
+
+- Name: charlie-ecs-deployment-group
+
+- Cluster: charlie-cluster
+
+- Service: charlie-service
+
+- Attach:
+
+  - ALB
+
+  - Blue TG
+
+  - Green TG
+
+  - Listener: HTTP:80
+
+### 4️⃣ — IAM ROLE
+
+- Create role:
+
+```
+CodeDeployRoleForECS
+```
+
+- Attach policy:
+
+```
+AWSCodeDeployRoleForECS
+```
+
+### 5️⃣ — ECS TASK EXECUTION ROLE
+
+- Use:
+
+```
+ecsTaskExecutionRole
+```
+
+- Put ARN in:
+
+```
+task-definition.json
+```
+
+### 6️⃣ — GITHUB SECRETS
+
+- Add:
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+AWS_ACCOUNT_ID
+ECR_REPO
+ECS_CLUSTER
+ECS_SERVICE
+```
+
+### 7️⃣ — PUSH CODE
+
+```
+git add .
+git commit -m "final pipeline"
+git push origin main
+```
+
+
+---
 
 
 

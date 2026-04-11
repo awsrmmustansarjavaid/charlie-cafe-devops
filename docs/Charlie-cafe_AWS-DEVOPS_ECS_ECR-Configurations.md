@@ -1306,77 +1306,109 @@ jobs:
 
 ### 🧭 STEP-BY-STEP
 
-### 🟢 STEP 1 — ALB Setup
+### ✅ Prerequisites
 
-Create 2 target groups:
-charlie-blue
-charlie-green
-Health check: /health.php
+- Application Load Balancer (ALB) is configured
 
+- Two target groups created:
 
-### 🟢 STEP 2 — ALB Listener
+  - charlie-blue
 
-Go to ALB → Listener → HTTP:80
-Set:Forward → charlie-blue
+  - charlie-green
 
-### 🟢 STEP 3 — ECS SERVICE (CRITICAL)
+- Health check endpoint configured: /health.php
 
-Go to ECS → Service
-Click Update
-Change:
+- ALB Listener (HTTP:80) is set to forward traffic to charlie-blue
 
-❌ Rolling update
-✅ Blue/Green (CodeDeploy)
+> #### 👉 “ALB with blue/green target groups is already configured, with traffic currently routed to charlie-blue and health checks on /health.php.”
 
-### 🟢 STEP 4 — CREATE CODEDEPLOY APP
+ 👉 If not; 
 
-Name: charlie-ecs-app
-Platform: ECS
+#### 1️⃣ — ALB Setup
 
-### 🟢 STEP 5 — CREATE DEPLOYMENT GROUP
+- Create 2 target groups:
 
-Name: charlie-ecs-deployment-group
-Cluster: charlie-cluster
-Service: charlie-service
+- charlie-blue
 
-Attach:
+- charlie-green
 
-ALB
-Blue TG
-Green TG
-Listener: HTTP:80
-🟢 STEP 6 — IAM ROLE
+- Health check: /health.php
 
-Create role:
+#### 2️⃣ — ALB Listener
+
+- Go to ALB → Listener → HTTP:80
+
+- Set:Forward → charlie-blue
+
+### 1️⃣ — ECS SERVICE (CRITICAL)
+
+- Go to ECS → Service
+
+- Click Update
+
+- Change:
+
+  ❌ Rolling update
+
+  ✅ Blue/Green (CodeDeploy)
+
+### 2️⃣ — CREATE CODEDEPLOY APP
+
+- Name: charlie-ecs-app
+
+- Platform: ECS
+
+### 3️⃣ — CREATE DEPLOYMENT GROUP
+
+- Name: charlie-ecs-deployment-group
+
+- Cluster: charlie-cluster
+
+- Service: charlie-service
+
+- Attach:
+
+  - ALB
+
+  - Blue TG
+
+  - Green TG
+
+  - Listener: HTTP:80
+
+### 4️⃣ — IAM ROLE
+
+- Create role:
 
 ```
 CodeDeployRoleForECS
 ```
 
-Attach policy:
+- Attach policy:
 
 ```
 AWSCodeDeployRoleForECS
 ```
 
-🟢 STEP 7 — ECS TASK EXECUTION ROLE
+### 5️⃣ — ECS TASK EXECUTION ROLE
 
-Use:
+- Use:
 
 ```
 ecsTaskExecutionRole
 ```
 
-Put ARN in:
+- Put ARN in:
 
 ```
 task-definition.json
 ```
 
-🟢 STEP 8 — GITHUB SECRETS
+### 6️⃣ — GITHUB SECRETS
 
-Add:
+- Add:
 
+```
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
@@ -1384,8 +1416,9 @@ AWS_ACCOUNT_ID
 ECR_REPO
 ECS_CLUSTER
 ECS_SERVICE
+```
 
-🟢 STEP 9 — PUSH CODE
+### 7️⃣ — PUSH CODE
 
 ```
 git add .
@@ -1395,17 +1428,24 @@ git push origin main
 
 ### 🔥 WHAT HAPPENS AFTER PUSH
 
-Docker image built → a84d92f
-Image pushed to ECR
-New task definition created
-CodeDeploy starts deployment
-ECS launches GREEN version
-Health checks run
-Traffic shifts: BLUE → GREEN
- 
+- Docker image built → a84d92f
 
-Old version kept
-🚨 CRITICAL RULES (DON’T BREAK THESE)
+- Image pushed to ECR
+
+- New task definition created
+
+- CodeDeploy starts deployment
+
+- ECS launches GREEN version
+
+- Health checks run
+
+- Traffic shifts: BLUE → GREEN
+ 
+### Old version kept
+
+### 🚨 CRITICAL RULES (DON’T BREAK THESE)
+
 ❌ NEVER use: aws ecs update-service
 
 ✅ ALWAYS use: CodeDeploy
