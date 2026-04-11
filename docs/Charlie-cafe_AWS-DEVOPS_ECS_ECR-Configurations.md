@@ -245,14 +245,12 @@ docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfi
 
 This avoids having to cd into the folder.
 
+#### 10- Clean up old images locally
 
-
-
-
-
-
-
-
+```
+docker images
+docker rmi charlie-cafe:latest
+```
 
 ### 2️⃣ ECS SETUP
 
