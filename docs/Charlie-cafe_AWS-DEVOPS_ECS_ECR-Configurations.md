@@ -1304,49 +1304,123 @@ jobs:
       run: echo "Deployment successful 🚀"
 ```
 
-👉 No full pipeline replacement is required. The existing deploy.yml is already an advanced setup (CI + EC2 via SSM + direct ECS updates).
+A full pipeline replacement is not required. The existing deploy.yml already implements an advanced CI workflow including EC2 deployment via SSM and direct ECS service updates.
 
-👉 The second YAML represents a simplified approach focused on ECR + ECS Blue/Green deployment via CodeDeploy.
+The second YAML represents a simplified deployment model using ECR + ECS Blue/Green deployment via AWS CodeDeploy.
 
-So the goal is:
+The required changes should be treated as additive or optional architectural modifications to the current pipeline.
 
-👉 NOT replace your pipeline
+### ✅ 1. Architectural Decision Point
 
-👉 ONLY ADD missing Blue/Green + AppSpec + CodeDeploy flow (if you want that new task)
+#### Current implementation includes:
 
-The following steps will clearly define what needs to be added or modified in the current pipeline configuration.
+- EC2 deployment via SSM (Steps 9–13)
 
-### ⚠️ First Important Understanding
+- ECS deployment via direct update-service (Steps 15–22)
 
-Your current pipeline uses:
+#### The proposed approach introduces:
 
-#### ✅ EC2 Deployment
+- AWS CodeDeploy Blue/Green deployment for ECS
 
-- SSM deploy script
+- Replacement of direct ECS service updates
 
-- manual EC2 health check
+### ⚠️ 2. Components That Should NOT Be Duplicated
 
-#### ✅ ECS Deployment
+The following steps already exist and must not be reintroduced:
 
-- aws ecs update-service
+- ECR authentication (docker login)
 
-- Rolling deployment (NOT Blue/Green)
+- Docker image build, tag, and push
 
-### 🆕 New YAML adds this feature:
+- ECS task definition registration
 
-#### 🚀 ECS Blue/Green Deployment (CodeDeploy)
+### 🚀 3. New Components That Can Be Added
 
-Instead of:
+### ✅ A. AppSpec Update Step (Required for CodeDeploy)
 
-```
-ecs update-service (rolling)
-```
-
-It uses:
+This step is added after ECS task definition registration:
 
 ```
-aws deploy create-deployment (CodeDeploy Blue/Green)
+# 🔄 Update AppSpec for CodeDeploy
+- name: 🔄 Update AppSpec
+  run: |
+    sed -i "s|TASK_DEFINITION|$TASK_DEF_ARN|g" appspec.yaml
 ```
+
+### ✅ B. CodeDeploy Deployment Step (Core Addition)
+
+This step should be added after AppSpec update:
+
+```
+# 🚀 Blue/Green Deployment (CodeDeploy)
+- name: 🚀 Deploy via CodeDeploy
+  run: |
+    aws deploy create-deployment \
+      --application-name charlie-ecs-app \
+      --deployment-group-name charlie-ecs-deployment-group \
+      --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+      --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+```
+
+### 🔁 4. Optional Replacement (Architecture Switch)
+
+If migration to CodeDeploy-based ECS deployment is intended:
+
+Replace existing ECS deployment step:
+
+#### Remove:
+
+```
+aws ecs update-service ...
+```
+
+#### Replace with:
+
+- CodeDeploy deployment step (above)
+
+### 🧹 5. Optional Cleanup
+
+When fully adopting CodeDeploy:
+
+The following steps may be removed:
+
+- ECS update-service deployment step
+
+- ECS service stability check (describe-services) step (optional)
+
+#### Reason:
+
+- CodeDeploy handles deployment orchestration and traffic shifting.
+
+### ⚡ 6. Deployment Architecture Options
+
+### Option A — Hybrid Model (Recommended for learning/transition)
+
+- EC2 deployment via SSM retained
+
+- ECS direct deployment retained
+
+- CodeDeploy Blue/Green added
+
+### Option B — Fully Managed Blue/Green Model
+
+- EC2 SSM deployment removed
+
+- ECS direct deployment removed
+
+- CodeDeploy becomes the single deployment mechanism
+
+### 🧠 Summary
+
+#### Additions:
+
+- AppSpec update step
+
+- CodeDeploy deployment step
+
+#### Optional Removal (if migrating fully):
+
+- ECS update-service deployment step
 
 
 
