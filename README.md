@@ -1297,9 +1297,75 @@ git push origin main
 ```
 
 ---
-## 🚀 CANARY + AUTO ROLLBACK + MONITORING
+## ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
 
+### 1️⃣ — Enable Canary Deployment
 
+In deployment group:
 
+#### Deployment config:
 
+```
+CodeDeployDefault.ECSCanary10Percent5Minutes
+```
+
+#### 👉 Meaning:
+
+- 10% traffic first
+
+- Wait 5 minutes
+
+- Then full rollout
+
+### 2️⃣ — Enable Auto Rollback
+
+#### Enable:
+
+✔ Rollback on:
+
+- Deployment failure
+
+- Alarm trigger
+
+### 3️⃣ — Create CloudWatch Alarm
+
+#### Create alarm:
+
+- Name: charlie-health-alarm
+
+- Metric: UnHealthyHostCount
+
+- Target Group: charlie-green
+
+- Condition: >= 1
+
+### 4️⃣ — Attach Alarm to CodeDeploy
+
+In deployment group:
+
+- Attach: charlie-health-alarm
+
+### 5️⃣ Charlie Cafe cleanup
+
+[ec2-cleanup.sh](./infrastructure/scripts/ec2-cleanup.sh)
+
+#### How to use:
+
+- Save this as ec2-cleanup.sh on your EC2.
+
+```
+nano ec2-cleanup.sh
+```
+
+- Make it executable:
+
+```
+chmod +x ec2-cleanup.sh
+```
+
+- Run it:
+
+```
+./ec2-cleanup.sh
+```
 

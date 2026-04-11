@@ -1704,82 +1704,347 @@ Now:
 👉 Don’t use latest anymore
 
 ---
-## 🌐 TASK 2 — CANARY + AUTO ROLLBACK + MONITORING
+## 🌐 TASK 2 — ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
 
----
-## 🌐 TASK 3 — CANARY + AUTO ROLLBACK + MONITORING
+### 🧠 1. WHAT YOU ARE TRYING TO BUILD
 
-### ✅ Enable Canary Deployment
+You are combining:
 
-#### Use:
+#### 🔹 CI/CD pipeline (you already have)
+
+- GitHub Actions
+
+- Docker build
+
+- ECR push
+
+- ECS deploy
+
+#### 🔹 Advanced Production features:
+
+- Canary deployment
+
+- Auto rollback
+
+- CloudWatch monitoring
+
+- Health checks
+
+- Blue/Green deployment logic
+
+### 🏗️ 5. COMPLETE STEP-BY-STEP
+
+### ✅ Prerequisites
+
+> #### ☁️ CHARLIE CAFE — PREREQUISITES CHECKLIST (ALREADY COMPLETED)
+
+You already have a working foundation. Before implementing Canary + Auto Rollback + Monitoring, ensure these are already in place:
+
+#### 🔹 1. NETWORKING (ALREADY DONE)
+
+✔ VPC configured (default or custom)
+
+✔ Public subnets available for ECS tasks
+
+✔ Internet Gateway attached
+
+✔ Security groups allow HTTP (80) access
+
+#### 🔹 2. LOAD BALANCER (ALREADY DONE)
+
+✔ Application Load Balancer (ALB) created
+
+✔ Listener: HTTP : 80
+
+✔ ALB accessible via DNS
+
+✔ Routing configured to ECS service
+
+#### 🔹 3. TARGET GROUPS (ALREADY DONE)
+
+✔ charlie-blue (Target type: IP)
+
+✔ charlie-green (Target type: IP)
+
+✔ Health check path: /health.php
+
+✔ Both attached to same VPC as ECS
+
+#### 🔹 4. ECS CLUSTER (ALREADY DONE)
+
+✔ Cluster: charlie-ecs-cluster
+
+✔ Launch type: FARGATE
+
+✔ Running successfully
+
+#### 🔹 5. ECS SERVICE (ALREADY DONE)
+
+✔ Service: charlie-service
+
+✔ Load balancer attached
+
+✔ Using ALB target group (blue initially)
+
+✔ Tasks running healthy
+
+#### 🔹 6. TASK DEFINITION (ALREADY DONE)
+
+✔ Family: charlie-task
+
+✔ Fargate mode
+
+✔ Container port: 80
+
+✔ CloudWatch logs enabled (recommended)
+
+✔ Image replaced via CI/CD pipeline
+
+#### 🔹 7. ECR (ALREADY DONE)
+
+✔ Repository: charlie-cafe
+
+✔ Docker image builds working
+
+✔ Image pushed from GitHub Actions or CLI
+
+#### 🔹 8. CODEDEPLOY FOUNDATION (ALREADY DONE)
+
+✔ CodeDeploy application: charlie-ecs-app
+
+✔ Deployment group: charlie-ecs-deployment-group
+
+✔ ECS Blue/Green enabled
+
+✔ ALB listener configured
+
+✔ Blue/Green target groups attached
+
+### 🚀 FINAL STATUS
+
+✔ YOU ARE READY FOR:
+
+### 🎯 NEXT UPGRADE LAYER
+
+Now you can safely implement:
+
+- Canary deployment (10% traffic)
+
+- Auto rollback
+
+- CloudWatch alarms
+
+- Production monitoring
+
+- Zero-downtime release system
+
+#### 🧠 SIMPLE UNDERSTANDING
+
+Think of your system like this:
+
+```
+ECR → stores image
+ECS → runs container
+ALB → sends traffic
+CodeDeploy → controls deployment strategy
+CloudWatch → monitors health
+```
+
+👉 All 5 layers are already working in your project.
+
+### 1️⃣ — Enable Canary Deployment
+
+In deployment group:
+
+#### Deployment config:
 
 ```
 CodeDeployDefault.ECSCanary10Percent5Minutes
 ```
 
-### ✅ Enable Auto Rollback
+#### 👉 Meaning:
+
+- 10% traffic first
+
+- Wait 5 minutes
+
+- Then full rollout
+
+### 2️⃣ — Enable Auto Rollback
 
 #### Enable:
 
-Deployment failure
+✔ Rollback on:
 
-Alarm triggered
+- Deployment failure
 
-### ✅ Create CloudWatch Alarm
+- Alarm trigger
 
-Metric: UnHealthyHostCount
+### 3️⃣ — Create CloudWatch Alarm
 
-Target group: charlie-green
+#### Create alarm:
 
-Threshold: >= 1
+- Name: charlie-health-alarm
 
-### ✅ Attach Alarm to CodeDeploy
+- Metric: UnHealthyHostCount
 
-Add alarm: charlie-health-alarm
+- Target Group: charlie-green
 
-### 🧪 FINAL FLOW
+- Condition: >= 1
+
+### 4️⃣ — Attach Alarm to CodeDeploy
+
+In deployment group:
+
+- Attach: charlie-health-alarm
+
+### 5️⃣ — Update appspec.yaml
 
 ```
-Push Code →
-Build →
-Push ECR →
-Deploy →
-10% Traffic →
-Health Check →
-✅ Success → 100%
-❌ Failure → Auto Rollback
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "charlie-task"
+        LoadBalancerInfo:
+          ContainerName: "charlie-cafe"
+          ContainerPort: 80
 ```
 
-### 🧠 FINAL UNDERSTANDING
+### 🧠 appspec.yaml (AWS ECS CodeDeploy)
 
-#### You now built a real production-grade DevOps system:
+#### 📄 What is appspec.yaml?
 
-✅ CI/CD automation
+appspec.yaml is a deployment instruction file used by AWS CodeDeploy.
 
-✅ Containerized deployment
+It tells AWS:
 
-✅ Load balancing
+- Which ECS service to deploy to
 
-✅ Zero downtime deployment
+- Which container to update
 
-✅ Canary releases
+- Which port to route traffic to
 
-✅ Auto rollback
+#### 👉 Think of it like:
 
-✅ Monitoring
+🧾 “Deployment map for AWS to know where to send the new version”
 
-### 🚨 COMMON MISTAKES (FIXED)
+### 🚀 Why do we need it?
 
-❌ Using Instance target type → Use IP
+Because AWS CodeDeploy needs clear instructions to:
 
-❌ Using old EC2 target group → Ignore it
+- Deploy new application version
 
-❌ Missing /health.php → Required
+- Shift traffic (Blue/Green deployment)
 
-❌ Duplicate ALB configs → Now removed
+- Connect load balancer to correct container
 
+Without it → AWS doesn’t know where your app should go.
 
-## ✅ Charlie Cafe cleanup
+### 🧱 Your Current Setup (Charlie Cafe)
+
+You have:
+
+- Fixed ECS Task Definition: charlie-task
+
+- Fixed Container Name: charlie-container
+
+- Port: 80
+
+👉 This means your setup is STATIC
+
+### ❓ Do you need to update appspec.yaml?
+
+❌ SHORT ANSWER:
+
+👉 NO — you do NOT need to update it
+
+### 💡 Why NOT needed?
+
+Because your file already has:
+
+- Stable task definition name
+
+- Fixed container name
+
+- No dynamic values
+
+👉 So AWS can always reuse it as-is
+
+### ⚠️ When DO people update it?
+
+Only in advanced CI/CD setups:
+
+### 🔁 Case 1: Dynamic Task Definitions
+
+Example:
+
+- charlie-task:12
+
+- charlie-task:13
+
+👉 Then pipeline replaces values automatically
+
+### ⚙️ Case 2: Multi-environment setups
+
+- dev
+
+- staging
+
+- production
+
+#### 👉 Different configs per environment
+
+### 🧠 Important Concept (PRO LEVEL)
+
+👉 CodeDeploy does NOT auto-update appspec.yaml
+
+#### Instead:
+
+```
+GitHub Actions / CI-CD Pipeline
+        ↓
+Creates new task definition
+        ↓
+Deploys via CodeDeploy
+        ↓
+CodeDeploy reads appspec.yaml (as-is)
+```
+
+### 🔥 Key Truth
+
+👉 Only Task Definition changes automatically
+
+❌ appspec.yaml does NOT change automatically
+
+### 🧱 Best Practice (Industry Standard)
+
+#### ✔ Keep appspec.yaml STATIC when:
+
+- ECS service is fixed
+
+- Container name is fixed
+
+- Blue/Green deployment is used
+
+#### ✔ Update only when:
+
+- Multiple environments exist
+
+- Dynamic task injection is required
+
+- Complex microservice pipelines exist
+
+### 🎯 FINAL CONCLUSION
+
+👉 Your current appspec.yaml is PERFECT
+
+👉 You do NOT need to change it
+
+👉 It will work correctly with your pipeline as-is
+
+### 6️⃣ Charlie Cafe cleanup
 
 [ec2-cleanup.sh](../infrastructure/scripts/ec2-cleanup.sh)
 
@@ -1802,6 +2067,109 @@ chmod +x ec2-cleanup.sh
 ```
 ./ec2-cleanup.sh
 ```
+
+### 🚀 — GitHub Actions Flow (FINAL LOGIC)
+
+Your pipeline becomes:
+
+#### ✅ CI/CD FLOW
+
+```
+Push Code →
+Build Docker Image →
+Push to ECR →
+Register Task Definition →
+Deploy via CodeDeploy →
+10% Traffic (Canary) →
+CloudWatch Health Check →
+✔ Success → 100% traffic shift
+❌ Failure → Auto rollback
+```
+
+### 🧠 WHAT YOU LEARN FROM THIS SYSTEM
+
+This is REAL industry DevOps:
+
+#### ✅ You will learn:
+
+- #### 🔥 CI/CD
+
+  - GitHub Actions automation
+
+- #### 🔥 Containers
+
+  - Docker + ECR
+
+- #### 🔥 Kubernetes alternative (ECS)
+
+  - Fargate deployment
+
+- #### 🔥 Production deployment strategies
+
+  - Blue/Green
+
+  - Canary deployment
+
+- #### 🔥 Observability
+
+  - CloudWatch alarms
+
+  - Health monitoring
+
+- #### 🔥 Reliability engineering
+
+  - Auto rollback system
+
+### 🚨 COMMON MISTAKES (YOU WILL AVOID NOW)
+
+❌ EC2-based deployment for production traffic
+
+❌ Missing health endpoint /health.php
+
+❌ No rollback strategy
+
+❌ No monitoring alarms
+
+❌ Mixing EC2 + ECS deployment models
+
+### 🧹 ABOUT YOUR EC2 CLEANUP SCRIPT
+
+#### Your cleanup script is:
+
+✔ Good for learning
+
+❌ NOT part of production pipeline
+
+#### 👉 Keep it ONLY for:
+
+- resetting EC2 lab
+
+- testing fresh environments
+
+
+### 🏁 FINAL SUMMARY
+
+#### 🎯 You are now building:
+
+- #### ☁️ REAL AWS PRODUCTION SYSTEM:
+
+  - ECS Fargate
+
+  - ALB
+
+  - CodeDeploy Blue/Green
+
+  - Canary deployment (10%)
+
+  - Auto rollback
+
+  - CloudWatch monitoring
+
+---
+
+
+
+
 
 ---
 ## 🌐 TASK 4 — CANARY + AUTO ROLLBACK + MONITORING
