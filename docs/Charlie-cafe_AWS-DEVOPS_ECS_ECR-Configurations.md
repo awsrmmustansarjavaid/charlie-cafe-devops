@@ -153,6 +153,47 @@ aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
 
 > Note: This requires your IAM user/role to have iam:CreateServiceLinkedRole permission.
 
+### ✅ Option C: Manual via IAM Console
+
+- Go to IAM → Roles → Create Role.
+
+- Choose AWS Service → Elastic Container Service.
+
+- Under Use Case, select Elastic Container Service (this is for ECS itself, not tasks or EC2).
+
+- Click Next: Permissions → You do not need to attach any extra policy (AWS adds AmazonECSServiceRolePolicy automatically).
+
+- Name the role: AWSServiceRoleForECS.
+
+- Click Create Role.
+
+This is the official Service-Linked Role required by ECS.
+
+#### Step 1 — Ensure your user/role can use ECS
+
+Even with the service-linked role, your IAM user must be able to create ECS clusters:
+
+- In IAM → Policies, make sure you have the following attached to your user or role:
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecs:*",
+                "iam:PassRole"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+> Your Lambda/GitHub Action IAM policies already have some ecs permissions, but ensure ecs:CreateCluster is allowed.
+
+
 - ### 2️⃣ Create ECS Cluster
 
 - Go to ECS → Clusters → Create Cluster.
