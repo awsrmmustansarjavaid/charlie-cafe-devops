@@ -464,7 +464,7 @@ After your tasks can access ECR:
 
 #### 1️⃣ Create NEW Target Groups (for ECS)
 
-- 👉 Go to: EC2 → Target Groups
+- 👉 Go to EC2 → Target Groups → Create Target Group.
 
 #### 🔵 Blue Target Group
 
@@ -472,15 +472,38 @@ After your tasks can access ECR:
 
 - Target type: IP (IMPORTANT)
 
-- Port: 80
+> ✅ (because Fargate tasks get their own ENI and private IP in the VPC, not EC2 instances).
+
+- Protocol / Port: HTTP / 80.
 
 - Health check: /health.php
 
+> ✅ (or / if your container does not have a health endpoint yet).
+
+- VPC: Select the VPC where your ECS cluster / tasks run.
+
+- Leave other settings default → Create.
+
+> ✅ Important: Do NOT select EC2 instances. For Fargate, the targets are IP addresses of tasks, not EC2 machines.
+
 #### 🟢 Green Target Group
+
+> ✅ Repeat the same steps for the green deployment:
 
 - Name: charlie-green
 
-- Same config as above
+- Target Type: IP
+
+- Protocol: HTTP / 80
+
+- Health check: /health.php
+
+- VPC: same as ECS tasks
+
+- Click Create.
+
+> ✅ This is usually used for blue/green deployments, but even if you are just testing, it’s good practice to have separate TGs.
+
 
 #### 2️⃣ Update ALB Listener
 
