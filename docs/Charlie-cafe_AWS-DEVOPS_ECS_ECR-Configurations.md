@@ -1390,6 +1390,92 @@ CodeDeployRoleForECS
 AWSCodeDeployRoleForECS
 ```
 
+#### ✅ Required IAM Policy (Add This to Your Existing Role)
+
+Add this JSON block into your merged policy:
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "codedeploy:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:*",
+        "logs:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+### ⚠️ Important Notes (Don’t Skip)
+
+#### 1. iam:PassRole is CRITICAL
+
+- Without this:
+
+  ❌ CodeDeploy cannot switch traffic between blue/green
+
+#### 2. Principle of Least Privilege (Advanced)
+
+Later (production), you should restrict:
+
+- ECS resources
+
+- Target groups
+
+- Specific roles
+
+But for your lab / DevOps project, * is fine ✅
+
+#### 3. Trust Relationship (VERY IMPORTANT)
+
+Make sure your IAM role trust policy allows:
+
+```
+{
+  "Effect": "Allow",
+  "Principal": {
+    "Service": "codedeploy.amazonaws.com"
+  },
+  "Action": "sts:AssumeRole"
+}
+```
+
+👉 Without this:
+
+❌ CodeDeploy cannot assume your role
+
 ### 5️⃣ — ECS TASK EXECUTION ROLE
 
 - Use:
