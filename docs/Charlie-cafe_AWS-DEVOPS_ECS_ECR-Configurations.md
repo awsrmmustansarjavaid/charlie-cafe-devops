@@ -2166,10 +2166,4 @@ This is REAL industry DevOps:
   - CloudWatch monitoring
 
 ---
-
-
-
-
-
----
 ## 🌐 TASK 4 — CANARY + AUTO ROLLBACK + MONITORING
