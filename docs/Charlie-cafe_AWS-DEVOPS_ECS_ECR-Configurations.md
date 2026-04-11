@@ -49,15 +49,13 @@ AWS_SECRET_ACCESS_KEY
 
 #### ✅ add ECR permissions to your IAM role policy
 
-> To fix this, you need to add ECR permissions to your IAM role policy. Here’s a minimal example you can add to your existing role JSON:
+> you need to add ECR permissions to your IAM role policy. Here’s a minimal example you can add to your existing role JSON:
 
 ```
 {
-    "Sid": "ECRFullAccess",
+    "Sid": "ECRAuthorizationToken",
     "Effect": "Allow",
-    "Action": [
-        "ecr:GetAuthorizationToken"
-    ],
+    "Action": "ecr:GetAuthorizationToken",
     "Resource": "*"
 },
 {
@@ -74,38 +72,9 @@ AWS_SECRET_ACCESS_KEY
         "ecr:DescribeRepositories",
         "ecr:CreateRepository"
     ],
-    "Resource": "arn:aws:ecr:us-east-1:537236558357:repository/charlie-cafe"
+    "Resource": "arn:aws:ecr:us-east-1:your aws account:repository/charlie-cafe"
 }
 ```
-
-#### 💡 Key points:
-
-- ecr:GetAuthorizationToken must always be "Resource": "*".
-
-- Other ECR actions (pull/push layers) can be scoped to your specific repository ARN.
-
-- ecr:GetAuthorizationToken is the one that allows aws ecr get-login-password to work.
-You can scope "Resource" to a specific repository ARN if you want tighter security.
-
-- After updating your IAM role:
-
-  - Detach and re-attach the policy, or just update inline policy on the role.
-
-  - On your EC2, refresh credentials (either wait a few minutes or run):
-
-```
-aws sts get-caller-identity
-```
-
-- Try login again:
-
-```
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 12365789.dkr.ecr.us-east-1.amazonaws.com
-```
-
-Once this works, you’ll be able to push/pull images from your ECR repository.
-
-
 
 #### 1️⃣ Create Repository
 
@@ -182,6 +151,74 @@ docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfi
 ```
 
 ✅ This avoids having to cd into the folder.
+
+### ThroubleShooting 
+
+#### 1- Refresh IAM credentials on the EC2 instance:
+
+```
+aws sts get-caller-identity
+```
+
+#### 2- Retry the login on EC2 instance:
+
+```
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin your aws account id.dkr.ecr.us-east-1.amazonaws.com
+```
+
+> #### Replace your aws account id with your
+
+#### 3- Check your current directory:
+
+```
+pwd
+ls -l
+```
+
+- Make sure you are in the folder where your Dockerfile is located.
+
+- If your Dockerfile is in, for example, ~/charlie-cafe-devops/app/frontend/, navigate there:
+
+```
+cd ~/charlie-cafe-devops/app/frontend/
+ls -l
+```
+
+You should see:
+
+```
+Dockerfile
+login.html
+charlie-cafe-link-generator.html
+...
+```
+
+#### 4- Build the Docker image from that folder:
+
+```
+docker build -t charlie-cafe .
+```
+
+#### 5- Tag and push (from the same directory):
+
+```
+docker tag charlie-cafe:latest 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+#### 6- If your Dockerfile has a different name or location:
+
+```
+docker build -t charlie-cafe -f /path/to/Dockerfile .
+```
+
+
+
+
+
+
+
+
 
 ### 2️⃣ ECS SETUP
 
