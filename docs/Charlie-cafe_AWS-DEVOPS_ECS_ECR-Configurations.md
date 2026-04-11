@@ -152,7 +152,7 @@ docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfi
 
 ✅ This avoids having to cd into the folder.
 
-### ThroubleShooting 
+### 💡 ThroubleShooting 
 
 #### 1- Refresh IAM credentials on the EC2 instance:
 
