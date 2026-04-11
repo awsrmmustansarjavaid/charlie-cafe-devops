@@ -1309,14 +1309,6 @@ In deployment group:
 CodeDeployDefault.ECSCanary10Percent5Minutes
 ```
 
-#### 👉 Meaning:
-
-- 10% traffic first
-
-- Wait 5 minutes
-
-- Then full rollout
-
 ### 2️⃣ — Enable Auto Rollback
 
 #### Enable:
