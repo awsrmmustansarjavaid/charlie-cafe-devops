@@ -1579,7 +1579,6 @@ Add this JSON block into your merged policy:
 }
 ```
 
-
 ### ⚠️ Important Notes (Don’t Skip)
 
 #### 1. iam:PassRole is CRITICAL
@@ -1708,7 +1707,7 @@ Now:
 
 This merged task consolidates three separate implementations—Blue/Green deployment, Git SHA–based immutable Docker image versioning, and ECS deployment via CodeDeploy—into a single streamlined workflow. Instead of configuring and managing these components independently (which often leads to duplication, confusion, and inconsistent deployments), this unified approach ensures a clean, production-grade pipeline where every deployment is versioned, traceable, and zero-downtime by design. By integrating all three practices into one cohesive system, it prevents repeating already completed setups and establishes a standard, reusable DevOps pattern that is easier to maintain, scale, and explain in real-world scenarios.
 
-## 🌐 TASK 1 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
+### 🌐 TASK 1 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
 
 ### 🎯 Flow
 
@@ -1867,7 +1866,7 @@ jobs:
 ```
 
 ---
-## 🌐 TASK 2 — Implement Immutable Docker Image Versioning Using Git Commit SHA in GitHub CI/CD Pipeline
+### 🌐 TASK 2 — Implement Immutable Docker Image Versioning Using Git Commit SHA in GitHub CI/CD Pipeline
 
 > Configure Unique Docker Image Tags with Git Commit SHA for Safe ECS Deployments
 
@@ -2941,7 +2940,7 @@ Deploy ECS New Version
 ```
 
 ---
-## 🌐 TASK 3 — Implement Blue/Green Deployment in Amazon ECS Using Application Load Balancer (Zero Downtime Deployment Strategy)
+### 🌐 TASK 3 — Implement Blue/Green Deployment in Amazon ECS Using Application Load Balancer (Zero Downtime Deployment Strategy)
 
 ### 🧠 FIRST — YOUR CONFUSION (CLEAR EXPLANATION)
 
@@ -3252,6 +3251,7 @@ Since you're practicing:
 #### Phase 3 (ADVANCED)
 
 ✔ Add CodeDeploy Blue/Green (this guide)
+
 ---
 ## 🌐 TASK 4 — CANARY + AUTO ROLLBACK + MONITORING
 
