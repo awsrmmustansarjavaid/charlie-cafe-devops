@@ -1170,7 +1170,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "TASK_DEFINITION"
+        TaskDefinition: "charlie-task"
         LoadBalancerInfo:
           ContainerName: "charlie-container"
           ContainerPort: 80
@@ -2900,7 +2900,7 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "TASK_DEFINITION"
+        TaskDefinition: "charlie-task"
         LoadBalancerInfo:
           ContainerName: "charlie-container"
           ContainerPort: 80
