@@ -520,9 +520,7 @@ After your tasks can access ECR:
 | Protocol / Port | HTTP / 80             |
 | Health Check    | /health.php           |
 | VPC             | Same as ECS tasks     |
-| Register EC2    | ❌ Do not select       |
-
-
+| Register EC2    | ❌ Do not select     |
 
 #### 2️⃣ Update ALB Listener
 
