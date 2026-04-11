@@ -1376,12 +1376,12 @@ jobs:
 
   - Listener: HTTP:80
 
-### 4️⃣ — IAM ROLE
+### 4️⃣ — IAM ROLE (ALready Done)
 
-- Create role:
+- Existing role:
 
 ```
-CodeDeployRoleForECS
+charlie-cafe-iam-Role
 ```
 
 - Attach policy:
@@ -1389,6 +1389,7 @@ CodeDeployRoleForECS
 ```
 AWSCodeDeployRoleForECS
 ```
+> #### ### ⚠️ The required IAM policy has already been added to the existing custom IAM policy
 
 #### ✅ Required IAM Policy (Add This to Your Existing Role)
 
@@ -1437,6 +1438,7 @@ Add this JSON block into your merged policy:
   ]
 }
 ```
+
 
 ### ⚠️ Important Notes (Don’t Skip)
 
