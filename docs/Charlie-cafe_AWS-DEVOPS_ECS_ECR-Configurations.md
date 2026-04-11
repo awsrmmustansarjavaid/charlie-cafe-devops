@@ -1304,6 +1304,52 @@ jobs:
       run: echo "Deployment successful 🚀"
 ```
 
+👉 No full pipeline replacement is required. The existing deploy.yml is already an advanced setup (CI + EC2 via SSM + direct ECS updates).
+
+👉 The second YAML represents a simplified approach focused on ECR + ECS Blue/Green deployment via CodeDeploy.
+
+So the goal is:
+
+👉 NOT replace your pipeline
+
+👉 ONLY ADD missing Blue/Green + AppSpec + CodeDeploy flow (if you want that new task)
+
+The following steps will clearly define what needs to be added or modified in the current pipeline configuration.
+
+### ⚠️ First Important Understanding
+
+Your current pipeline uses:
+
+#### ✅ EC2 Deployment
+
+- SSM deploy script
+
+- manual EC2 health check
+
+#### ✅ ECS Deployment
+
+- aws ecs update-service
+
+- Rolling deployment (NOT Blue/Green)
+
+### 🆕 New YAML adds this feature:
+
+#### 🚀 ECS Blue/Green Deployment (CodeDeploy)
+
+Instead of:
+
+```
+ecs update-service (rolling)
+```
+
+It uses:
+
+```
+aws deploy create-deployment (CodeDeploy Blue/Green)
+```
+
+
+
 ### 🧭 STEP-BY-STEP
 
 ### ✅ Prerequisites
