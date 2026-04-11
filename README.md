@@ -1288,21 +1288,7 @@ ecsTaskExecutionRole
 task-definition.json
 ```
 
-### 5️⃣ — GITHUB SECRETS
-
-- Add:
-
-```
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_REGION
-AWS_ACCOUNT_ID
-ECR_REPO
-ECS_CLUSTER
-ECS_SERVICE
-```
-
-### 6️⃣ — PUSH CODE
+### 5️⃣ — PUSH CODE
 
 ```
 git add .

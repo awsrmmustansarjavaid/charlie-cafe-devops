@@ -1631,7 +1631,7 @@ ecsTaskExecutionRole
 task-definition.json
 ```
 
-### 6️⃣ — GITHUB SECRETS
+### 6️⃣ — GITHUB SECRETS (Already Done)
 
 - Add:
 
