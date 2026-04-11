@@ -3159,3 +3159,307 @@ jobs:
 
 
 ---
+### Fully final deploy.yml
+
+#### ✅ — UPDATE GITHUB ACTIONS (MINOR CHANGE ONLY)
+
+You ONLY change ONE line:
+
+#### ❌ REMOVE THIS (if present):
+
+```
+CodeDeployDefault.ECSAllAtOnce
+```
+
+#### ✅ REPLACE WITH:
+
+```
+CodeDeployDefault.ECSCanary10Percent5Minutes
+```
+
+or
+
+#### ✅ FULL DEPLOY STEP:
+
+```
+- name: 🚀 Deploy with CodeDeploy (Canary)
+  run: |
+    aws deploy create-deployment \
+      --application-name charlie-ecs-app \
+      --deployment-group-name charlie-ecs-deployment-group \
+      --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
+      --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+```
+
+### Fully Final Deploy.yml
+
+```
+name: ☕ Charlie Cafe — PRODUCTION CI/CD PIPELINE (FINAL)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    # -------------------------------------------------
+    # 🌍 GLOBAL ENV VARIABLES (SAFE)
+    # -------------------------------------------------
+    env:
+      IMAGE_TAG: ${{ github.sha }}   # Will be overridden with short SHA
+
+    steps:
+
+    # =================================================
+    # 1️⃣ SOURCE CODE
+    # =================================================
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 🔤 Convert Git SHA to short version (7 chars)
+    # -------------------------------------------------
+    - name: 🔤 Short SHA
+      run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+    # =================================================
+    # 2️⃣ AWS CONFIGURATION
+    # =================================================
+    - name: 🔐 Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # =================================================
+    # 3️⃣ CI ENV SETUP
+    # =================================================
+    - name: 🧰 Install Required Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq curl zip python3-pip mysql-client
+
+    # =================================================
+    # 4️⃣ CI TEST (LOCAL DOCKER BUILD)
+    # =================================================
+    - name: 🐳 Build Docker Image (CI)
+      run: |
+        docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # Run container locally for testing
+    # -------------------------------------------------
+    - name: 🚀 Run Container (CI Test)
+      run: |
+        docker rm -f test_app || true
+        docker run -d -p 80:80 --name test_app charlie-cafe
+        sleep 10
+
+    # -------------------------------------------------
+    # Health check for CI validation
+    # -------------------------------------------------
+    - name: ❤️ Health Check (CI)
+      run: curl -f http://localhost/health.php || exit 1
+
+    # -------------------------------------------------
+    # Cleanup CI container
+    # -------------------------------------------------
+    - name: 🧹 Cleanup CI Container
+      run: docker rm -f test_app || true
+
+    # =================================================
+    # 🚀 EC2 DEPLOYMENT (SSM - DEV/STAGE)
+    # =================================================
+    - name: 🚀 Deploy to EC2 via SSM
+      run: |
+        COMMAND_ID=$(aws ssm send-command \
+          --targets "Key=InstanceIds,Values=${{ secrets.EC2_INSTANCE_ID }}" \
+          --document-name "AWS-RunShellScript" \
+          --parameters commands=["bash /home/ec2-user/charlie-cafe-devops/deploy_master.sh"] \
+          --query "Command.CommandId" \
+          --output text)
+
+        echo "COMMAND_ID=$COMMAND_ID" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # Wait for EC2 deployment completion
+    # -------------------------------------------------
+    - name: ⏳ Wait for EC2 Deployment
+      run: |
+        aws ssm wait command-executed \
+          --command-id $COMMAND_ID \
+          --instance-id ${{ secrets.EC2_INSTANCE_ID }}
+
+    # -------------------------------------------------
+    # Verify EC2 deployment status
+    # -------------------------------------------------
+    - name: 🔍 Verify EC2 Deployment Status
+      run: |
+        STATUS=$(aws ssm get-command-invocation \
+          --command-id $COMMAND_ID \
+          --instance-id ${{ secrets.EC2_INSTANCE_ID }} \
+          --query "Status" \
+          --output text)
+
+        echo "EC2 STATUS = $STATUS"
+
+        if [ "$STATUS" != "Success" ]; then
+          echo "❌ EC2 deployment failed"
+          exit 1
+        fi
+
+    # -------------------------------------------------
+    # Get EC2 public IP
+    # -------------------------------------------------
+    - name: 🌐 Get EC2 Public IP
+      run: |
+        INSTANCE_IP=$(aws ec2 describe-instances \
+          --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+          --query "Reservations[0].Instances[0].PublicIpAddress" \
+          --output text)
+
+        echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_ENV
+
+    # -------------------------------------------------
+    # EC2 application verification
+    # -------------------------------------------------
+    - name: 🌐 EC2 App Health Check
+      run: curl -f http://$INSTANCE_IP/health.php || exit 1
+
+    # =================================================
+    # 🎉 EC2 SUCCESS
+    # =================================================
+    - name: 🎉 EC2 Deployment Success
+      run: echo "EC2 Deployment Completed Successfully 🚀"
+
+    # =================================================
+    # ⚡ ECS DEPLOYMENT (PRODUCTION)
+    # =================================================
+
+    # -------------------------------------------------
+    # 5️⃣ Login to Amazon ECR
+    # -------------------------------------------------
+    - name: 🐳 Login to Amazon ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        docker login --username AWS --password-stdin \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    # -------------------------------------------------
+    # 6️⃣ Build ECS Image with Git SHA
+    # -------------------------------------------------
+    - name: 🏗️ Build ECS Image
+      run: |
+        docker build \
+          -t ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
+          -f docker/apache-php/Dockerfile .
+
+    # -------------------------------------------------
+    # 7️⃣ Tag ECS Image
+    # -------------------------------------------------
+    - name: 🏷️ Tag ECS Image
+      run: |
+        docker tag \
+          ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
+          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
+
+    # -------------------------------------------------
+    # 8️⃣ Push ECS Image
+    # -------------------------------------------------
+    - name: 📤 Push ECS Image
+      run: |
+        docker push \
+          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
+
+    # =================================================
+    # 📦 TASK DEFINITION (SAFE RENDER)
+    # =================================================
+    - name: 📄 Render Task Definition
+      run: |
+        cp .github/task-definition.json task-def.json
+
+        sed -i "s#IMAGE_PLACEHOLDER#${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG#g" task-def.json
+
+    # -------------------------------------------------
+    # Register ECS Task Definition
+    # -------------------------------------------------
+    - name: 📦 Register ECS Task Definition
+      run: |
+        TASK_DEF_ARN=$(aws ecs register-task-definition \
+          --cli-input-json file://task-def.json \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+
+        echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+
+    # =================================================
+    # 🔄 APPSPEC (SAFE RENDER)
+    # =================================================
+    - name: 📄 Prepare AppSpec
+      run: |
+        cp appspec.yaml appspec-rendered.yaml
+        sed -i "s#TASK_DEFINITION#${TASK_DEF_ARN}#g" appspec-rendered.yaml
+
+    # =================================================
+    # 🚀 CODEDEPLOY (CANARY DEPLOYMENT)
+    # =================================================
+    - name: 🚀 Deploy via AWS CodeDeploy
+      run: |
+        DEPLOYMENT_ID=$(aws deploy create-deployment \
+          --application-name charlie-ecs-app \
+          --deployment-group-name charlie-ecs-deployment-group \
+          --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
+          --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec-rendered.yaml | sed 's/\"/\\\"/g')\"}" \
+          --query "deploymentId" \
+          --output text)
+
+        echo "DEPLOYMENT_ID=$DEPLOYMENT_ID" >> $GITHUB_ENV
+        echo "🚀 Deployment ID: $DEPLOYMENT_ID"
+
+    # -------------------------------------------------
+    # Wait for deployment to complete
+    # -------------------------------------------------
+    - name: ⏳ Wait for CodeDeploy
+      run: |
+        aws deploy wait deployment-successful --deployment-id $DEPLOYMENT_ID
+
+    # =================================================
+    # 🎉 FINAL SUCCESS
+    # =================================================
+    - name: 🎉 Full Pipeline Success
+      run: echo "🎉 Charlie Cafe FULL CI/CD Pipeline Completed Successfully 🚀"
+```
+
+### 🔥 WHAT YOU HAVE NOW (REAL TALK)
+
+This is not a normal pipeline anymore.
+
+You now have:
+
+#### ☁️ PRODUCTION SYSTEM:
+
+✅ CI testing
+
+✅ EC2 staging validation
+
+✅ Immutable Docker images (Git SHA)
+
+✅ ECS Fargate deployment
+
+✅ CodeDeploy Blue/Green
+
+✅ Canary deployment (10%)
+
+✅ Auto rollback ready
+
+✅ CloudWatch compatible
+
+✅ Safe file rendering (no break on re-run)
+
+✅ Deployment wait (no blind success)
+---
+
+
