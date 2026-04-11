@@ -1147,6 +1147,7 @@ OLD version kept for rollback
 ### ⚡ KEY FEATURES (WHAT MAKES THIS ADVANCED)
 
 🔥 Immutable deployments (a84d92f, not latest)
+
 🔥 Zero downtime deployment
 
 🔥 Automatic traffic shifting
@@ -1305,18 +1306,21 @@ jobs:
 
 ### 🧭 STEP-BY-STEP
 
-🟢 STEP 1 — ALB Setup
+### 🟢 STEP 1 — ALB Setup
+
 Create 2 target groups:
 charlie-blue
 charlie-green
 Health check: /health.php
 
 
-🟢 STEP 2 — ALB Listener
+### 🟢 STEP 2 — ALB Listener
+
 Go to ALB → Listener → HTTP:80
 Set:Forward → charlie-blue
 
-🟢 STEP 3 — ECS SERVICE (CRITICAL)
+### 🟢 STEP 3 — ECS SERVICE (CRITICAL)
+
 Go to ECS → Service
 Click Update
 Change:
@@ -1324,10 +1328,13 @@ Change:
 ❌ Rolling update
 ✅ Blue/Green (CodeDeploy)
 
-🟢 STEP 4 — CREATE CODEDEPLOY APP
+### 🟢 STEP 4 — CREATE CODEDEPLOY APP
+
 Name: charlie-ecs-app
 Platform: ECS
-🟢 STEP 5 — CREATE DEPLOYMENT GROUP
+
+### 🟢 STEP 5 — CREATE DEPLOYMENT GROUP
+
 Name: charlie-ecs-deployment-group
 Cluster: charlie-cluster
 Service: charlie-service
