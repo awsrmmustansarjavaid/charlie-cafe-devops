@@ -2910,3 +2910,34 @@ Your pipeline is now:
 
 ✔ Production-ready structure
 ---
+### ✅ deploy.yml
+
+> ##### Latest Update Version after add CodeDeploy
+
+```
+    # -------------------------------------------------
+    # 🔄 Update AppSpec for CodeDeploy
+    # -------------------------------------------------
+    - name: 🔄 Update AppSpec
+      run: |
+        sed -i "s|TASK_DEFINITION|$TASK_DEF_ARN|g" appspec.yaml
+
+    # -------------------------------------------------
+    # 🚀 Blue/Green Deployment (CodeDeploy)
+    # -------------------------------------------------
+    - name: 🚀 Deploy via CodeDeploy
+      run: |
+        aws deploy create-deployment \
+          --application-name charlie-ecs-app \
+          --deployment-group-name charlie-ecs-deployment-group \
+          --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+          --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+```
+
+### ✅ Fully final deploy.yml
+
+```
+
+```
+
+---
