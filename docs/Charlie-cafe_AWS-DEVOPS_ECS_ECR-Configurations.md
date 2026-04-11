@@ -1444,13 +1444,6 @@ The following steps may be removed:
           --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
 ```
 
-### ✅ Fully Final deploy.yml: 
-
-```
-
-```
-
-
 ### 🧭 STEP-BY-STEP
 
 ### ✅ Prerequisites
