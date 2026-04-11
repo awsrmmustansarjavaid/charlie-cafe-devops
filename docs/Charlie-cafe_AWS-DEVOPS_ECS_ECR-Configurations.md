@@ -1801,3 +1801,4 @@ chmod +x ec2-cleanup.sh
 ```
 
 ---
+## 🌐 TASK 3 — CANARY + AUTO ROLLBACK + MONITORING
