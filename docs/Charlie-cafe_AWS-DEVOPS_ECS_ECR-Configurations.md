@@ -1377,6 +1377,7 @@ AWS_ACCOUNT_ID
 ECR_REPO
 ECS_CLUSTER
 ECS_SERVICE
+
 🟢 STEP 9 — PUSH CODE
 
 ```
@@ -1385,7 +1386,8 @@ git commit -m "final pipeline"
 git push origin main
 ```
 
-🔥 WHAT HAPPENS AFTER PUSH
+### 🔥 WHAT HAPPENS AFTER PUSH
+
 Docker image built → a84d92f
 Image pushed to ECR
 New task definition created
@@ -1401,16 +1403,21 @@ Old version kept
 
 ✅ ALWAYS use: CodeDeploy
 
-🎯 FINAL RESULT (YOU REACH THIS LEVEL)
+### 🎯 FINAL RESULT (YOU REACH THIS LEVEL)
 
 You now have:
 
 ✅ Enterprise CI/CD
+
 ✅ Zero downtime deployments
+
 ✅ Immutable versioning
+
 ✅ Safe rollback system
+
 ✅ Real DevOps architecture
-💬 My honest advice (important for YOU)
+
+### 💬 My honest advice (important for YOU)
 
 You tried to combine everything at once — that’s why confusion happened.
 
