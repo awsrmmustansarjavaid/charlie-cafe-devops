@@ -244,28 +244,6 @@ AWS_SECRET_ACCESS_KEY
 
 - Read more here [GitHub Auto-Deploy Config](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/GitHub_Auto-Deploy_Config.md)
 
-### 🧱 Charlie Cafe -- Github Logs
-
-[Charlie Cafe -- Github Logs](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/Charlie-cafe_github-logs.md)
-
-```
-nano ~/github_logs_setup_capture.sh
-```
-
-[github_logs_setup_capture](./infrastructure/scripts/github_logs_setup_capture.sh)
-
-```
-chmod +x ~/github_logs_setup_capture.sh
-~/github_logs_setup_capture.sh
-```
-
-- #### Check logs:
-
-```
-ls -la ~/charlie-cafe-devops/github_logs
-less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
-```
-
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
 ✔ Dockerfile
@@ -317,7 +295,7 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 ### 1️⃣ IAM Policy 
 
-[Charlie Cafe DevOps IAM Policy](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/ee4f9cc434fe3a6d5598db09d452667efb16daa2/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20%28Dev%20%2B%20Prod%29/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project%20DOCs/AWS%20Dynamic%20Cafe%20Website%20Fully%20Project/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20Front%20%26%20Backend%20Code%20Script/%E2%98%95%20AWS%20CAFE%20%E2%80%94%20AWS%20IAM%20Policy%20JSON%20Script/Charlie%20Cafe%20DevOps.json)
+[Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
 
 ### 2️⃣ Configure AWS Secrets in GitHub
 
@@ -1425,4 +1403,25 @@ chmod +x ec2-cleanup.sh
 ./ec2-cleanup.sh
 ```
 
+### 7️⃣ Charlie Cafe -- Github Logs
+
+[Charlie Cafe -- Github Logs](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/Charlie-cafe_github-logs.md)
+
+```
+nano ~/github_logs_setup_capture.sh
+```
+
+[github_logs_setup_capture](./infrastructure/scripts/github_logs_setup_capture.sh)
+
+```
+chmod +x ~/github_logs_setup_capture.sh
+~/github_logs_setup_capture.sh
+```
+
+- #### Check logs:
+
+```
+ls -la ~/charlie-cafe-devops/github_logs
+less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
+```
 ---
