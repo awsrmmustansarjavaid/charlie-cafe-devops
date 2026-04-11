@@ -1084,6 +1084,348 @@ chmod +x ECR_CI-CD_TEST.sh
 
 ✅ Auto deployment
 ---
+## 🚀 MEGA TASK: Enterprise Zero-Downtime CI/CD Pipeline (ECS + CodeDeploy + Immutable Images)
+
+### 🎯 GOAL
+
+Build a production-grade CI/CD pipeline that:
+
+✅ Uses GitHub Actions
+
+✅ Builds & pushes Docker images to ECR
+
+✅ Uses Git SHA (immutable versioning)
+
+✅ Deploys using CodeDeploy Blue/Green
+
+✅ Ensures ZERO downtime
+
+✅ Allows instant rollback
+
+### 🧠 WHAT YOU WILL LEARN
+
+After this, you will understand:
+
+🔹 Difference between Rolling vs Blue/Green
+
+🔹 How CodeDeploy controls ECS
+
+🔹 Why immutable Docker images matter
+
+🔹 How ALB + Target Groups work in real production
+
+🔹 How to build real DevOps pipelines (not tutorial-level)
+
+### 🏗 FINAL ARCHITECTURE
+
+```
+GitHub Push
+   ↓
+GitHub Actions (CI/CD)
+   ↓
+Build Docker Image (Git SHA)
+   ↓
+Push to ECR
+   ↓
+Update Task Definition
+   ↓
+CodeDeploy Trigger
+   ↓
+ECS creates NEW version (Green)
+   ↓
+ALB routes:
+   Blue → Old
+   Green → New
+   ↓
+Health Check
+   ↓
+Traffic Shift (Blue → Green)
+   ↓
+OLD version kept for rollback
+```
+
+### ⚡ KEY FEATURES (WHAT MAKES THIS ADVANCED)
+
+🔥 Immutable deployments (a84d92f, not latest)
+🔥 Zero downtime deployment
+
+🔥 Automatic traffic shifting
+
+🔥 Safe rollback
+
+🔥 No ECS caching issues
+
+🔥 Fully automated pipeline
+
+### 📁 REQUIRED FILES (VERY IMPORTANT)
+
+You need 2 files in repo:
+
+### ✅ 1. appspec.yaml
+
+```
+version: 1
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "TASK_DEFINITION"
+        LoadBalancerInfo:
+          ContainerName: "charlie-container"
+          ContainerPort: 80
+```
+
+### ✅ 2. .github/task-definition.json
+
+```
+{
+  "family": "charlie-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "YOUR_ECS_TASK_EXECUTION_ROLE_ARN",
+  "containerDefinitions": [
+    {
+      "name": "charlie-container",
+      "image": "IMAGE_PLACEHOLDER",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 🚀 FINAL deploy.yml (CLEAN + MERGED + CORRECT)
+
+👉 This replaces your ECS section completely
+
+👉 NO ecs update-service (CodeDeploy will handle)
+
+```
+name: ☕ Charlie Cafe — FINAL PRODUCTION PIPELINE
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+
+    # 1️⃣ Checkout
+    - name: 📥 Checkout
+      uses: actions/checkout@v3
+
+    # 2️⃣ Short SHA
+    - name: 🔤 Short SHA
+      run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+    # 3️⃣ AWS Login
+    - name: 🔐 Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # 4️⃣ Login to ECR
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | \
+        docker login --username AWS --password-stdin \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+    # 5️⃣ Build Image
+    - name: 🏗️ Build Docker Image
+      run: |
+        docker build \
+          -t ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
+          -f docker/apache-php/Dockerfile .
+
+    # 6️⃣ Tag Image
+    - name: 🏷️ Tag Image
+      run: |
+        docker tag \
+          ${{ secrets.ECR_REPO }}:$IMAGE_TAG \
+          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
+
+    # 7️⃣ Push Image
+    - name: 📤 Push Image
+      run: |
+        docker push \
+          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG
+
+    # 8️⃣ Prepare Task Definition
+    - name: 📄 Prepare Task Definition
+      run: |
+        cp .github/task-definition.json task-def.json
+
+        sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPO }}:$IMAGE_TAG|g" task-def.json
+
+    # 9️⃣ Register Task Definition
+    - name: 📦 Register Task Definition
+      run: |
+        TASK_DEF_ARN=$(aws ecs register-task-definition \
+          --cli-input-json file://task-def.json \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+
+        echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+
+    # 🔟 Inject into appspec
+    - name: 🔄 Update AppSpec
+      run: |
+        sed -i "s|TASK_DEFINITION|$TASK_DEF_ARN|g" appspec.yaml
+
+    # 11️⃣ Deploy via CodeDeploy
+    - name: 🚀 Blue/Green Deploy
+      run: |
+        aws deploy create-deployment \
+          --application-name charlie-ecs-app \
+          --deployment-group-name charlie-ecs-deployment-group \
+          --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+          --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+
+    # 12️⃣ Done
+    - name: 🎉 Done
+      run: echo "Deployment successful 🚀"
+```
+
+### 🧭 STEP-BY-STEP
+
+🟢 STEP 1 — ALB Setup
+Create 2 target groups:
+charlie-blue
+charlie-green
+Health check: /health.php
+
+
+🟢 STEP 2 — ALB Listener
+Go to ALB → Listener → HTTP:80
+Set:Forward → charlie-blue
+
+🟢 STEP 3 — ECS SERVICE (CRITICAL)
+Go to ECS → Service
+Click Update
+Change:
+
+❌ Rolling update
+✅ Blue/Green (CodeDeploy)
+
+🟢 STEP 4 — CREATE CODEDEPLOY APP
+Name: charlie-ecs-app
+Platform: ECS
+🟢 STEP 5 — CREATE DEPLOYMENT GROUP
+Name: charlie-ecs-deployment-group
+Cluster: charlie-cluster
+Service: charlie-service
+
+Attach:
+
+ALB
+Blue TG
+Green TG
+Listener: HTTP:80
+🟢 STEP 6 — IAM ROLE
+
+Create role:
+
+```
+CodeDeployRoleForECS
+```
+
+Attach policy:
+
+```
+AWSCodeDeployRoleForECS
+```
+
+🟢 STEP 7 — ECS TASK EXECUTION ROLE
+
+Use:
+
+```
+ecsTaskExecutionRole
+```
+
+Put ARN in:
+
+```
+task-definition.json
+```
+
+🟢 STEP 8 — GITHUB SECRETS
+
+Add:
+
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+AWS_ACCOUNT_ID
+ECR_REPO
+ECS_CLUSTER
+ECS_SERVICE
+🟢 STEP 9 — PUSH CODE
+
+```
+git add .
+git commit -m "final pipeline"
+git push origin main
+```
+
+🔥 WHAT HAPPENS AFTER PUSH
+Docker image built → a84d92f
+Image pushed to ECR
+New task definition created
+CodeDeploy starts deployment
+ECS launches GREEN version
+Health checks run
+Traffic shifts: BLUE → GREEN
+ 
+
+Old version kept
+🚨 CRITICAL RULES (DON’T BREAK THESE)
+❌ NEVER use: aws ecs update-service
+
+✅ ALWAYS use: CodeDeploy
+
+🎯 FINAL RESULT (YOU REACH THIS LEVEL)
+
+You now have:
+
+✅ Enterprise CI/CD
+✅ Zero downtime deployments
+✅ Immutable versioning
+✅ Safe rollback system
+✅ Real DevOps architecture
+💬 My honest advice (important for YOU)
+
+You tried to combine everything at once — that’s why confusion happened.
+
+Now:
+
+👉 Follow THIS exact order
+
+👉 Don’t mix old ECS rolling config
+
+👉 Don’t use latest anymore
+
+### 🚀 Unified Enterprise CI/CD Pipeline (Blue/Green + Immutable Versioning)
+
+This merged task consolidates three separate implementations—Blue/Green deployment, Git SHA–based immutable Docker image versioning, and ECS deployment via CodeDeploy—into a single streamlined workflow. Instead of configuring and managing these components independently (which often leads to duplication, confusion, and inconsistent deployments), this unified approach ensures a clean, production-grade pipeline where every deployment is versioned, traceable, and zero-downtime by design. By integrating all three practices into one cohesive system, it prevents repeating already completed setups and establishes a standard, reusable DevOps pattern that is easier to maintain, scale, and explain in real-world scenarios.
+
 ## 🌐 TASK 1 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
 
 ### 🎯 Flow
