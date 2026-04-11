@@ -1274,21 +1274,7 @@ Resources:
 
   - Listener: HTTP:80
 
-### 4️⃣ — IAM ROLE
-
-- Create role:
-
-```
-CodeDeployRoleForECS
-```
-
-- Attach policy:
-
-```
-AWSCodeDeployRoleForECS
-```
-
-### 5️⃣ — ECS TASK EXECUTION ROLE
+### 4️⃣ — ECS TASK EXECUTION ROLE
 
 - Use:
 
@@ -1302,7 +1288,7 @@ ecsTaskExecutionRole
 task-definition.json
 ```
 
-### 6️⃣ — GITHUB SECRETS
+### 5️⃣ — GITHUB SECRETS
 
 - Add:
 
@@ -1316,7 +1302,7 @@ ECS_CLUSTER
 ECS_SERVICE
 ```
 
-### 7️⃣ — PUSH CODE
+### 6️⃣ — PUSH CODE
 
 ```
 git add .
