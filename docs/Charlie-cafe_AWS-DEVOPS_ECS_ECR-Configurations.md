@@ -504,6 +504,25 @@ After your tasks can access ECR:
 
 > ✅ This is usually used for blue/green deployments, but even if you are just testing, it’s good practice to have separate TGs.
 
+#### ✅ Key Points
+
+- VPC: Must match the VPC of your ECS tasks. Otherwise, the ALB cannot route traffic to the Fargate tasks.
+
+- Do not select EC2: In Fargate, there is no EC2 host visible to the ALB. The ALB targets Fargate tasks via their private IPs automatically when ECS service registers them.
+
+- Health Check: Make sure /health.php exists in your container. Otherwise use / or another valid endpoint.
+
+#### ✅ Summary:
+
+| Setting         | Value for Fargate ECS |
+| --------------- | --------------------- |
+| Target Type     | IP                    |
+| Protocol / Port | HTTP / 80             |
+| Health Check    | /health.php           |
+| VPC             | Same as ECS tasks     |
+| Register EC2    | ❌ Do not select       |
+
+
 
 #### 2️⃣ Update ALB Listener
 
