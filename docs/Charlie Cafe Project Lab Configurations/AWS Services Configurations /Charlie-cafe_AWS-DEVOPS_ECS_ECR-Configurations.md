@@ -2166,4 +2166,284 @@ This is REAL industry DevOps:
   - CloudWatch monitoring
 
 ---
-## 🌐 TASK 3 — 
+## 🌐 TASK 3 — ☁️ CHARLIE CAFE — PRODUCTION-GRADE ECS BLUE/GREEN + CANARY DEPLOYMENT WITH AUTO ROLLBACK & CLOUDWATCH MONITORING
+
+### 🏗️ YOUR CURRENT SYSTEM (WHAT YOU ALREADY HAVE)
+
+You already built:
+
+#### ✅ Core CI/CD + Blue/Green
+
+- GitHub Actions pipeline
+
+- ECR image build
+
+- ECS Fargate service
+
+- ALB routing
+
+- CodeDeploy Blue/Green
+
+✔ This = DEPLOYMENT LAYER
+
+### 🚨 WHAT YOU ARE ADDING NOW (UPGRADE LAYER)
+
+Now you are adding:
+
+#### 🔥 NEW PRODUCTION LAYERS
+
+#### 1️⃣ Canary Deployment
+
+- 10% traffic first
+
+- Then full rollout
+
+#### 2️⃣ Auto Rollback
+
+- If failure → revert automatically
+
+#### 3️⃣ CloudWatch Monitoring
+
+- Detect unhealthy deployment
+
+- Trigger rollback via alarms
+
+### 🧠 FINAL TRUTH
+
+| Layer         | Status |
+| ------------- | ------ |
+| CI/CD         | ✅ DONE |
+| Blue/Green    | ✅ DONE |
+| Canary (10%)  | ❌ NEW  |
+| Auto Rollback | ❌ NEW  |
+| Monitoring    | ❌ NEW  |
+
+### 🏗️ ARCHITECTURE (FINAL UPGRADED SYSTEM)
+
+```
+GitHub Push
+    ↓
+GitHub Actions CI/CD
+    ↓
+Build Docker Image (Git SHA)
+    ↓
+Push to ECR
+    ↓
+Register ECS Task Definition
+    ↓
+CodeDeploy (CANARY 10%)
+    ↓
+ALB (Blue + Green Target Groups)
+    ↓
+CloudWatch Alarm Monitoring
+    ↓
+Decision Engine:
+    ├── SUCCESS → Shift 100% traffic to GREEN
+    └── FAILURE → AUTO ROLLBACK to BLUE
+```
+
+### 🔥 WHAT YOU ARE ACTUALLY UPGRADING
+
+You are NOT rebuilding.
+
+👉 You are ONLY upgrading:
+
+#### OLD SYSTEM
+
+```
+Blue/Green only (instant switch)
+```
+
+#### NEW SYSTEM
+
+```
+Canary (10%) → Monitor → Full rollout OR rollback
+```
+
+### 🧭 STEP-BY-STEP UPGRADE GUIDE
+
+### 1️⃣ — UPDATE CODEDEPLOY (MOST IMPORTANT)
+
+- Go to: 👉 AWS CodeDeploy → Deployment Group
+
+#### 🔧 CHANGE THIS:
+
+- ❌ Old config: CodeDeployDefault.ECSAllAtOnce
+
+- ✅ NEW CONFIG (CANARY): CodeDeployDefault.ECSCanary10Percent5Minutes
+
+#### 🧠 Meaning:
+
+- 10% traffic goes to GREEN
+
+- Wait 5 minutes
+
+- Then full rollout
+
+### 2️⃣ — ENABLE AUTO ROLLBACK
+
+Inside SAME deployment group:
+
+#### Turn ON:
+
+```
+✔ Rollback when deployment fails
+✔ Rollback when CloudWatch alarm triggers
+```
+
+#### 🧠 This means:
+
+If anything goes wrong:
+
+👉 AWS automatically goes back to BLUE
+
+### 3️⃣ — CREATE CLOUDWATCH ALARM
+
+- Go to: 👉 CloudWatch → Alarms → Create Alarm
+
+### 📊 ALARM 1 (CRITICAL)
+
+- Name: charlie-green-unhealthy-alarm
+
+- Metric: ApplicationELB → UnHealthyHostCount
+
+- Target Group: charlie-green
+
+- Condition: >= 1 for 1 minute
+
+#### 🧠 Meaning:
+
+- If GREEN has even 1 unhealthy instance → rollback trigger
+
+### 4️⃣ — ATTACH ALARM TO CODEDEPLOY
+
+- Go to: 👉 CodeDeploy Deployment Group
+
+- Add: charlie-green-unhealthy-alarm
+
+#### 🧠 This connects monitoring → deployment system
+
+### 5️⃣ — VERIFY appspec.yaml (NO CHANGE NEEDED)
+
+Your file is already correct.
+
+#### ✔ KEEP IT AS IS
+
+- Only confirm:
+
+```
+ContainerName: "charlie-container"
+ContainerPort: 80
+```
+
+#### ❗ IMPORTANT
+
+- Do NOT change appspec.yaml for canary or rollback
+
+👉 AWS handles it internally
+
+### 6️⃣ — UPDATE GITHUB ACTIONS (MINOR CHANGE ONLY)
+
+You ONLY change ONE line:
+
+#### ❌ REMOVE THIS (if present):
+
+```
+CodeDeployDefault.ECSAllAtOnce
+```
+
+#### ✅ REPLACE WITH:
+
+```
+CodeDeployDefault.ECSCanary10Percent5Minutes
+```
+
+or
+
+#### ✅ FULL DEPLOY STEP:
+
+```
+- name: 🚀 Deploy with CodeDeploy (Canary)
+  run: |
+    aws deploy create-deployment \
+      --application-name charlie-ecs-app \
+      --deployment-group-name charlie-ecs-deployment-group \
+      --deployment-config-name CodeDeployDefault.ECSCanary10Percent5Minutes \
+      --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+```
+
+### 7️⃣ — VERIFY ECS + ALB BEHAVIOR
+
+After deployment:
+
+You will see:
+
+#### Phase 1:
+
+- 10% users → GREEN
+
+#### Phase 2:
+
+CloudWatch monitors health
+
+#### Phase 3:
+
+If OK → 100% traffic to GREEN
+
+#### Phase 4:
+
+If FAIL → rollback to BLUE
+
+### 🔥 FINAL SYSTEM BEHAVIOR
+
+#### BEFORE (your current system)
+
+```
+Deploy → Switch ALL traffic → Done
+```
+
+#### AFTER (upgraded system)
+
+```
+Deploy → 10% traffic → Monitor → Decide → Rollback or Full release
+```
+
+### 🎯 WHAT YOU JUST BUILT (REAL INDUSTRY LEVEL)
+
+You now have:
+
+#### ☁️ Production-grade system:
+
+- CI/CD automation
+
+- Docker immutable images
+
+- ECS Fargate deployment
+
+- ALB traffic routing
+
+- CodeDeploy Blue/Green
+
+- Canary deployments
+
+- CloudWatch monitoring
+
+- Auto rollback system
+
+### 🚨 FINAL IMPORTANT TRUTH
+
+👉 You DID NOT build a new system
+
+👉 You are ONLY upgrading deployment intelligence
+
+### 🧠 SIMPLE WAY TO REMEMBER
+
+| Feature       | Meaning             |
+| ------------- | ------------------- |
+| Blue/Green    | Switch full traffic |
+| Canary        | Test before switch  |
+| CloudWatch    | Watch system health |
+| Auto Rollback | Safety switch       |
+
+---
+
