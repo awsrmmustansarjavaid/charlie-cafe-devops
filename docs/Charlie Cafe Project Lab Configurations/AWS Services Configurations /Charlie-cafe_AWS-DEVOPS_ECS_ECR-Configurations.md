@@ -2661,34 +2661,41 @@ http://YOUR-ALB-DNS
 
 👉 You should see your app live
 
-✅ 4.7 Check LOGS (DEBUGGING)
+### ✅ 4.7 Check LOGS (DEBUGGING)
 
-Go:
-👉 CloudWatch → Logs → /ecs/charlie-task
+- Go: 👉 CloudWatch → Logs → /ecs/charlie-task
 
-Check:
+#### Check:
 
-container started
-no PHP / Apache errors
-🔥 TASK 5 — VERIFY BLUE/GREEN DEPLOYMENT
+- container started
 
-Go:
-👉 CodeDeploy → Deployments
+- no PHP / Apache errors
 
-You should see:
+### 5️⃣ — VERIFY BLUE/GREEN DEPLOYMENT
 
-🟢 During Deployment
-10% → GREEN
-monitoring
-🟢 After Success
-100% → GREEN
-🔴 If Failure
-rollback → BLUE
-🧪 TASK 6 — TEST CI/CD (REAL PROOF)
+- Go: 👉 CodeDeploy → Deployments
+
+#### You should see:
+
+#### 🟢 During Deployment
+
+- 10% → GREEN
+
+- monitoring
+
+#### 🟢 After Success
+
+- 100% → GREEN
+
+#### 🔴 If Failure
+
+- rollback → BLUE
+
+### 6️⃣ — TEST CI/CD (REAL PROOF)
 
 Now do this:
 
-🔁 Make Small Change
+#### 🔁 Make Small Change
 
 Edit any file:
 
@@ -2696,7 +2703,7 @@ Edit any file:
 echo "Version 2 deployed!";
 ```
 
-🚀 Push Again
+#### 🚀 Push Again
 
 ```
 git add .
@@ -2704,57 +2711,77 @@ git commit -m "test deployment"
 git push origin main
 ```
 
-🔍 Observe:
-GitHub Actions runs
-ECS deploys new version
-ALB shows updated app
+### 🔍 Observe:
+
+- GitHub Actions runs
+
+- ECS deploys new version
+
+- ALB shows updated app
 
 👉 THIS = SUCCESSFUL DEVOPS PIPELINE 🎉
 
-🚨 COMMON ERRORS (VERY IMPORTANT)
-❌ Image Pull Error
+### 🚨 COMMON ERRORS (VERY IMPORTANT)
 
-👉 Fix:
+- ### ❌ Image Pull Error
 
-ECR permissions
-task execution role
-❌ Health Check Failed
+#### 👉 Fix:
 
-👉 Fix:
+- ECR permissions
 
-/health.php exists
-container runs Apache correctly
-❌ Task Not Starting
+- task execution role
 
-👉 Check:
+- ### ❌ Health Check Failed
 
-CloudWatch logs
-CPU/memory mismatch
-❌ No Deployment Triggered
+#### 👉 Fix:
 
-👉 Check:
+- /health.php exists
 
-branch = main
-workflow YAML syntax
-🧠 FINAL UNDERSTANDING (IMPORTANT)
+- container runs Apache correctly
+
+- ### ❌ Task Not Starting
+
+#### 👉 Check:
+
+- CloudWatch logs
+
+- CPU/memory mismatch
+
+- ### ❌ No Deployment Triggered
+
+#### 👉 Check:
+
+- branch = main
+
+- workflow YAML syntax
+
+### 🧠 FINAL UNDERSTANDING (IMPORTANT)
 
 👉 You DO NOT run deploy.yml manually
+
 👉 GitHub Actions = your CI/CD engine
+
 👉 Every push = automatic deployment
 
-🎯 WHAT YOU HAVE NOW
+### 🎯 WHAT YOU HAVE NOW
 
-You built:
+#### You built:
 
 ✅ Dockerized app
+
 ✅ ECR registry
+
 ✅ ECS Fargate deployment
+
 ✅ ALB load balancing
+
 ✅ Blue/Green deployment
+
 ✅ Auto rollback
+
 ✅ GitHub CI/CD
 
-👉 This is REAL production-level DevOps setup
+#### 👉 This is REAL production-level DevOps setup
 
 ---
 
