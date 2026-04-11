@@ -1336,30 +1336,6 @@ In deployment group:
 
 - Attach: charlie-health-alarm
 
-### 5️⃣ Charlie Cafe cleanup
-
-[ec2-cleanup.sh](./infrastructure/scripts/ec2-cleanup.sh)
-
-#### How to use:
-
-- Save this as ec2-cleanup.sh on your EC2.
-
-```
-nano ec2-cleanup.sh
-```
-
-- Make it executable:
-
-```
-chmod +x ec2-cleanup.sh
-```
-
-- Run it:
-
-```
-./ec2-cleanup.sh
-```
-
 ### 🧭 STEP-BY-STEP UPGRADE
 
 ### 1️⃣ — UPDATE CODEDEPLOY (MOST IMPORTANT)
@@ -1424,5 +1400,29 @@ If OK → 100% traffic to GREEN
 #### Phase 4:
 
 If FAIL → rollback to BLUE
+
+### 6️⃣ Charlie Cafe cleanup
+
+[ec2-cleanup.sh](./infrastructure/scripts/ec2-cleanup.sh)
+
+#### How to use:
+
+- Save this as ec2-cleanup.sh on your EC2.
+
+```
+nano ec2-cleanup.sh
+```
+
+- Make it executable:
+
+```
+chmod +x ec2-cleanup.sh
+```
+
+- Run it:
+
+```
+./ec2-cleanup.sh
+```
 
 ---
