@@ -114,16 +114,6 @@ You can paste this directly into IAM → Policies → Create policy → JSON
 
 ### 3️⃣ Create IAM User for GitHub Actions
 
-- Go to AWS → IAM → Users → Add user
-
-  - UserName: github-ci-cd-user
-
-  - ✅ Select:
-
-```
-Provide user access to the AWS Management Console → ❌ UNCHECK
-```
-
 #### 👉 IMPORTANT:
 
   - You only need programmatic access (API)
