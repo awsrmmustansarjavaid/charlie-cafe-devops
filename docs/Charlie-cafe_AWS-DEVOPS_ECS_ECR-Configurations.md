@@ -47,6 +47,66 @@ AWS_SECRET_ACCESS_KEY
 ---
 ### 1️⃣ CREATE ECR (DOCKER REGISTRY)
 
+#### ✅ add ECR permissions to your IAM role policy
+
+> To fix this, you need to add ECR permissions to your IAM role policy. Here’s a minimal example you can add to your existing role JSON:
+
+```
+{
+    "Sid": "ECRFullAccess",
+    "Effect": "Allow",
+    "Action": [
+        "ecr:GetAuthorizationToken"
+    ],
+    "Resource": "*"
+},
+{
+    "Sid": "ECRRepoAccess",
+    "Effect": "Allow",
+    "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeRepositories",
+        "ecr:CreateRepository"
+    ],
+    "Resource": "arn:aws:ecr:us-east-1:537236558357:repository/charlie-cafe"
+}
+```
+
+#### 💡 Key points:
+
+- ecr:GetAuthorizationToken must always be "Resource": "*".
+
+- Other ECR actions (pull/push layers) can be scoped to your specific repository ARN.
+
+- ecr:GetAuthorizationToken is the one that allows aws ecr get-login-password to work.
+You can scope "Resource" to a specific repository ARN if you want tighter security.
+
+- After updating your IAM role:
+
+  - Detach and re-attach the policy, or just update inline policy on the role.
+
+  - On your EC2, refresh credentials (either wait a few minutes or run):
+
+```
+aws sts get-caller-identity
+```
+
+- Try login again:
+
+```
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 537236558357.dkr.ecr.us-east-1.amazonaws.com
+```
+
+Once this works, you’ll be able to push/pull images from your ECR repository.
+
+
+
 #### 1️⃣ Create Repository
 
 - Go to: ECR → Create Repository
