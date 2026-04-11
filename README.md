@@ -1296,8 +1296,9 @@ git commit -m "final pipeline"
 git push origin main
 ```
 
-
 ---
+## 🚀 CANARY + AUTO ROLLBACK + MONITORING
+
 
 
 

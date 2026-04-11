@@ -1706,6 +1706,9 @@ Now:
 ---
 ## 🌐 TASK 2 — CANARY + AUTO ROLLBACK + MONITORING
 
+---
+## 🌐 TASK 3 — CANARY + AUTO ROLLBACK + MONITORING
+
 ### ✅ Enable Canary Deployment
 
 #### Use:
@@ -1801,4 +1804,4 @@ chmod +x ec2-cleanup.sh
 ```
 
 ---
-## 🌐 TASK 3 — CANARY + AUTO ROLLBACK + MONITORING
+## 🌐 TASK 4 — CANARY + AUTO ROLLBACK + MONITORING
