@@ -112,7 +112,13 @@ You can paste this directly into IAM → Policies → Create policy → JSON
 
 - **✔️ Click Create IAM ROLE**
 
-### 3️⃣ Create IAM User for GitHub Actions
+### 3️⃣ IAM Role for GitHub-Actions
+
+- **IAM Role Name:**
+
+```
+GitHub-Actions-iam-Role
+```
 
 #### 👉 IMPORTANT:
 
@@ -146,6 +152,10 @@ You can paste this directly into IAM → Policies → Create policy → JSON
 - Policy Name: GitHub-Actions
 
 - 👉 Then attach this policy to your user
+
+You can paste this directly into IAM → Policies → Create policy → JSON
+
+[GitHub-Actions.json](./Charlie%20Cafe%20IAm%20Policies/GitHub-Actions.json)
 
 ---
 
