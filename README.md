@@ -1144,35 +1144,6 @@ http://YOUR-ALB-DNS
 
 ✅ Everything you mentioned is already done.
 
-
-
-### 6️⃣ 🚀 FINAL BASH SCRIPT (ECR + CI/CD TEST + ACCESS URL)
-
-[ECR_CI-CD_TEST.sh](./infrastructure/scripts/ECR_CI-CD_TEST.sh)
-
-#### 🧠 Important Notes (Very Important)
-
-#### 🔹 Replace these values:
-
-```
-ECR_URI="YOUR_ECR_URI"
-ALB_DNS="YOUR-ALB-DNS"
-```
-
-Example:
-
-```
-ECR_URI="123456789012.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe"
-ALB_DNS="charlie-alb-123456.us-east-1.elb.amazonaws.com"
-```
-
-#### ▶️ How to Run
-
-```
-chmod +x ECR_CI-CD_TEST.sh
-./ECR_CI-CD_TEST.sh
-```
-
 ### 8️⃣ VERIFY DEPLOYMENT
 
 - ECS → Cluster → Service → Tasks → Running
