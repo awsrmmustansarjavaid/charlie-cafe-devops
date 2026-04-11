@@ -199,6 +199,10 @@ charlie-cafe-link-generator.html
 docker build -t charlie-cafe .
 ```
 
+- -t charlie-cafe → names your image charlie-cafe.
+
+- . → tells Docker to use the current folder for the Dockerfile and context.
+
 #### 5- Tag and push (from the same directory):
 
 ```
@@ -206,11 +210,41 @@ docker tag charlie-cafe:latest 537236558357.dkr.ecr.us-east-1.amazonaws.com/char
 docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 ```
 
-#### 6- If your Dockerfile has a different name or location:
+#### 6- Push the Docker image to ECR
+
+```
+docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+✅ After this, your Docker image will be in ECR, ready for ECS or Fargate deploymen
+
+#### 7- If your Dockerfile has a different name or location:
 
 ```
 docker build -t charlie-cafe -f /path/to/Dockerfile .
 ```
+
+#### 8- Go to the folder with the Dockerfile
+
+```
+cd ~/charlie-cafe-devops/docker/apache-php/
+```
+
+Check the file exists:
+
+```
+ls -l Dockerfile
+# should show your Dockerfile
+```
+
+#### 9- If you want to build from anywhere, you can also specify the Dockerfile path:
+
+```
+docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfile ~/charlie-cafe-devops/docker/apache-php/
+```
+
+This avoids having to cd into the folder.
+
 
 
 
