@@ -1360,4 +1360,69 @@ chmod +x ec2-cleanup.sh
 ./ec2-cleanup.sh
 ```
 
+### 🧭 STEP-BY-STEP UPGRADE
+
+### 1️⃣ — UPDATE CODEDEPLOY (MOST IMPORTANT)
+
+- Go to: 👉 AWS CodeDeploy → Deployment Group
+
+#### 🔧 CHANGE THIS:
+
+- ❌ Old config: CodeDeployDefault.ECSAllAtOnce
+
+- ✅ NEW CONFIG (CANARY): CodeDeployDefault.ECSCanary10Percent5Minutes
+
+### 2️⃣ — ENABLE AUTO ROLLBACK
+
+Inside SAME deployment group:
+
+#### Turn ON:
+
+```
+✔ Rollback when deployment fails
+✔ Rollback when CloudWatch alarm triggers
+```
+
+### 3️⃣ — CREATE CLOUDWATCH ALARM
+
+- Go to: 👉 CloudWatch → Alarms → Create Alarm
+
+### 📊 ALARM 1 (CRITICAL)
+
+- Name: charlie-green-unhealthy-alarm
+
+- Metric: ApplicationELB → UnHealthyHostCount
+
+- Target Group: charlie-green
+
+- Condition: >= 1 for 1 minute
+
+### 4️⃣ — ATTACH ALARM TO CODEDEPLOY
+
+- Go to: 👉 CodeDeploy Deployment Group
+
+- Add: charlie-green-unhealthy-alarm
+
+### 5️⃣ — VERIFY ECS + ALB BEHAVIOR
+
+After deployment:
+
+You will see:
+
+#### Phase 1:
+
+- 10% users → GREEN
+
+#### Phase 2:
+
+CloudWatch monitors health
+
+#### Phase 3:
+
+If OK → 100% traffic to GREEN
+
+#### Phase 4:
+
+If FAIL → rollback to BLUE
+
 ---
