@@ -193,6 +193,42 @@ Even with the service-linked role, your IAM user must be able to create ECS clus
 
 > Your Lambda/GitHub Action IAM policies already have some ecs permissions, but ensure ecs:CreateCluster is allowed.
 
+#### Option 2 — Give EC2 Role Permission to Create Service-Linked Role
+
+If you want to stick with CLI on EC2, you need to temporarily attach a policy to your EC2 role:
+
+#### Policy to allow service-linked role creation:
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole",
+                "iam:ListRoles"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+- Go to IAM → Roles → EC2-Cafe-Secrets-Role → Attach Policies → Create Inline Policy.
+
+- Paste the JSON above.
+
+- Save policy.
+
+- Retry:
+
+```
+aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
+```
+
+> After creation, you can remove the inline policy if you want to tighten security.
+
 
 - ### 2️⃣ Create ECS Cluster
 
@@ -211,6 +247,20 @@ Even with the service-linked role, your IAM user must be able to create ECS clus
 Wait until the status shows Active.
 
 ✅ No need to attach EC2 instances since this is Fargate.
+
+#### ✅ Delete the failed CloudFormation stack (Optional)
+
+- Go to CloudFormation Console → Stacks.
+
+- Look for stack: Infra-ECS-Cluster-charlie-cluster-00bdea46 (or similar with charlie-cluster in the name).
+
+- Select it → Click Delete Stack.
+
+- Wait for the stack to be fully deleted (status disappears from the console).
+
+- Retry creating ECS cluster charlie-cluster.
+
+✅ This is the safest approach if you want to reuse the same cluster name.
 
 - ### 3️⃣ Create Task Execution Role (if not exists)
 
