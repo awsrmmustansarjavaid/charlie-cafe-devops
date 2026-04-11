@@ -30,7 +30,11 @@ When creating the IAM role:
 
 - Click: Next
 
-- Attach your custom policy: EC2-Cafe-Secrets-Role
+- Attach IAM Policy
+
+    - Attach your custom policy: EC2-Cafe-Secrets-Role
+
+    - Attach AWS policy: SecretsManagerReadWrite
 
 - Role name example: Cafe-EC2-Secrets-Role
 
