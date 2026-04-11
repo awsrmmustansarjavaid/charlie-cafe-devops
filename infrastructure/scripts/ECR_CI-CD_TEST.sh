@@ -1,94 +1,48 @@
 #!/bin/bash
 
 # ==========================================================
-# 🚀 CHARLIE CAFE — ECR PUSH + CI/CD TEST SCRIPT
+# 🚀 CHARLIE CAFE — SIMPLE DEVOPS HELPER SCRIPT
 # ----------------------------------------------------------
-# ✔ Login to AWS ECR
-# ✔ Build Docker Image
-# ✔ Tag Image
-# ✔ Push to ECR
-# ✔ Trigger GitHub Pipeline
-# ✔ Display ALB URL
+# ✔ Auto Detect ECR URI
+# ✔ Auto Detect ALB DNS
+# ✔ Push Code to Trigger CI/CD
 # ==========================================================
 
-# -------------------------------
-# 🔧 CONFIGURATION (EDIT THESE)
-# -------------------------------
-AWS_REGION="us-east-1"
-ECR_URI="YOUR_ECR_URI"              # e.g. 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
-IMAGE_NAME="charlie-cafe"
-IMAGE_TAG="latest"
-ALB_DNS="YOUR-ALB-DNS"             # e.g. charlie-alb-123.us-east-1.elb.amazonaws.com
+echo "🚀 Starting Simple DevOps Helper..."
 
 # -------------------------------
-# 1️⃣ LOGIN TO ECR
+# 🔧 AUTO CONFIG
 # -------------------------------
-echo "🔐 Logging into AWS ECR..."
+AWS_REGION=$(aws configure get region)
 
-aws ecr get-login-password --region $AWS_REGION | \
-docker login --username AWS --password-stdin $ECR_URI
+# Get AWS Account ID
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
-if [ $? -ne 0 ]; then
-  echo "❌ ECR Login Failed"
-  exit 1
-fi
+# Get ECR Repo (first repo)
+ECR_REPO=$(aws ecr describe-repositories \
+  --query "repositories[0].repositoryName" \
+  --output text)
 
-echo "✅ ECR Login Successful"
+ECR_URI="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO"
+
+# Get ALB DNS
+ALB_DNS=$(aws elbv2 describe-load-balancers \
+  --query "LoadBalancers[0].DNSName" \
+  --output text)
+
+echo "----------------------------------------"
+echo "📦 ECR URI: $ECR_URI"
+echo "🌐 ALB DNS: $ALB_DNS"
 echo "----------------------------------------"
 
 # -------------------------------
-# 2️⃣ BUILD DOCKER IMAGE
+# 🚀 TRIGGER CI/CD
 # -------------------------------
-echo "🐳 Building Docker Image..."
-
-docker build -t $IMAGE_NAME .
-
-if [ $? -ne 0 ]; then
-  echo "❌ Docker Build Failed"
-  exit 1
-fi
-
-echo "✅ Docker Build Successful"
-echo "----------------------------------------"
-
-# -------------------------------
-# 3️⃣ TAG DOCKER IMAGE
-# -------------------------------
-echo "🏷️ Tagging Image..."
-
-docker tag $IMAGE_NAME:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
-
-if [ $? -ne 0 ]; then
-  echo "❌ Docker Tag Failed"
-  exit 1
-fi
-
-echo "✅ Image Tagged Successfully"
-echo "----------------------------------------"
-
-# -------------------------------
-# 4️⃣ PUSH TO ECR
-# -------------------------------
-echo "📤 Pushing Image to ECR..."
-
-docker push $ECR_URI:$IMAGE_TAG
-
-if [ $? -ne 0 ]; then
-  echo "❌ Docker Push Failed"
-  exit 1
-fi
-
-echo "✅ Image Pushed to ECR"
-echo "----------------------------------------"
-
-# -------------------------------
-# 5️⃣ TEST CI/CD PIPELINE
-# -------------------------------
-echo "🔄 Triggering CI/CD Pipeline..."
+echo "🔄 Triggering GitHub Pipeline..."
 
 git add .
 
-git commit -m "🚀 Auto deployment test $(date +'%Y-%m-%d %H:%M:%S')" || echo "⚠️ Nothing to commit"
+git commit -m "🚀 Auto Deploy $(date +'%Y-%m-%d %H:%M:%S')" || echo "⚠️ Nothing to commit"
 
 git push
 
@@ -97,14 +51,10 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "✅ Pipeline Triggered Successfully"
-echo "----------------------------------------"
-
 # -------------------------------
-# 6️⃣ ACCESS APPLICATION
+# ✅ DONE
 # -------------------------------
-echo "🌐 Application URL:"
-echo "http://$ALB_DNS"
-
 echo "----------------------------------------"
-echo "🎉 ALL TASKS COMPLETED SUCCESSFULLY"
+echo "✅ CI/CD Triggered Successfully"
+echo "🌐 App URL: http://$ALB_DNS"
+echo "----------------------------------------"
