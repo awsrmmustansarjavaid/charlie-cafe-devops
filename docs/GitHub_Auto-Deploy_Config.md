@@ -414,3 +414,188 @@ ssh -T git@github.com
 ```
 
 ---
+## 🚀 Task: How to Trigger GitHub Actions CI/CD Pipeline (deploy.yml) from GitHub Web UI and EC2 (Manual + Automated Ways)
+
+What you are asking is called in DevOps:
+
+“Pipeline Triggering Methods” or “CI/CD Pipeline Execution Strategies”
+
+Your deploy.yml already runs on:
+
+```
+on:
+  push:
+    branches: ["main"]
+```
+
+So it is event-driven (automatic trigger) by default.
+
+Now let’s cover ALL ways to run it properly.
+
+### ✅ METHOD 1 — Run from GitHub Web (Manual Trigger)
+
+#### ✔ Step 1: Go to GitHub Repository
+
+- Open: Your repo → charlie-cafe-devops
+
+#### ✔ Step 2: Open Actions Tab
+
+- Click: Actions → ☕ Charlie Cafe — FULL CI/CD PIPELINE
+
+#### ✔ Step 3: Select Workflow
+
+- Choose your workflow: FULL CI/CD PIPELINE (FINAL)
+
+#### ✔ Step 4: Click “Run workflow”
+
+- You will see:
+
+```
+Run workflow ▼
+Branch: main
+```
+
+#### ✔ Step 5: Click Green Button
+
+- 👉 Click: Run workflow
+
+#### 🎯 Result GitHub will:
+
+- Start pipeline instantly
+
+- Run deploy.yml steps
+
+- Deploy EC2 + ECS automatically
+
+### ✅ METHOD 2 — Automatic Trigger (What you already have)
+
+#### How it works:
+
+Whenever you do:
+
+```
+git add .
+git commit -m "update"
+git push origin main
+```
+
+👉 GitHub automatically triggers:
+
+```
+deploy.yml
+```
+
+#### 🎯 This is called:
+
+- Git-based CI/CD trigger (Git push trigger)
+
+### ✅ METHOD 3 — Trigger from EC2 (NOT DIRECT, BUT POSSIBLE)
+
+#### ⚠️ Important truth:
+
+- EC2 cannot directly run GitHub Actions workflow.
+
+- But you CAN trigger it indirectly.
+
+### ✔ OPTION A — Git push from EC2 (MOST COMMON)
+
+#### Step 1: SSH into EC2
+
+```
+ssh ec2-user@your-ec2-ip
+```
+
+#### Step 2: Go to project folder
+
+```
+cd charlie-cafe-devops
+```
+
+#### Step 3: Make a small change OR pull latest
+
+```
+git pull origin main
+```
+
+#### Step 4: Push from EC2
+
+If repo is connected:
+
+```
+git add .
+git commit -m "trigger pipeline from EC2"
+git push origin main
+```
+
+### 🎯 Result:
+
+- This triggers GitHub Actions automatically.
+
+### ✔ OPTION B — GitHub API Trigger (ADVANCED)
+
+You can manually trigger workflow using API:
+
+```
+curl -X POST \
+  -H "Authorization: token YOUR_GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/OWNER/REPO/actions/workflows/deploy.yml/dispatches \
+  -d '{"ref":"main"}'
+```
+
+### 🎯 This is called:
+
+> Workflow Dispatch API Trigger
+
+### ✅ METHOD 4 — Add Manual Button in YAML (BEST PRACTICE)
+
+If you want a button inside GitHub Actions:
+
+Modify your deploy.yml:
+
+```
+on:
+  push:
+    branches: ["main"]
+
+  workflow_dispatch:
+```
+
+
+### 🎯 Now you get:
+
+✔ Run on push
+
+✔ Run manually from GitHub UI
+
+✔ Best DevOps practice
+
+### 🚀 FINAL SUMMARY (VERY IMPORTANT)
+
+| Method       | Where        | Name                     |
+| ------------ | ------------ | ------------------------ |
+| Push code    | GitHub       | Git Push Trigger         |
+| GitHub UI    | Actions tab  | Manual Workflow Dispatch |
+| EC2 git push | EC2 terminal | Indirect Trigger         |
+| API call     | curl/Postman | Workflow Dispatch API    |
+
+### ⚡ SIMPLE DEVOPS EXPLANATION
+
+👉 Your pipeline is NOT something you “run like a script”
+
+It is:
+
+> Event-driven automation pipeline
+
+#### Meaning:
+
+- Git push → runs automatically
+
+- GitHub button → manual run
+
+- API → remote trigger
+
+- EC2 → indirectly triggers via git or API
+
+---
+
