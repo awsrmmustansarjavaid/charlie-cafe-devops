@@ -112,5 +112,52 @@ You can paste this directly into IAM → Policies → Create policy → JSON
 
 - **✔️ Click Create IAM ROLE**
 
-### 3️⃣ IAM Role for Charlie Cafe
+### 3️⃣ Create IAM User for GitHub Actions
+
+- Go to AWS → IAM → Users → Add user
+
+  - UserName: github-ci-cd-user
+
+  - ✅ Select:
+
+```
+Provide user access to the AWS Management Console → ❌ UNCHECK
+```
+
+#### 👉 IMPORTANT:
+
+  - You only need programmatic access (API)
+
+  - NOT console login
+
+- Attach policy (minimum required):
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:UpdateFunctionCode",
+        "lambda:GetFunction",
+        "lambda:ListFunctions",
+        "ec2:DescribeInstances",
+        "ssm:SendCommand",
+        "ssm:GetCommandInvocation",
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+- Policy Name: GitHub-Actions
+
+- 👉 Then attach this policy to your user
+
+---
+
+
 
