@@ -1202,7 +1202,7 @@ Resources:
 }
 ```
 
-### 🚀 FINAL deploy.yml (CLEAN + MERGED + CORRECT)
+### 🚀 deploy.yml (CLEAN + MERGED + CORRECT)
 
 👉 This replaces your ECS section completely
 
