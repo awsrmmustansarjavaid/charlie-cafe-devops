@@ -1084,7 +1084,166 @@ chmod +x ECR_CI-CD_TEST.sh
 
 ✅ Auto deployment
 ---
-## 🚀 Implement Immutable Docker Image Versioning Using Git Commit SHA in GitHub CI/CD Pipeline
+## 🌐 TASK 1 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
+
+### 🎯 Flow
+
+```
+GitHub → ECR → ECS → CodeDeploy → ALB (Blue/Green)
+```
+
+### 1️⃣ Create CodeDeploy App
+
+- Name: charlie-app
+
+- Platform: ECS
+
+### 2️⃣ Create Deployment Group
+
+- Name: charlie-dg
+
+- Cluster: charlie-cluster
+
+- Service: charlie-service
+
+#### Load Balancer:
+
+- ALB: existing
+
+- Production: charlie-blue
+
+- Test: charlie-green
+
+### 3️⃣ appspec.yaml
+
+[appspec.yaml](./appspec.yaml)
+
+### 4️⃣ Update CI/CD
+
+> #### Add this to deploy.yml:
+
+```
+- name: 🚀 Deploy with CodeDeploy
+  run: |
+    aws deploy create-deployment \
+      --application-name charlie-app \
+      --deployment-group-name charlie-dg \
+      --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+      --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+```
+
+### ✅ ✅ FINAL CORRECTED deploy.yml (PRODUCTION READY)
+
+👉 Right now your pipeline is doing:
+
+```
+ECS Rolling Update
+```
+
+👉 After adding CodeDeploy step, you will have:
+
+```
+CodeDeploy Blue/Green Deployment
+```
+
+#### ⚠️ IMPORTANT RULE (MUST UNDERSTAND):
+
+You should NOT use both:
+
+- aws ecs update-service ❌
+
+- aws deploy create-deployment ❌
+
+👉 Use ONLY CodeDeploy for Blue/Green
+
+
+#### This is your clean, fixed, and final version 👇
+
+```
+name: ☕ Charlie Cafe Full DevOps Pipeline (Blue/Green)
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REPO: charlie-cafe
+
+    steps:
+
+    # -------------------------------------------------
+    # 1️⃣ Checkout Code
+    # -------------------------------------------------
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    # -------------------------------------------------
+    # 2️⃣ Configure AWS Credentials
+    # -------------------------------------------------
+    - name: 🔐 Configure AWS
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # -------------------------------------------------
+    # 3️⃣ Login to ECR
+    # -------------------------------------------------
+    - name: 🐳 Login to ECR
+      run: |
+        aws ecr get-login-password --region $AWS_REGION | \
+        docker login --username AWS --password-stdin \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com
+
+    # -------------------------------------------------
+    # 4️⃣ Build Docker Image
+    # -------------------------------------------------
+    - name: 🏗️ Build Docker Image
+      run: |
+        docker build -t $ECR_REPO .
+
+    # -------------------------------------------------
+    # 5️⃣ Tag Docker Image
+    # -------------------------------------------------
+    - name: 🏷️ Tag Image
+      run: |
+        docker tag $ECR_REPO:latest \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
+    # -------------------------------------------------
+    # 6️⃣ Push Image to ECR
+    # -------------------------------------------------
+    - name: 📤 Push Image
+      run: |
+        docker push \
+        ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
+    # -------------------------------------------------
+    # 7️⃣ Deploy using CodeDeploy (Blue/Green)
+    # -------------------------------------------------
+    - name: 🚀 Deploy with CodeDeploy
+      run: |
+        aws deploy create-deployment \
+          --application-name charlie-app \
+          --deployment-group-name charlie-dg \
+          --deployment-config-name CodeDeployDefault.ECSAllAtOnce \
+          --revision revisionType=AppSpecContent,appSpecContent="{\"content\": \"$(cat appspec.yaml | sed 's/\"/\\\"/g')\"}"
+
+    # -------------------------------------------------
+    # 8️⃣ Done
+    # -------------------------------------------------
+    - name: 🎉 Deployment Completed
+      run: echo "Blue/Green deployment successful 🚀"
+```
+
+---
+## 🌐 TASK 2 — Implement Immutable Docker Image Versioning Using Git Commit SHA in GitHub CI/CD Pipeline
 
 > Configure Unique Docker Image Tags with Git Commit SHA for Safe ECS Deployments
 
@@ -2158,7 +2317,7 @@ Deploy ECS New Version
 ```
 
 ---
-## 🌐 Implement Blue/Green Deployment in Amazon ECS Using Application Load Balancer (Zero Downtime Deployment Strategy)
+## 🌐 TASK 3 — Implement Blue/Green Deployment in Amazon ECS Using Application Load Balancer (Zero Downtime Deployment Strategy)
 
 ### 🧠 FIRST — YOUR CONFUSION (CLEAR EXPLANATION)
 
@@ -2469,4 +2628,101 @@ Since you're practicing:
 #### Phase 3 (ADVANCED)
 
 ✔ Add CodeDeploy Blue/Green (this guide)
+---
+## 🌐 TASK 4 — CANARY + AUTO ROLLBACK + MONITORING
+
+### ✅ Enable Canary Deployment
+
+#### Use:
+
+```
+CodeDeployDefault.ECSCanary10Percent5Minutes
+```
+
+### ✅ Enable Auto Rollback
+
+#### Enable:
+
+Deployment failure
+
+Alarm triggered
+
+### ✅ Create CloudWatch Alarm
+
+Metric: UnHealthyHostCount
+
+Target group: charlie-green
+
+Threshold: >= 1
+
+### ✅ Attach Alarm to CodeDeploy
+
+Add alarm: charlie-health-alarm
+
+### 🧪 FINAL FLOW
+
+```
+Push Code →
+Build →
+Push ECR →
+Deploy →
+10% Traffic →
+Health Check →
+✅ Success → 100%
+❌ Failure → Auto Rollback
+```
+
+### 🧠 FINAL UNDERSTANDING
+
+#### You now built a real production-grade DevOps system:
+
+✅ CI/CD automation
+
+✅ Containerized deployment
+
+✅ Load balancing
+
+✅ Zero downtime deployment
+
+✅ Canary releases
+
+✅ Auto rollback
+
+✅ Monitoring
+
+### 🚨 COMMON MISTAKES (FIXED)
+
+❌ Using Instance target type → Use IP
+
+❌ Using old EC2 target group → Ignore it
+
+❌ Missing /health.php → Required
+
+❌ Duplicate ALB configs → Now removed
+
+
+## ✅ Charlie Cafe cleanup
+
+[ec2-cleanup.sh](../infrastructure/scripts/ec2-cleanup.sh)
+
+#### How to use:
+
+- Save this as ec2-cleanup.sh on your EC2.
+
+```
+nano ec2-cleanup.sh
+```
+
+- Make it executable:
+
+```
+chmod +x ec2-cleanup.sh
+```
+
+- Run it:
+
+```
+./ec2-cleanup.sh
+```
+
 ---
