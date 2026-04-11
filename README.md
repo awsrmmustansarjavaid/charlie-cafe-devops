@@ -1193,6 +1193,51 @@ http://YOUR-ALB-DNS
 
 > #### 👉 “ALB with blue/green target groups is already configured, with traffic currently routed to charlie-blue and health checks on /health.php.”
 
+### 📁 REQUIRED FILES (VERY IMPORTANT)
+
+You need 2 files in repo:
+
+### ✅ 1. appspec.yaml
+
+```
+version: 1
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: "TASK_DEFINITION"
+        LoadBalancerInfo:
+          ContainerName: "charlie-container"
+          ContainerPort: 80
+```
+
+### ✅ 2. .github/task-definition.json
+
+```
+{
+  "family": "charlie-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "YOUR_ECS_TASK_EXECUTION_ROLE_ARN",
+  "containerDefinitions": [
+    {
+      "name": "charlie-container",
+      "image": "IMAGE_PLACEHOLDER",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### 1️⃣ — ECS SERVICE (CRITICAL)
 
 - Go to ECS → Service
