@@ -228,6 +228,24 @@ The task execution role is needed for Fargate to pull images from ECR and write 
 
 This role will be used later in the task definition.
 
+#### ✅ (Optional) If Using Tasks With Roles
+
+Task Execution Role: If your ECS task needs to pull images from ECR or access secrets:
+
+- Go to IAM → Roles → Create Role → AWS Service → ECS → Task Execution Role.
+
+- Attach AmazonECSTaskExecutionRolePolicy.
+
+- Assign this role when creating task definitions.
+
+- Task Role: For your app code to call AWS services (like DynamoDB or S3):
+
+- Go to IAM → Roles → Create Role → AWS Service → ECS → Task Role.
+
+- Attach the needed custom policies (your DynamoDB, S3, SecretsManager policies).
+
+- Assign this role when creating task definitions.
+
 - ### 4️⃣ Create Task Definition
 
 - Go to ECS → Task Definitions → Create new Task Definition.
