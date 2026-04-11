@@ -1357,7 +1357,43 @@ Inside SAME deployment group:
 
 - Add: charlie-green-unhealthy-alarm
 
-### 5️⃣ — VERIFY ECS + ALB BEHAVIOR
+### 5️⃣ TRIGGER deploy.yml (VERY IMPORTANT)
+
+- You DO NOT run deploy.yml manually ❌
+
+- GitHub Actions runs it automatically ✅
+
+#### 🔹 METHOD 1 — Trigger via Push (RECOMMENDED)
+
+Run this on your local machine or EC2:
+
+```
+cd ~/charlie-cafe-devops
+
+git add .
+git commit -m "🚀 trigger deployment"
+git push origin main
+```
+
+#### 👉 This will:
+
+- Trigger GitHub Actions
+
+- Start your CI/CD pipeline automatically
+
+#### 🔹 METHOD 2 — Manual Trigger (Optional)
+
+If your workflow supports it:
+
+- Go to GitHub repo
+
+- Click Actions tab
+
+- Select workflow
+
+- Click Run workflow
+
+### 6️⃣ — VERIFY ECS + ALB BEHAVIOR
 
 After deployment:
 
@@ -1379,7 +1415,7 @@ If OK → 100% traffic to GREEN
 
 If FAIL → rollback to BLUE
 
-### 6️⃣ Charlie Cafe cleanup
+### 7️⃣ Charlie Cafe cleanup
 
 [ec2-cleanup.sh](./infrastructure/scripts/ec2-cleanup.sh)
 
@@ -1403,7 +1439,7 @@ chmod +x ec2-cleanup.sh
 ./ec2-cleanup.sh
 ```
 
-### 7️⃣ Charlie Cafe -- Github Logs
+### 8️⃣ Charlie Cafe -- Github Logs
 
 [Charlie Cafe -- Github Logs](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/Charlie-cafe_github-logs.md)
 
