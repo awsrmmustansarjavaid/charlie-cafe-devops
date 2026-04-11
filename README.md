@@ -242,11 +242,11 @@ AWS_SECRET_ACCESS_KEY
 
 > #### Optional Task 
 
-- Read more here [GitHub Auto-Deploy Config](./docs/GitHub_Auto-Deploy_Config.md)
+- Read more here [GitHub Auto-Deploy Config](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/GitHub_Auto-Deploy_Config.md)
 
 ### 🧱 Charlie Cafe -- Github Logs
 
-[Charlie Cafe -- Github Logs](./docs/Charlie-cafe_github-logs.md)
+[Charlie Cafe -- Github Logs](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/Charlie-cafe_github-logs.md)
 
 ```
 nano ~/github_logs_setup_capture.sh
@@ -714,11 +714,10 @@ chmod +x ec2_docker_health.sh
 
 Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
 
-
 ---
 ## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
 
-Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
+Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
 
 ### 1️⃣ CREATE ECR (DOCKER REGISTRY)
 
@@ -922,7 +921,7 @@ This role will be used later in the task definition.
 
 > #### NAT GW / VPC ENDPoint
 
-Read more [“Click here for configuration.”](./docs/charlie-cafe-devops-Network%20Connectivity.md)
+Read more [“Click here for configuration.”](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/charlie-cafe-devops-Network%20Connectivity.md)
 
 #### 🔹 Step 1: VPC Endpoints (Private Access)
 
