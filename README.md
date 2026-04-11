@@ -1120,7 +1120,7 @@ http://YOUR-ALB-DNS
 
 ### 4️⃣ GITHUB CI/CD (AUTO DEPLOY)
 
-### 1️⃣ Add GitHub Secrets
+- ### 1️⃣ Add GitHub Secrets
 
 #### ✅ REQUIRED SECRETS 
 
@@ -1144,17 +1144,35 @@ http://YOUR-ALB-DNS
 
 ✅ Everything you mentioned is already done.
 
-### 8️⃣ VERIFY DEPLOYMENT
+### 5️⃣ Commit & Push
 
-- ECS → Cluster → Service → Tasks → Running
+- Save the updated deploy.yml in .github/workflows/
+
+- Commit & push to main
+
+- GitHub Actions will automatically trigger
+
+- Check Actions tab → Logs for each step
+
+✅ If all steps succeed, your ECS service will be automatically updated whenever you push to main.
+
+### 6️⃣ Testing the ECS Deployment
+
+- Go to ECS → Cluster → charlie-cluster → Tasks
+
+- You should see new tasks running with the latest image
+
+- Go to ALB → Target Groups → charlie-blue → Targets
+
+- Status should be Healthy
+
+- Open your ALB DNS in the browser to test the live app
 
 #### 🔍 Open:
 
 ```
 http://YOUR-ALB-DNS
 ```
-
-
 
 ---
 ## 🌐 PHASE 4 — BLUE/GREEN DEPLOYMENT (ZERO DOWNTIME)
