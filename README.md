@@ -1,5 +1,105 @@
 # ☕ Charlie Cafe DevOps Project
 
+## ☕ Project Goal
+
+### 🎯 Primary Goal
+
+Build a scalable, secure, cloud-native café ordering system using modern DevOps practices.
+
+### 🎯 Technical Goals
+
+- Implement serverless backend (Lambda + API Gateway)
+
+- Use event-driven architecture (SQS)
+
+- Deploy containerized frontend (Docker → ECS)
+
+- Build CI/CD pipeline (GitHub Actions)
+
+- Ensure secure architecture (VPC + Secrets Manager + Cognito)
+
+### 🎯 Business Goal
+
+- Real-time order processing
+
+- Secure employee/admin system
+
+- Scalable system for future growth
+
+## ☕ Architecture Data Flow Diagram
+
+```
+User (Browser / Mobile)
+        ↓
+CloudFront (CDN + HTTPS)
+        ↓
+Application Load Balancer (ALB)
+        ↓
+Frontend (EC2 / ECS Docker Container)
+        ↓
+API Gateway
+        ↓
+Lambda Functions
+        ↓
+-----------------------------------------
+|           Backend Layer               |
+|  → SQS (Order Queue)                 |
+|  → DynamoDB (Menu / Orders / Metrics)|
+|  → RDS MySQL (Relational Data)       |
+|  → Secrets Manager (Credentials)     |
+-----------------------------------------
+        ↓
+CloudWatch Logs & Monitoring
+```
+
+## ☕ AWS Official Architecture Diagram (Text Version)
+
+Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
+
+```
+[User]
+   ↓
+[CloudFront]
+   ↓
+[Application Load Balancer]
+   ↓
+[ECS / EC2 - Docker Container (Frontend)]
+   ↓
+[API Gateway]
+   ↓
+[Lambda Functions]
+   ↓
+ ┌───────────────────────────────┐
+ | Backend Services              |
+ |-------------------------------|
+ | SQS (Order Queue)             |
+ | DynamoDB (NoSQL Tables)       |
+ | RDS (MySQL Database)          |
+ | Secrets Manager               |
+ └───────────────────────────────┘
+   ↓
+[CloudWatch]
+```
+
+### 💡 Pro Tip for Portfolio
+
+- #### Use:
+
+  - AWS official icons
+
+- #### Color coding:
+
+  🟦 Compute
+
+  🟧 Storage
+
+  🟪 Security
+
+  🟩 Networking
+
+
+
+
 ### 🔹 Overview
 
 #### Full-stack cloud-based cafe ordering system using:
@@ -155,6 +255,9 @@ Developer → GitHub → Docker → Local Testing
 - SSH client (e.g., PuTTY, Terminal) or AWS Cloud9
 
 - Git & GitHub basics
+
+
+
 
 ## 📁 Professional Repository Structure
 
