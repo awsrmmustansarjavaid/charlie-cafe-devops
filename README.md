@@ -472,7 +472,7 @@ For production-ready setup, you should also include:
 - Prerequisite setup is automated using a User Data script
 
 - The verification script ensures that the environment is properly configured and ready
-
+---
 ### 3️⃣ VPC ENDPOINTS
 
 ### 1️⃣ VPC Interface Endpoints
@@ -678,7 +678,7 @@ Frontend Users
 | Secrets Manager timeout  | No interface endpoint     |
 | RDS connection failed    | Wrong SG (0.0.0.0/0 used) |
 | CloudWatch logs missing  | Missing logs endpoint     |
-
+---
 ### 4️⃣ NAT Gateway (OPTIONAL INTERNET ACCESS FOR ECS)
 
 ### 1️⃣ NAT Gateway Architecture
@@ -778,7 +778,7 @@ Internet Gateway
    ↓
 ECR / AWS Services / Internet
 ```
-
+---
 ### 5️⃣ Cafe Database Configuration
 
 ### 1️⃣ — RDS Core Setup
@@ -1253,8 +1253,10 @@ Frontend Order → Lambda → SQS → Worker Lambda → DynamoDB (CafeOrders)
 | Mode        | On-Demand               |
 | Use Case    | Order Management System |
 
+### 3️⃣ Create DynamoDB CafeOrders TABLE
 
 
+---
 ### 6️⃣ ALB & CloudFront Configuration
 
 ### ⚖️ 1️⃣ Application Load Balancer (ALB)
