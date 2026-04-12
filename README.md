@@ -417,7 +417,50 @@ For production-ready setup, you should also include:
 
 🧪 SSH/HTTP in Lambda SG = optional (debug only)
 
+### 4️⃣ EC2 Configuration
 
+| Parameter      | Value                   |
+| -------------- | ----------------------- |
+| Name           | `CafeDevWebServer`      |
+| AMI            | Amazon Linux 2023       |
+| Instance Type  | `t2.micro`              |
+| VPC / Subnet   | Dev VPC / Public Subnet |
+| Security Group | `default-sg`            |
+| IAM Role       | `EC2-Cafe-Secrets-Role` |
+
+#### 🔹 EC2 User Data
+
+| Item        | Details                          |
+| ----------- | -------------------------------- |
+| Script Name | `charlie-cafe-devops.sh`         |
+| Purpose     | Install and configure LAMP stack |
+| Location    | GitHub (User Data script)        |
+
+
+### 5️⃣ EC2 Access & Setup
+
+#### 🔹 Connect to EC2
+
+| Step           | Command                                      |
+| -------------- | -------------------------------------------- |
+| Set Permission | `chmod 400 CafeDevKey.pem`                   |
+| SSH Login      | `ssh -i CafeDevKey.pem ec2-user@<PUBLIC-IP>` |
+
+#### 🔹 Verify User Data Execution
+
+| Step            | Command                        |
+| --------------- | ------------------------------ |
+| Open Script     | `sudo nano lamp-verify.sh`     |
+| Make Executable | `sudo chmod +x lamp-verify.sh` |
+| Run Script      | `sudo ./lamp-verify.sh`        |
+
+#### 💡 Notes 
+
+- EC2 uses Amazon Linux 2023
+
+- LAMP setup is automated via User Data script
+
+- Verification script ensures environment is ready
 
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
