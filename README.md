@@ -118,7 +118,7 @@ Lambda Functions
 CloudWatch Logs & Monitoring
 ```
 
-## ☕ AWS Official Architecture Diagram (Text Version)
+## ☕ AWS Official Architecture Diagram
 
 Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
 
@@ -162,6 +162,39 @@ Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
   🟪 Security
 
   🟩 Networking
+
+## ☕ Serverless Microservices Data Flow
+
+```
+User → CloudFront → ALB → ECS/EC2 → API Gateway → Lambda
+                                      ↓
+                          SQS → Worker Lambda
+                                      ↓
+                         DynamoDB + RDS
+```
+
+## ☕ Backend Data Flow
+
+```
+Frontend → API Gateway → Lambda → SQS → Worker Lambda → DB
+```
+
+## ☕ Authentication (Cognito) Data Flow
+
+```
+User → Cognito → JWT Token → Frontend → API → Lambda
+```
+
+## ☕ CI/CD Flow Diagram
+
+```
+Developer → GitHub → GitHub Actions → AWS (ECS / Lambda)
+```
+
+## ☕ CI/CD Flow Diagram
+
+
+
 
 ### ☕ Database Diagrams
 
