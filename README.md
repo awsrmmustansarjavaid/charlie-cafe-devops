@@ -1253,7 +1253,121 @@ Frontend Order → Lambda → SQS → Worker Lambda → DynamoDB (CafeOrders)
 | Mode        | On-Demand               |
 | Use Case    | Order Management System |
 
-### 4️⃣ Create DynamoDB CafeOrders TABLE
+### 4️⃣ Create DynamoDB CafeMenu TABLE (ITEM COST TABLE SETUP)
+
+### 1️⃣ Create Table Configuration
+
+#### 🔹 Basic Setup
+
+| Field         | Value       |
+| ------------- | ----------- |
+| Table Name    | `CafeMenu`  |
+| Partition Key | `item_name` |
+| Key Type      | String (PK) |
+| Sort Key      | ❌ None      |
+
+#### 🔹 Table Settings
+
+| Setting       | Value                 |
+| ------------- | --------------------- |
+| Table Class   | Standard              |
+| Capacity Mode | On-Demand             |
+| Encryption    | Default (AWS Managed) |
+| Tags          | Optional (Skip)       |
+
+#### ⚠️ Important Rules
+
+| Rule          | Status                      |
+| ------------- | --------------------------- |
+| Sort Key      | ❌ Not allowed               |
+| Key Name      | Must be `item_name` exactly |
+| Capacity Mode | Must be On-Demand           |
+
+#### 🔹 Sample Data Structure
+
+| Attribute | Type   | Purpose         |
+| --------- | ------ | --------------- |
+| item_name | String | Menu item name  |
+| base_cost | Number | Item base price |
+
+#### 🔹 Insert Menu Items (Test Data)
+
+#### 🔹 Latte
+
+| Field     | Value |
+| --------- | ----- |
+| item_name | Latte |
+| base_cost | 1.5   |
+
+#### 🔹 ADD MORE ITEMS (RECOMMENDED)
+
+**♻️ Repeat Create item for:**
+
+2. **Cappuccino:**
+
+```
+item_name = Cappuccino
+base_cost = 1.8
+```
+
+3. **Tea:**
+
+```
+item_name = Tea
+base_cost = 0.6
+```
+
+4. **Coffee:**
+
+```
+item_name = Juice
+base_cost = 1.2
+```
+
+5. **Juice**
+
+```
+item_name = Juice
+base_cost = 1.2
+```
+
+#### 🔹 Data Flow
+
+```
+DynamoDB (CafeMenu)
+   ↓
+Lambda (Price Fetch)
+   ↓
+Order Calculation Service
+   ↓
+Frontend Display
+```
+
+### 💡 Notes
+
+- CafeMenu stores price reference data
+
+- Used for order calculation logic
+
+- On-demand mode = auto scaling
+
+- No schema required (NoSQL flexibility)
+
+- Must have at least 2–3 items for testing
+
+### 🚀 Final Summary
+
+| Component  | Value                 |
+| ---------- | --------------------- |
+| Table Name | CafeMenu              |
+| Key        | item_name             |
+| Type       | NoSQL Pricing Table   |
+| Mode       | On-Demand             |
+| Use Case   | Menu Price Management |
+
+### 5️⃣ Create DynamoDB CafeMenu TABLE (ITEM COST TABLE SETUP)
+
+
 
 
 ---
