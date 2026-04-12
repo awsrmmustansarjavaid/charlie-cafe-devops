@@ -720,7 +720,6 @@ ssh-keyscan github.com >> /home/ec2-user/.ssh/known_hosts
 chown -R ec2-user:ec2-user /home/ec2-user/.ssh
 
 echo "✅ EC2 Bootstrap completed"
-
 ```
 
 ---
