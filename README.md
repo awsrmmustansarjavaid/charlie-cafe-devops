@@ -675,7 +675,23 @@ Instead of invalidating every time, use versioning:
 
 ### 🔐 4️⃣ Cognito Integration
 
+| Parameter            | Value                          |
+| -------------------- | ------------------------------ |
+| Hosted UI Return URL | `https://xxxxx.cloudfront.net` |
+| Login Flow           | ALB → CloudFront → EC2         |
+| Requirement          | HTTPS mandatory                |
 
+#### 💡 Key Notes
+
+- ALB handles traffic routing + SSL termination
+
+- CloudFront handles global caching + HTTPS enforcement
+
+- Always use HTTPS (required for Cognito)
+
+- Avoid caching API/auth responses
+
+- Use versioning instead of frequent invalidations
 
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
