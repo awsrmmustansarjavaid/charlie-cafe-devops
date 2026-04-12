@@ -247,20 +247,18 @@ AWS_SECRET_ACCESS_KEY
 
 - Go to GitHub repo → Settings → Secrets → Actions → Add the following secrets:
 
-| Secret Name             | Value                                |
-| ----------------------- | ------------------------------------ |
-| `AWS_ACCESS_KEY_ID`     | Your IAM user access key             |
-| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret key             |
-| `AWS_REGION`            | e.g., `us-east-1`                    |
-| `AWS_ACCOUNT_ID`        | Your AWS account ID                  |
-| `EC2_INSTANCE_ID`       | `i-0123456789abcdef0` (target EC2) |
-| `EC2_USER`              | `ec2-user` (default username)      |
-| `ECR_REPO`              | If using containerized Lambda or ECS |
-| `ECS_CLUSTER`           | If using ECS                         |
-| `ECS_SERVICE`           | If using ECS                         |
-
-
-
+| Secret Name             | Value                                          |
+| ----------------------- | ---------------------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | Your IAM user access key                       |
+| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret key                       |
+| `AWS_REGION`            | e.g., `us-east-1`                              |
+| `AWS_ACCOUNT_ID`        | Your AWS account ID                            |
+| `EC2_INSTANCE_ID`       | `i-0123456789abcdef0` (target EC2)             |
+| `EC2_USER`              | `ec2-user` (default username)                  |
+| `ECR_REPO`              | If using containerized Lambda or ECS           |
+| `ECS_CLUSTER`           | If using ECS                                   |
+| `ECS_SERVICE`           | If using ECS                                   |
+| `RDS_SECRET_ARN`        | ARN of your AWS Secrets Manager RDS credential |
 
 
 
