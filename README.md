@@ -612,26 +612,6 @@ Attributes:
 
 #### Full-stack cloud-based cafe ordering system using:
 
-- AWS Lambda
-
-- API Gateway
-
-- RDS MySQL
-
-- Docker (local dev)
-
-- GitHub CI/CD
-
-### 🔹 Architecture
-
-Include diagram (VERY IMPORTANT for job portfolio)
-
-```
-User → CloudFront → API Gateway → Lambda → RDS
-                     ↓
-                    S3
-```
-
 ### 🔹 Features
 
 - Order system
@@ -642,53 +622,11 @@ User → CloudFront → API Gateway → Lambda → RDS
 
 - Live order status
 
-### 🔹 Local Setup (Docker)
-
-```
-docker-compose up --build
-```
-
 ### 🔹 AWS Deployment
 
 - **Refer:** [AWS Charlie Cafe Project](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/1eec632562867d778e7f490f9e0efcfc57027b6f/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20%28Dev%20%2B%20Prod%29/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project.md)
 
-### 🔹 DevOps Features
-
-- Dockerized frontend
-
-- GitHub CI/CD
-
-- Automated build pipeline
-
 ### 🚀 1. Final DevOps Architecture (Your Project Now)
-
-#### You already have:
-
-- Frontend (HTML, CSS, JS, PHP)
-
-- Backend (Lambda Python)
-
-- RDS + Secrets Manager
-
-- Bash automation scripts
-
-#### We will enhance it like this:
-
-```
-Developer → GitHub → Docker → Local Testing
-                      ↓
-                CI/CD Pipeline
-                      ↓
-                AWS Deployment
-```
-
-#### Using:
-
-- GitHub
-
-- Docker
-
-- GitHub Actions
 
 ### ✅ Prerequisites
 
