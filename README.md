@@ -160,7 +160,8 @@ charlie-cafe-devops/
 
 #### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
 
-### 1️⃣ Initialize GitHub Repo
+---
+## 1️⃣ Initialize GitHub Repo
 
 ### 1️⃣ Create repo on GitHub
 
@@ -215,6 +216,10 @@ Provide user access to the AWS Management Console → ❌ UNCHECK
 
 - Policy Name: GitHub-Actions
 
+#### ✅ Paste 
+
+[GitHub-Actions](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie%20Cafe%20IAm%20Policies/GitHub-Actions.json)
+
 - 👉 Then attach this policy to your user
 
 ### 3️⃣ 🔐 Create IAM User Access Key for GitHub
@@ -238,11 +243,26 @@ AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 ```
 
-### 3️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
+### 4️⃣ Configure AWS Secrets in GitHub
 
-> #### Optional Task 
+- Go to GitHub repo → Settings → Secrets → Actions → Add the following secrets:
 
-- Read more here [GitHub Auto-Deploy Config](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/GitHub_Auto-Deploy_Config.md)
+| Secret Name             | Value                                |
+| ----------------------- | ------------------------------------ |
+| `AWS_ACCESS_KEY_ID`     | Your IAM user access key             |
+| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret key             |
+| `AWS_REGION`            | e.g., `us-east-1`                    |
+| `AWS_ACCOUNT_ID`        | Your AWS account ID                  |
+| `EC2_INSTANCE_ID`       | `i-0123456789abcdef0` (target EC2) |
+| `EC2_USER`              | `ec2-user` (default username)      |
+| `ECR_REPO`              | If using containerized Lambda or ECS |
+| `ECS_CLUSTER`           | If using ECS                         |
+| `ECS_SERVICE`           | If using ECS                         |
+
+
+
+
+
 
 ### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
@@ -297,19 +317,7 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 [Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
 
-### 2️⃣ Configure AWS Secrets in GitHub
-
-- Go to GitHub repo → Settings → Secrets → Actions → Add the following secrets:
-
-| Secret Name             | Value                                |
-| ----------------------- | ------------------------------------ |
-| `AWS_ACCESS_KEY_ID`     | Your IAM user access key             |
-| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret key             |
-| `AWS_REGION`            | e.g., `us-east-1`                    |
-| `AWS_ACCOUNT_ID`        | Your AWS account ID                  |
-| `ECR_REPO`              | If using containerized Lambda or ECS |
-| `ECS_CLUSTER`           | If using ECS                         |
-| `ECS_SERVICE`           | If using ECS                         |
+### 2️⃣ 
 
 ### 3️⃣ Basic Lambda Configurations
 
@@ -1357,7 +1365,13 @@ Inside SAME deployment group:
 
 - Add: charlie-green-unhealthy-alarm
 
-### 5️⃣ TRIGGER deploy.yml (VERY IMPORTANT)
+### 5️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
+
+> #### Optional Task 
+
+- Read more here [GitHub Auto-Deploy Config](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/GitHub_Auto-Deploy_Config.md)
+
+### ✅ TRIGGER deploy.yml (VERY IMPORTANT)
 
 - You DO NOT run deploy.yml manually ❌
 
