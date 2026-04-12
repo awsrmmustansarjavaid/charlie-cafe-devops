@@ -863,9 +863,188 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 
 - Credentials are never hardcoded in application
 
-### 4️⃣ DynamoDB
+### 4️⃣ DynamoDB Setup
 
+### 1️⃣ Create DynamoDB Table
 
+#### 🔹 Table Configuration
+
+| Parameter     | Value          |
+| ------------- | -------------- |
+| Table Name    | `CafeMenu`     |
+| Partition Key | `item`         |
+| Key Type      | String         |
+| Sort Key      | ❌ Not required |
+
+#### 🔹 Capacity Settings
+
+| Setting       | Value     |
+| ------------- | --------- |
+| Capacity Mode | On-Demand |
+
+#### 💡 Why On-Demand?
+
+| Reason               | Benefit               |
+| -------------------- | --------------------- |
+| No planning required | Auto scaling          |
+| Cost efficient       | Free-tier friendly    |
+| Ideal use case       | Learning + small apps |
+
+#### 🔹 Default Settings (Keep As-Is)
+
+| Setting             | Value           |
+| ------------------- | --------------- |
+| Encryption          | AWS Owned Key   |
+| Table Class         | Standard        |
+| Deletion Protection | Disabled        |
+| Tags                | Optional (skip) |
+
+#### 🔹 Table Status
+
+| Step         | Status         |
+| ------------ | -------------- |
+| Create Table | Click “Create” |
+| Wait Status  | `ACTIVE`       |
+
+### 🍽️ 2️⃣ Insert Menu Items (Cafe Data)
+
+#### 🔹 Item Structure
+
+| Attribute | Type   |
+| --------- | ------ |
+| item      | String |
+| price     | Number |
+
+#### ☕ Menu Items
+
+| Item        | JSON Format                         |
+| ----------- | ----------------------------------- |
+| Coffee      | `"item": "Coffee", "price": 3`      |
+| Latte       | `"item": "Latte", "price": 5`       |
+| Tea         | `"item": "Tea", "price": 2`         |
+| Cappuccino  | `"item": "Cappuccino", "price": 8`  |
+| Fresh Juice | `"item": "Fresh Juice", "price": 6` |
+
+#### 🧾 3️⃣ JSON Item Examples
+
+#### ☕ Coffee
+
+You will see a JSON editor.
+
+Replace everything with:
+
+```
+{
+  "item": {
+    "S": "Coffee"
+  },
+  "price": {
+    "N": "3"
+  }
+}
+```
+
+- ✅ Click Create item
+
+#### 🥛 Latte
+
+Click Create item again:
+
+```
+{
+  "item": {
+    "S": "Latte"
+  },
+  "price": {
+    "N": "5"
+  }
+}
+```
+
+- ✅ Click Create item
+
+#### 🍵 Tea
+
+Click Create item again:
+
+```
+{
+  "item": {
+    "S": "Tea"
+  },
+  "price": {
+    "N": "2"
+  }
+}
+```
+
+- ✅ Click Create item
+
+---
+
+#### ☕ Cappuccino
+
+```
+{
+  "item": {
+    "S": "Cappuccino"
+  },
+  "price": {
+    "N": "8"
+  }
+}
+```
+
+- ✅ Click Create item
+
+---
+
+#### 🍹 Fresh Juice
+
+```
+{
+  "item": {
+    "S": "Fresh Juice"
+  },
+  "price": {
+    "N": "6"
+  }
+}
+```
+
+- ✅ Click Create item
+
+#### 🔄 Data Flow
+
+```
+DynamoDB Table (CafeMenu)
+   ↓
+API Gateway / Lambda
+   ↓
+Frontend (Cafe Website)
+```
+
+### 💡 Notes
+
+- DynamoDB uses NoSQL key-value structure
+
+- item is the primary identifier
+
+- On-demand mode = auto scaling
+
+- Perfect for menu / product catalog
+
+- No need for relational schema
+
+### 🚀 Final Summary
+
+| Component     | Value        |
+| ------------- | ------------ |
+| Database Type | DynamoDB     |
+| Table Name    | CafeMenu     |
+| Primary Key   | item         |
+| Mode          | On-Demand    |
+| Use Case      | Menu Storage |
 
 
 
