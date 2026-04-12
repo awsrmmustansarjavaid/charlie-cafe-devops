@@ -428,6 +428,10 @@ For production-ready setup, you should also include:
 | Security Group | `default-sg`            |
 | IAM Role       | `EC2-Cafe-Secrets-Role` |
 
+#### 🌐 EC2 IAM ROle 
+
+[EC2-Cafe-Secrets-Role](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie%20Cafe%20IAm%20Policies/EC2-Cafe-Secrets-Role.json)
+
 #### 🔹 EC2 User Data
 
 | Item        | Details                          |
@@ -436,6 +440,9 @@ For production-ready setup, you should also include:
 | Purpose     | Install and configure LAMP stack |
 | Location    | GitHub (User Data script)        |
 
+#### 🌐 EC2 User Data Script
+
+[charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
 
 ### 5️⃣ EC2 Access & Setup
 
@@ -448,19 +455,23 @@ For production-ready setup, you should also include:
 
 #### 🔹 Verify User Data Execution
 
-| Step            | Command                        |
-| --------------- | ------------------------------ |
-| Open Script     | `sudo nano lamp-verify.sh`     |
-| Make Executable | `sudo chmod +x lamp-verify.sh` |
-| Run Script      | `sudo ./lamp-verify.sh`        |
+| Step            | Command                                            |
+| --------------- | -------------------------------------------------- |
+| Open Script     | `sudo nano charlie-cafe-full-devops-verify.sh`     |
+| Make Executable | `sudo chmod +x charlie-cafe-full-devops-verify.sh` |
+| Run Script      | `sudo ./charlie-cafe-full-devops-verify.sh`        |
 
-#### 💡 Notes 
+#### 🌐 EC2 Verify Script
 
-- EC2 uses Amazon Linux 2023
+[charlie-cafe-full-devops-verify.sh](./infrastructure/scripts/charlie-cafe-full-devops-verify.sh)
 
-- LAMP setup is automated via User Data script
+#### 💡 Notes
 
-- Verification script ensures environment is ready
+- EC2 instance uses Amazon Linux 2023
+
+- Prerequisite setup is automated using a User Data script
+
+- The verification script ensures that the environment is properly configured and ready
 
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
