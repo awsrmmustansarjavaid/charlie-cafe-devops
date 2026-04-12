@@ -473,6 +473,70 @@ For production-ready setup, you should also include:
 
 - The verification script ensures that the environment is properly configured and ready
 
+### 5️⃣ Cafe Database Configuration
+
+### 1️⃣ — RDS Core Setup
+
+#### 🔹 Infrastructure Setup
+
+| Step | Component          | Configuration                                                                                                                                                     |
+| ---- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1️⃣  | DB Subnet Group    | Name: `CafeRDSSubnetGroup`<br>VPC: `CafeDevVPC`<br>Subnets: Private Subnets (2 AZs)                                                                               |
+| 2️⃣  | RDS Security Group | Name: `CafeRDS-SG`<br>Inbound: MySQL (3306) from `Lambda-SG`, `EC2-Web-SG`<br>Outbound: All traffic                                                               |
+| 3️⃣  | RDS Instance       | Engine: MySQL/MariaDB<br>DB Name: `cafedb`<br>Username: `cafe_user`<br>Password: `StrongPassword123`<br>Public Access: ❌ Disabled<br>Security Group: `CafeRDS-SG` |
+
+### 2️⃣ — AWS Secrets Manager
+
+#### 🔹 Store Database Credentials
+
+| Item        | Value                            |
+| ----------- | -------------------------------- |
+| Secret Name | `CafeDevDBSM`                    |
+| Secret Type | Key/Value (Other type of secret) |
+| Username    | `cafe_user`                      |
+| Password    | `StrongPassword123`              |
+| Host        | RDS Endpoint                     |
+| DB Name     | `cafe_db`                        |
+
+#### 🔹 Secret JSON Format
+
+```
+{
+  "username": "cafe_user",
+  "password": "StrongPassword123",
+  "host": "your-rds-endpoint.amazonaws.com",
+  "dbname": "cafe_db"
+}
+```
+
+#### 🔹 Example (Real Format)
+
+```
+{
+  "username": "cafe_user",
+  "password": "StrongPassword123",
+  "host": "cafedb.abc123xyz.us-east-1.rds.amazonaws.com",
+  "dbname": "cafe_db"
+}
+```
+
+#### 🔹 Secret ARN
+
+| Item       | Value                                                                    |
+| ---------- | ------------------------------------------------------------------------ |
+| Secret ARN | `arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeDevDBSM-xxxxx` |
+
+#### 💡 Important Notes
+
+- RDS is NOT public (secure private DB)
+
+- Only Lambda / EC2 with proper SG can access MySQL (3306)
+
+- Secret ARN is used inside Lambda / backend code
+
+- Credentials are never hardcoded in application
+
+
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
 
