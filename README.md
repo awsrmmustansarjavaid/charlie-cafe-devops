@@ -476,7 +476,7 @@ DynamoDB (Metrics Table)
 Dashboard (Admin Panel)
 ```
 
-## ☕ RDS vs DynamoDB (COMPARISON FLOW)
+## ☕ RDS & DynamoDB (COMPARISON FLOW)
 
 ```
 Frontend
@@ -489,6 +489,26 @@ RDS       DynamoDB
 (Order DB)   (Menu / Metrics)
    ↓            ↓
 Response ← Combined Data
+```
+
+## ☕ RDS & DynamoDB (ADVANCED)
+
+```
+User places order
+   ↓
+API Gateway
+   ↓
+Lambda (validate + price from DynamoDB)
+   ↓
+Send to SQS
+   ↓
+Worker Lambda
+   ↓
+Store in RDS
+   ↓
+Update DynamoDB (status + metrics)
+   ↓
+Frontend fetches live status
 ```
 
 ## ☕ DB END-2-END DATA FLOW
