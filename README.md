@@ -163,6 +163,36 @@ Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
 
   🟩 Networking
 
+## ☕ Full System Flow (END-TO-END)
+
+```
+User
+ ↓
+CloudFront
+ ↓
+ALB
+ ↓
+ECS (Docker Container - Frontend)
+ ↓
+API Gateway
+ ↓
+Lambda
+ ↓
+SQS → Worker Lambda
+ ↓
+RDS (Orders DB)
+ ↓
+DynamoDB (Menu / Metrics)
+ ↓
+Response to User
+```
+
+#### 💡 Add:
+
+- Cognito (Auth)
+
+- Secrets Manager  
+
 ## ☕ Serverless Microservices Data Flow
 
 ```
@@ -200,6 +230,46 @@ Users
 
 - CodeDeploy (blue/green)
 
+## ☕ CI/CD Pipeline Flow
+
+```
+Developer Push Code
+   ↓
+GitHub
+   ↓
+GitHub Actions Trigger
+   ↓
+Build Docker Image
+   ↓
+Run Tests
+   ↓
+Push to ECR
+   ↓
+Update ECS Task Definition
+   ↓
+Deploy via CodeDeploy
+   ↓
+Traffic Shift (Blue → Green)
+   ↓
+Live Application
+```
+
+## ☕ AWS ↔ GitHub CI/CD Flow
+
+```
+GitHub Actions
+   ↓ (IAM Access Keys)
+AWS CLI
+   ↓
+ECR (Push Image)
+   ↓
+ECS (Pull Image)
+   ↓
+CodeDeploy
+   ↓
+ALB Traffic Switch
+```
+
 ## ☕ Frontend ↔ Backend Data Flow
 
 ```
@@ -232,17 +302,49 @@ Response → Frontend → User
 Frontend → API Gateway → Lambda → SQS → Worker Lambda → DB
 ```
 
-## ☕ Authentication (Cognito) Data Flow
+## ☕ Authentication Flow (Cognito) 🔐 Data Flow
 
 ```
-User → Cognito → JWT Token → Frontend → API → Lambda
+User
+ ↓
+CloudFront (Frontend)
+ ↓
+Redirect to Cognito Hosted UI
+ ↓
+User Login
+ ↓
+Cognito returns JWT Token
+ ↓
+Frontend stores token
+ ↓
+API Gateway (Authorization Header)
+ ↓
+Lambda validates JWT
+ ↓
+Access granted → RDS / DynamoDB
+```
+
+## ☕ API Flow (Frontend → Lambda → DB) 
+
+```
+Frontend (JS / PHP)
+   ↓
+API Gateway
+   ↓
+Lambda Function
+   ↓
+Secrets Manager (DB credentials)
+   ↓
+RDS (MySQL)
+   ↓
+DynamoDB (optional)
+   ↓
+Response → Frontend
 ```
 
 ## ☕ CI/CD Flow Diagram
 
-```
-Developer → GitHub → GitHub Actions → AWS (ECS / Lambda)
-```
+
 
 ## ☕ ECS + ECR Flow
 
