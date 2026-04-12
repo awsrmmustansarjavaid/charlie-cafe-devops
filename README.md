@@ -163,8 +163,71 @@ Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
 
   🟩 Networking
 
+### ☕ Database Diagrams
 
+### 🗄️ RDS (Relational Database)
 
+```
+employees
+---------
+id (PK)
+cognito_user_id (UNIQUE)
+name
+job_title
+salary
+start_date
+```
+
+#### Relationship:
+- Cognito sub → cognito_user_id
+
+### ⚡ DynamoDB Tables
+
+#### 1. CafeOrders
+
+```
+PK: order_id
+
+Attributes:
+- table_number
+- item
+- quantity
+- total_amount
+- payment_method
+- payment_status
+- status
+- created_at
+```
+
+#### 2. CafeMenu
+
+```
+PK: item_name
+
+Attributes:
+- base_cost
+```
+
+#### 3. CafeOrderMetrics
+
+```
+PK: metric
+
+Attributes:
+- count
+```
+
+#### 4. CafeAttendance
+
+```
+PK: employee_id
+SK: date
+
+Attributes:
+- check_in
+- check_out
+- role
+```
 
 ### 🔹 Overview
 
