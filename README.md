@@ -863,7 +863,221 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 
 - Credentials are never hardcoded in application
 
-### 4️⃣ DynamoDB Setup
+### 4️⃣ ☕ Employee ID System (Cognito ↔ RDS Integration)
+
+### 🔄 Flow Diagram (Concept)
+
+- Employee signs up in Amazon Cognito
+
+- Cognito generates a unique sub (User ID)
+
+- Lambda / Admin inserts employee into RDS
+
+- RDS stores Cognito ID as reference
+
+- Frontend uses Cognito token → fetch employee data from RDS
+
+### 🔄 RDS Table Structure (Employee Master Table)
+
+| Column Name     | Data Type           | Purpose                 |
+| --------------- | ------------------- | ----------------------- |
+| id              | INT AUTO_INCREMENT  | Internal DB ID          |
+| cognito_user_id | VARCHAR(100) UNIQUE | Links Cognito user      |
+| name            | VARCHAR(100)        | Employee name           |
+| job_title       | VARCHAR(50)         | Role (Barista, Manager) |
+| salary          | DECIMAL(10,2)       | Salary                  |
+| start_date      | DATE                | Joining date            |
+
+### 🔄 Cognito → Employee Identity Mapping
+
+| Cognito Attribute  | Meaning        | Usage in RDS                |
+| ------------------ | -------------- | --------------------------- |
+| sub                | Unique User ID | Stored as `cognito_user_id` |
+| email              | Login email    | Optional mapping            |
+| cognito:username   | Username       | UI reference                |
+| custom:employee_id | Optional DB ID | Alternative mapping         |
+
+### 1️⃣ Get Cognito User Info
+
+Example Cognito user:
+
+| Field    | Value                                  |
+| -------- | -------------------------------------- |
+| username | ali                                    |
+| sub      | `74e8a458-a011-700d-dcdb-df9692b61962` |
+| group    | Employee                               |
+
+### 2️⃣ Insert Employee into RDS
+
+```
+INSERT INTO employees
+(cognito_user_id, name, job_title, salary, start_date)
+VALUES
+('74e8a458-a011-700d-dcdb-df9692b61962',
+ 'Ali',
+ 'Barista',
+ 40000,
+ '2026-03-05');
+```
+
+### 3️⃣ Verify Employee in RDS
+
+```
+SELECT * FROM employees
+WHERE cognito_user_id = '74e8a458-a011-700d-dcdb-df9692b61962';
+```
+
+### 4️⃣ Batch Insert (Optional)
+
+```
+INSERT INTO employees (cognito_user_id, name, job_title, salary, start_date)
+VALUES
+('ID-2', 'Bob', 'Chef', 50000, '2026-03-01'),
+('ID-3', 'Carol', 'Manager', 60000, '2026-02-15');
+```
+
+### 5️⃣ Integration Query (App Use Case)
+
+```
+SELECT name, job_title, salary
+FROM employees
+WHERE cognito_user_id = '74e8a458-a011-700d-dcdb-df9692b61962';
+```
+
+### 6️⃣ Cognito Configuration (Required Setup)
+
+#### 🔐 App Client Settings
+
+| Setting    | Value                    |
+| ---------- | ------------------------ |
+| OAuth Flow | Authorization Code Grant |
+| Scope      | openid, email, profile   |
+
+#### 🔁 Redirect URLs
+
+| Type     | URL                                                                                                  |
+| -------- | ---------------------------------------------------------------------------------------------------- |
+| Callback | [https://your-cloudfront-url/employee-portal.html](https://your-cloudfront-url/employee-portal.html) |
+| Logout   | [https://your-cloudfront-url/employee-login.html](https://your-cloudfront-url/employee-login.html)   |
+
+#### 🌐 Cognito Hosted Domain
+
+- Example: charlie-cafe-auth
+
+- Login URL:
+
+```
+https://charlie-cafe-auth.auth.us-east-1.amazoncognito.com/login
+```
+
+### 🌐 Login Flow (Frontend)
+
+#### 🔑 Login URL Example
+
+```
+https://charlie-cafe-auth.auth.us-east-1.amazoncognito.com/login
+?client_id=YOUR_CLIENT_ID
+&response_type=code
+&scope=openid+email+profile
+&redirect_uri=https://your-cloudfront-url/employee-portal.html
+```
+
+#### 🔁 After Login
+
+Cognito returns:
+
+```
+employee-portal.html?code=xxxx
+```
+
+Frontend exchanges code → token
+
+### 🔑 Token Verification (Frontend)
+
+```
+console.log(parseJwt(localStorage.getItem("id_token")));
+```
+
+#### ✅ Expected Token Output
+
+```
+{
+  "sub": "74e8a458-a011-700d-dcdb-df9692b61962",
+  "email": "ali@charliecafe.com",
+  "cognito:username": "ali",
+  "custom:employee_id": "5"
+}
+```
+
+### 🌀 RDS ↔ Cognito Integration Logic
+
+| Step | Action                   |
+| ---- | ------------------------ |
+| 1    | User logs in via Cognito |
+| 2    | Get `sub` from token     |
+| 3    | Use `sub` to query RDS   |
+| 4    | Fetch employee record    |
+| 5    | Return data to frontend  |
+
+### 🌀 Lambda Automation (Best Practice)
+
+#### ⚡ Auto Employee Creation (Post Confirmation Trigger)
+
+```
+INSERT INTO employees 
+(cognito_user_id, name, job_title, salary, start_date)
+VALUES (%s, %s, %s, %s, %s)
+```
+
+#### 🔄 Workflow:
+
+| Event                | Action            |
+| -------------------- | ----------------- |
+| Cognito user created | Lambda triggered  |
+| Lambda executes      | Inserts into RDS  |
+| Employee ready       | Portal auto-syncs |
+
+### ⚒ Final Verification Checklist
+
+#### ✅ RDS Check
+
+```
+SHOW TABLES;
+SELECT * FROM employees;
+```
+
+#### ✅ Cognito Check
+
+- User pool active
+
+- App client configured
+
+- Hosted UI enabled
+
+- OAuth scopes correct
+
+#### ✅ Integration Check
+
+- Token contains sub
+
+- RDS stores cognito_user_id
+
+- Query returns employee data
+
+### 🎯 Final Result
+
+✔ Cognito handles authentication
+
+✔ RDS stores employee profile
+
+✔ sub links both systems
+
+✔ Frontend uses token to fetch employee data
+
+✔ Lambda can automate employee creation
+
+---
+### 5️⃣ DynamoDB Setup
 
 ### 1️⃣ Create DynamoDB CafeMenu Table 
 
