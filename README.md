@@ -1137,7 +1137,121 @@ Frontend Dashboard
 | Mode        | On-Demand           |
 | Use Case    | Dashboard analytics |
 
-### 3️⃣ Create DynamoDB METRICS TABLE
+### 3️⃣ Create DynamoDB CafeOrders TABLE
+
+### 1️⃣ Create Table Configuration
+
+| Field         | Value                 |
+| ------------- | --------------------- |
+| Table Name    | `CafeOrders`          |
+| Partition Key | `order_id`            |
+| Key Type      | String                |
+| Sort Key      | ❌ None                |
+| Table Class   | Standard              |
+| Capacity Mode | On-Demand             |
+| Encryption    | Default (AWS Managed) |
+
+#### 🔹 Table Creation Status
+
+| Step         | Status         |
+| ------------ | -------------- |
+| Create Table | Click “Create” |
+| Wait Time    | 1–2 minutes    |
+| Final Status | `ACTIVE`       |
+
+#### 🔑 Primary Key Verification
+
+| Parameter     | Value      |
+| ------------- | ---------- |
+| Partition Key | `order_id` |
+| Type          | String     |
+
+⚠️ If not correct → STOP setup (critical dependency for system)
+
+### 3️⃣ Order Item Structure
+
+| Attribute      | Type   | Description           |
+| -------------- | ------ | --------------------- |
+| order_id       | String | Unique order ID       |
+| table_number   | Number | Customer table number |
+| item           | String | Menu item             |
+| quantity       | Number | Quantity ordered      |
+| total_amount   | Number | Total price           |
+| payment_method | String | CASH / CARD           |
+| payment_status | String | PENDING / PAID        |
+| status         | String | Order state           |
+| created_at     | String | Timestamp             |
+
+### 4️⃣ Test Items
+
+#### 🔹 Test Order 1 (CASH – PENDING)
+
+```
+{
+  "order_id": { "S": "ORD-TEST-001" },
+  "table_number": { "N": "5" },
+  "item": { "S": "Coffee" },
+  "quantity": { "N": "2" },
+  "total_amount": { "N": "6" },
+  "payment_method": { "S": "CASH" },
+  "payment_status": { "S": "PENDING" },
+  "status": { "S": "RECEIVED" },
+  "created_at": { "S": "2026-01-14T10:30:00Z" }
+}
+```
+
+#### 🔹 Test Order 2 (CARD – PENDING)
+
+```
+{
+  "order_id": { "S": "ORD-TEST-002" },
+  "table_number": { "N": "5" },
+  "item": { "S": "Coffee" },
+  "quantity": { "N": "2" },
+  "total_amount": { "N": "6" },
+  "payment_method": { "S": "CARD" },
+  "payment_status": { "S": "PENDING" },
+  "status": { "S": "RECEIVED" },
+  "created_at": { "S": "2026-01-14T10:30:00Z" }
+}
+```
+
+#### 🔎 Verification Checklist
+
+| Check           | Expected Result |
+| --------------- | --------------- |
+| Item visible    | Yes             |
+| payment_method  | CASH / CARD     |
+| payment_status  | PENDING         |
+| order_id unique | Yes             |
+
+#### 🔄 Data Flow
+
+```
+Frontend Order → Lambda → SQS → Worker Lambda → DynamoDB (CafeOrders)
+```
+
+### 💡 DevOps Notes
+
+- order_id is the primary system identifier
+
+- DynamoDB auto-creates attributes (No schema required)
+
+- Designed for event-driven architecture
+
+- Works with SQS + Lambda pipeline
+
+- Supports real-time order tracking system
+
+### 🚀 Final Summary
+
+| Component   | Value                   |
+| ----------- | ----------------------- |
+| Table Name  | CafeOrders              |
+| Type        | NoSQL Orders Store      |
+| Primary Key | order_id                |
+| Mode        | On-Demand               |
+| Use Case    | Order Management System |
 
 
 
