@@ -2427,7 +2427,6 @@ aws s3 cp "$ZIP_FILE" "s3://$S3_BUCKET/$S3_KEY" --region "$AWS_DEFAULT_REGION"
 
 echo "✅ DONE!"
 echo "Attach this layer to Lambda (Python 3.9 / 3.10 / 3.11)"
-
 ```
 
 ---
