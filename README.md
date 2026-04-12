@@ -3350,3 +3350,92 @@ ls -la ~/charlie-cafe-devops/github_logs
 less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
 ```
 ---
+## ☕ 4. Lab Task List (Step-by-Step)
+
+### 🔹 Phase 1 – Setup
+
+ Create GitHub repo
+
+ Organize project structure
+
+ Setup Docker (local)
+
+### 🔹 Phase 2 – AWS Foundation
+
+ Create VPC, subnets
+
+ Configure Security Groups
+
+ Launch EC2 instance
+
+ Setup ALB
+
+### 🔹 Phase 3 – Database
+
+ Create RDS MySQL
+
+ Create DynamoDB tables:
+
+CafeMenu
+
+CafeOrders
+
+CafeOrderMetrics
+
+CafeAttendance
+
+ Store credentials in Secrets Manager
+
+### 🔹 Phase 4 – 
+
+ Create Lambda functions
+
+ Connect Lambda to VPC
+
+ Configure environment variables
+
+ Create SQS queue
+
+### 🔹 Phase 5 – API Layer
+
+ Create API Gateway
+
+ Connect endpoints to Lambda
+
+ Enable CORS
+
+ Add Cognito authorizer
+
+### 🔹 Phase 6 – Authentication
+
+ Setup Cognito User Pool
+
+ Create users & groups
+
+ Configure Hosted UI
+
+### 🔹 Phase 7 – DevOps
+
+ Create Dockerfile
+
+ Push image to ECR
+
+ Deploy ECS service
+
+ Configure ALB target group
+
+### 🔹 Phase 8 – CI/CD
+
+ Setup GitHub Actions
+
+ Add AWS secrets
+
+ Automate deployment
+
+### 🔹 Phase 9 – Advanced
+
+ Setup Blue/Green deployment
+
+ Configure CodeDeploy
+ 
+ Add CloudWatch alarms
