@@ -379,6 +379,46 @@ For production-ready setup, you should also include:
 
 - Proper tagging (Environment = Dev, Project = CharlieCafe)
 
+### 3️⃣ Security Groups (Quick View)
+
+#### 🔹 Overview
+
+| SG Name      | Purpose       | Attached To  | Inbound (Key)                    | Outbound  |
+| ------------ | ------------- | ------------ | -------------------------------- | --------- |
+| `default-sg` | General use   | EC2, RDS     | SSH, HTTP, HTTPS, MySQL, ALL TCP | Allow All |
+| `rds-sg`     | DB protection | RDS          | MySQL (from Lambda + Default SG) | Allow All |
+| `lambda-sg`  | Lambda access | Lambda (VPC) | HTTP/HTTPS, MySQL to RDS         | Allow All |
+
+#### 🔹 Rules 
+
+| SG Name    | Port   | Protocol | Source / Destination   | Purpose           |
+| ---------- | ------ | -------- | ---------------------- | ----------------- |
+| default-sg | 22     | TCP      | 0.0.0.0/0 (or your IP) | SSH access        |
+| default-sg | 80     | TCP      | 0.0.0.0/0              | Web (HTTP)        |
+| default-sg | 443    | TCP      | 0.0.0.0/0              | Web (HTTPS)       |
+| default-sg | 3306   | TCP      | Open / restricted      | MySQL access      |
+| rds-sg     | 3306   | TCP      | lambda-sg, default-sg  | DB access control |
+| lambda-sg  | 3306   | TCP      | rds-sg                 | Connect to RDS    |
+| lambda-sg  | 80/443 | TCP      | default-sg (optional)  | API testing       |
+
+#### 🔹 NACL
+
+| Component | Rule                             |
+| --------- | -------------------------------- |
+| NACL      | Allow all inbound/outbound (Dev) |
+
+#### 💡 Important Notes 
+
+🔒 RDS should NOT be public → only accessible via lambda-sg
+
+⚡ Lambda needs outbound 3306 → RDS
+
+🚫 Avoid 0.0.0.0/0 for MySQL in production
+
+🧪 SSH/HTTP in Lambda SG = optional (debug only)
+
+
+
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
 
