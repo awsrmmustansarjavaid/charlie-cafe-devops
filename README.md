@@ -524,14 +524,50 @@ For production-ready setup, you should also include:
 | Route Tables | All private route tables           |
 | Purpose      | Enable private DynamoDB access     |
 
-#### ⚙️ Endpoint Strategy Summary
+### 🐳 2️⃣ ECR Interface VPC Endpoints
 
-| Service         | Type      | Purpose                   |
-| --------------- | --------- | ------------------------- |
-| Secrets Manager | Interface | Secure credentials access |
-| SQS             | Interface | Messaging system          |
-| CloudWatch Logs | Interface | Logging Lambda output     |
-| DynamoDB        | Gateway   | Private DB access         |
+#### 🔹 Purpose: 
+
+Allow ECS/Lambda to pull Docker images from ECR without internet or NAT Gateway.
+
+#### 🔹 ECR API Endpoint
+
+| Parameter      | Value                                  |
+| -------------- | -------------------------------------- |
+| Name           | `ecr-api-endpoint`                     |
+| Service        | `com.amazonaws.us-east-1.ecr.api`      |
+| Type           | Interface                              |
+| Purpose        | ECS → ECR API communication            |
+| Subnets        | Private subnets (same as ECS tasks)    |
+| Security Group | Allow outbound HTTPS (443) from ECS SG |
+| Private DNS    | Enabled                                |
+
+#### 🔹 ECR Docker Registry Endpoint
+
+| Parameter      | Value                               |
+| -------------- | ----------------------------------- |
+| Name           | `ecr-dkr-endpoint`                  |
+| Service        | `com.amazonaws.us-east-1.ecr.dkr`   |
+| Type           | Interface                           |
+| Purpose        | Docker image pull (registry access) |
+| Subnets        | Private ECS subnets                 |
+| Security Group | ECS SG allowed outbound HTTPS (443) |
+| Private DNS    | Enabled                             |
+
+### 3️⃣ S3 Gateway Endpoint (Required for ECR)
+
+#### 🔹 Purpose
+
+ECR stores image layers in S3 → required for image downloads.
+
+| Parameter    | Value                        |
+| ------------ | ---------------------------- |
+| Name         | `s3-ecr-gateway-endpoint`    |
+| Service      | `com.amazonaws.us-east-1.s3` |
+| Type         | Gateway                      |
+| Purpose      | ECR image layers retrieval   |
+| Route Tables | Private subnet route tables  |
+| Destination  | S3 Prefix List               |
 
 #### 🔄 Architecture Flow
 
@@ -543,7 +579,76 @@ VPC Endpoints
 AWS Services (SQS / Secrets / Logs / DynamoDB)
 ```
 
-### 💡 Important DevOps Rules
+```
+GitHub Actions
+   ↓
+ECR (Docker Images)
+   ↓
+VPC Endpoints (ECR API + ECR DKR + S3)
+   ↓
+ECS Tasks (Private Subnets)
+   ↓
+ALB (Public Access Layer)
+   ↓
+CloudFront (CDN Layer)
+   ↓
+Frontend Users
+```
+
+#### 💡 Key Architecture
+
+🔒 Fully private ECS deployment
+
+🚫 No NAT Gateway required
+
+⚡ Faster image pulls from ECR
+
+🛡 Secure backend communication
+
+💰 Lower AWS cost
+
+🏗 Production-grade DevOps setup
+
+#### 🧠 Combined VPC Endpoint Strategy
+
+| Category           | Endpoints            |
+| ------------------ | -------------------- |
+| Security & Secrets | Secrets Manager, SSM |
+| Messaging          | SQS                  |
+| Logging            | CloudWatch Logs      |
+| Database           | DynamoDB Gateway     |
+| Container System   | ECR API, ECR DKR     |
+| Storage            | S3 Gateway           |
+
+
+#### ⚙️ Endpoint Strategy Summary
+
+| Service         | Type      | Purpose                   |
+| --------------- | --------- | ------------------------- |
+| Secrets Manager | Interface | Secure credentials access |
+| SQS             | Interface | Messaging system          |
+| CloudWatch Logs | Interface | Logging Lambda output     |
+| DynamoDB        | Gateway   | Private DB access         |
+
+#### ⚙️ ECS VPC Access Summary
+
+| Component     | Requirement             |
+| ------------- | ----------------------- |
+| ECS Tasks     | Run in Private Subnets  |
+| ECR Access    | Via Interface Endpoints |
+| Image Storage | S3 Gateway Endpoint     |
+| Internet/NAT  | ❌ Not required          |
+
+#### 🔐 Security Rules
+
+| Component     | Rule                            |
+| ------------- | ------------------------------- |
+| ECS SG        | Outbound HTTPS (443) allowed    |
+| Endpoint SG   | Inbound HTTPS (443) from ECS SG |
+| Public Access | ❌ Not required                  |
+| NAT Gateway   | ❌ Not needed                    |
+
+### 💡 Important Rules
 
 - Always use VPC endpoints for private Lambda
 
@@ -554,6 +659,16 @@ AWS Services (SQS / Secrets / Logs / DynamoDB)
 - DynamoDB must use Gateway endpoint
 
 - Lambda must run inside private subnets
+
+- Enables fully private container deployment
+
+- Improves security (no internet exposure)
+
+- Reduces cost (no NAT Gateway required)
+
+- Required for production-grade ECS architecture
+
+- Works with CI/CD pipelines (GitHub Actions → ECR → ECS)
 
 ### 🚨 Common Failure Points
 
