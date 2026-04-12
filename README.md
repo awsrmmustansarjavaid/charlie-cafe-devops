@@ -679,8 +679,107 @@ Frontend Users
 | RDS connection failed    | Wrong SG (0.0.0.0/0 used) |
 | CloudWatch logs missing  | Missing logs endpoint     |
 
+### 4️⃣ NAT Gateway (OPTIONAL INTERNET ACCESS FOR ECS)
 
-### 4️⃣ Cafe Database Configuration
+### 1️⃣ NAT Gateway Architecture
+
+| Component        | Purpose                                        |
+| ---------------- | ---------------------------------------------- |
+| NAT Gateway      | Provides internet access for private ECS tasks |
+| Internet Gateway | Public subnet outbound connectivity            |
+| Private Subnet   | ECS tasks run here (no public IP)              |
+| Route Table      | Routes internet traffic via NAT Gateway        |
+
+### 2️⃣ NAT Gateway Setup
+
+| Parameter       | Value                |
+| --------------- | -------------------- |
+| Name            | `ecs-nat-gateway`    |
+| Placement       | Public Subnet        |
+| Elastic IP      | Required             |
+| Internet Access | Via Internet Gateway |
+
+### 3️⃣ Route Table Configuration (Critical)
+
+#### 🔹 Private Subnet Route Table
+
+| Destination | Target      |
+| ----------- | ----------- |
+| `0.0.0.0/0` | NAT Gateway |
+
+### 4️⃣ ECS Task Networking
+
+| Setting         | Value                      |
+| --------------- | -------------------------- |
+| Subnet Type     | Private Subnet             |
+| Public IP       | ❌ Disabled                 |
+| Outbound Access | Via NAT Gateway            |
+| Security Group  | Allow HTTPS (443) outbound |
+
+###  5️⃣ Security Group Rules
+
+| Type                   | Protocol | Port | Destination                 |
+| ---------------------- | -------- | ---- | --------------------------- |
+| HTTPS                  | TCP      | 443  | `0.0.0.0/0`                 |
+| (Optional Restriction) | TCP      | 443  | ECR CIDR (`52.95.255.0/24`) |
+
+### 💡 NAT Gateway Benefits vs Limitations
+
+| Pros                      | Cons                                 |
+| ------------------------- | ------------------------------------ |
+| Easy setup                | High cost (hourly + data transfer)   |
+| Works immediately         | Not fully private architecture       |
+| No VPC endpoints required | Not recommended for production scale |
+
+### 🔄 Use Case Flow (NAT Based ECS)
+
+```
+ECS Task (Private Subnet)
+   ↓
+Route Table
+   ↓
+NAT Gateway (Public Subnet)
+   ↓
+Internet Gateway
+   ↓
+ECR / AWS Services
+```
+
+### ⚖️ NAT Gateway vs VPC Endpoints
+
+| Feature           | NAT Gateway | VPC Endpoints |
+| ----------------- | ----------- | ------------- |
+| Cost              | ❌ High      | ✔ Low         |
+| Security          | Medium      | High          |
+| Performance       | Good        | Better        |
+| Production Use    | Optional    | Recommended   |
+| Internet Required | Yes         | No            |
+
+### 🧠  DevOps Recommendation
+
+- Use NAT Gateway only for quick setup/testing
+
+- Use VPC Endpoints for production (best practice)
+
+- Prefer private architecture (no internet dependency)
+
+- Combine with ECR + ECS endpoints for full security
+
+### 🚀 Final ECS Internet Access Flow
+
+```
+ECS Task (Private Subnet)
+   ↓
+Route Table (0.0.0.0/0)
+   ↓
+NAT Gateway
+   ↓
+Internet Gateway
+   ↓
+ECR / AWS Services / Internet
+```
+
+### 5️⃣ Cafe Database Configuration
 
 ### 1️⃣ — RDS Core Setup
 
