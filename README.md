@@ -693,6 +693,9 @@ Instead of invalidating every time, use versioning:
 
 - Use versioning instead of frequent invalidations
 
+### 7️⃣ ALB & CloudFront Configuration
+
+
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
 
