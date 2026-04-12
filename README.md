@@ -865,7 +865,7 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 
 ### 4️⃣ DynamoDB Setup
 
-### 1️⃣ Create DynamoDB Table
+### 1️⃣ Create DynamoDB Table CafeMenu
 
 #### 🔹 Table Configuration
 
@@ -1045,6 +1045,8 @@ Frontend (Cafe Website)
 | Primary Key   | item         |
 | Mode          | On-Demand    |
 | Use Case      | Menu Storage |
+
+### 2️⃣ Create DynamoDB Table CafeMenu
 
 
 
