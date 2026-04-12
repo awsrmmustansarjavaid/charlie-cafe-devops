@@ -865,7 +865,7 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 
 ### 4️⃣ DynamoDB Setup
 
-### 1️⃣ Create DynamoDB Table CafeMenu
+### 1️⃣ Create DynamoDB CafeMenu Table 
 
 #### 🔹 Table Configuration
 
@@ -1046,7 +1046,98 @@ Frontend (Cafe Website)
 | Mode          | On-Demand    |
 | Use Case      | Menu Storage |
 
-### 2️⃣ Create DynamoDB Table CafeMenu
+### 2️⃣ Create DynamoDB METRICS TABLE
+
+### 1️⃣ Create DynamoDB Table
+
+| Parameter     | Value                 |
+| ------------- | --------------------- |
+| Table Name    | `CafeOrderMetrics`    |
+| Partition Key | `metric`              |
+| Key Type      | String                |
+| Sort Key      | ❌ None                |
+| Table Class   | Standard              |
+| Capacity Mode | On-Demand             |
+| Encryption    | Default (AWS managed) |
+
+#### 🔹 Table Status
+
+| Step         | Status         |
+| ------------ | -------------- |
+| Create Table | Click “Create” |
+| Wait Status  | `ACTIVE`       |
+
+#### 🔹 Metrics Table Data Structure
+
+| Attribute | Type   | Purpose           |
+| --------- | ------ | ----------------- |
+| metric    | String | Metric identifier |
+| count     | Number | Metric value      |
+
+#### 🔹 Initial Metrics Items
+
+| Metric Name  | Meaning                | Initial Value |
+| ------------ | ---------------------- | ------------- |
+| TOTAL_ORDERS | Total orders in system | 0             |
+| TODAY_ORDERS | Orders for current day | 0             |
+
+### 🧾 2️⃣ Insert Items (JSON Format)
+
+**Click table → Explore table → Create item**
+
+#### 🔹 TOTAL_ORDERS
+
+```
+{
+  "metric": { "S": "TOTAL_ORDERS" },
+  "count": { "N": "0" }
+}
+```
+
+#### 🔹 TODAY_ORDERS
+
+```
+{
+  "metric": { "S": "TODAY_ORDERS" },
+  "count": { "N": "0" }
+}
+```
+
+### 🔄 Metrics Data Flow
+
+```
+Order Placement (SQS/Lambda)
+   ↓
+Update Metrics Lambda
+   ↓
+DynamoDB (CafeOrderMetrics)
+   ↓
+Frontend Dashboard
+```
+
+### 💡 Notes
+
+- Designed for real-time dashboard metrics
+
+- Uses simple key-value structure
+
+- Optimized for fast reads/writes
+
+- Works with Lambda update triggers
+
+- No relational complexity required
+
+### 🚀 Final Summary
+
+| Component   | Value               |
+| ----------- | ------------------- |
+| Table Name  | CafeOrderMetrics    |
+| Type        | NoSQL Metrics Store |
+| Primary Key | metric              |
+| Mode        | On-Demand           |
+| Use Case    | Dashboard analytics |
+
+
 
 
 
