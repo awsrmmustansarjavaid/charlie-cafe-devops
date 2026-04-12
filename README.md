@@ -692,9 +692,6 @@ Attributes:
 
 - Git & GitHub basics
 
-
-
-
 ## 📁 Professional Repository Structure
 
 ### Create your repo like this:
