@@ -26,6 +26,46 @@ Build a scalable, secure, cloud-native café ordering system using modern DevOps
 
 - Scalable system for future growth
 
+### ☕ Client Business Requirements
+
+> ### 🧑‍💼 Client: Charlie Cafe
+
+### 📌 What client wants:
+
+- Online café ordering system
+
+-  dashboard
+
+- Employee management system
+
+- Secure login system
+
+- Real-time order tracking
+
+- Payment tracking (cash/card)
+
+### 📌 Performance Requirements:
+
+- Handle multiple orders simultaneously
+
+- Fast response time
+
+- High availability
+
+### 📌 Security Requirements:
+
+- No public database access
+
+- Secure authentication (Cognito)
+
+- Secrets not hardcoded
+
+### 📌 Scalability:
+
+- System should grow with business
+
+- Handle peak traffic (rush hours)
+
 ## ☕ Architecture Data Flow Diagram
 
 ```
@@ -3437,5 +3477,5 @@ CafeAttendance
  Setup Blue/Green deployment
 
  Configure CodeDeploy
- 
+
  Add CloudWatch alarms
