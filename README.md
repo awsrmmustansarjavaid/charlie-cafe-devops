@@ -191,7 +191,12 @@ User → Cognito → JWT Token → Frontend → API → Lambda
 Developer → GitHub → GitHub Actions → AWS (ECS / Lambda)
 ```
 
-## ☕ CI/CD Flow Diagram
+## ☕ ECS + ECR Flow
+
+```
+Docker → ECR → ECS → ALB → User
+```
+
 
 
 
