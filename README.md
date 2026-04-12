@@ -3483,88 +3483,88 @@ less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
 
 ### 🔹 Phase 1 – Setup
 
- Create GitHub repo
+⬜️ Create GitHub repo
 
- Organize project structure
+⬜️ Organize project structure
 
- Setup Docker (local)
+⬜️ Setup Docker (local)
 
 ### 🔹 Phase 2 – AWS Foundation
 
- Create VPC, subnets
+⬜️ Create VPC, subnets
 
- Configure Security Groups
+⬜️ Configure Security Groups
 
- Launch EC2 instance
+⬜️ Launch EC2 instance
 
- Setup ALB
+⬜️ Setup ALB
 
 ### 🔹 Phase 3 – Database
 
- Create RDS MySQL
+⬜️ Create RDS MySQL
 
- Create DynamoDB tables:
+⬜️ Create DynamoDB tables:
 
-CafeMenu
+⬜️ CafeMenu
 
-CafeOrders
+⬜️ CafeOrders
 
-CafeOrderMetrics
+⬜️ CafeOrderMetrics
 
-CafeAttendance
+⬜️ CafeAttendance
 
- Store credentials in Secrets Manager
+⬜️ Store credentials in Secrets Manager
 
 ### 🔹 Phase 4 – 
 
- Create Lambda functions
+⬜️ Create Lambda functions
 
- Connect Lambda to VPC
+⬜️ Connect Lambda to VPC
 
- Configure environment variables
+⬜️ Configure environment variables
 
- Create SQS queue
+⬜️ Create SQS queue
 
 ### 🔹 Phase 5 – API Layer
 
- Create API Gateway
+⬜️ Create API Gateway
 
- Connect endpoints to Lambda
+⬜️ Connect endpoints to Lambda
 
- Enable CORS
+⬜️ Enable CORS
 
- Add Cognito authorizer
+⬜️ Add Cognito authorizer
 
 ### 🔹 Phase 6 – Authentication
 
- Setup Cognito User Pool
+⬜️ Setup Cognito User Pool
 
- Create users & groups
+⬜️ Create users & groups
 
- Configure Hosted UI
+⬜️ Configure Hosted UI
 
 ### 🔹 Phase 7 – DevOps
 
- Create Dockerfile
+⬜️ Create Dockerfile
 
- Push image to ECR
+⬜️ Push image to ECR
 
- Deploy ECS service
+⬜️ Deploy ECS service
 
- Configure ALB target group
+⬜️ Configure ALB target group
 
 ### 🔹 Phase 8 – CI/CD
 
- Setup GitHub Actions
+⬜️ Setup GitHub Actions
 
- Add AWS secrets
+⬜️ Add AWS secrets
 
- Automate deployment
+⬜️ Automate deployment
 
 ### 🔹 Phase 9 – Advanced
 
- Setup Blue/Green deployment
+⬜️ Setup Blue/Green deployment
 
- Configure CodeDeploy
+⬜️ Configure CodeDeploy
 
- Add CloudWatch alarms
+⬜️ Add CloudWatch alarms
