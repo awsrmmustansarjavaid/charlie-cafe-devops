@@ -738,8 +738,6 @@ Secrets Manager
 RDS (Private DB)
 ```
 
-
-
 ### ☕ Database Diagrams
 
 ### 🗄️ RDS (Relational Database)
