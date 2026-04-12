@@ -402,7 +402,123 @@ Health Check
 Docker → ECR → ECS → ALB → User
 ```
 
-## ☕ 
+## ☕ RDS Order Flow
+
+```
+User (Frontend)
+   ↓
+CloudFront
+   ↓
+API Gateway
+   ↓
+Lambda (Order Processor)
+   ↓
+Secrets Manager (DB credentials)
+   ↓
+RDS MySQL (Orders Table)
+   ↓
+Response → Frontend
+```
+
+## ☕ Advanced RDS Flow (With SQS)
+
+```
+User Order
+   ↓
+API Gateway
+   ↓
+Lambda (Producer)
+   ↓
+SQS Queue
+   ↓
+Worker Lambda
+   ↓
+RDS (Insert Order)
+   ↓
+Status Update
+```
+
+## ☕ DynamoDB Menu Flow
+
+```
+Frontend
+   ↓
+API Gateway
+   ↓
+Lambda
+   ↓
+DynamoDB (CafeMenu)
+   ↓
+Return Menu Data
+```
+
+## ☕ DynamoDB Order Tracking Flow
+
+```
+Order Created
+   ↓
+Lambda
+   ↓
+DynamoDB (CafeOrders)
+   ↓
+Frontend (Live Status)
+```
+
+## ☕ DynamoDB Metrics Flow
+
+```
+Order Completed
+   ↓
+Worker Lambda
+   ↓
+DynamoDB (Metrics Table)
+   ↓
+Dashboard (Admin Panel)
+```
+
+## ☕ RDS vs DynamoDB (COMPARISON FLOW)
+
+```
+Frontend
+   ↓
+API Gateway
+   ↓
+Lambda
+   ↓        ↓
+RDS       DynamoDB
+(Order DB)   (Menu / Metrics)
+   ↓            ↓
+Response ← Combined Data
+```
+
+## ☕ DB END-2-END DATA FLOW
+
+```
+User
+ ↓
+CloudFront
+ ↓
+ALB / API Gateway
+ ↓
+Lambda
+ ↓
+ ├── DynamoDB (Menu / Metrics / Orders)
+ └── SQS → Worker Lambda → RDS (Final Orders)
+ ↓
+Response to User
+```
+
+## ☕ Secure RDS Access Flow
+
+```
+Lambda
+   ↓
+VPC (Private Subnet)
+   ↓
+Secrets Manager
+   ↓
+RDS (Private DB)
+```
 
 
 
