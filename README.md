@@ -790,6 +790,54 @@ Instead of invalidating every time, use versioning:
 | Callback URLs | CloudFront routes (dashboard, login, order, analytics, employee portal) |
 | Logout URL    | `https://YOUR_CLOUDFRONT/logout.php?loggedout=true`                     |
 
+#### 🔗 Construct the LOGIN URL
+
+Open browser and paste (replace values):
+
+```
+https://YOUR_DOMAIN.auth.us-east-1.amazoncognito.com/login
+?client_id=YOUR_CLIENT_ID
+&response_type=code
+&scope=openid+email+profile
+&redirect_uri=https://yourdomain.com/login.html
+```
+
+#### 📌 Example:
+
+```
+https://charlie-cafe.auth.us-east-1.amazoncognito.com/login
+?client_id=YOUR_CLIENT_ID
+&response_type=code
+&scope=openid+email+profile
+&redirect_uri=https://yourdomain.com/login.html
+```
+
+- 👉 Press Enter
+
+#### 🌐 Cognito Access Auth Code
+
+```
+https://yourdomain.com/login.html?code=ebec6a0a-54e8-49c0-a093-d68150c182b1
+```
+
+#### 🔗 Login Screen Appears
+
+- Enter username & password
+
+- Click Sign in
+
+If login is successful → browser redirects to:
+
+```
+https://yourdomain.com/login.html?code=AUTH_CODE
+```
+
+Access token will only appear after your frontend exchanges the code via:
+
+```
+POST https://YOUR_DOMAIN/oauth2/token
+```
+
 ### 🔐 1️⃣2️⃣ Authentication Flow Summary
 
 | Component  | Role                        |
