@@ -536,6 +536,146 @@ For production-ready setup, you should also include:
 
 - Credentials are never hardcoded in application
 
+### 6️⃣ ALB & CloudFront Configuration
+
+### ⚖️ 1️⃣ Application Load Balancer (ALB)
+
+#### 🔹 Core Configuration
+
+| Parameter      | Value                              |
+| -------------- | ---------------------------------- |
+| Name           | `charlie-cafe-alb`                 |
+| Scheme         | Internet-facing                    |
+| IP Type        | IPv4                               |
+| VPC            | `CafeDevVPC`                       |
+| Subnets        | 2+ Public Subnets (multi-AZ)       |
+| Security Group | Allow HTTPS (443) from `0.0.0.0/0` |
+
+#### 🔹 Target Group (EC2 Backend)
+
+| Parameter    | Value                               |
+| ------------ | ----------------------------------- |
+| Type         | Instance                            |
+| Protocol     | HTTP                                |
+| Port         | 80                                  |
+| Target       | EC2 Instance (`CafeDevWebServer`)   |
+| Health Check | `/` or `/cafe-admin-dashboard.html` |
+
+#### 🔹 Listeners (HTTP → HTTPS Setup - Optional)
+
+| Listener   | Action                  |
+| ---------- | ----------------------- |
+| HTTP :80   | Redirect → HTTPS :443   |
+| HTTPS :443 | Forward to Target Group |
+
+#### 🔹 SSL Certificate (ACM - Optional)
+
+| Parameter  | Value                         |
+| ---------- | ----------------------------- |
+| Source     | AWS Certificate Manager (ACM) |
+| Type       | Public SSL Certificate        |
+| Validation | DNS (recommended)             |
+| Domain     | Your domain / wildcard        |
+
+#### 🔹 ALB Output
+
+| Item    | Value                                                         |
+| ------- | ------------------------------------------------------------- |
+| ALB DNS | `http(s)://charlie-cafe-alb-xxxx.us-east-1.elb.amazonaws.com` |
+
+### ☁️ 2️⃣ CloudFront Configuration
+
+#### 🔹 Origin (ALB Backend)
+
+| Parameter       | Value                                               |
+| --------------- | --------------------------------------------------- |
+| Origin Type     | Application Load Balancer                           |
+| Origin Domain   | ALB DNS (`charlie-cafe-alb-xxxx.elb.amazonaws.com`) |
+| Origin Protocol | HTTP only                                           |
+| Port            | 80                                                  |
+
+#### 🔹 Default Cache Behavior
+
+| Setting                | Value                                        |
+| ---------------------- | -------------------------------------------- |
+| Viewer Protocol Policy | Redirect HTTP → HTTPS                        |
+| Allowed Methods        | GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE |
+| Cache Policy           | CachingDisabled                              |
+| Origin Request Policy  | AllViewer                                    |
+
+#### 🔹 Key Purpose
+
+| Feature           | Purpose                      |
+| ----------------- | ---------------------------- |
+| Forward Headers   | Auth (Cognito tokens)        |
+| Disable Cache     | Prevent login/session issues |
+| Full HTTP Methods | Support APIs + forms         |
+
+#### 🔹 General Settings
+
+| Parameter           | Value                       |
+| ------------------- | --------------------------- |
+| IPv6                | Disabled (lab setup)        |
+| Default Root Object | `cafe-admin-dashboard.html` |
+| Origin Path         | Empty                       |
+
+#### 🔹 Routing Flow
+
+```
+CloudFront → ALB → EC2 → Apache → Web App
+```
+
+#### 🔹 CloudFront Domain
+
+| Item | Value                  |
+| ---- | ---------------------- |
+| URL  | `xxxxx.cloudfront.net` |
+
+### 🔄 3️⃣ CloudFront Invalidations
+
+#### 🔹 Common Paths
+
+| Type           | Path                         |
+| -------------- | ---------------------------- |
+| HTML           | `/cafe-admin-dashboard.html` |
+| Full JS Folder | `/js/*`                      |
+| Entire Cache   | `/*`                         |
+
+#### 🔹 Best Practice (Recommended)
+
+| Method            | Recommendation               |
+| ----------------- | ---------------------------- |
+| Versioning        | `app.v2.js` or `?v=2`        |
+| Cache Bypass      | Avoid frequent invalidations |
+| Full Invalidation | Use only when required       |
+
+### ✅ BEST PRACTICE (Better Than Invalidation)
+
+Instead of invalidating every time, use versioning:
+
+```
+/js/config.v2.js
+/js/central-auth.v2.js
+/js/utils.v2.js
+/js/api.v2.js
+/js/central-printing.v2.js
+/var/www/html/js/role-guard.v2.js
+```
+
+#### Or:
+
+```
+<script src="/js/config.js?v=2"></script>
+<script src="/js/central-auth.js?v=2"></script>
+<script src="/js/utils.js?v=2"></script>
+<script src="/js/app.js?v=2"></script>
+<script src="/js/central-printing.js?v=2"></script>
+<script src="/js/role-guard.js?v=2"></script>
+```
+
+### 🔐 4️⃣ Cognito Integration
+
+
 
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
