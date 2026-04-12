@@ -84,6 +84,72 @@ Developer → GitHub → Docker → Local Testing
 
 - GitHub Actions
 
+### ✅ Prerequisites
+
+#### 🔹 1. AWS Account
+
+- Active AWS account with proper IAM permissions
+
+#### 🔹 2. AWS Services Knowledge
+
+#### 🌐 Networking Services
+
+- VPC (Virtual Private Cloud)
+
+- Security Groups
+
+- VPC Endpoints
+
+- NAT Gateway
+
+- Internet Gateway (IGW)
+
+- Application Load Balancer (ALB)
+
+- EC2 (Elastic Compute Cloud)
+
+- CloudFront
+
+#### 🗄️ Database Services
+
+- RDS (Relational Database Service)
+
+- DynamoDB
+
+#### 🔐 Credential & Secret Management
+
+- AWS Secrets Manager
+
+#### 🔑 Authentication & Authorization
+
+- Amazon Cognito
+
+#### ⚡ Serverless Services
+
+- AWS Lambda
+
+- API Gateway
+
+#### 🚀 DevOps & Container Services
+
+- ECS (Elastic Container Service)
+
+- ECR (Elastic Container Registry)
+
+#### 🔹 3. Technical Skills
+
+- Basic Linux commands
+
+- Basic networking concepts (optional but recommended)
+
+- PHP and MySQL fundamentals
+
+#### 🔹 4. Tools & Access
+
+- SSH client (e.g., PuTTY, Terminal) or AWS Cloud9
+
+- Git & GitHub basics
+
 ## 📁 Professional Repository Structure
 
 ### Create your repo like this:
@@ -260,45 +326,16 @@ AWS_SECRET_ACCESS_KEY
 | `ECS_SERVICE`           | If using ECS                                   |
 | `RDS_SECRET_ARN`        | ARN of your AWS Secrets Manager RDS credential |
 
+---
+## 2️⃣ Initialize AWS 
 
 
-### 🧱 PHASE 1 — PREPARE YOUR PROJECT (DONE ✅)
 
-✔ Dockerfile
+### 1️⃣ IAM Policy 
 
-✔ docker-compose
+[Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
 
-✔ GitHub repo
 
-✔ CI/CD
-
-#### 👉 Good — move next level: real AWS DevOps (ECS + ECR + CI/CD deployment) to upgrade your current Docker + GitHub setup into a production-grade AWS DevOps architecture.
-
-### 🚀 🎯 FINAL TARGET ARCHITECTURE (UPGRADED)
-
-#### You will move from:
-
-```
-Local Docker + GitHub CI
-```
-
-#### ➡️ TO:
-
-```
-GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
-                          ↓
-                         RDS
-```
-
-#### Using:
-
-- Amazon ECS
-
-- Amazon ECR
-
-- AWS Fargate
-
-- Application Load Balancer
 
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
@@ -311,13 +348,9 @@ GitHub → CI/CD → ECR → ECS (Fargate) → ALB → Users
 
 ❌ Lambda → still manual (this is what we’ll fix)
 
-### 1️⃣ IAM Policy 
 
-[Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
 
-### 2️⃣ 
-
-### 3️⃣ Basic Lambda Configurations
+### 2️⃣ Basic Lambda Configurations
 
 ```
 nano charlie_cafe_devops-rds_setup_full.sh
@@ -339,7 +372,7 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 ./charlie_cafe_devops-rds_setup_full.sh
 ```
 
-### 4️⃣ Create Lambda Function
+### 3️⃣ Create Lambda Function
 
 - ### 1️⃣ Lambda Function 
 
