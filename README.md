@@ -1,7 +1,5 @@
 # ☕ Charlie Cafe DevOps Project
 
-### 🧱 PHASE 1 — Local Dockerize 
-
 ### 🔹 Overview
 
 #### Full-stack cloud-based cafe ordering system using:
