@@ -1,22 +1,26 @@
 #!/bin/bash
 
 # ==========================================================
-# ☕ CHARLIE CAFE — FULL DEVOPS VERIFICATION + AUTO SYNC
-# File: charlie-cafe-full-devops-verify.sh
+# ☕ CHARLIE CAFE — MASTER DEVOPS VERIFICATION SCRIPT
+# ==========================================================
+# Combines:
+#   ✅ Environment verification
+#   ✅ Docker + Apache test
+#   ✅ Git & GitHub validation
+#   ✅ AWS + RDS + Secrets
+#   ✅ Auto sync repo
+#   ✅ Post-deployment checks
 # ==========================================================
 
 set -e
 
-# ---------------- VARIABLES ----------------
-AWS_ACCESS_KEY_ID="your-access-id"
-AWS_SECRET_ACCESS_KEY="your-secret-key"
+# ---------------- CONFIG ----------------
 AWS_REGION="us-east-1"
-
+SECRET_NAME="CafeDevDBSM"
 GITHUB_USERNAME="your-username"
 GITHUB_TOKEN="your-token"
 GITHUB_REPO="charlie-cafe-devops"
-
-SECRET_NAME="CafeDevDBSM"
+PROJECT_DIR="/home/ec2-user/charlie-cafe-devops"
 ECR_REPO="your-ecr-repo"
 
 # ---------------- COLORS ----------------
@@ -40,139 +44,105 @@ echo -e "${BLUE}$1${NC}"
 echo -e "${BLUE}==================================================${NC}"
 }
 
-echo -e "${BLUE}🚀 Starting Charlie Cafe DevOps Full Verification${NC}"
+echo -e "${BLUE}🚀 STARTING MASTER VERIFICATION${NC}"
 
 # ==========================================================
-# 1️⃣ REQUIRED TOOLS
+# 1. REQUIRED TOOLS
 # ==========================================================
 section "🔎 Required Tools"
 
 for cmd in aws jq mysql docker git curl ssh; do
- command -v $cmd &>/dev/null && pass "$cmd installed" || fail "$cmd missing"
+ command -v $cmd >/dev/null && pass "$cmd installed" || fail "$cmd missing"
 done
 
 # ==========================================================
-# 2️⃣ DOCKER CHECK
+# 2. DOCKER CHECK
 # ==========================================================
-section "🐳 Docker Verification"
+section "🐳 Docker Check"
 
 if systemctl is-active --quiet docker; then
  pass "Docker running"
 else
- warn "Docker not running, starting..."
+ warn "Docker not running → starting"
  sudo systemctl start docker
- sudo systemctl enable docker
- pass "Docker started"
 fi
 
-docker --version
-docker info | head -n 10
+docker info >/dev/null && pass "Docker OK" || fail "Docker issue"
 
-echo "Images:"
 docker images
-
-echo "Running Containers:"
 docker ps
 
-echo "All Containers:"
-docker ps -a
-
 # ==========================================================
-# 3️⃣ APACHE TEST
+# 3. APACHE TEST CONTAINER
 # ==========================================================
-section "🌐 Apache Container Test"
+section "🌐 Apache Test"
 
-TEST_CONTAINER="verify-apache-test"
+docker rm -f verify-apache >/dev/null 2>&1 || true
+docker run -d --name verify-apache -p 8080:80 httpd:latest >/dev/null
 
-docker rm -f $TEST_CONTAINER >/dev/null 2>&1 || true
-
-docker run -d --name $TEST_CONTAINER -p 8080:80 httpd:latest >/dev/null
 sleep 5
 
-curl -s http://localhost:8080 >/dev/null && pass "Apache 8080 OK" || fail "Apache failed"
+curl -s http://localhost:8080 >/dev/null && pass "Apache OK (8080)" || fail "Apache failed"
 
-HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost)
-
-[ "$HTTP_STATUS" == "200" ] && pass "Port 80 active" || warn "Port 80 not active"
-
-docker logs $TEST_CONTAINER | head -n 5
-
-docker rm -f $TEST_CONTAINER >/dev/null
+docker logs verify-apache | head -n 5
+docker rm -f verify-apache >/dev/null
 
 # ==========================================================
-# 4️⃣ PROJECT + GIT
+# 4. PROJECT + GIT
 # ==========================================================
-section "📂 Project & Git"
-
-PROJECT_DIR="$HOME/$GITHUB_REPO"
+section "📂 Git Project"
 
 if [ -d "$PROJECT_DIR/.git" ]; then
  pass "Project exists"
  cd "$PROJECT_DIR"
+
+ git status >/dev/null && pass "Git OK" || fail "Git issue"
+
+ git remote -v
 else
- warn "Project not found, cloning..."
- git clone https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git $PROJECT_DIR
- cd "$PROJECT_DIR"
+ fail "Project missing"
 fi
 
-git status &>/dev/null && pass "Git OK" || fail "Git issue"
-
-git remote -v
-
 # ==========================================================
-# 5️⃣ SSH + GITHUB
+# 5. SSH + GITHUB
 # ==========================================================
 section "🔐 SSH & GitHub"
 
-[ -f ~/.ssh/id_rsa ] && pass "SSH key exists" || warn "SSH key missing"
+[ -f ~/.ssh/id_deploy ] && pass "SSH key exists" || fail "SSH key missing"
 
 ssh -T git@github.com -o StrictHostKeyChecking=no 2>&1 | grep -q "successfully authenticated" \
- && pass "GitHub SSH OK" || warn "GitHub SSH failed"
+ && pass "GitHub SSH OK" || fail "GitHub SSH failed"
 
 # ==========================================================
-# 6️⃣ GIT PUSH TEST
+# 6. GIT PUSH TEST
 # ==========================================================
 section "🧪 Git Push Test"
 
-TEST_FILE="test_$(date +%s).txt"
+cd "$PROJECT_DIR"
 
-echo "test" > $TEST_FILE
-git add .
-git commit -m "Auto test commit" >/dev/null 2>&1 || true
+echo "test $(date)" > test.txt
+git add test.txt
+git commit -m "test commit" >/dev/null 2>&1 || true
 
-git push origin main >/dev/null 2>&1 \
- && pass "Git push OK" || fail "Git push failed"
+git push origin main >/dev/null 2>&1 && pass "Git push OK" || fail "Git push failed"
 
-rm -f $TEST_FILE
-
-# ==========================================================
-# 7️⃣ GITHUB CLONE TEST
-# ==========================================================
-section "🌍 GitHub Clone Test"
-
-TEST_DIR="$HOME/github_test_repo"
-rm -rf $TEST_DIR
-
-git clone https://github.com/octocat/Hello-World.git $TEST_DIR \
- && pass "Clone OK" || fail "Clone failed"
+rm -f test.txt
 
 # ==========================================================
-# 8️⃣ NETWORK
+# 7. NETWORK
 # ==========================================================
 section "🌐 Network"
 
-ping -c 2 github.com >/dev/null 2>&1 \
- && pass "Internet OK" || fail "No internet"
+ping -c 2 github.com >/dev/null && pass "Internet OK" || fail "No internet"
 
 # ==========================================================
-# 9️⃣ AWS + RDS
+# 8. AWS + SECRETS + RDS
 # ==========================================================
 section "🗄️ AWS + RDS"
 
-export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION
-
 SECRET=$(aws secretsmanager get-secret-value \
  --secret-id $SECRET_NAME \
+ --region $AWS_REGION \
  --query SecretString \
  --output text 2>/dev/null)
 
@@ -182,24 +152,26 @@ if [ $? -eq 0 ]; then
  DB_HOST=$(echo $SECRET | jq -r .host)
  DB_USER=$(echo $SECRET | jq -r .username)
  DB_PASS=$(echo $SECRET | jq -r .password)
-
- echo "SELECT 1;" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" &>/dev/null \
-  && pass "RDS OK" || fail "RDS failed"
 else
  fail "Secret fetch failed"
 fi
 
-# ==========================================================
-# 🔟 AWS ACCOUNT
-# ==========================================================
-section "☁️ AWS Account"
-
-ACC_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null)
-
-[ -n "$ACC_ID" ] && pass "AWS Account: $ACC_ID" || fail "AWS error"
+if [ -n "$DB_HOST" ]; then
+ echo "SELECT 1;" | mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" \
+  && pass "RDS OK" || fail "RDS failed"
+fi
 
 # ==========================================================
-# 11️⃣ AUTO SYNC
+# 9. AWS ACCOUNT
+# ==========================================================
+section "☁️ AWS Identity"
+
+ACC=$(aws sts get-caller-identity --query Account --output text 2>/dev/null)
+
+[ -n "$ACC" ] && pass "AWS Account: $ACC" || fail "AWS not working"
+
+# ==========================================================
+# 10. GITHUB AUTO SYNC
 # ==========================================================
 section "🔄 Auto Sync"
 
@@ -209,22 +181,21 @@ git pull origin main
 
 if [[ -n "$(git status --porcelain)" ]]; then
  git add .
- git commit -m "Auto sync $(date)"
+ git commit -m "auto-sync $(date)"
  git push origin main
- pass "Changes pushed"
+ pass "Changes synced"
 else
  pass "No changes"
 fi
 
 # ==========================================================
-# 12️⃣ ECR
+# 11. POST DEPLOY CHECK
 # ==========================================================
-section "📦 ECR"
+section "🚀 Post Deployment"
 
-if [[ -n "$ECR_REPO" ]]; then
- aws ecr describe-repositories --repository-names "$ECR_REPO" >/dev/null 2>&1 \
-  && pass "ECR OK" || warn "ECR not found"
-fi
+docker ps
+
+curl -s http://localhost >/dev/null && pass "App running" || fail "App not running"
 
 # ==========================================================
 # FINAL RESULT
@@ -232,14 +203,11 @@ fi
 section "📊 RESULT"
 
 TOTAL=$((PASS+FAIL))
-SUCCESS=$((PASS*100/TOTAL))
-
 echo "Passed: $PASS"
 echo "Failed: $FAIL"
-echo "Success: $SUCCESS%"
 
 if [ $FAIL -eq 0 ]; then
- echo -e "${GREEN}🎉 SYSTEM READY${NC}"
+ echo -e "${GREEN}🎉 ALL GOOD 🚀${NC}"
 else
- echo -e "${YELLOW}⚠️ NEED FIXES${NC}"
+ echo -e "${YELLOW}⚠️ Fix issues${NC}"
 fi
