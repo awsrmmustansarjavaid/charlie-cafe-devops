@@ -337,9 +337,9 @@ AWS_SECRET_ACCESS_KEY
 ---
 ## 2️⃣ Initialize AWS 
 
-### 1️⃣ IAM Policy 
+### 1️⃣ IAM Role & Policies
 
-[Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
+- Create the following three IAM roles using the configurations defined in the [Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
 
 ### 2️⃣ Network & Compute (Foundation)
 
