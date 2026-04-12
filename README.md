@@ -420,22 +420,220 @@ RDS MySQL (Orders Table)
 Response → Frontend
 ```
 
-## ☕ Advanced RDS Flow (With SQS)
+## ☕ Main Order + HR Flow
 
 ```
-User Order
+User (Frontend)
+   ↓
+CloudFront
    ↓
 API Gateway
    ↓
-Lambda (Producer)
+Lambda
+   ↓
+Secrets Manager (DB credentials)
+   ↓
+RDS (cafe_db)
+   ↓
+Tables:
+   ├── orders
+   ├── employees
+   ├── attendance
+   ├── leaves
+   └── holidays
+   ↓
+Response → Frontend
+```
+
+## ☕ Advanced Flow (WITH SQS + Analytics)
+
+```
+User places order
+   ↓
+API Gateway
+   ↓
+Lambda (Order Processor)
    ↓
 SQS Queue
    ↓
 Worker Lambda
    ↓
-RDS (Insert Order)
+RDS (orders table)
    ↓
-Status Update
+Analytics Queries (SQL)
+   ↓
+Dashboard (Admin Panel)
+```
+
+## ☕ RDS ARCHITECTURE DIAGRAM
+
+```
+                ┌───────────────┐
+                │   User        │
+                └──────┬────────┘
+                       ↓
+                ┌───────────────┐
+                │ CloudFront    │
+                └──────┬────────┘
+                       ↓
+                ┌───────────────┐
+                │ API Gateway   │
+                └──────┬────────┘
+                       ↓
+                ┌───────────────┐
+                │ Lambda        │
+                └──────┬────────┘
+                       ↓
+          ┌────────────────────────────┐
+          │ Secrets Manager            │
+          └──────────┬─────────────────┘
+                     ↓
+        ┌──────────────────────────────┐
+        │ RDS MySQL (Private Subnet)   │
+        │                              │
+        │ cafe_db                      │
+        │ ├── orders                  │
+        │ ├── employees               │
+        │ ├── attendance              │
+        │ ├── leaves                  │
+        │ └── holidays                │
+        └──────────────────────────────┘
+```
+
+## ☕ ER DIAGRAM (DATABASE DESIGN)
+
+#### 1. employees (MAIN TABLE)
+
+```
+employees
+---------
+employee_id (PK)
+cognito_user_id (UNIQUE)
+name
+job_title
+salary
+start_date
+created_at
+```
+
+#### 2. attendance
+
+```
+attendance
+---------
+attendance_id (PK)
+employee_id (FK)
+attendance_date
+checkin_time
+checkout_time
+```
+
+#### 3. leaves
+
+```
+leaves
+---------
+leave_id (PK)
+employee_id (FK)
+leave_date
+leave_type
+```
+
+#### 4. holidays
+
+```
+holidays
+---------
+holiday_id (PK)
+holiday_date (UNIQUE)
+description
+```
+
+#### 5. orders
+
+```
+orders
+---------
+order_id (PK)
+table_number
+customer_name
+item
+quantity
+payment_method
+total_cost
+total_amount
+payment_status
+status
+created_at
+```
+
+### 🔗 RELATIONSHIPS
+
+```
+employees (1)
+   ↓
+attendance (many)
+
+employees (1)
+   ↓
+leaves (many)
+```
+
+#### 👉 This means:
+
+- One employee → many attendance records
+
+- One employee → many leave records
+
+## ☕ ER DIAGRAM STRUCTURE
+
+```
+           ┌───────────────┐
+           │  employees    │
+           │───────────────│
+           │ employee_id PK│
+           │ name          │
+           │ job_title     │
+           └──────┬────────┘
+                  │
+        ┌─────────┴─────────┐
+        ↓                   ↓
+
+┌───────────────┐   ┌───────────────┐
+│  attendance   │   │    leaves     │
+│───────────────│   │───────────────│
+│ attendance_id │   │ leave_id      │
+│ employee_id FK│   │ employee_id FK│
+│ checkin_time  │   │ leave_date    │
+└───────────────┘   └───────────────┘
+
+
+┌───────────────┐
+│   holidays    │
+└───────────────┘
+
+┌───────────────┐
+│    orders     │
+└───────────────┘
+```
+
+## ☕ FULL DATA FLOW (RDS + SYSTEM
+
+```
+User
+ ↓
+CloudFront
+ ↓
+Frontend (EC2 / ECS)
+ ↓
+API Gateway
+ ↓
+Lambda
+ ↓
+ ├── DynamoDB (menu / metrics)
+ └── RDS (orders + employees + HR)
+ ↓
+Response
 ```
 
 ## ☕ DynamoDB Menu Flow
