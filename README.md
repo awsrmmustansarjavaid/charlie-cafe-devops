@@ -1137,7 +1137,7 @@ Frontend Dashboard
 | Mode        | On-Demand           |
 | Use Case    | Dashboard analytics |
 
-
+### 3️⃣ Create DynamoDB METRICS TABLE
 
 
 
