@@ -86,6 +86,14 @@ Developer → GitHub → Docker → Local Testing
 
 ### ✅ Prerequisites
 
+#### 🔹 0. GITHUB
+
+- Github Account
+
+- Github Repo
+
+- Github Repository secrets
+
 #### 🔹 1. AWS Account
 
 - Active AWS account with proper IAM permissions
