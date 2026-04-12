@@ -172,6 +172,59 @@ User → CloudFront → ALB → ECS/EC2 → API Gateway → Lambda
                                       ↓
                          DynamoDB + RDS
 ```
+## ☕ DevOps Data Flow
+
+```
+Developer
+   ↓
+GitHub Repo
+   ↓
+GitHub Actions (CI/CD)
+   ↓
+Build Docker Image
+   ↓
+Push to ECR
+   ↓
+Deploy to ECS / Lambda
+   ↓
+ALB
+   ↓
+CloudFront
+   ↓
+Users
+```
+
+#### 💡 Add:
+
+- CloudWatch (logs)
+
+- CodeDeploy (blue/green)
+
+## ☕ Frontend ↔ Backend Data Flow
+
+```
+User (Browser)
+   ↓
+CloudFront (CDN)
+   ↓
+ALB (Load Balancer)
+   ↓
+EC2 (Frontend - PHP/JS)
+   ↓
+API Gateway
+   ↓
+Lambda (Backend Logic)
+   ↓
+RDS (MySQL)
+   ↓
+Response → Frontend → User
+```
+
+#### 💡 Also include:
+
+- DynamoDB (menu / orders)
+
+- SQS (async processing)
 
 ## ☕ Backend Data Flow
 
