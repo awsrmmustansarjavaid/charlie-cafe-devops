@@ -557,6 +557,12 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 
 - Credentials are never hardcoded in application
 
+### 4️⃣ DynamoDB
+
+
+
+
+
 ### 6️⃣ ALB & CloudFront Configuration
 
 ### ⚖️ 1️⃣ Application Load Balancer (ALB)
@@ -926,7 +932,75 @@ CloudFront → Cognito Hosted UI → JWT Token → Frontend → API Gateway/Lamb
 | Backend Security | Lambda/API Gateway |
 | Data Layer       | RDS                |
 
-### 8️⃣ Lambda & API Configuration 
+### 8️⃣ — SQS (Producer Setup)
+
+### 1️⃣ SQS Queue Configuration
+
+| Parameter          | Value             | Notes                    |
+| ------------------ | ----------------- | ------------------------ |
+| Queue Name         | `CafeOrdersQueue` | Main order queue         |
+| Queue Type         | Standard          | ❌ Do NOT use FIFO        |
+| Visibility Timeout | 60 seconds        | Lambda processing window |
+| Message Retention  | 4 days            | Default                  |
+| Max Message Size   | 256 KB            | Default                  |
+| Delivery Delay     | 0 seconds         | Default                  |
+| Receive Wait Time  | 0 seconds         | Default                  |
+| Dead-Letter Queue  | ❌ Disabled        | Will be added later      |
+| Encryption         | ❌ Disabled        | Free-tier friendly       |
+| Access Policy      | Basic (default)   | Do not modify            |
+
+### 2️⃣ Purpose & Behavior
+
+| Component       | Role                               |
+| --------------- | ---------------------------------- |
+| SQS Queue       | Stores incoming orders             |
+| Producer Lambda | Sends messages to queue            |
+| Worker Lambda   | Processes messages + writes to RDS |
+| Flow Type       | Asynchronous processing            |
+
+### 3️⃣ Performance Design
+
+| Setting                  | Reason                                |
+| ------------------------ | ------------------------------------- |
+| Visibility Timeout (60s) | Ensures Lambda completes DB insert    |
+| Standard Queue           | High throughput, unordered processing |
+| No DLQ (initial)         | Simpler setup for development         |
+
+### 4️⃣ Security & Access
+
+| Setting       | Value                                   |
+| ------------- | --------------------------------------- |
+| Encryption    | Disabled (dev mode)                     |
+| Access Policy | Default AWS-managed                     |
+| Public Access | Not applicable (SQS is private service) |
+
+### 5️⃣ Output Values (IMPORTANT)
+
+| Item         | Value                                 |
+| ------------ | ------------------------------------- |
+| Queue Status | Available                             |
+| Queue URL    | Save for Lambda integration           |
+| Queue ARN    | Required for IAM + Lambda permissions |
+
+### 💡 Notes
+
+- SQS acts as buffer between API and database
+
+- Ensures decoupled architecture
+
+- Prevents DB overload
+
+- Enables scalable async processing
+
+- Standard queue = best for event-driven systems
+
+### 🔄 Architecture Flow
+
+```
+API → Producer Lambda → SQS Queue → Worker Lambda → RDS
+```
+
+### 9️⃣ Lambda & API Configuration 
 
 ### 1️⃣ Create Lambda Function
 
