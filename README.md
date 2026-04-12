@@ -526,6 +526,27 @@ For production-ready setup, you should also include:
 | ---------- | ------------------------------------------------------------------------ |
 | Secret ARN | `arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeDevDBSM-xxxxx` |
 
+### 3️⃣ Run RDS Bash Script 
+
+```
+nano charlie_cafe_devops-rds_setup_full.sh
+```
+[charlie_cafe_devops-rds_setup_full.sh](./infrastructure/scripts/charlie_cafe_devops-rds_setup_full.sh)
+
+#### 🧪 HOW TO USE
+
+#### 1️⃣ Give permission
+
+```
+chmod +x charlie_cafe_devops-rds_setup_full.sh
+```
+
+#### 2️⃣ Run
+
+```
+./charlie_cafe_devops-rds_setup_full.sh
+```
+
 #### 💡 Important Notes
 
 - RDS is NOT public (secure private DB)
@@ -905,43 +926,9 @@ CloudFront → Cognito Hosted UI → JWT Token → Frontend → API Gateway/Lamb
 | Backend Security | Lambda/API Gateway |
 | Data Layer       | RDS                |
 
+### 8️⃣ Lambda & API Configuration 
 
----
-## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
-
-#### Right now:
-
-✅ EC2 deployment → automated
-
-✅ RDS → automated
-
-❌ Lambda → still manual (this is what we’ll fix)
-
-
-
-### 2️⃣ Basic Lambda Configurations
-
-```
-nano charlie_cafe_devops-rds_setup_full.sh
-```
-
-[charlie_cafe_devops-rds_setup_full.sh](./infrastructure/scripts/charlie_cafe_devops-rds_setup_full.sh)
-
-#### 🧪 HOW TO USE
-
-#### 1️⃣ Give permission
-
-```
-chmod +x charlie_cafe_devops-rds_setup_full.sh
-```
-
-#### 2️⃣ Run
-
-```
-./charlie_cafe_devops-rds_setup_full.sh
-```
-
-### 3️⃣ Create Lambda Function
+### 1️⃣ Create Lambda Function
 
 - ### 1️⃣ Lambda Function 
 
@@ -1039,7 +1026,7 @@ filename.function
 |------------------|------------------|
 | DYNAMODB_TABLE   | CafeAttendance   |
 
-### 4️⃣ API Gateway Endpoints
+### 2️⃣ API Gateway Endpoints
 
 #### 1️⃣ Create a REST API
 
@@ -1207,7 +1194,7 @@ https://xxxx.execute-api.us-east-1.amazonaws.com/prod/hr-analytics
 
 ```
 
-### 5️⃣ Git Auto Deploy
+### 3️⃣ Git Auto Deploy
 
 ```
 nano github-aws-devops-lambda-deploy.sh
@@ -1237,7 +1224,7 @@ chmod +x github-aws-devops-lambda-deploy.sh
 ./github-aws-devops-lambda-deploy.sh
 ```
 
-### 🌐 Verification Test 
+### 🌐 Verification Test (Optional)
 
 #### 1️⃣ One-liner to list all Lambda functions in your region
 
@@ -1279,7 +1266,7 @@ done
 
 - Ensures all Lambda functions exist and are ready to receive code and layers
 
-### EC2 Docker Health
+### 🌐 EC2 Docker Health (Optional)
 
 ```
 nano ec2_docker_health.sh
@@ -1296,12 +1283,12 @@ chmod +x ec2_docker_health.sh
 
 ✅ This will work every time on EC2, no matter where you run it from, as long as the repo is cloned in ~/charlie-cafe-devops.
 
-### Docker Container
+#### ✅ Docker Container
 
 Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
 
 ---
-## ☁️ PHASE 3 — AWS DEVOPS UPGRADE
+## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
 
 Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
 
