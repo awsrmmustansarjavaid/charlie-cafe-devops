@@ -1253,7 +1253,7 @@ Frontend Order → Lambda → SQS → Worker Lambda → DynamoDB (CafeOrders)
 | Mode        | On-Demand               |
 | Use Case    | Order Management System |
 
-### 3️⃣ Create DynamoDB CafeOrders TABLE
+### 4️⃣ Create DynamoDB CafeOrders TABLE
 
 
 ---
