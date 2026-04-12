@@ -341,7 +341,7 @@ AWS_SECRET_ACCESS_KEY
 
 [Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
 
-### 🌐 2️⃣ Network & Compute (Foundation)
+### 2️⃣ Network & Compute (Foundation)
 
 #### 🔹 VPC Configuration
 
