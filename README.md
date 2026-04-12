@@ -473,7 +473,7 @@ For production-ready setup, you should also include:
 
 - The verification script ensures that the environment is properly configured and ready
 ---
-### 3️⃣ VPC ENDPOINTS
+## 3️⃣ VPC ENDPOINTS
 
 ### 1️⃣ VPC Interface Endpoints
 
@@ -679,7 +679,7 @@ Frontend Users
 | RDS connection failed    | Wrong SG (0.0.0.0/0 used) |
 | CloudWatch logs missing  | Missing logs endpoint     |
 ---
-### 4️⃣ NAT Gateway (OPTIONAL INTERNET ACCESS FOR ECS)
+## 4️⃣ NAT Gateway (OPTIONAL INTERNET ACCESS FOR ECS)
 
 ### 1️⃣ NAT Gateway Architecture
 
@@ -779,7 +779,7 @@ Internet Gateway
 ECR / AWS Services / Internet
 ```
 ---
-### 5️⃣ Cafe Database Configuration
+## 5️⃣ Cafe Database Configuration
 
 ### 1️⃣ — RDS Core Setup
 
@@ -790,7 +790,7 @@ ECR / AWS Services / Internet
 | 1️⃣  | DB Subnet Group    | Name: `CafeRDSSubnetGroup`<br>VPC: `CafeDevVPC`<br>Subnets: Private Subnets (2 AZs)                                                                               |
 | 2️⃣  | RDS Security Group | Name: `CafeRDS-SG`<br>Inbound: MySQL (3306) from `Lambda-SG`, `EC2-Web-SG`<br>Outbound: All traffic                                                               |
 | 3️⃣  | RDS Instance       | Engine: MySQL/MariaDB<br>DB Name: `cafedb`<br>Username: `cafe_user`<br>Password: `StrongPassword123`<br>Public Access: ❌ Disabled<br>Security Group: `CafeRDS-SG` |
-
+---
 ### 2️⃣ — AWS Secrets Manager
 
 #### 🔹 Store Database Credentials
@@ -831,7 +831,7 @@ ECR / AWS Services / Internet
 | Item       | Value                                                                    |
 | ---------- | ------------------------------------------------------------------------ |
 | Secret ARN | `arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeDevDBSM-xxxxx` |
-
+---
 ### 3️⃣ Run RDS Bash Script 
 
 ```
@@ -864,7 +864,7 @@ chmod +x charlie_cafe_devops-rds_setup_full.sh
 - Credentials are never hardcoded in application
 
 ---
-### 5️⃣ DynamoDB Setup
+### 4️⃣ DynamoDB Setup
 
 ### 1️⃣ Create DynamoDB CafeMenu Table 
 
@@ -1463,7 +1463,7 @@ dynamo_table.put_item(
 | Use Case    | HR Tracking System      |
 
 ---
-### 6️⃣ ALB & CloudFront Configuration
+## 6️⃣ ALB & CloudFront Configuration
 
 ### ⚖️ 1️⃣ Application Load Balancer (ALB)
 
@@ -1619,8 +1619,8 @@ Instead of invalidating every time, use versioning:
 - Avoid caching API/auth responses
 
 - Use versioning instead of frequent invalidations
-
-### 7️⃣ AWS Cognito Authentication Configuration
+---
+## 7️⃣ AWS Cognito Authentication Configuration
 
 ### 🔐 1️⃣ Cognito User Pool (Core Setup)
 
@@ -1831,8 +1831,8 @@ CloudFront → Cognito Hosted UI → JWT Token → Frontend → API Gateway/Lamb
 | Role Control     | Cognito Groups     |
 | Backend Security | Lambda/API Gateway |
 | Data Layer       | RDS                |
-
-### 8️⃣ ☕ Employee ID System (Cognito ↔ RDS Integration)
+---
+## 8️⃣ ☕ Employee ID System (Cognito ↔ RDS Integration)
 
 ### 🔄 Flow Diagram (Concept)
 
@@ -2044,8 +2044,8 @@ SELECT * FROM employees;
 ✔ Frontend uses token to fetch employee data
 
 ✔ Lambda can automate employee creation
-
-### 8️⃣ — SQS (Producer Setup)
+---
+## 9️⃣ — SQS (Producer Setup)
 
 ### 1️⃣ SQS Queue Configuration
 
@@ -2112,8 +2112,8 @@ SELECT * FROM employees;
 ```
 API → Producer Lambda → SQS Queue → Worker Lambda → RDS
 ```
-
-### 9️⃣ Lambda & API Configuration 
+---
+### 🔟 Lambda & API Configuration 
 
 ### 1️⃣ Create Lambda Function
 
@@ -2475,7 +2475,7 @@ chmod +x ec2_docker_health.sh
 Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
 
 ---
-## ☁️ PHASE 2 — AWS DEVOPS UPGRADE
+## 1️⃣1️⃣ ☁️ AWS DEVOPS UPGRADE -- ECS & ECR
 
 Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
 
