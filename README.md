@@ -1365,7 +1365,101 @@ Frontend Display
 | Mode       | On-Demand             |
 | Use Case   | Menu Price Management |
 
-### 5️⃣ Create DynamoDB CafeMenu TABLE (ITEM COST TABLE SETUP)
+### 5️⃣ Create DynamoDB CafeAttendance TABLE
+
+### 1️⃣ Create Table Configuration
+
+#### 🔹 Basic Setup
+
+| Field              | Value                      |
+| ------------------ | -------------------------- |
+| Table Name         | `CafeAttendance`           |
+| Partition Key      | `employee_id`              |
+| Partition Key Type | String                     |
+| Sort Key           | `date`                     |
+| Sort Key Type      | String (YYYY-MM-DD format) |
+
+#### 🔹 Table Design Purpose
+
+| Feature            | Description                                     |
+| ------------------ | ----------------------------------------------- |
+| One record per day | Each employee has one attendance entry per date |
+| Query pattern      | employee-wise + date-wise lookup                |
+| Use case           | HR attendance tracking system                   |
+
+#### 🔹 Table Settings
+
+| Setting       | Value                   |
+| ------------- | ----------------------- |
+| Capacity Mode | On-Demand               |
+| Table Class   | Standard                |
+| Encryption    | AWS Owned Key (Default) |
+| Tags          | Optional (Skip)         |
+
+#### 🔹 Important Rules
+
+| Rule                                 | Status                                |
+| ------------------------------------ | ------------------------------------- |
+| Add attributes manually              | ❌ Not allowed                         |
+| Define check_in/check_out in console | ❌ Not required                        |
+| DynamoDB schema                      | Schema-less (auto attribute creation) |
+
+#### 🔹 Attendance Item Structure (Inserted via Lambda)
+
+| Attribute   | Type   | Description                  |
+| ----------- | ------ | ---------------------------- |
+| employee_id | String | Employee unique ID           |
+| date        | String | Attendance date (YYYY-MM-DD) |
+| check_in    | String | Check-in time                |
+| check_out   | String | Check-out time               |
+| role        | String | Employee role                |
+
+#### 🔹 Example Item (DynamoDB JSON Format)
+
+```
+{
+  "employee_id": { "S": "101" },
+  "date": { "S": "2026-02-01" },
+  "check_in": { "S": "09:03" },
+  "check_out": { "S": "17:11" },
+  "role": { "S": "Employee" }
+}
+```
+
+#### 🔹 Example Item (Lambda boto3 Format)
+
+```
+dynamo_table.put_item(
+    Item={
+        "employee_id": "101",
+        "date": "2026-02-01",
+        "check_in": "09:03",
+        "check_out": "17:11",
+        "role": "Employee"
+    }
+)
+```
+
+### 🔥 Key Design Notes
+
+| Concept       | Explanation                             |
+| ------------- | --------------------------------------- |
+| Partition Key | employee_id groups data per employee    |
+| Sort Key      | date ensures daily tracking             |
+| Schema        | Fully dynamic (NoSQL)                   |
+| Best Practice | Use Lambda for inserts                  |
+| Data Format   | No manual attribute definition required |
+
+### 🚀 Final Summary
+
+| Component   | Value                   |
+| ----------- | ----------------------- |
+| Table Name  | CafeAttendance          |
+| Primary Key | employee_id             |
+| Sort Key    | date                    |
+| Type        | NoSQL Attendance System |
+| Mode        | On-Demand               |
+| Use Case    | HR Tracking System      |
 
 
 
