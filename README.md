@@ -693,7 +693,169 @@ Instead of invalidating every time, use versioning:
 
 - Use versioning instead of frequent invalidations
 
-### 7️⃣ ALB & CloudFront Configuration
+### 7️⃣ AWS Cognito Authentication Configuration
+
+### 🔐 1️⃣ Cognito User Pool (Core Setup)
+
+| Parameter           | Value                            |
+| ------------------- | -------------------------------- |
+| User Pool Name      | `CharlieCafeAdminSPA`            |
+| Application Type    | Single Page Application (SPA)    |
+| Sign-in Method      | Username only                    |
+| Example Users       | `admin`, `manager1`, `employee1` |
+| Self Registration   | ❌ Disabled                       |
+| Required Attributes | `email` only                     |
+
+### 🔐 2️⃣ Security Configuration
+
+| Setting          | Value                |
+| ---------------- | -------------------- |
+| Password Policy  | Default              |
+| MFA              | ❌ Disabled (Dev/Lab) |
+| Account Recovery | Email only           |
+| SMS Recovery     | ❌ Disabled           |
+
+### 🔐 3️⃣ App Client Configuration
+
+| Parameter        | Value                        |
+| ---------------- | ---------------------------- |
+| Client Type      | Public Client (NO secret)    |
+| App Client Name  | `CharlieCafeAdminSPA`        |
+| OAuth Flow       | Authorization Code Grant     |
+| Implicit Flow    | ❌ Disabled                   |
+| Supported Scopes | `openid`, `email`, `profile` |
+
+### 🔐 4️⃣ Authentication Flows
+
+| Flow               | Status     |
+| ------------------ | ---------- |
+| USER_PASSWORD_AUTH | Enabled    |
+| USER_SRP_AUTH      | Enabled    |
+| REFRESH_TOKEN_AUTH | Enabled    |
+| Others             | ❌ Disabled |
+
+### 👥 5️⃣ User Groups (RBAC)
+
+| Group    | Precedence | Purpose              |
+| -------- | ---------- | -------------------- |
+| Admin    | 1          | Full system access   |
+| Manager  | 5          | Management dashboard |
+| Employee | 10         | Employee portal      |
+
+### 👤 6️⃣ User Management
+
+| Username  | Group    | Example Password |
+| --------- | -------- | ---------------- |
+| cafeadmin | Admin    | `^MyH%H!A4YjD`   |
+| manager1  | Manager  | `jfZvm@^3gTVE`   |
+| ali       | Employee | `*KEXO^C3mjm3`   |
+
+### 🧩 7️⃣ Custom Attributes (Employee Mapping)
+
+| Attribute | Value                                   |
+| --------- | --------------------------------------- |
+| Name      | `custom:employee_id`                    |
+| Type      | String                                  |
+| Mutable   | Yes                                     |
+| Purpose   | Link Cognito user → RDS employee record |
+
+### 🔐 8️⃣ App Client Attribute Access
+
+| Setting          | Value                |
+| ---------------- | -------------------- |
+| Read Permission  | `custom:employee_id` |
+| Write Permission | `custom:employee_id` |
+| Token Inclusion  | Included in JWT      |
+
+### 🌍 9️⃣ Cognito Hosted UI
+
+| Parameter     | Value                                                |
+| ------------- | ---------------------------------------------------- |
+| Domain Prefix | `charlie-cafe-auth`                                  |
+| Full Domain   | `charlie-cafe-auth.auth.us-east-1.amazoncognito.com` |
+| Type          | Hosted UI (OAuth2)                                   |
+
+### 🔁 1️⃣0️⃣ OAuth Configuration
+
+| Setting       | Value                    |
+| ------------- | ------------------------ |
+| Grant Type    | Authorization Code Grant |
+| Implicit Flow | ❌ Disabled               |
+| Scope         | openid + email + profile |
+
+### 🔗 1️⃣1️⃣ Callback & Logout URLs
+
+| Type          | URL                                                                     |
+| ------------- | ----------------------------------------------------------------------- |
+| Callback URLs | CloudFront routes (dashboard, login, order, analytics, employee portal) |
+| Logout URL    | `https://YOUR_CLOUDFRONT/logout.php?loggedout=true`                     |
+
+### 🔐 1️⃣2️⃣ Authentication Flow Summary
+
+| Component  | Role                        |
+| ---------- | --------------------------- |
+| Cognito    | Authentication + JWT tokens |
+| CloudFront | Frontend hosting            |
+| ALB        | Backend routing             |
+| Lambda/API | Business logic              |
+| RDS        | Employee + order data       |
+
+### 🧠 1️⃣3️⃣ Token Structure (Important)
+
+| Token Type    | Contains           |
+| ------------- | ------------------ |
+| ID Token      | User info + groups |
+| Access Token  | API authorization  |
+| Refresh Token | Session renewal    |
+
+### 🔄 1️⃣4️⃣ Login Flow (Architecture)
+
+```
+CloudFront → Cognito Hosted UI → JWT Token → Frontend → API Gateway/Lambda → RDS
+```
+
+### 🧩 1️⃣5️⃣ Employee ID Mapping (Critical Design)
+
+| Component         | Value                        |
+| ----------------- | ---------------------------- |
+| Cognito Attribute | `custom:employee_id`         |
+| Purpose           | Match RDS employee table     |
+| Flow              | Cognito → JWT → Lambda → RDS |
+
+### ⚠️ 1️⃣6️⃣ Key Security Rules
+
+| Rule                   | Status        |
+| ---------------------- | ------------- |
+| Self registration      | ❌ Disabled    |
+| Public admin creation  | ❌ Not allowed |
+| Implicit flow          | ❌ Disabled    |
+| Password auth exposure | ❌ Restricted  |
+| Groups-based access    | ✔ Enabled     |
+
+### 💡 1️⃣7️⃣ Best Practices
+
+- Use Authorization Code Flow (modern standard)
+
+- Always enforce group-based access control
+
+- Store no secrets in frontend
+
+- Use custom attributes for DB mapping
+
+- Never use implicit OAuth flow
+
+- Always validate JWT in backend
+
+### 🚀 Final Summary
+
+| Layer            | Service            |
+| ---------------- | ------------------ |
+| Identity         | Cognito            |
+| UI Auth          | Hosted UI          |
+| Token            | JWT                |
+| Role Control     | Cognito Groups     |
+| Backend Security | Lambda/API Gateway |
+| Data Layer       | RDS                |
 
 
 ---
