@@ -473,7 +473,99 @@ For production-ready setup, you should also include:
 
 - The verification script ensures that the environment is properly configured and ready
 
-### 5️⃣ Cafe Database Configuration
+### 3️⃣ VPC ENDPOINTS
+
+### 1️⃣ VPC Interface Endpoints
+
+#### 🔹 Secrets Manager Endpoint
+
+| Parameter      | Value                                    |
+| -------------- | ---------------------------------------- |
+| Name           | `secretsmanager-INT-EP`                  |
+| Service        | `com.amazonaws.us-east-1.secretsmanager` |
+| Type           | Interface                                |
+| VPC            | Your Dev VPC                             |
+| Subnets        | Private subnets (Lambda same AZs)        |
+| Security Group | Allow HTTPS (443) from Lambda SG         |
+| Private DNS    | Enabled                                  |
+
+#### 🔹 SQS Interface Endpoint
+
+| Parameter      | Value                         |
+| -------------- | ----------------------------- |
+| Name           | `sqs-INT-EP`                  |
+| Service        | `com.amazonaws.us-east-1.sqs` |
+| Type           | Interface                     |
+| VPC            | Same VPC                      |
+| Subnets        | Private subnets               |
+| Security Group | `Lambda-SG`                   |
+| Private DNS    | Enabled                       |
+
+#### 🔹 CloudWatch Logs Endpoint
+
+| Parameter      | Value                          |
+| -------------- | ------------------------------ |
+| Name           | `cloudwatch-INT-EP`            |
+| Service        | `com.amazonaws.us-east-1.logs` |
+| Type           | Interface                      |
+| VPC            | Same VPC                       |
+| Subnets        | Private subnets                |
+| Security Group | `Lambda-SG`                    |
+| Private DNS    | Enabled                        |
+
+#### 🔹 DynamoDB Gateway Endpoint
+
+| Parameter    | Value                              |
+| ------------ | ---------------------------------- |
+| Name         | `dynamodb-GW-EP`                   |
+| Service      | `com.amazonaws.us-east-1.dynamodb` |
+| Type         | Gateway                            |
+| VPC          | Same VPC                           |
+| Route Tables | All private route tables           |
+| Purpose      | Enable private DynamoDB access     |
+
+#### ⚙️ Endpoint Strategy Summary
+
+| Service         | Type      | Purpose                   |
+| --------------- | --------- | ------------------------- |
+| Secrets Manager | Interface | Secure credentials access |
+| SQS             | Interface | Messaging system          |
+| CloudWatch Logs | Interface | Logging Lambda output     |
+| DynamoDB        | Gateway   | Private DB access         |
+
+#### 🔄 Architecture Flow
+
+```
+Lambda (Private Subnet)
+   ↓
+VPC Endpoints
+   ↓
+AWS Services (SQS / Secrets / Logs / DynamoDB)
+```
+
+### 💡 Important DevOps Rules
+
+- Always use VPC endpoints for private Lambda
+
+- Never expose RDS directly (0.0.0.0/0 is forbidden)
+
+- Enable Private DNS for interface endpoints
+
+- DynamoDB must use Gateway endpoint
+
+- Lambda must run inside private subnets
+
+### 🚨 Common Failure Points
+
+| Issue                    | Cause                     |
+| ------------------------ | ------------------------- |
+| Lambda cannot access SQS | Missing SQS endpoint      |
+| Secrets Manager timeout  | No interface endpoint     |
+| RDS connection failed    | Wrong SG (0.0.0.0/0 used) |
+| CloudWatch logs missing  | Missing logs endpoint     |
+
+
+### 4️⃣ Cafe Database Configuration
 
 ### 1️⃣ — RDS Core Setup
 
