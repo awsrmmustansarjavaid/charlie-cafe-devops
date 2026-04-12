@@ -337,13 +337,47 @@ AWS_SECRET_ACCESS_KEY
 ---
 ## 2️⃣ Initialize AWS 
 
-
-
 ### 1️⃣ IAM Policy 
 
 [Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
 
+### 🌐 2️⃣ Network & Compute (Foundation)
 
+#### 🔹 VPC Configuration
+
+| Resource | Name         | CIDR Block    | Region      |
+| -------- | ------------ | ------------- | ----------- |
+| VPC      | `CafeDevVPC` | `10.0.0.0/16` | `us-east-1` |
+
+#### 🔹 Public Subnet
+
+| Resource      | Name                  | CIDR Block    | Auto Public IP |
+| ------------- | --------------------- | ------------- | -------------- |
+| Public Subnet | `CafeDevPublicSubnet` | `10.0.1.0/24` | Enabled        |
+
+#### 🔹 Private Subnets
+
+| Resource         | Name                    | CIDR Block    | Availability Zone |
+| ---------------- | ----------------------- | ------------- | ----------------- |
+| Private Subnet 1 | `CafeDevPrivateSubnet1` | `10.0.2.0/24` | AZ-a              |
+| Private Subnet 2 | `CafeDevPrivateSubnet2` | `10.0.3.0/24` | AZ-b              |
+
+#### 🔹 Internet Access Configuration
+
+| Component        | Configuration                            |
+| ---------------- | ---------------------------------------- |
+| Internet Gateway | Create and attach to `CafeDevVPC`        |
+| Route Table      | Add route `0.0.0.0/0 → Internet Gateway` |
+
+#### 💡 Pro Tip
+
+For production-ready setup, you should also include:
+
+- Separate route tables for public and private subnets
+
+- NAT Gateway for private subnet internet access
+
+- Proper tagging (Environment = Dev, Project = CharlieCafe)
 
 ---
 ## ☁️ PHASE 2 ☕ Charlie Cafe Full AWS DevOps Upgrade from GitHub
