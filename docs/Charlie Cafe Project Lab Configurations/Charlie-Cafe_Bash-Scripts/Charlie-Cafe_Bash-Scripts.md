@@ -2370,7 +2370,6 @@ echo -e "${GREEN}✔ Schemas Verified${NC}"
 echo -e "${GREEN}✔ Row Counts Verified${NC}"
 echo -e "${GREEN}✔ Analytics Queries Successful${NC}"
 echo -e "${GREEN}✔ Full RDS Verification Completed${NC}"
-
 ```
 
 ---
