@@ -29,7 +29,7 @@ window.CHARLIE_CONFIG = {
     /* ===============================
        🚀 API Gateway (PRODUCTION)
     =============================== */
-    API_BASE: "https://1kbgj4vpi9.execute-api.us-east-1.amazonaws.com/prod",
+    API_BASE: "https://k73mzry3dj.execute-api.us-east-1.amazonaws.com/prod",
 
     /* ===============================
        ☁ CloudFront Distribution
