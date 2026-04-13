@@ -1984,33 +1984,54 @@ Frontend Order → Lambda → SQS → Worker Lambda → DynamoDB (CafeOrders)
 | Mode        | On-Demand               |
 | Use Case    | Order Management System |
 
-### 4️⃣ Required DynamoDB Attributes (Orders Table)
+### 4️⃣ CREATE GSI
 
-#### 1️⃣ Open DynamoDB Table
+- AWS Console → DynamoDB → CafeOrders
 
-- AWS Console → DynamoDB
+- Click Indexes tab → Create index
 
-- Click Tables
+- Configure Index
 
-- Open table:
+| Setting       | Value            |
+| ------------- | ---------------- |
+| Partition Key | order_date       |
+| Type          | String           |
+| Sort Key      | ❌ None           |
+| Index Name    | order_date-index |
 
-```
-CafeOrders
-```
+- Projection Type: ALL | Capacity Mode: On-demand (default) | Action: Click Create Index | Status: ACTIVE (wait 1–2 min)
 
-#### 2️⃣ Verify Table Keys
+#### 📦 REQUIRED TABLE STRUCTURE
 
-#### Confirm:
+> #### 🧾 DynamoDB GSI Configuration (CafeOrders)
 
-| Setting       | Value               |
-| ------------- | ------------------- |
-| Partition Key | `order_id` (String) |
-| GSI           | `order_date-index`  |
+| Parameter       | Value                        |
+| --------------- | ---------------------------- |
+| Table Name      | CafeOrders                   |
+| Index Name      | order_date-index             |
+| Index Type      | Global Secondary Index (GSI) |
+| Partition Key   | order_date (String)          |
+| Sort Key        | None                         |
+| Projection Type | ALL                          |
+| Capacity Mode   | On-Demand                    |
+| Status          | ACTIVE                       |
 
+#### 📦 REQUIRED TABLE STRUCTURE (IMPORTANT)
 
-**📢 If GSI does not exist, STOP and create it before continuing.**
+> #### 🧾 Orders Table Schema
 
-#### 3️⃣ Verify Required Attributes (CRITICAL)
+| Parameter       | Value                        |
+| --------------- | ---------------------------- |
+| Table Name      | CafeOrders                   |
+| Index Name      | order_date-index             |
+| Index Type      | Global Secondary Index (GSI) |
+| Partition Key   | order_date (String)          |
+| Sort Key        | None                         |
+| Projection Type | ALL                          |
+| Capacity Mode   | On-Demand                    |
+| Status          | ACTIVE                       |
+
+### 2️⃣ Verify Required Attributes (CRITICAL)
 
 Click Explore table items
 
@@ -2034,27 +2055,19 @@ It MUST contain ALL attributes below:
 
 ✔ Do NOT continue until this is correct
 
-### 2️⃣ – VERIFY GSI WORKS (NO CODE YET)
+### 2️⃣ TEST GSI
 
-#### Test GSI in Console
+- Go to: Explore table items → Change: Scan → Query
 
-- DynamoDB → Explore table items
+- Select index: order_date-index
 
-- Switch Query
+#### ✔ Query Example:
 
-- Select index:
+| Field      | Value      |
+| ---------- | ---------- |
+| order_date | 2026-01-17 |
 
-```
-order_date-index
-```
-
-- Query condition:
-
-```
-order_date BETWEEN 2026-01-01 AND 2026-01-31
-```
-
-- Click Run
+> #### - OR range: BETWEEN 2026-01-01 AND 2026-01-31
 
 ✔ If items return → GSI works
 
