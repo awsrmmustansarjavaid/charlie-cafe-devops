@@ -71,3 +71,67 @@ git log --oneline
 
 ### 🔹 Build Docker Image
 
+```
+docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+```
+
+👉 Purpose: Create Docker image from Dockerfile
+
+### 🔹 Build Without Cache
+
+```
+docker build --no-cache -t charlie-cafe -f docker/apache-php/Dockerfile .
+```
+
+👉 Purpose: Force rebuild everything
+
+### 🔹 List Images
+
+```
+docker images
+```
+
+👉 Purpose: Show available images
+
+### 🔹 Run Container
+
+```
+docker run -d -p 80:80 --name cafe-app charlie-cafe
+```
+
+👉 Purpose: Start app container
+
+### 🔹 List Running Containers
+
+```
+docker ps
+```
+
+👉 Purpose: Show active containers
+
+### 🔹 Enter Container
+
+```
+docker exec -it cafe-app bash
+```
+
+👉 Purpose: Access container shell
+
+### 🔹 View Logs
+
+```
+docker logs cafe-app
+```
+
+👉 Purpose: Debug container issues
+
+### 🔹 Stop Container
+
+```
+
+```
+
+
+
+
+
