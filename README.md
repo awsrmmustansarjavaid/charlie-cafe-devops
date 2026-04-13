@@ -3250,6 +3250,32 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 
 #### 3️⃣ Go to the folder with the Dockerfile
 
+✔ Step 1: Go to ROOT project folder
+
+```
+cd ~/charlie-cafe-devops
+```
+
+✔ Step 2: Build using Dockerfile path
+
+```
+docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+```
+
+#### 🔥 IMPORTANT:
+
+The dot . means:
+
+“use FULL project root as build context”
+
+Now Docker can see:
+
+```
+app/frontend/
+docker/apache-php/Dockerfile
+```
+
+
 ```
 cd ~/charlie-cafe-devops/docker/apache-php/
 ```
