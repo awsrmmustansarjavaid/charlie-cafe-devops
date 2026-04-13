@@ -509,7 +509,7 @@ Read more [“Click here for configuration.”](./charlie-cafe-devops-Network%20
 
 ✅ This is recommended if you want production-level private networking.
 
-### 5️⃣ ALB + ECS SERVICE
+- ### 7️⃣ ALB + ECS SERVICE
 
 > #### KEEP existing ALB and upgrade it for ECS.
 
@@ -659,7 +659,7 @@ Read more [“Click here for configuration.”](./charlie-cafe-devops-Network%20
 
 🕓 Wait 2–5 minutes
 
-- ### 7️⃣  Run Task in Cluster
+- ### 8️⃣  Run Task in Cluster
 
 - Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
 
@@ -675,7 +675,7 @@ Read more [“Click here for configuration.”](./charlie-cafe-devops-Network%20
 
 ✅ Your container should start. Check Logs → CloudWatch → /ecs/charlie-task to verify the app is running.
 
-### Verification Test 
+### 3️⃣ Verification Test 
 
 ### 1️⃣  Verify Container
 

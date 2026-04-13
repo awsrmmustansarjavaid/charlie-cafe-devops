@@ -3431,9 +3431,9 @@ This role will be used later in the task definition.
 
 > #### NAT GW / VPC ENDPoint
 
-Read more [“Click here for configuration.”](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/charlie-cafe-devops-Network%20Connectivity.md)
+Read more [“Click here for configuration.”](./charlie-cafe-devops-Network%20Connectivity.md)
 
-#### 🔹 Step 1: VPC Endpoints (Private Access)
+#### 🔹 VPC Endpoints (Private Access)
 
 | Endpoint                        | Type      | Notes                                            |
 | ------------------------------- | --------- | ------------------------------------------------ |
@@ -3455,102 +3455,7 @@ Read more [“Click here for configuration.”](./docs/Charlie%20Cafe%20Project%
 
 ✅ This is recommended if you want production-level private networking.
 
-#### 🔹 Step 2: Quick Test Before Redeploy
-
-Use a temporary EC2 instance in the same subnet as your ECS tasks:
-
-```
-# Test ECR API
-curl -v https://api.ecr.us-east-1.amazonaws.com/
-
-# Test ECR Docker registry
-curl -v https://537236558357.dkr.ecr.us-east-1.amazonaws.com/v2/
-```
-
-- Timeout → network problem
-
-- JSON / HTTP 200 → network works
-
-#### 🔹 Step 3: Verify ECS Once Networking Works
-
-After your tasks can access ECR:
-
-- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
-
-- Check Tasks:
-
-  - Status: Running
-
-  - Last Status: RUNNING
-
-- Go to Target Groups → charlie-blue → Targets
-
-  - Status: Healthy
-
-  - Should see the private IP of the Fargate task
-
-- Open your ALB DNS in browser:
-
-  - You should see your app page served from the container
-
-- Logs:
-
-  - Go to CloudWatch Logs (if configured in task definition)
-
-  - Verify container starts without errors
-
-#### 🔹 Step 4: Make sure AWS CLI works
-
-```
-aws sts get-caller-identity
-```
-
-If this works → IAM role is OK.
-
-#### 🔹 Step 5: Login to ECR
-
-```
-aws ecr get-login-password --region us-east-1 \
-| docker login --username AWS --password-stdin 537236558357.dkr.ecr.us-east-1.amazonaws.com
-```
-
-#### Expected success output:
-
-```
-Login Succeeded
-```
-
-#### 🔹 Step 6: Login to ECR
-
-```
-docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
-```
-
-- ### 7️⃣  Run Task in Cluster
-
-- Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
-
-- Launch Type: Fargate.
-
-- Task Definition: charlie-task:1 (latest revision).
-
-- Cluster VPC & Subnets: select defaults or your preferred VPC.
-
-- Security group: allow TCP 80 (HTTP) from 0.0.0.0/0 if public access needed.
-
-- Click Run Task.
-
-✅ Your container should start. Check Logs → CloudWatch → /ecs/charlie-task to verify the app is running.
-
-- ### 8️⃣  Verify Container
-
-- Go to ECS → Cluster → Tasks.
-
-- Click on your task → Containers → View Logs.
-
-- Verify container started successfully, listening on port 80.
-
-### 5️⃣ ALB + ECS SERVICE
+- ### 7️⃣ ALB + ECS SERVICE
 
 > #### KEEP existing ALB and upgrade it for ECS.
 
@@ -3610,11 +3515,59 @@ docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 
 - Go ECS → Cluster → charlie-cluster → Create Service
 
-- Service Name: charlie-service
+- #### Compute options
 
-- Launch type: Fargate
+   - Launch type: Fargate
 
-- Number of tasks: 1 (start small)
+- #### Task Definition  
+
+  - Task definition: charlie-task
+
+  - Revision: latest
+
+- #### Service name  
+
+  - Service name: charlie-service
+  
+  - Desired tasks (Number of tasks): 1 (start small)
+
+- #### NETWORKING
+
+- 👉 VPC : 
+  
+  - Select your default VPC (or custom if you made one)
+
+- 👉 Subnets 
+
+> ✅ Choose ONLY:
+
+- ✔ Public Subnets (important)
+
+#### Example:
+
+- subnet-xxxx (public-subnet-1)
+
+- subnet-xxxx (public-subnet-2)
+
+#### ❌ DO NOT choose:
+
+- Private subnets (for now)
+
+- Isolated subnets
+
+- 👉 Auto-assign Public IP
+
+- 👉 MUST SET: ENABLE
+
+✔ This is what allows internet access
+
+- 🔐 Security Group: Create or select default-SG:
+
+| Type | Port | Source    |
+| ---- | ---- | --------- |
+| HTTP | 80   | 0.0.0.0/0 |
+
+- #### LOAD BALANCER (OPTIONAL but recommended)
 
 - Load Balancer: Application Load Balancer
 
@@ -3632,7 +3585,35 @@ docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 
 ✅ Click Create Service → Wait for tasks to become Running
 
-#### 4️⃣ Verify Target Group
+🕓 Wait 2–5 minutes
+
+- ### 8️⃣  Run Task in Cluster
+
+- Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
+
+- Launch Type: Fargate.
+
+- Task Definition: charlie-task:1 (latest revision).
+
+- Cluster VPC & Subnets: select defaults or your preferred VPC.
+
+- Security group: allow TCP 80 (HTTP) from 0.0.0.0/0 if public access needed.
+
+- Click Run Task.
+
+✅ Your container should start. Check Logs → CloudWatch → /ecs/charlie-task to verify the app is running.
+
+### 3️⃣ Verification Test 
+
+### 1️⃣  Verify Container
+
+- Go to ECS → Cluster → Tasks.
+
+- Click on your task → Containers → View Logs.
+
+- Verify container started successfully, listening on port 80.
+
+### 2️⃣ Verify Target Group
 
 - Go EC2 → Target Groups → charlie-blue → Targets
 
@@ -3644,7 +3625,78 @@ docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 
 - Status: Healthy
 
-#### 🌐 Access App
+### 2️⃣ Quick Test Before Redeploy (Optional)
+
+#### 🔹 Step 1: Use a temporary EC2 instance in the same subnet as your ECS tasks:
+
+```
+# Test ECR API
+curl -v https://api.ecr.us-east-1.amazonaws.com/
+
+# Test ECR Docker registry
+curl -v https://537236558357.dkr.ecr.us-east-1.amazonaws.com/v2/
+```
+
+- Timeout → network problem
+
+- JSON / HTTP 200 → network works
+
+#### 🔹 Step 2: Verify ECS Once Networking Works
+
+After your tasks can access ECR:
+
+- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
+
+- Check Tasks:
+
+  - Status: Running
+
+  - Last Status: RUNNING
+
+- Go to Target Groups → charlie-blue → Targets
+
+  - Status: Healthy
+
+  - Should see the private IP of the Fargate task
+
+- Open your ALB DNS in browser:
+
+  - You should see your app page served from the container
+
+- Logs:
+
+  - Go to CloudWatch Logs (if configured in task definition)
+
+  - Verify container starts without errors
+
+#### 🔹 Step 3: Make sure AWS CLI works
+
+```
+aws sts get-caller-identity
+```
+
+If this works → IAM role is OK.
+
+#### 🔹 Step 4: Login to ECR
+
+```
+aws ecr get-login-password --region us-east-1 \
+| docker login --username AWS --password-stdin 537236558357.dkr.ecr.us-east-1.amazonaws.com
+```
+
+#### Expected success output:
+
+```
+Login Succeeded
+```
+
+#### 🔹 Step 5: Login to ECR
+
+```
+docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+``` 
+
+#### 🔹 Step 6: 🌐 Access App
 
 - Go to your ALB DNS in browser
 
