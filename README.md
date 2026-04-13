@@ -3852,9 +3852,11 @@ Resources:
 
 - Go to AWS CODEDEPLOY → Applications → Click Create application
 
-- Name: charlie-ecs-app
+- Application name: charlie-ecs-app
 
-- Platform: ECS
+- Compute platform: ECS
+
+- ✅ Click Create
 
 ### 2️⃣ — ECS SERVICE (CRITICAL)
 
