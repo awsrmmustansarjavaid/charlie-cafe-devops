@@ -485,16 +485,21 @@ Task Execution Role: If your ECS task needs to pull images from ECR or access se
 
 - Go to: ECS → Cluster → charlie-cluster → Services → Create
 
-- Choose: 
+- #### Compute options
 
-  - Launch type: Fargate
+   - Launch type: Fargate
+
+- #### Task Definition  
 
   - Task definition: charlie-task
+
+  - Revision: latest
+
+- #### Service name  
 
   - Service name: charlie-service
   
   - Desired tasks: 1
-
 
 - ### 7️⃣  Network Connectivity
 

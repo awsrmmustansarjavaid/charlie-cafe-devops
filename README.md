@@ -3431,11 +3431,17 @@ This role will be used later in the task definition.
 
 - Go to: ECS → Cluster → charlie-cluster → Services → Create
 
-- Choose: 
+- #### Compute options
 
-  - Launch type: Fargate
+   - Launch type: Fargate
+
+- #### Task Definition  
 
   - Task definition: charlie-task
+
+  - Revision: latest
+
+- #### Service name  
 
   - Service name: charlie-service
   
