@@ -128,8 +128,131 @@ docker logs cafe-app
 ### 🔹 Stop Container
 
 ```
+docker stop cafe-app
+```
+
+### 🔹 Remove Container
 
 ```
+docker rm cafe-app
+```
+
+### 🔹 Remove Image
+
+```
+docker rmi charlie-cafe
+```
+
+---
+## 📦 3. AMAZON ECR COMMANDS
+
+### 🔹 Login to ECR
+
+```
+aws ecr get-login-password --region us-east-1 \
+| docker login --username AWS --password-stdin <account_id>.dkr.ecr.us-east-1.amazonaws.com
+```
+
+👉 Purpose: Authenticate Docker with AWS ECR
+
+### 🔹 Tag Image
+
+```
+docker tag charlie-cafe:latest <account_id>.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+### 🔹 Push Image
+
+```
+docker push <account_id>.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+👉 Purpose: Upload image to AWS registry
+
+### 🔹 List ECR Images
+
+```
+aws ecr list-images --repository-name charlie-cafe
+```
+
+---
+## 🚀 4. AWS ECS COMMANDS
+
+### 🔹 Update Service (Deploy New Version)
+
+```
+aws ecs update-service \
+  --cluster charlie-cluster \
+  --service charlie-service \
+  --force-new-deployment
+```
+
+👉 Purpose: Restart tasks with latest image
+
+### 🔹 Update with Task Definition
+
+```
+aws ecs update-service \
+  --cluster charlie-cluster \
+  --service charlie-service \
+  --task-definition charlie-task:8 \
+  --force-new-deployment
+```
+
+### 🔹 Describe Service
+
+```
+aws ecs describe-services \
+  --cluster charlie-cluster \
+  --service charlie-service
+```
+
+👉 Purpose: Check running status
+
+### 🔹 List Tasks
+
+```
+aws ecs list-tasks --cluster charlie-cluster
+```
+
+### 🔹 Describe Tasks
+
+```
+aws ecs describe-tasks \
+  --cluster charlie-cluster \
+  --tasks <task_id>
+```
+
+### 🔹 Register Task Definition
+
+```
+aws ecs register-task-definition \
+  --cli-input-json file://task-definition.json
+```
+
+### 🔹 View Task Definition Image
+
+```
+aws ecs describe-task-definition \
+  --task-definition charlie-task:8
+```
+
+---
+## 🔐 5. AWS SECRETS MANAGER
+
+### 🔹 Get Secret Value
+
+```
+aws secretsmanager get-secret-value \
+  --secret-id CafeDevDBSM
+```
+
+
+
+
+
+
+
 
 
 
