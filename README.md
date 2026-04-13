@@ -2837,20 +2837,20 @@ API → Producer Lambda → SQS Queue → Worker Lambda → RDS
 
 - ### 1️⃣ Lambda Function 
 
-| Lambda Function Name          | Python File Name                 | Handler (Set in Lambda)                      |
-| ----------------------------- | -------------------------------- | -------------------------------------------- |
-| CafeOrderProcessor            | CafeOrderProcessor.py            | CafeOrderProcessor.lambda_handler            |
-| CafeMenuLambda                | CafeMenuLambda.py                | CafeMenuLambda.lambda_handler                |
-| CafeOrderStatusLambda         | CafeOrderStatusLambda.py         | CafeOrderStatusLambda.lambda_handler         |
-| GetOrderStatusLambda          | GetOrderStatusLambda.py          | GetOrderStatusLambda.lambda_handler          |
-| CafeOrderWorkerLambda         | CafeOrderWorkerLambda.py         | CafeOrderWorkerLambda.lambda_handler         |
-| AdminMarkPaidLambda           | AdminMarkPaidLambda.py           | AdminMarkPaidLambda.lambda_handler           |
-| CafeAnalyticsLambda           | CafeAnalyticsLambda.py           | CafeAnalyticsLambda.lambda_handler           |
-| hr-attendance                 | hr-attendance.py                 | hr-attendance.lambda_handler                 |
-| hr-employee-profile           | hr-employee-profile.py           | hr-employee-profile.lambda_handler           |
-| hr-attendance-history         | hr-attendance-history.py         | hr-attendance-history.lambda_handler         |
-| hr-leaves-holidays            | hr-leaves-holidays.py            | hr-leaves-holidays.lambda_handler            |
-| cafe-attendance-admin-service | cafe-attendance-admin-service.py | cafe-attendance-admin-service.lambda_handler |
+| Lambda Function Name          | Python File                      | Handler                                      | VPC Required |
+| ----------------------------- | -------------------------------- | -------------------------------------------- | ------------ |
+| CafeOrderProcessor            | CafeOrderProcessor.py            | CafeOrderProcessor.lambda_handler            | ✔ Yes        |
+| CafeMenuLambda                | CafeMenuLambda.py                | CafeMenuLambda.lambda_handler                | ❌ No         |
+| CafeOrderStatusLambda         | CafeOrderStatusLambda.py         | CafeOrderStatusLambda.lambda_handler         | ✔ Yes        |
+| GetOrderStatusLambda          | GetOrderStatusLambda.py          | GetOrderStatusLambda.lambda_handler          | ✔ Yes        |
+| CafeOrderWorkerLambda         | CafeOrderWorkerLambda.py         | CafeOrderWorkerLambda.lambda_handler         | ✔ Yes        |
+| AdminMarkPaidLambda           | AdminMarkPaidLambda.py           | AdminMarkPaidLambda.lambda_handler           | ✔ Yes        |
+| CafeAnalyticsLambda           | CafeAnalyticsLambda.py           | CafeAnalyticsLambda.lambda_handler           | ✔ Yes        |
+| hr-attendance                 | hr-attendance.py                 | hr-attendance.lambda_handler                 | ✔ Yes        |
+| hr-employee-profile           | hr-employee-profile.py           | hr-employee-profile.lambda_handler           | ✔ Yes        |
+| hr-attendance-history         | hr-attendance-history.py         | hr-attendance-history.lambda_handler         | ✔ Yes        |
+| hr-leaves-holidays            | hr-leaves-holidays.py            | hr-leaves-holidays.lambda_handler            | ✔ Yes        |
+| cafe-attendance-admin-service | cafe-attendance-admin-service.py | cafe-attendance-admin-service.lambda_handler | ✔ Yes        |
 
 - ### 2️⃣ Basic Lambda Configurations
 
