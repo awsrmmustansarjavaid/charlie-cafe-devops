@@ -2043,6 +2043,41 @@ taskDefinitionArn
 
 👉 THIS IS YOUR NEW VERSION
 
+#### 🧠 What happened?
+
+When you run:
+
+```
+aws ecs register-task-definition ...
+```
+
+AWS CLI sends output to a pager program (less), so you see:
+
+```
+:
+```
+
+at the bottom.
+
+> 👉 That : means:
+
+  - > You are inside a scroll/view mode, not stuck or broken.
+
+
+#### 🚪 How to exit safely (VERY IMPORTANT)
+
+  - Just press: q
+
+✔ That is it. You will return to terminal like:
+
+```
+[ec2-user@ip-10-0-4-15 charlie-cafe-devops]$
+```
+
+#### ⚡ If q does NOT work
+
+  - Try: Ctrl + C
+
 ### 🚀 STEP 8 — FORCE ECS ROLLING UPDATE (CORE STEP)
 
 - Now update service:
