@@ -3999,19 +3999,113 @@ chmod +x ecs_zero_downtime_deploy.sh
 ./ecs_zero_downtime_deploy.sh
 ```
 
-### 🌐 VERIFY LIVE APP
+### 🧭 VERIFY ECS DEPLOYMENT
+
+- Go here: ECS → Your Cluster → charlie-cluster
+
+#### 📊 WHAT YOU SHOULD SEE HERE
+
+- Inside cluster:
+
+✔ Service name: charlie-service
+
+✔ Status: ACTIVE
+
+✔ Running tasks: 1 (or more depending on your config)
+
+- go to charlie-service → Now go into Service details page
+
+- Go to Check DEPLOYMENTS TAB → Scroll to → Deployments section 
+
+✔ EXPECTED OUTPUT YOU SHOULD SEE
+
+You should see something like:
+
+| Field           | Value                      |
+| --------------- | -------------------------- |
+| Primary         | YES                        |
+| Status          | **COMPLETED**              |
+| Task Definition | charlie-task:4 (or latest) |
+| Desired Count   | 1                          |
+| Running Count   | 1                          |
+
+
+👉 If you see:
+
+```
+PRIMARY = YES
+STATUS = COMPLETED
+```
+
+✔ That means rolling update succeeded
+
+### 🔄 Verify EVENTS TAB
+
+- Click tab: Events
+
+✔ EXPECTED SUCCESS EVENTS
+
+You should see messages like:
+
+```
+service charlie-service has started 1 tasks
+service charlie-service has stopped 1 running tasks
+service reached steady state
+```
+
+👉 Most important line:
+
+```
+service reached steady state
+```
+
+✔ This confirms ZERO downtime deployment completed
+
+### 🧠 Check TASKS (RUNNING CONTAINERS)
+
+- Go to: Tasks tab
+
+✔ EXPECTED OUTPUT
+
+You should see:
+
+- Task status = RUNNING
+
+- Launch type = FARGATE / EC2 (your setup)
+
+- Health = HEALTHY
+
+- Task definition = latest revision (e.g. charlie-task:4)
+
+### 🧪 VERIFY NEW IMAGE IS RUNNING
+
+- Click the running task → open details
+
+- Check: Container image
+
+✔ EXPECTED:
+
+```
+537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+👉 If it matches your latest push = SUCCESS
+
+### 🌐 VERIFY APPLICATION (REAL TEST)
 
 - Open ALB URL:
 
 ```
-http://your-alb-dns.amazonaws.com/health.php
+http://<your-alb-dns>/health.php
 ```
 
-#### ✔ Should show:
 
-```
-OK
-```
+
+
+
+
+
+
 ---
 ## ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
 
