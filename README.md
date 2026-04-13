@@ -3173,6 +3173,8 @@ done
 
 ### 🌐 EC2 Docker Health (Optional)
 
+#### ✅ Docker Container Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
+
 ```
 nano ec2_docker_health.sh
 ```
@@ -3188,9 +3190,7 @@ chmod +x ec2_docker_health.sh
 
 ✅ This will work every time on EC2, no matter where you run it from, as long as the repo is cloned in ~/charlie-cafe-devops.
 
-#### ✅ Docker Container
 
-Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
 
 ---
 ## 1️⃣1️⃣ ☁️ AWS DEVOPS UPGRADE -- ECS & ECR
