@@ -3419,6 +3419,111 @@ This role will be used later in the task definition.
 
 - Click Add → Click Create Task Definition.
 
+#### ✅ charlie-task JSON
+
+```
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:537236558357:task-definition/charlie-task:2",
+    "containerDefinitions": [
+        {
+            "name": "charlie-container",
+            "image": "537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "charlie-container-80-tcp",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DB_HOST",
+                    "value": "cafedb.c03ieya4wc40.us-east-1.rds.amazonaws.com"
+                },
+                {
+                    "name": "DB_PASS",
+                    "value": "StrongPassword123"
+                },
+                {
+                    "name": "DB_USER",
+                    "value": "cafe_user"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/charlie-task",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "charlie-task",
+    "executionRoleArn": "arn:aws:iam::537236558357:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 2,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE",
+        "MANAGED_INSTANCES"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2026-04-13T10:29:10.236Z",
+    "registeredBy": "arn:aws:iam::537236558357:root",
+    "enableFaultInjection": false,
+    "tags": []
+}
+```
+
 - ### 6️⃣  Network Connectivity
 
 > #### NAT GW / VPC ENDPoint
