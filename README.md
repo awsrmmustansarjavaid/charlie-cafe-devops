@@ -3880,19 +3880,17 @@ Resources:
 
 - Choose: charlie-cafe-alb
 
-- 
+#### Target groups:
 
+- Blue → charlie-blue
 
+- Green → charlie-green
 
-- Attach:
+#### Deployment settings:
 
-  - ALB
+- Traffic shifting: All at once
 
-  - Blue TG
-
-  - Green TG
-
-  - Listener: HTTP:80
+👉 Click Create deployment group
 
 ### 2️⃣ — ECS SERVICE (CRITICAL)
 
