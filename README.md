@@ -3958,8 +3958,6 @@ You will see UI changes like:
 
 - ALB config becomes mandatory
 
-
-
 ### 4️⃣ — ECS TASK EXECUTION ROLE
 
 - Use:
