@@ -3858,6 +3858,28 @@ Resources:
 
 - ✅ Click Create
 
+### 2️⃣ — CREATE DEPLOYMENT GROUP
+
+👉 Now inside that app: Click Create deployment group
+
+- Name: charlie-ecs-deployment-group
+
+- Service role: 👉 Select your role: charlie-codedeploy-role
+
+- Cluster: charlie-cluster
+
+- Service: charlie-service
+
+- Attach:
+
+  - ALB
+
+  - Blue TG
+
+  - Green TG
+
+  - Listener: HTTP:80
+
 ### 2️⃣ — ECS SERVICE (CRITICAL)
 
 - Go to ECS → Clusters → charlie-cluster → Services → charlie-service
@@ -3890,23 +3912,7 @@ Deployment controller: CodeDeploy
 
 
 
-### 3️⃣ — CREATE DEPLOYMENT GROUP
 
-- Name: charlie-ecs-deployment-group
-
-- Cluster: charlie-cluster
-
-- Service: charlie-service
-
-- Attach:
-
-  - ALB
-
-  - Blue TG
-
-  - Green TG
-
-  - Listener: HTTP:80
 
 ### 4️⃣ — ECS TASK EXECUTION ROLE
 
