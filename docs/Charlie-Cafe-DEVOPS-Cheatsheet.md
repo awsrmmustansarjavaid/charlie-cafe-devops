@@ -1,3 +1,205 @@
+# ☕ Charlie Cafe — Cheat Sheet
+
+# 🐧 Linux + ☁️ AWS DevOps + 🔁 GitHub Actions CI/CD Commands
+
+## 🐧 1. LINUX COMMANDS (DEVOPS ESSENTIALS)
+
+### 📁 File & Directory Management
+
+### 🔹 Show current directory
+
+```
+pwd
+```
+
+👉 Purpose: Show where you are
+
+### 🔹 List files
+
+```
+ls -la
+```
+
+👉 Purpose: Show all files + hidden files
+
+### 🔹 Change directory
+
+```
+cd /path/to/folder
+```
+
+👉 Purpose: Move between folders
+
+### 🔹 Create directory
+
+```
+mkdir my-folder
+```
+
+👉 Purpose: Create new folder
+
+### 🔹 Remove file
+
+```
+rm file.txt
+```
+
+👉 Purpose: Delete file
+
+### 🔹 Remove folder
+
+```
+rm -rf folder/
+```
+
+👉 Purpose: Force delete folder (danger)
+
+### 📄 File Viewing
+
+### 🔹 View file content
+
+```
+cat file.txt
+```
+
+### 🔹 View large file
+
+```
+less file.txt
+```
+
+### 🔹 View last logs
+
+```
+tail -f app.log
+```
+
+👉 Purpose: Live log monitoring
+
+### 🔍 Search & Filter
+
+### 🔹 Find file
+
+```
+find /var/www -name "health.php"
+```
+
+### 🔹 Search text in files
+
+```
+grep "error" logfile.txt
+```
+
+### 🔹 Recursive search
+
+```
+grep -R "DB_HOST" /var/www/html
+```
+
+### ⚙️ Process Management
+
+### 🔹 Show running processes
+
+```
+ps aux
+```
+
+### 🔹 Kill process
+
+```
+kill -9 <PID>
+```
+
+### 🔹 Find process by name
+
+```
+pgrep nginx
+```
+
+### 🌐 Networking
+
+### 🔹 Check open ports
+
+```
+netstat -tulpn
+```
+
+### 🔹 Test connection
+
+```
+curl http://localhost
+```
+
+### 🔹 Check IP
+
+```
+ip a
+```
+
+### 💾 System Monitoring
+
+### 🔹 CPU & RAM usage
+
+```
+top
+```
+
+### 🔹 Disk usage
+
+```
+df -h
+```
+
+### 🔹 Folder size
+
+```
+du -sh *
+```
+
+### 🔐 Permissions
+
+### 🔹 Change permissions
+
+```
+chmod 755 script.sh
+```
+
+### 🔹 Change owner
+
+```
+chown ubuntu:ubuntu file.txt
+```
+
+---
+## ☁️ AWS DEVOPS COMMANDS
+
+### 🔑 AWS Login
+
+### 🔹 Configure AWS CLI
+
+```
+aws configure
+```
+
+👉 Purpose: Set access key + region
+
+### 📦 EC2 Commands
+
+### 🔹 List instances
+
+```
+aws ec2 describe-instances
+```
+
+
+
+
+
+
+
+
+
+---
 # ☕ Charlie Cafe — DevOps Command Cheat Sheet
 
 ## 📦 1. GIT / GITHUB COMMANDS
