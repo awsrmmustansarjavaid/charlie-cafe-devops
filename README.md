@@ -2389,7 +2389,7 @@ Instead of invalidating every time, use versioning:
 
 | Attribute | Value                                   |
 | --------- | --------------------------------------- |
-| Name      | `custom:employee_id`                    |
+| Name      | `employee_id`                    |
 | Type      | String                                  |
 | Mutable   | Yes                                     |
 | Purpose   | Link Cognito user → RDS employee record |
