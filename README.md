@@ -4242,7 +4242,7 @@ less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
 
 ⬜️ Store credentials in Secrets Manager
 
-### 🔹 Phase 4 – 
+### 🔹 Phase 4 – Lambda + SQS 
 
 ⬜️ Create Lambda functions
 
