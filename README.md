@@ -3109,6 +3109,12 @@ nano deploy_via_ssm.sh
 
 [deploy_via_ssm.sh](./infrastructure/scripts/deploy_via_ssm.sh)
 
+#### 💡 What you only need to provide:
+
+```
+GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+```
+
 ```
 chmod +x deploy_via_ssm.sh
 ./deploy_via_ssm.sh
