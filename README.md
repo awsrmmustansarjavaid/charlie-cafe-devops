@@ -2378,11 +2378,12 @@ Instead of invalidating every time, use versioning:
 
 ### 👤 6️⃣ User Management
 
-| Username  | Group    | Example Password |
-| --------- | -------- | ---------------- |
-| cafeadmin | Admin    | `^MyH%H!A4YjD`   |
-| manager1  | Manager  | `jfZvm@^3gTVE`   |
-| ali       | Employee | `*KEXO^C3mjm3`   |
+| Username  | Group    | Email                                                         | Password (Default) | New Password | Email Verified |
+| --------- | -------- | ------------------------------------------------------------- | ------------------ | ------------ | -------------- |
+| cafeadmin | Admin    | [cafeadmin@charliecafe.com](mailto:cafeadmin@charliecafe.com) | ^MyH%H!A4YjD       | ^MyH%H!A4YjD | ✔ true         |
+| manager1  | Manager  | [manager1@charliecafe.com](mailto:manager1@charliecafe.com)   | jfZvm@^3gTVE       | *KEXO^C3mjm3 | ✔ true         |
+| ali       | Employee | [ali@charliecafe.com](mailto:ali@charliecafe.com)             | *KEXO^C3mjm3       | *KEXO^C3mjm3 | ✔ true         |
+
 
 ### 🧩 7️⃣ Custom Attributes (Employee Mapping)
 
