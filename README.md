@@ -3826,6 +3826,28 @@ Resources:
 }
 ```
 
+### ✅ IAM ROle for CodeDeploy
+
+- Go to IAM role → create iam role 
+
+- Select Trusted Entity: AWS service
+
+- Use case: CodeDeploy
+
+#### You will see 3 options:
+
+- CodeDeploy
+
+- CodeDeploy for Lambda
+
+- ✅ CodeDeploy for ECS ← SELECT THIS
+
+- AWS will automatically attach: 👉 AWSCodeDeployRoleForECS
+
+- Role Name: charlie-codedeploy-role
+
+👉 Click Create role
+
 ### 1️⃣ — ECS SERVICE (CRITICAL)
 
 - Go to ECS → Clusters → charlie-cluster → Services → charlie-service
