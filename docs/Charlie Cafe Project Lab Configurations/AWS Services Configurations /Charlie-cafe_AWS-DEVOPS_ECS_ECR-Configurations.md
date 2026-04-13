@@ -2079,7 +2079,109 @@ aws ecs update-service \
 
 - Run:
 
+```
+aws ecs describe-services \
+  --cluster charlie-cluster \
+  --services charlie-service
+```
 
+- Look for:
+
+```
+"rolloutState": "IN_PROGRESS"
+```
+
+- Then:
+
+```
+"rolloutState": "COMPLETED"
+```
+
+### 🌐 STEP 11 — VERIFY LIVE APP
+
+- Open ALB URL:
+
+```
+http://your-alb-dns.amazonaws.com/health.php
+```
+
+#### ✔ Should show:
+
+```
+OK
+```
+
+### 🧠 IMPORTANT RULES (DO NOT SKIP THIS)
+
+#### ✔ Your ALB must have:
+
+- Health check path: /health.php
+
+- Healthy threshold: 2–3
+
+- Interval: 10–30 sec
+
+#### ✔ ECS must have:
+
+- min healthy percent = 100
+
+- max percent = 200
+
+👉 This ensures zero downtime rolling
+
+### ⚡ OPTIONAL (PRO LEVEL AUTOMATION SCRIPT)
+
+You can combine everything:
+
+```
+#!/bin/bash
+
+set -e
+
+ACCOUNT_ID=537236558357
+REGION=us-east-1
+REPO=charlie-cafe
+
+echo "🚀 Building Docker image..."
+docker build -t $REPO -f docker/apache-php/Dockerfile .
+
+echo "🏷 Tagging image..."
+docker tag $REPO:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
+
+echo "🔐 Logging in to ECR..."
+aws ecr get-login-password --region $REGION | \
+docker login --username AWS --password-stdin \
+$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+
+echo "📤 Pushing image..."
+docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO:latest
+
+echo "📦 Registering task definition..."
+aws ecs register-task-definition \
+  --cli-input-json file://task-definition.json
+
+echo "🚀 Updating ECS service..."
+aws ecs update-service \
+  --cluster charlie-cluster \
+  --service charlie-service \
+  --force-new-deployment
+
+echo "✅ Deployment triggered successfully!"
+```
+
+### 🏁 FINAL RESULT
+
+#### After this:
+
+✔ New version deployed
+
+✔ Old version removed safely
+
+✔ No downtime
+
+✔ No CodeDeploy cost
+
+✔ Fully AWS free-tier friendly
 
 ---
 ## 🌐 TASK 2 — ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
