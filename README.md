@@ -3427,8 +3427,21 @@ This role will be used later in the task definition.
 
 - #### ✅ charlie-task JSON [charlie-task.json](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/charlie-task%20JSON/charlie-task.json)
 
+- ### 6️⃣  Create ECS Service
 
-- ### 6️⃣  Network Connectivity
+- Go to: ECS → Cluster → charlie-cluster → Services → Create
+
+- Choose: 
+
+  - Launch type: Fargate
+
+  - Task definition: charlie-task
+
+  - Service name: charlie-service
+  
+  - Desired tasks: 1
+
+- ### 7️⃣  Network Connectivity
 
 > #### NAT GW / VPC ENDPoint
 

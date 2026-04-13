@@ -492,6 +492,7 @@ Task Execution Role: If your ECS task needs to pull images from ECR or access se
   - Task definition: charlie-task
 
   - Service name: charlie-service
+  
   - Desired tasks: 1
 
 
