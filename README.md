@@ -2380,9 +2380,9 @@ Instead of invalidating every time, use versioning:
 
 | Username  | Group    | Email                                                         | Password (Default) | New Password | Email Verified |
 | --------- | -------- | ------------------------------------------------------------- | ------------------ | ------------ | -------------- |
-| cafeadmin | Admin    | [cafeadmin@charliecafe.com](mailto:cafeadmin@charliecafe.com) | ^MyH%H!A4YjD       | ^MyH%H!A4YjD | ✔ true         |
+| cafeadmin | Admin    | [cafeadmin@charliecafe.com](mailto:cafeadmin@charliecafe.com) | ^MyH%H!A4YjD       | *KEXO^C3mjm3 | ✔ true         |
 | manager1  | Manager  | [manager1@charliecafe.com](mailto:manager1@charliecafe.com)   | jfZvm@^3gTVE       | *KEXO^C3mjm3 | ✔ true         |
-| ali       | Employee | [ali@charliecafe.com](mailto:ali@charliecafe.com)             | *KEXO^C3mjm3       | *KEXO^C3mjm3 | ✔ true         |
+| ali       | Employee | [ali@charliecafe.com](mailto:ali@charliecafe.com)             | *KEXO^C3mjm3       | ^MyH%H!A4YjD | ✔ true         |
 
 
 ### 🧩 7️⃣ Custom Attributes (Employee Mapping)
