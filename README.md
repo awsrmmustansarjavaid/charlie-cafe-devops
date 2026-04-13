@@ -3268,7 +3268,7 @@ ls -l Dockerfile
 cd ~/charlie-cafe-devops
 ```
 
-✔ Step 2: Build using Dockerfile path
+#### 4️⃣ Build using Dockerfile path
 
 ```
 docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
