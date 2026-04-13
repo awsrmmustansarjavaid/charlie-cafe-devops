@@ -1,69 +1,86 @@
 #!/bin/bash
 
 # ==========================================================
-# ☕ Charlie Cafe — Auto Deployment Script via SSM
-# ----------------------------------------------------------
-# This script is intended to run via AWS SSM or manually on EC2.
-# It uses git pull, builds docker, and redeploys container.
-# Compatible with GitHub Actions CI/CD using AWS Access Keys.
+# ☕ Charlie Cafe — Auto Deployment Script via SSM (FINAL)
+# ==========================================================
+# ✔ No GitHub login prompts
+# ✔ Fully automated EC2 deployment
+# ✔ Safe git sync
+# ✔ Docker redeploy
 # ==========================================================
 
-# -----------------------------
-# 0️⃣ Variables (edit as needed)
-# -----------------------------
-APP_DIR="/home/ec2-user/charlie-cafe-devops"
-DOCKER_IMAGE="charlie-cafe"
-DOCKER_CONTAINER="cafe-app"
-GIT_BRANCH="main"
+set -e  # stop on error
 
 # -----------------------------
-# 1️⃣ Ensure app directory exists
+# 0️⃣ CONFIGURATION
 # -----------------------------
-if [ ! -d "$APP_DIR" ]; then
-    echo "📥 App directory not found, cloning repository..."
-    git clone -b $GIT_BRANCH https://github.com/YOUR_USERNAME/charlie-cafe-devops.git "$APP_DIR"
+APP_DIR="/home/ec2-user/charlie-cafe-devops"
+REPO_URL="https://github.com/awsrmmustansarjavaid/charlie-cafe-devops.git"
+GIT_BRANCH="main"
+
+DOCKER_IMAGE="charlie-cafe"
+DOCKER_CONTAINER="cafe-app"
+
+# -----------------------------
+# 1️⃣ CLONE OR UPDATE REPO (NO PASSWORD EVER)
+# -----------------------------
+if [ ! -d "$APP_DIR/.git" ]; then
+    echo "📥 Cloning repository (fresh install)..."
+
+    # FORCE NON-INTERACTIVE MODE
+    GIT_TERMINAL_PROMPT=0 git clone --depth 1 -b "$GIT_BRANCH" "$REPO_URL" "$APP_DIR"
+
 else
-    echo "✅ App directory exists, pulling latest changes..."
-    cd "$APP_DIR" || exit
-    git fetch origin $GIT_BRANCH
-    git reset --hard origin/$GIT_BRANCH
+    echo "🔄 Updating repository..."
+
+    cd "$APP_DIR"
+
+    # Force clean sync with remote
+    git fetch origin "$GIT_BRANCH"
+    git reset --hard "origin/$GIT_BRANCH"
+    git clean -fd
 fi
 
 # -----------------------------
-# 2️⃣ Enter app directory
+# 2️⃣ ENTER APP DIRECTORY
 # -----------------------------
-cd "$APP_DIR" || exit
+cd "$APP_DIR" || exit 1
 
 # -----------------------------
-# 3️⃣ Build Docker Image
+# 3️⃣ BUILD DOCKER IMAGE
 # -----------------------------
 echo "🐳 Building Docker image..."
-docker build -t $DOCKER_IMAGE -f docker/apache-php/Dockerfile .
+docker build -t "$DOCKER_IMAGE" -f docker/apache-php/Dockerfile .
 
 # -----------------------------
-# 4️⃣ Stop & Remove Existing Container
+# 4️⃣ STOP OLD CONTAINER
 # -----------------------------
 echo "🛑 Stopping old container (if exists)..."
-docker rm -f $DOCKER_CONTAINER || true
+docker rm -f "$DOCKER_CONTAINER" || true
 
 # -----------------------------
-# 5️⃣ Run New Container
+# 5️⃣ RUN NEW CONTAINER
 # -----------------------------
-echo "🚀 Running new container..."
-docker run -d -p 80:80 --name $DOCKER_CONTAINER $DOCKER_IMAGE
+echo "🚀 Starting new container..."
+docker run -d -p 80:80 --name "$DOCKER_CONTAINER" "$DOCKER_IMAGE"
 
 # -----------------------------
-# 6️⃣ Health Check
+# 6️⃣ HEALTH CHECK
 # -----------------------------
 echo "❤️ Running health check..."
+
+sleep 5
+
 if curl -f http://localhost/health.php >/dev/null 2>&1; then
     echo "✅ Health check passed"
 else
     echo "❌ Health check FAILED"
+    echo "📜 Showing container logs:"
+    docker logs "$DOCKER_CONTAINER"
     exit 1
 fi
 
 # -----------------------------
-# 7️⃣ Success
+# 7️⃣ SUCCESS
 # -----------------------------
 echo "🎉 Deployment completed successfully!"

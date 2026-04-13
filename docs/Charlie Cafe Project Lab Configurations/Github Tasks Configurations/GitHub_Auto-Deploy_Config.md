@@ -24,6 +24,9 @@
 
 > 💡 Tip: Instead of hardcoding EC2 IP, use EC2 instance ID + AWS SSM to target instance — no SSH needed.
 
+### 2️⃣
+
+
 ### 4️⃣ SSM Agent
 
 #### ✅ 1. SSM Agent installed 
