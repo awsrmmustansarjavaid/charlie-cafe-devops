@@ -3866,6 +3866,10 @@ Resources:
 
 - Service role: 👉 Select your role: charlie-codedeploy-role
 
+- Deployment type: Blue/Green
+
+### Environment configuration:
+
 - Cluster: charlie-cluster
 
 - Service: charlie-service
