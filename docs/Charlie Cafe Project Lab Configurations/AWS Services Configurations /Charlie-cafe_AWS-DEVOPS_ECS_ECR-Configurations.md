@@ -1559,41 +1559,7 @@ The following steps may be removed:
 
 - Set:Forward → charlie-blue
 
-### 1️⃣ — ECS SERVICE (CRITICAL)
 
-- Go to ECS → Service
-
-- Click Update
-
-- Change:
-
-  ❌ Rolling update
-
-  ✅ Blue/Green (CodeDeploy)
-
-### 2️⃣ — CREATE CODEDEPLOY APP
-
-- Name: charlie-ecs-app
-
-- Platform: ECS
-
-### 3️⃣ — CREATE DEPLOYMENT GROUP
-
-- Name: charlie-ecs-deployment-group
-
-- Cluster: charlie-cluster
-
-- Service: charlie-service
-
-- Attach:
-
-  - ALB
-
-  - Blue TG
-
-  - Green TG
-
-  - Listener: HTTP:80
 
 ### 4️⃣ — IAM ROLE (ALready Done)
 
@@ -1696,6 +1662,141 @@ Make sure your IAM role trust policy allows:
 
 ❌ CodeDeploy cannot assume your role
 
+
+### OR 
+
+### ✅ Create new IAM ROle for CodeDeploy
+
+- Go to IAM role → create iam role 
+
+- Select Trusted Entity: AWS service
+
+- Use case: CodeDeploy
+
+#### You will see 3 options:
+
+- CodeDeploy
+
+- CodeDeploy for Lambda
+
+- ✅ CodeDeploy for ECS ← SELECT THIS
+
+- AWS will automatically attach: 👉 AWSCodeDeployRoleForECS
+
+- Role Name: charlie-codedeploy-role
+
+👉 Click Create role
+
+### 1️⃣ — CREATE CODEDEPLOY APP
+
+- Go to AWS CODEDEPLOY → Applications → Click Create application
+
+- Application name: charlie-ecs-app
+
+- Compute platform: ECS
+
+- ✅ Click Create
+
+### 2️⃣ — CREATE DEPLOYMENT GROUP
+
+👉 Now inside that app: Click Create deployment group
+
+- Name: charlie-ecs-deployment-group
+
+- Service role: 👉 Select your role: charlie-codedeploy-role
+
+- Deployment type: Blue/Green
+
+### Environment configuration:
+
+- Cluster: charlie-cluster
+
+- Service: charlie-service
+
+### Load balancer:
+
+- Select: Application Load Balancer
+
+- Choose: charlie-cafe-alb
+
+#### Target groups:
+
+- Blue → charlie-blue
+
+- Green → charlie-green
+
+#### Deployment settings:
+
+- Traffic shifting: All at once
+
+👉 Click Create deployment group
+
+### 2️⃣ — ECS SERVICE (CRITICAL)
+
+- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
+
+- Top right → Click Update
+
+> Now scroll slowly 👇
+
+- Look for:
+
+   👉 Deployment configuration
+
+   👉 Deployment controller
+
+- CHANGE CONTROLLER: 
+
+👉 Scroll to: Deployment options → Deployment controller type
+
+- ❌ Current: ❌ ECS
+
+- ✅ Change to: ✅ CodeDeploy
+
+- Deployment strategy:
+
+> #### You will see something like:
+
+   > - Rolling update (default)
+
+   > - External (CodeDeploy)
+
+- ❌ Current: ❌ Rolling update
+
+- ✅ Change to: ✅ Blue/Green (CodeDeploy)
+
+- Service role: 👉 Select your role: charlie-codedeploy-role
+
+- Load Balancing → Blue/Green config: 
+
+- Choose: charlie-cafe-alb
+
+- Target groups:
+
+   - Blue → charlie-blue
+
+   - Green → charlie-green
+
+- Click Update 
+
+#### ⚠️ VERY IMPORTANT BEHAVIOR
+
+👉 The moment you select CodeDeploy:
+
+👉 Sometimes it shows as:
+
+```
+Deployment controller: CodeDeploy
+```
+
+You will see UI changes like:
+
+- Blue target group field becomes active
+
+- Green target group field becomes selectable ✅
+
+- ALB config becomes mandatory
+
 ### 5️⃣ — ECS TASK EXECUTION ROLE
 
 - Use:
@@ -1781,6 +1882,11 @@ Now:
 👉 Don’t mix old ECS rolling config
 
 👉 Don’t use latest anymore
+
+---
+## ✅ 🔥 BEST ALTERNATIVES (WITHOUT CodeDeploy)
+
+
 
 ---
 ## 🌐 TASK 2 — ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
