@@ -2031,8 +2031,54 @@ nano task-definition.json
 ### 📌 STEP 7 — Register New Task Definition
 
 ```
+aws ecs register-task-definition \
+  --cli-input-json file://task-definition.json
+```
+
+#### ✔ Output gives:
 
 ```
+taskDefinitionArn
+```
+
+👉 THIS IS YOUR NEW VERSION
+
+### 🚀 STEP 8 — FORCE ECS ROLLING UPDATE (CORE STEP)
+
+- Now update service:
+
+```
+aws ecs update-service \
+  --cluster charlie-cluster \
+  --service charlie-service \
+  --force-new-deployment
+```
+
+✔ This tells ECS:
+
+“Pull latest task definition + start rolling update”
+
+### 🔄 STEP 9 — WHAT ECS DOES AUTOMATICALLY
+
+- ECS now:
+
+
+  - Starts NEW container with new image
+
+  - Checks ALB health (/health.php)
+
+  - Waits until healthy
+
+  - Stops OLD container slowly
+
+  - Keeps traffic alive
+
+👉 THIS IS ZERO DOWNTIME
+
+### 📊 STEP 10 — MONITOR DEPLOYMENT
+
+- Run:
+
 
 
 ---
