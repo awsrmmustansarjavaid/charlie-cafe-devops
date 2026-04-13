@@ -1984,6 +1984,82 @@ Frontend Order → Lambda → SQS → Worker Lambda → DynamoDB (CafeOrders)
 | Mode        | On-Demand               |
 | Use Case    | Order Management System |
 
+### 4️⃣ Required DynamoDB Attributes (Orders Table)
+
+#### 1️⃣ Open DynamoDB Table
+
+- AWS Console → DynamoDB
+
+- Click Tables
+
+- Open table:
+
+```
+CafeOrders
+```
+
+#### 2️⃣ Verify Table Keys
+
+#### Confirm:
+
+| Setting       | Value               |
+| ------------- | ------------------- |
+| Partition Key | `order_id` (String) |
+| GSI           | `order_date-index`  |
+
+
+**📢 If GSI does not exist, STOP and create it before continuing.**
+
+#### 3️⃣ Verify Required Attributes (CRITICAL)
+
+Click Explore table items
+
+Open at least ONE COMPLETED order
+
+It MUST contain ALL attributes below:
+
+```
+{
+  "order_id": "ORD123",
+  "order_date": "2026-01-17",
+  "order_timestamp": 1705488000,
+  "item_name": "Latte",
+  "quantity": 2,
+  "item_cost": 1.5,
+  "item_price": 3.0,
+  "order_status": "COMPLETED"
+}
+```
+❌ If ANY field is missing → fix order-creation Lambda first
+
+✔ Do NOT continue until this is correct
+
+### 2️⃣ – VERIFY GSI WORKS (NO CODE YET)
+
+#### Test GSI in Console
+
+- DynamoDB → Explore table items
+
+- Switch Query
+
+- Select index:
+
+```
+order_date-index
+```
+
+- Query condition:
+
+```
+order_date BETWEEN 2026-01-01 AND 2026-01-31
+```
+
+- Click Run
+
+✔ If items return → GSI works
+
+❌ If empty → fix dates or index
+
 ### 4️⃣ Create DynamoDB CafeMenu TABLE (ITEM COST TABLE SETUP)
 
 ### 1️⃣ Create Table Configuration
