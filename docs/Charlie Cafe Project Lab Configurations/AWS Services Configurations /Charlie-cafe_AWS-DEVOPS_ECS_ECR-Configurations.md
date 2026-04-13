@@ -2132,6 +2132,24 @@ aws ecs describe-services \
 "rolloutState": "COMPLETED"
 ```
 
+### 🧠 Pro Tip (to avoid this pager again)
+
+If you don’t want this “:` screen again, use:
+
+```
+aws ecs register-task-definition \
+  --cli-input-json file://task-definition.json \
+  --no-cli-pager
+```
+
+✔ This prints directly in terminal (no exit needed)
+
+#### 🚀 Important
+
+- : screen = AWS CLI pager (less)
+
+- Press q to exit safely
+
 ### 🌐 STEP 11 — VERIFY LIVE APP
 
 - Open ALB URL:
