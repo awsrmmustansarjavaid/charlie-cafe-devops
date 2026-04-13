@@ -2387,6 +2387,14 @@ Instead of invalidating every time, use versioning:
 
 ### 🧩 7️⃣ Custom Attributes (Employee Mapping)
 
+- Go to : Amazon Cognito Console → User Pools → Your User Pool
+
+- Open Sign-up experience
+
+- Scroll to Custom attributes
+
+- Click Add custom attribute
+
 | Attribute | Value                                   |
 | --------- | --------------------------------------- |
 | Name      | `employee_id`                    |
