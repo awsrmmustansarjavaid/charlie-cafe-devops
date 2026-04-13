@@ -3250,6 +3250,18 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 
 #### 3️⃣ Go to the folder with the Dockerfile
 
+```
+cd ~/charlie-cafe-devops/docker/apache-php/
+```
+
+  - Check the file exists:
+
+#### should show your Dockerfile
+
+```
+ls -l Dockerfile
+```
+
 ✔ Step 1: Go to ROOT project folder
 
 ```
@@ -3273,19 +3285,6 @@ Now Docker can see:
 ```
 app/frontend/
 docker/apache-php/Dockerfile
-```
-
-
-```
-cd ~/charlie-cafe-devops/docker/apache-php/
-```
-
-  - Check the file exists:
-
-#### should show your Dockerfile
-
-```
-ls -l Dockerfile
 ```
 
 #### 4️⃣ Build and Tag Docker Image
