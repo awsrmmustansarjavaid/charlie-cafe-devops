@@ -2394,6 +2394,8 @@ Instead of invalidating every time, use versioning:
 | Mutable   | Yes                                     |
 | Purpose   | Link Cognito user → RDS employee record |
 
+> #### Cognito will internally store it as: custom:employee_id
+
 ### 🔐 8️⃣ App Client Attribute Access
 
 | Setting          | Value                |
