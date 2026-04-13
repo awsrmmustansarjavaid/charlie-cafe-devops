@@ -3828,9 +3828,23 @@ Resources:
 
 ### 1️⃣ — ECS SERVICE (CRITICAL)
 
-- Go to ECS → Service
+- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
 
-- Click Update
+- Top right → Click Update
+
+> Now scroll slowly 👇
+
+- Look for:
+
+   👉 Deployment configuration
+
+   👉 Deployment controller
+
+#### You will see something like:
+
+   - Rolling update (default)
+
+   - External (CodeDeploy)
 
 - Change:
 
