@@ -247,6 +247,32 @@ aws secretsmanager get-secret-value \
   --secret-id CafeDevDBSM
 ```
 
+### 🔹 Debug Secret Output
+
+```
+aws secretsmanager get-secret-value \
+  --secret-id CafeDevDBSM \
+  --query SecretString --output text
+```
+
+---
+## 🧪 6. EC2 / SERVER COMMANDS
+
+### 🔹 Check Docker Containers
+
+```
+docker ps
+```
+
+### 🔹 Inspect Container
+
+```
+
+```
+
+
+
+
 
 
 
