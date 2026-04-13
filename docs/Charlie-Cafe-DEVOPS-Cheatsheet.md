@@ -191,14 +191,6 @@ aws configure
 aws ec2 describe-instances
 ```
 
-
-
-
-
-
-
-
-
 ---
 # ☕ Charlie Cafe — DevOps Command Cheat Sheet
 
