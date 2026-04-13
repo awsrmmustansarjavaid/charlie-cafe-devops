@@ -3846,11 +3846,15 @@ Resources:
 
    - External (CodeDeploy)
 
-- Change:
+- ❌ Current: ❌ Rolling update
 
-  ❌ Rolling update
+- ✅ Change to: ✅ Blue/Green (CodeDeploy)
 
-  ✅ Blue/Green (CodeDeploy)
+#### 👉 Sometimes it shows as:
+
+```
+Deployment controller: CodeDeploy
+```
 
 ### 2️⃣ — CREATE CODEDEPLOY APP
 
