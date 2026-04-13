@@ -3906,6 +3906,16 @@ Resources:
 
    👉 Deployment controller
 
+#### CHANGE CONTROLLER
+
+👉 Scroll to: Deployment options → Deployment controller type
+
+- ❌ Current: ❌ ECS
+
+- ✅ Change to: ✅ CodeDeploy
+
+#### Deployment strategy
+
 #### You will see something like:
 
    - Rolling update (default)
@@ -3916,13 +3926,26 @@ Resources:
 
 - ✅ Change to: ✅ Blue/Green (CodeDeploy)
 
-#### 👉 Sometimes it shows as:
+
+
+
+#### ⚠️ VERY IMPORTANT BEHAVIOR
+
+👉 The moment you select CodeDeploy:
+
+👉 Sometimes it shows as:
 
 ```
 Deployment controller: CodeDeploy
 ```
 
+You will see UI changes like:
 
+- Blue target group field becomes active
+
+- Green target group field becomes selectable ✅
+
+- ALB config becomes mandatory
 
 
 
