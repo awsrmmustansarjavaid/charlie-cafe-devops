@@ -55,7 +55,7 @@ sudo systemctl enable amazon-ssm-agent
 nano deploy_via_ssm.sh
 ```
 
-[deploy_via_ssm.sh](../infrastructure/scripts/deploy_via_ssm.sh)
+[deploy_via_ssm.sh](./../../../infrastructure/scripts/deploy_via_ssm.sh)
 
 ```
 chmod +x deploy_via_ssm.sh
