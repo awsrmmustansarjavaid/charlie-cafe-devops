@@ -3447,6 +3447,26 @@ This role will be used later in the task definition.
   
   - Desired tasks: 1
 
+- #### NETWORKING
+
+- 👉 VPC : 
+  
+  - Select your default VPC (or custom if you made one)
+
+- 👉 Subnets 
+
+> ✅ Choose ONLY:
+
+- ✔ Public Subnets (important)
+
+- 👉 Auto-assign Public IP
+
+- 👉 MUST SET: ENABLE
+
+✔ This is what allows internet access
+
+
+
 - ### 7️⃣  Network Connectivity
 
 > #### NAT GW / VPC ENDPoint

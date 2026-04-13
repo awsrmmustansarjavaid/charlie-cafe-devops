@@ -501,6 +501,40 @@ Task Execution Role: If your ECS task needs to pull images from ECR or access se
   
   - Desired tasks: 1
 
+- #### NETWORKING
+
+- 👉 VPC : 
+  
+  - Select your default VPC (or custom if you made one)
+
+- 👉 Subnets 
+
+> ✅ Choose ONLY:
+
+- ✔ Public Subnets (important)
+
+#### Example:
+
+- subnet-xxxx (public-subnet-1)
+
+- subnet-xxxx (public-subnet-2)
+
+#### ❌ DO NOT choose:
+
+- Private subnets (for now)
+
+- Isolated subnets
+
+- 👉 Auto-assign Public IP
+
+- 👉 MUST SET: ENABLE
+
+✔ This is what allows internet access
+
+
+
+
+
 - ### 7️⃣  Network Connectivity
 
 > #### NAT GW / VPC ENDPoint
