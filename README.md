@@ -4295,3 +4295,9 @@ less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
 ⬜️ Configure CodeDeploy
 
 ⬜️ Add CloudWatch alarms
+
+----
+## 📑 Important Charlie Cafe DOC
+
+1. [Charlie Cafe DEVOPS Cheatsheet](./docs/Charlie-Cafe-DEVOPS-Cheatsheet.md)
+
