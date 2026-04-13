@@ -1886,6 +1886,153 @@ Now:
 ---
 ## ✅ 🔥 BEST ALTERNATIVES (WITHOUT CodeDeploy)
 
+### 🚀 ECS Rolling Deployment (NO CodeDeploy, FREE, ZERO DOWNTIME)
+
+### 🧱 STEP 0 — Understand the Flow (VERY IMPORTANT)
+
+Every deployment works like this:
+
+```
+Code change →
+Docker build →
+Push to ECR →
+Register new Task Definition →
+Update ECS Service →
+ECS Rolling Update starts automatically
+```
+
+### 🧰 STEP 1 — Login to AWS CLI
+
+- Run:
+
+```
+aws configure
+```
+
+- Enter:
+
+  - AWS Access Key
+
+  - Secret Key
+
+  - Region → us-east-1
+
+  -  → json
+
+✔ Done when no error comes
+
+### 🐳 STEP 2 — Build Docker Image
+
+- Go to your project:
+
+```
+cd ~/charlie-cafe-devops
+```
+
+- Build image:
+
+```
+docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+```
+
+#### ✔ This creates local image:
+
+```
+charlie-cafe:latest
+```
+
+### 🏷 STEP 3 — Tag Image for ECR
+
+- Replace YOUR_ACCOUNT_ID if needed:
+
+```
+docker tag charlie-cafe:latest \
+537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+### 🔐 STEP 4 — Login to ECR
+
+```
+aws ecr get-login-password --region us-east-1 | \
+docker login --username AWS --password-stdin \
+537236558357.dkr.ecr.us-east-1.amazonaws.com
+```
+
+#### ✔ You should see:
+
+```
+Login Succeeded
+```
+
+### 📤 STEP 5 — Push Image to ECR
+
+```
+docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
+✔ This updates your image in ECR
+
+### 📦 STEP 6 — Create NEW Task Definition JSON (IMPORTANT STEP)
+
+- Open file:
+
+```
+nano task-definition.json
+```
+
+- Paste (EDIT IMAGE ONLY):
+
+```
+{
+  "family": "charlie-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::537236558357:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "charlie-container",
+      "image": "537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "APP_ENV",
+          "value": "production"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/charlie",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
+```
+
+- ✔ Save:
+
+  - CTRL + X or CTRL + O
+
+  - Y or Enter
+
+  - Enter or CTRL + X
+
+### 📌 STEP 7 — Register New Task Definition
+
+```
+
+```
 
 
 ---
