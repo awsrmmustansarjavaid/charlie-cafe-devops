@@ -3980,6 +3980,38 @@ git commit -m "final pipeline"
 git push origin main
 ```
 
+## ✅ 🔥 BEST ALTERNATIVES (WITHOUT CodeDeploy)
+
+### 🚀 ECS Rolling Deployment (NO CodeDeploy, FREE, ZERO DOWNTIME)
+
+```
+nano ecs_zero_downtime_deploy.sh
+```
+
+[ecs_zero_downtime_deploy.sh](./infrastructure/scripts/ecs_zero_downtime_deploy.sh)
+
+### 🔥 MAKE FILE EXECUTABLE & RUN IT
+
+#### After saving:
+
+```
+chmod +x ecs_zero_downtime_deploy.sh
+./ecs_zero_downtime_deploy.sh
+```
+
+### 🌐 VERIFY LIVE APP
+
+- Open ALB URL:
+
+```
+http://your-alb-dns.amazonaws.com/health.php
+```
+
+#### ✔ Should show:
+
+```
+OK
+```
 ---
 ## ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
 
