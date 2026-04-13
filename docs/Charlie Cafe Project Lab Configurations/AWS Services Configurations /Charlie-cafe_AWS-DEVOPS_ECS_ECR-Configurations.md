@@ -580,40 +580,6 @@ Login Succeeded
 docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 ```  
 
-- ### 7️⃣  Run Task in Cluster
-
-- Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
-
-- Launch Type: Fargate.
-
-- Task Definition: charlie-task:1 (latest revision).
-
-- Cluster VPC & Subnets: select defaults or your preferred VPC.
-
-- Security group: allow TCP 80 (HTTP) from 0.0.0.0/0 if public access needed.
-
-- Click Run Task.
-
-✅ Your container should start. Check Logs → CloudWatch → /ecs/charlie-task to verify the app is running.
-
-- ### 8️⃣  Verify Container
-
-- Go to ECS → Cluster → Tasks.
-
-- Click on your task → Containers → View Logs.
-
-- Verify container started successfully, listening on port 80.
-
-#### ✅ Notes / Tips
-
-- Task Role is optional unless your app inside the container needs AWS services (DynamoDB, S3, SecretsManager).
-
-- Task Execution Role is required for Fargate to pull images and send logs.
-
-- awsvpc network mode gives each task its own ENI, so make sure your security groups and subnets allow traffic.
-
-- If you want environment secrets (like DB password) more securely, use Secrets Manager instead of plain text environment variables.
-
 ### 5️⃣ ALB + ECS SERVICE
 
 > #### KEEP existing ALB and upgrade it for ECS.
@@ -763,6 +729,40 @@ docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 ✅ Click Create Service → Wait for tasks to become Running
 
 🕓 Wait 2–5 minutes
+
+- ### 7️⃣  Run Task in Cluster
+
+- Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
+
+- Launch Type: Fargate.
+
+- Task Definition: charlie-task:1 (latest revision).
+
+- Cluster VPC & Subnets: select defaults or your preferred VPC.
+
+- Security group: allow TCP 80 (HTTP) from 0.0.0.0/0 if public access needed.
+
+- Click Run Task.
+
+✅ Your container should start. Check Logs → CloudWatch → /ecs/charlie-task to verify the app is running.
+
+- ### 8️⃣  Verify Container
+
+- Go to ECS → Cluster → Tasks.
+
+- Click on your task → Containers → View Logs.
+
+- Verify container started successfully, listening on port 80.
+
+#### ✅ Notes / Tips
+
+- Task Role is optional unless your app inside the container needs AWS services (DynamoDB, S3, SecretsManager).
+
+- Task Execution Role is required for Fargate to pull images and send logs.
+
+- awsvpc network mode gives each task its own ENI, so make sure your security groups and subnets allow traffic.
+
+- If you want environment secrets (like DB password) more securely, use Secrets Manager instead of plain text environment variables.
 
 #### 4️⃣ Verify Target Group
 
