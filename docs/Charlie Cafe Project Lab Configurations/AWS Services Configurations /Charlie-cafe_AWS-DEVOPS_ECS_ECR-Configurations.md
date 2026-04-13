@@ -481,7 +481,21 @@ Task Execution Role: If your ECS task needs to pull images from ECR or access se
 
 - Click Add → Click Create Task Definition.
 
-- ### 6️⃣  Network Connectivity
+- ### 6️⃣  Create ECS Service
+
+- Go to: ECS → Cluster → charlie-cluster → Services → Create
+
+- Choose: 
+
+  - Launch type: Fargate
+
+  - Task definition: charlie-task
+
+  - Service name: charlie-service
+  - Desired tasks: 1
+
+
+- ### 7️⃣  Network Connectivity
 
 > #### NAT GW / VPC ENDPoint
 
@@ -552,6 +566,33 @@ After your tasks can access ECR:
   - Go to CloudWatch Logs (if configured in task definition)
 
   - Verify container starts without errors
+
+#### 🔹 Step 4: Make sure AWS CLI works
+
+```
+aws sts get-caller-identity
+```
+
+If this works → IAM role is OK.
+
+#### 🔹 Step 5: Login to ECR
+
+```
+aws ecr get-login-password --region us-east-1 \
+| docker login --username AWS --password-stdin 537236558357.dkr.ecr.us-east-1.amazonaws.com
+```
+
+#### Expected success output:
+
+```
+Login Succeeded
+```
+
+#### 🔹 Step 6: Login to ECR
+
+```
+docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```  
 
 - ### 7️⃣  Run Task in Cluster
 
