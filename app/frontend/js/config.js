@@ -22,9 +22,9 @@ window.CHARLIE_CONFIG = {
     /* ===============================
        🔐 AWS Cognito Configuration
     =============================== */
-    USER_POOL_ID: "us-east-1_IIxvGn6hl",
-    CLIENT_ID: "3aag3bskuclv4t4rq2n6dai8uq",
-    COGNITO_DOMAIN: "https://us-east-1iixvgn6hl.auth.us-east-1.amazoncognito.com",
+    USER_POOL_ID: "us-east-1_dEIQZP6zR",
+    CLIENT_ID: "35dgk7toqp7q0hpg6pc6bln4e3",
+    COGNITO_DOMAIN: "https://us-east-1deiqzp6zr.auth.us-east-1.amazoncognito.com",
 
     /* ===============================
        🚀 API Gateway (PRODUCTION)
@@ -34,5 +34,5 @@ window.CHARLIE_CONFIG = {
     /* ===============================
        ☁ CloudFront Distribution
     =============================== */
-    CLOUDFRONT_BASE: "https://d83g7gxgj9s8w.cloudfront.net"
+    CLOUDFRONT_BASE: "https://d1mz6k86rbin2a.cloudfront.net"
 };
