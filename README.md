@@ -3850,6 +3850,8 @@ Resources:
 
 ### 1️⃣ — CREATE CODEDEPLOY APP
 
+- Go to AWS CODEDEPLOY → Applications → Click Create application
+
 - Name: charlie-ecs-app
 
 - Platform: ECS
