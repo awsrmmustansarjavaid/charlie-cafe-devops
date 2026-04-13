@@ -377,6 +377,12 @@ docker push <account_id>.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 aws ecr list-images --repository-name charlie-cafe
 ```
 
+### 🔹 List repositories
+
+```
+aws ecr describe-repositories
+```
+
 ---
 ## 🚀 4. AWS ECS COMMANDS
 
