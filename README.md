@@ -3999,7 +3999,9 @@ chmod +x ecs_zero_downtime_deploy.sh
 ./ecs_zero_downtime_deploy.sh
 ```
 
-### 🧭 VERIFY ECS DEPLOYMENT
+### 🔍 VERIFY TEST
+
+### 1️⃣ VERIFY ECS DEPLOYMENT
 
 - Go here: ECS → Your Cluster → charlie-cluster
 
@@ -4039,7 +4041,7 @@ STATUS = COMPLETED
 
 ✔ That means rolling update succeeded
 
-### 🔄 Verify EVENTS TAB
+### 2️⃣ Verify EVENTS TAB
 
 - Click tab: Events
 
@@ -4061,7 +4063,7 @@ service reached steady state
 
 ✔ This confirms ZERO downtime deployment completed
 
-### 🧠 Check TASKS (RUNNING CONTAINERS)
+### 3️⃣ Check TASKS (RUNNING CONTAINERS)
 
 - Go to: Tasks tab
 
@@ -4077,7 +4079,7 @@ You should see:
 
 - Task definition = latest revision (e.g. charlie-task:4)
 
-### 🧪 VERIFY NEW IMAGE IS RUNNING
+### 4️⃣ VERIFY NEW IMAGE IS RUNNING
 
 - Click the running task → open details
 
@@ -4091,7 +4093,7 @@ You should see:
 
 👉 If it matches your latest push = SUCCESS
 
-### 🌐 VERIFY APPLICATION (REAL TEST)
+### 5️⃣ VERIFY APPLICATION (REAL TEST)
 
 - Open ALB URL:
 
@@ -4099,12 +4101,33 @@ You should see:
 http://<your-alb-dns>/health.php
 ```
 
+✔ EXPECTED OUTPUT:
 
+```
+OK
+```
 
+OR:
 
+```
+200 OK
+```
 
+### 📊 FINAL “PRO DEVOPS CHECKLIST”
 
+If ALL below are true → deployment is PERFECT:
 
+✔ Service = ACTIVE
+
+✔ Deployment = COMPLETED
+
+✔ Running tasks = 1
+
+✔ Events = "steady state reached"
+
+✔ Task = latest revision
+
+✔ ALB health = OK
 
 ---
 ## ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
