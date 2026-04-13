@@ -3101,6 +3101,21 @@ https://xxxx.execute-api.us-east-1.amazonaws.com/prod/hr-analytics
 
 ### 3️⃣ Git Auto Deploy
 
+#### 📄 deploy_via_ssm.sh
+
+```
+nano deploy_via_ssm.sh
+```
+
+[deploy_via_ssm.sh](./infrastructure/scripts/deploy_via_ssm.sh)
+
+```
+chmod +x deploy_via_ssm.sh
+./deploy_via_ssm.sh
+```
+
+#### 📄 github-aws-devops-lambda-deploy.sh
+
 ```
 nano github-aws-devops-lambda-deploy.sh
 ```
