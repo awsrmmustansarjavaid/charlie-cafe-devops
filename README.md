@@ -3211,8 +3211,6 @@ chmod +x ec2_docker_health.sh
 
 ✅ This will work every time on EC2, no matter where you run it from, as long as the repo is cloned in ~/charlie-cafe-devops.
 
-
-
 ---
 ## 1️⃣1️⃣ ☁️ AWS DEVOPS UPGRADE -- ECS & ECR
 
@@ -3239,6 +3237,21 @@ Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Char
 ```
 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
 ```
+
+### 🌐 deploy-ecr-docker (Recommanded)
+
+```
+nano deploy-ecr-docker.sh
+```
+
+[deploy-ecr-docker](./infrastructure/scripts/deploy-ecr-docker.sh)
+
+```
+chmod +x deploy-ecr-docker.sh
+./deploy-ecr-docker.sh
+```
+
+or 
 
 #### 2️⃣ Login to ECR
 
