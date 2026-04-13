@@ -3874,6 +3874,16 @@ Resources:
 
 - Service: charlie-service
 
+### Load balancer:
+
+- Select: Application Load Balancer
+
+- Choose: charlie-cafe-alb
+
+- 
+
+
+
 - Attach:
 
   - ALB
