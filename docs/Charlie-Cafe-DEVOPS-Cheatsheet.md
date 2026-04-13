@@ -267,7 +267,96 @@ docker ps
 ### 🔹 Inspect Container
 
 ```
+docker exec -it cafe-app bash
+```
 
+### 🔹 Find Files
+
+```
+find /var/www -name "health.php"
+```
+
+### 🔹 Search inside files
+
+```
+grep -R "cafe_db" /var/www/html
+```
+
+### 🔹 Restart Docker Container
+
+```
+docker restart cafe-app
+```
+
+---
+## 🔄 7. FULL CI/CD FLOW (IMPORTANT)
+
+### 🚀 Step 1: Pull Latest Code
+
+```
+git pull origin main
+```
+
+### 🐳 Step 2: Build Docker Image
+
+```
+docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
+```
+
+### 📦 Step 3: Tag Image
+
+```
+docker tag charlie-cafe:latest <ECR_URL>:latest
+```
+
+### ⬆️ Step 4: Push to ECR
+
+```
+docker push <ECR_URL>:latest
+```
+
+### 🚀 Step 5: Deploy to ECS
+
+```
+aws ecs update-service \
+  --cluster charlie-cluster \
+  --service charlie-service \
+  --force-new-deployment
+```
+
+---
+## 🔥 8. DEBUGGING COMMANDS (VERY IMPORTANT)
+
+### 🔹 Check logs
+
+```
+docker logs cafe-app
+```
+
+### 🔹 Enter running container
+
+```
+docker exec -it cafe-app bash
+```
+
+### 🔹 Verify file inside container
+
+```
+cat /var/www/html/php/health.php
+```
+
+### 🔹 Check running ECS tasks
+
+```
+aws ecs describe-services \
+  --cluster charlie-cluster \
+  --service charlie-service
+```
+---
+### 🎯 END RESULT FLOW
+
+```
+GitHub → EC2 → Docker Build → ECR → ECS → ALB → User
 ```
 
 
