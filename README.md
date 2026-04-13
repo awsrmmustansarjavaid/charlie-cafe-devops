@@ -3848,7 +3848,13 @@ Resources:
 
 👉 Click Create role
 
-### 1️⃣ — ECS SERVICE (CRITICAL)
+### 1️⃣ — CREATE CODEDEPLOY APP
+
+- Name: charlie-ecs-app
+
+- Platform: ECS
+
+### 2️⃣ — ECS SERVICE (CRITICAL)
 
 - Go to ECS → Clusters → charlie-cluster → Services → charlie-service
 
@@ -3878,11 +3884,7 @@ Resources:
 Deployment controller: CodeDeploy
 ```
 
-### 2️⃣ — CREATE CODEDEPLOY APP
 
-- Name: charlie-ecs-app
-
-- Platform: ECS
 
 ### 3️⃣ — CREATE DEPLOYMENT GROUP
 
