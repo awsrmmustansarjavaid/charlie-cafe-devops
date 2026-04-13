@@ -16,7 +16,7 @@ set -euo pipefail
 # CONFIGURATION
 # -------------------------------
 AWS_REGION="${AWS_REGION:-us-east-1}"
-GITHUB_REPO="https://github.com/your github username /charlie-cafe-devops.git"
+GITHUB_REPO="https://github.com/awsrmmustansarjavaid/charlie-cafe-devops.git"
 LOCAL_REPO="charlie-cafe-devops"
 LAMBDA_SUBDIR="app/backend/lambda"
 LAYER_NAME="pymysql-layer"
