@@ -3427,47 +3427,7 @@ This role will be used later in the task definition.
 
 - #### ✅ charlie-task JSON [charlie-task.json](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/charlie-task%20JSON/charlie-task.json)
 
-- ### 6️⃣  Create ECS Service
-
-- Go to: ECS → Cluster → charlie-cluster → Services → Create
-
-- #### Compute options
-
-   - Launch type: Fargate
-
-- #### Task Definition  
-
-  - Task definition: charlie-task
-
-  - Revision: latest
-
-- #### Service name  
-
-  - Service name: charlie-service
-  
-  - Desired tasks: 1
-
-- #### NETWORKING
-
-- 👉 VPC : 
-  
-  - Select your default VPC (or custom if you made one)
-
-- 👉 Subnets 
-
-> ✅ Choose ONLY:
-
-- ✔ Public Subnets (important)
-
-- 👉 Auto-assign Public IP
-
-- 👉 MUST SET: ENABLE
-
-✔ This is what allows internet access
-
-
-
-- ### 7️⃣  Network Connectivity
+- ### 6️⃣  Network Connectivity
 
 > #### NAT GW / VPC ENDPoint
 

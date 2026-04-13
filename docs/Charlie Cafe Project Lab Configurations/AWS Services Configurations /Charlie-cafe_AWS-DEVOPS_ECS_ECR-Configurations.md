@@ -481,61 +481,7 @@ Task Execution Role: If your ECS task needs to pull images from ECR or access se
 
 - Click Add → Click Create Task Definition.
 
-- ### 6️⃣  Create ECS Service
-
-- Go to: ECS → Cluster → charlie-cluster → Services → Create
-
-- #### Compute options
-
-   - Launch type: Fargate
-
-- #### Task Definition  
-
-  - Task definition: charlie-task
-
-  - Revision: latest
-
-- #### Service name  
-
-  - Service name: charlie-service
-  
-  - Desired tasks: 1
-
-- #### NETWORKING
-
-- 👉 VPC : 
-  
-  - Select your default VPC (or custom if you made one)
-
-- 👉 Subnets 
-
-> ✅ Choose ONLY:
-
-- ✔ Public Subnets (important)
-
-#### Example:
-
-- subnet-xxxx (public-subnet-1)
-
-- subnet-xxxx (public-subnet-2)
-
-#### ❌ DO NOT choose:
-
-- Private subnets (for now)
-
-- Isolated subnets
-
-- 👉 Auto-assign Public IP
-
-- 👉 MUST SET: ENABLE
-
-✔ This is what allows internet access
-
-
-
-
-
-- ### 7️⃣  Network Connectivity
+- ### 6️⃣  Network Connectivity
 
 > #### NAT GW / VPC ENDPoint
 
@@ -746,11 +692,59 @@ docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 
 - Go ECS → Cluster → charlie-cluster → Create Service
 
-- Service Name: charlie-service
+- #### Compute options
 
-- Launch type: Fargate
+   - Launch type: Fargate
 
-- Number of tasks: 1 (start small)
+- #### Task Definition  
+
+  - Task definition: charlie-task
+
+  - Revision: latest
+
+- #### Service name  
+
+  - Service name: charlie-service
+  
+  - Desired tasks (Number of tasks): 1 (start small)
+
+- #### NETWORKING
+
+- 👉 VPC : 
+  
+  - Select your default VPC (or custom if you made one)
+
+- 👉 Subnets 
+
+> ✅ Choose ONLY:
+
+- ✔ Public Subnets (important)
+
+#### Example:
+
+- subnet-xxxx (public-subnet-1)
+
+- subnet-xxxx (public-subnet-2)
+
+#### ❌ DO NOT choose:
+
+- Private subnets (for now)
+
+- Isolated subnets
+
+- 👉 Auto-assign Public IP
+
+- 👉 MUST SET: ENABLE
+
+✔ This is what allows internet access
+
+- 🔐 Security Group: Create or select default-SG:
+
+| Type | Port | Source    |
+| ---- | ---- | --------- |
+| HTTP | 80   | 0.0.0.0/0 |
+
+- #### LOAD BALANCER (OPTIONAL but recommended)
 
 - Load Balancer: Application Load Balancer
 
