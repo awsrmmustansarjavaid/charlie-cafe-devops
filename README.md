@@ -3500,6 +3500,33 @@ After your tasks can access ECR:
 
   - Verify container starts without errors
 
+#### 🔹 Step 4: Make sure AWS CLI works
+
+```
+aws sts get-caller-identity
+```
+
+If this works → IAM role is OK.
+
+#### 🔹 Step 5: Login to ECR
+
+```
+aws ecr get-login-password --region us-east-1 \
+| docker login --username AWS --password-stdin 537236558357.dkr.ecr.us-east-1.amazonaws.com
+```
+
+#### Expected success output:
+
+```
+Login Succeeded
+```
+
+#### 🔹 Step 6: Login to ECR
+
+```
+docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+```
+
 - ### 7️⃣  Run Task in Cluster
 
 - Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
