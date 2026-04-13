@@ -1,0 +1,73 @@
+# ☕ Charlie Cafe — DevOps Command Cheat Sheet
+
+## 📦 1. GIT / GITHUB COMMANDS
+
+### 🔹 Clone Repository
+
+```
+git clone https://github.com/<username>/<repo>.git
+```
+
+👉 Purpose: Download project from GitHub
+
+### 🔹 Check Status
+
+```
+git status
+```
+
+👉 Purpose: See modified/untracked files
+
+### 🔹 Add Files
+
+```
+git add .
+```
+
+👉 Purpose: Stage all changes
+
+### 🔹 Commit Changes
+
+```
+git commit -m "your message"
+```
+
+👉 Purpose: Save changes locally
+
+### 🔹 Push to GitHub
+
+```
+git push origin main
+```
+
+👉 Purpose: Upload code to GitHub
+
+### 🔹 Pull Latest Code
+
+```
+git pull origin main
+```
+
+👉 Purpose: Get latest updates from GitHub
+
+### 🔹 Reset Local Code (DANGER)
+
+```
+git reset --hard origin/main
+```
+
+👉 Purpose: Force sync with GitHub (deletes local changes)
+
+### 🔹 View Logs
+
+```
+git log --oneline
+```
+
+👉 Purpose: Show commit history
+
+---
+## 🐳 2. DOCKER COMMANDS
+
+### 🔹 Build Docker Image
+
