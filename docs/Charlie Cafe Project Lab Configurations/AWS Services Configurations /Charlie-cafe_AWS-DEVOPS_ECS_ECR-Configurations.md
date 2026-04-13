@@ -762,6 +762,8 @@ docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 
 ✅ Click Create Service → Wait for tasks to become Running
 
+🕓 Wait 2–5 minutes
+
 #### 4️⃣ Verify Target Group
 
 - Go EC2 → Target Groups → charlie-blue → Targets
