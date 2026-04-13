@@ -3906,7 +3906,7 @@ Resources:
 
    👉 Deployment controller
 
-#### CHANGE CONTROLLER
+- CHANGE CONTROLLER: 
 
 👉 Scroll to: Deployment options → Deployment controller type
 
@@ -3914,20 +3914,31 @@ Resources:
 
 - ✅ Change to: ✅ CodeDeploy
 
-#### Deployment strategy
+- Deployment strategy:
 
-#### You will see something like:
+> #### You will see something like:
 
-   - Rolling update (default)
+   > - Rolling update (default)
 
-   - External (CodeDeploy)
+   > - External (CodeDeploy)
 
 - ❌ Current: ❌ Rolling update
 
 - ✅ Change to: ✅ Blue/Green (CodeDeploy)
 
+- Service role: 👉 Select your role: charlie-codedeploy-role
 
+- Load Balancing → Blue/Green config: 
 
+- Choose: charlie-cafe-alb
+
+- Target groups:
+
+   - Blue → charlie-blue
+
+   - Green → charlie-green
+
+- Click Update 
 
 #### ⚠️ VERY IMPORTANT BEHAVIOR
 
