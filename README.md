@@ -3248,21 +3248,7 @@ On your local machine (or EC2):
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789.dkr.ecr.us-east-1.amazonaws.com
 ```
 
-#### 3️⃣ Go to the folder with the Dockerfile
-
-```
-cd ~/charlie-cafe-devops/docker/apache-php/
-```
-
-  - Check the file exists:
-
-#### should show your Dockerfile
-
-```
-ls -l Dockerfile
-```
-
-✔ Step 1: Go to ROOT project folder
+#### 3️⃣ Go to ROOT project folder
 
 ```
 cd ~/charlie-cafe-devops
@@ -3280,35 +3266,27 @@ The dot . means:
 
 “use FULL project root as build context”
 
-Now Docker can see:
+- -t charlie-cafe → names your image charlie-cafe.
+
+- . → tells Docker to use the current folder for the Dockerfile and context.
+
+#### Now Docker can see:
 
 ```
 app/frontend/
 docker/apache-php/Dockerfile
 ```
 
-#### 4️⃣ Build and Tag Docker Image
-
-From your project directory (where Dockerfile is):
+#### 5️⃣ Tag image for ECR
 
 ```
-docker build -t charlie-cafe .
-```
-
-- -t charlie-cafe → names your image charlie-cafe.
-
-- . → tells Docker to use the current folder for the Dockerfile and context.
-
-#### 5️⃣ Tag the Docker image for ECR
-
-```
-docker tag charlie-cafe:latest 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+docker tag charlie-cafe:latest 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 ```
 
 #### 6️⃣ Push the Docker image to ECR
 
 ```
-docker push 123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
+docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
 ```
 
 ✅ After this, your Docker image will be in ECR, ready for ECS or Fargate deployment.
