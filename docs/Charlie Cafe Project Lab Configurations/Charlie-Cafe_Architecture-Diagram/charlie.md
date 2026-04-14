@@ -2257,14 +2257,40 @@ Charlie Cafe Async Order Processing Flow using SQS provides:
 
 ---
 
+
 <br><br>
 ---
 <br><br>
 
 
-## ☕ Blue/Green Deployment Flow
+# ☕ Charlie Cafe — Blue/Green Deployment Flow
 
 ---
+
+## ☁️ Overview
+
+Blue/Green deployment is a **zero-downtime deployment strategy** used to release new application versions safely by switching traffic between two identical environments.
+
+---
+
+## 🔵🟢 Deployment Environments
+
+### 🔵 Blue Environment (Current Production)
+
+- Current stable production version  
+- Handles all live user traffic  
+- Fully tested and reliable  
+
+---
+
+### 🟢 Green Environment (New Release)
+
+- New version of the application  
+- Deployed alongside Blue environment  
+- Does not affect live users initially  
+
+---
+
 ## ☁️ High-Level Authentication Flow
 
 ```
@@ -2283,6 +2309,81 @@ Health Check
 100% Switch OR Rollback
 ```
 
+---
+# ☕ 1. User Traffic Entry
+
+- Users send requests to the application  
+- Requests pass through **Application Load Balancer (ALB)**  
+
+✔ Entry point for all traffic  
+
+---
+
+# ☕ 2. Blue Environment (Live System)
+
+- Initially, **100% traffic is routed to Blue**  
+- This is the stable production environment  
+
+✔ Ensures system reliability  
+
+---
+
+# ☕ 3. Green Environment (New Release)
+
+- New application version is deployed in Green  
+- Runs in parallel with Blue  
+- No impact on live users  
+
+✔ Safe deployment environment  
+
+---
+
+# ☕ 4. Gradual Traffic Shift
+
+- A small percentage of traffic (e.g., 10%) is routed to Green  
+- Used for real-world validation  
+
+✔ Minimizes deployment risk  
+
+---
+
+# ☕ 5. Health Checks & Monitoring
+
+System continuously monitors Green environment:
+
+- ❌ Errors  
+- ⚡ Latency  
+- 📡 Logs (via AWS CloudWatch)  
+
+✔ Ensures stability before full rollout  
+
+---
+
+# ☕ 6. Final Decision
+
+### If Green is stable:
+
+- 🔄 100% traffic shifted to Green  
+- Green becomes new production  
+
+### If issues occur:
+
+- 🔙 Instant rollback to Blue  
+- No downtime for users  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe Blue/Green Deployment ensures:
+
+- ⚡ Zero-downtime releases  
+- 🔄 Safe production deployments  
+- 📡 Real-time monitoring via CloudWatch  
+- 🔙 Instant rollback capability  
+- 🧩 Production-grade DevOps strategy  
+
+---
 
 
 <br><br>
