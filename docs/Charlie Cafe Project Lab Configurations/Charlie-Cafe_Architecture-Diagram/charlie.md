@@ -400,5 +400,198 @@ Charlie Cafe is a **modern cloud-native serverless architecture** designed with:
 ----
 ----
 ----
+# ☕ Charlie Cafe — Full System Flow (End-to-End Architecture)
 
+---
+
+## ☁️ High-Level System Flow
+
+```
+User
+ ↓
+CloudFront
+ ↓
+Application Load Balancer (ALB)
+ ↓
+ECS (Docker Container - Frontend)
+ ↓
+API Gateway
+ ↓
+AWS Lambda
+ ↓
+SQS → Worker Lambda
+ ↓
+RDS (Orders Database)
+ ↓
+DynamoDB (Menu / Metrics)
+ ↓
+Response returned to User
+```
+
+# ☕ Charlie Cafe — System Request Flow (Clean Architecture View)
+
+---
+
+## ☕ 1. User Request Initiation
+
+### 👤 Entry Point
+
+The process starts when a **User (Browser/Mobile App)** interacts with the system.
+
+### Actions include:
+- Placing orders  
+- Viewing menu  
+- Payment requests  
+
+---
+
+## ☕ 2. Content Delivery Layer
+
+### 🌐 Amazon CloudFront (CDN)
+
+CloudFront handles:
+
+- ⚡ Global content delivery acceleration  
+- 🔒 HTTPS security enforcement  
+- 🌍 Edge caching to reduce latency  
+
+✔ Ensures fast and secure access to the application
+
+---
+
+## ☕ 3. Traffic Distribution Layer
+
+### 🚦 Application Load Balancer (ALB)
+
+ALB is responsible for:
+
+- Distributing incoming traffic across services  
+- Ensuring high availability  
+- Providing fault tolerance  
+
+✔ Acts as an intelligent traffic router
+
+---
+
+## ☕ 4. Frontend Application Layer
+
+### 🐳 ECS (Docker Frontend Service)
+
+ALB forwards requests to frontend running on:
+
+- Amazon ECS (Docker Container)
+
+### Responsibilities:
+- UI rendering  
+- User interaction handling  
+- API communication with backend  
+
+---
+
+## ☕ 5. API Gateway Layer
+
+### 🚪 Amazon API Gateway
+
+API Gateway acts as:
+
+- Secure API entry point  
+- Request validation layer  
+- Request routing system  
+
+✔ Controls all backend access securely
+
+---
+
+## ☕ 6. Business Logic Layer
+
+### ⚙️ AWS Lambda
+
+API Gateway triggers Lambda functions.
+
+### Responsibilities:
+- Order processing  
+- Input validation  
+- Data transformation  
+- Business logic execution  
+
+✔ Fully serverless and auto-scaling
+
+---
+
+## ☕ 7. Asynchronous Processing Layer
+
+---
+
+### 📦 Amazon SQS (Queue)
+
+- Stores tasks temporarily  
+- Enables asynchronous processing  
+- Decouples system components  
+
+---
+
+### 🤖 Worker Lambda
+
+- Consumes messages from SQS  
+- Processes background tasks  
+- Ensures reliable execution  
+
+---
+
+### 📌 Benefits:
+- High scalability  
+- Fault tolerance  
+- Non-blocking architecture  
+
+---
+
+## ☕ 8. Data Storage Layer (Hybrid Database Design)
+
+---
+
+### 🗃️ Amazon RDS (MySQL)
+
+Stores structured transactional data:
+
+- Orders  
+- Payments  
+- Customer records  
+
+✔ Ensures relational consistency
+
+---
+
+### 📊 Amazon DynamoDB (NoSQL)
+
+Stores fast-access real-time data:
+
+- Menu items  
+- Order status updates  
+- Live metrics  
+
+✔ Optimized for high-speed reads and writes
+
+---
+
+## ☕ 9. Response Flow
+
+### 🔄 End-to-End Response Path
+
+```
+Worker Lambda
+ ↓
+API Gateway
+ ↓
+Frontend (ECS)
+ ↓
+Application Load Balancer (ALB)
+ ↓
+CloudFront
+ ↓
+User
+```
+
+----
+----
+----
 
