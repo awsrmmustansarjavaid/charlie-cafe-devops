@@ -2530,7 +2530,126 @@ VPC Endpoints → AWS Services
 
 ---
 
+# ☕ 1. Internet Entry Layer
 
+- Users access the application via the Internet  
+- Requests are first routed through **Amazon CloudFront (CDN)**  
+
+✔ Entry point for global users  
+
+---
+
+# ☕ 2. Edge Security Layer
+
+## 🌐 Amazon CloudFront
+
+CloudFront handles edge delivery.
+
+### Provides:
+- 🌍 Global content caching  
+- 🔒 HTTPS security  
+- ⚡ Reduced latency  
+
+✔ Improves performance and security  
+
+---
+
+# ☕ 3. Public Subnet Layer (ALB)
+
+## 🚦 Application Load Balancer (ALB)
+
+ALB is placed in a **Public Subnet**.
+
+### Responsibilities:
+- Accepts incoming internet traffic  
+- Routes requests to backend services  
+- Distributes load across targets  
+
+✔ Acts as secure traffic gateway  
+
+---
+
+# ☕ 4. Private Compute Layer (ECS)
+
+## 🖥️ Amazon ECS (Private Subnets)
+
+ECS tasks run inside **private subnets**.
+
+### Benefits:
+- ❌ Not directly exposed to internet  
+- 🔐 Secure container execution  
+- ⚡ Scalable microservices architecture  
+
+✔ Strong security isolation  
+
+---
+
+# ☕ 5. Serverless Backend Layer (Lambda)
+
+## ⚙️ AWS Lambda (Private Context)
+
+Lambda functions operate within secure VPC context.
+
+### Handles:
+- Business logic execution  
+- Background processing  
+- API operations  
+
+✔ Fully serverless and secure  
+
+---
+
+# ☕ 6. Database Layer (RDS)
+
+## 🗄️ Amazon RDS (Private Subnet)
+
+RDS is deployed inside a **private subnet**.
+
+### Stores:
+- Orders  
+- Payments  
+- Customer data  
+
+### Security:
+- ❌ Not publicly accessible  
+- 🔐 Fully protected database layer  
+
+✔ Ensures data security and integrity  
+
+---
+
+# ☕ 7. AWS Service Access Layer (VPC Endpoints)
+
+## 🔗 Private AWS Connectivity
+
+VPC Endpoints provide private access to AWS services.
+
+### Used for:
+- 📦 Amazon S3  
+- 📊 Amazon DynamoDB  
+- 🔐 AWS Secrets Manager  
+- 📡 Amazon CloudWatch  
+
+### Benefits:
+- ❌ No public internet required  
+- 🔐 Secure internal communication  
+- ⚡ Lower latency  
+
+✔ Enhances security and performance  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe VPC architecture ensures:
+
+- 🔐 Secure network isolation  
+- 🧩 Private subnet-based backend design  
+- 🚦 Controlled public access via ALB  
+- ⚡ High performance with CloudFront  
+- 🔗 Secure AWS service communication via VPC Endpoints  
+
+---
 
 <br><br>
 ---
