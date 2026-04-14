@@ -147,22 +147,6 @@ Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
 [CloudWatch]
 ```
 
-### 💡 Pro Tip for Portfolio
-
-- #### Use:
-
-  - AWS official icons
-
-- #### Color coding:
-
-  🟦 Compute
-
-  🟧 Storage
-
-  🟪 Security
-
-  🟩 Networking
-
 ## ☕ Full System Flow (END-TO-END)
 
 ```
