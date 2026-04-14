@@ -1206,6 +1206,99 @@ Live Application
 <br><br>
 
 
+## ☕ AWS ↔ GitHub CI/CD Flow
+
+```
+GitHub Actions
+   ↓ (IAM Access Keys)
+AWS CLI
+   ↓
+ECR (Push Image)
+   ↓
+ECS (Pull Image)
+   ↓
+CodeDeploy
+   ↓
+ALB Traffic Switch
+```
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+## ☕ Frontend ↔ Backend Data Flow
+
+```
+User (Browser)
+   ↓
+CloudFront (CDN)
+   ↓
+ALB (Load Balancer)
+   ↓
+EC2 (Frontend - PHP/JS)
+   ↓
+API Gateway
+   ↓
+Lambda (Backend Logic)
+   ↓
+RDS (MySQL)
+   ↓
+Response → Frontend → User
+```
+
+#### 💡 Also include:
+
+- DynamoDB (menu / orders)
+
+- SQS (async processing)
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+## ☕ Backend Data Flow
+
+```
+Frontend → API Gateway → Lambda → SQS → Worker Lambda → DB
+```
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+## ☕ Authentication Flow (Cognito) 🔐 Data Flow
+
+```
+User
+ ↓
+CloudFront (Frontend)
+ ↓
+Redirect to Cognito Hosted UI
+ ↓
+User Login
+ ↓
+Cognito returns JWT Token
+ ↓
+Frontend stores token
+ ↓
+API Gateway (Authorization Header)
+ ↓
+Lambda validates JWT
+ ↓
+Access granted → RDS / DynamoDB
+```
 
 
 <br><br>
@@ -1225,3 +1318,56 @@ Live Application
 <br><br>
 ---
 <br><br>
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+<br><br>
+---
+<br><br>
+
+

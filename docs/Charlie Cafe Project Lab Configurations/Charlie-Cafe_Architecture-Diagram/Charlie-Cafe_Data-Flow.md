@@ -7,75 +7,13 @@
 
 
 
-## ☕ AWS ↔ GitHub CI/CD Flow
 
-```
-GitHub Actions
-   ↓ (IAM Access Keys)
-AWS CLI
-   ↓
-ECR (Push Image)
-   ↓
-ECS (Pull Image)
-   ↓
-CodeDeploy
-   ↓
-ALB Traffic Switch
-```
 
-## ☕ Frontend ↔ Backend Data Flow
 
-```
-User (Browser)
-   ↓
-CloudFront (CDN)
-   ↓
-ALB (Load Balancer)
-   ↓
-EC2 (Frontend - PHP/JS)
-   ↓
-API Gateway
-   ↓
-Lambda (Backend Logic)
-   ↓
-RDS (MySQL)
-   ↓
-Response → Frontend → User
-```
 
-#### 💡 Also include:
 
-- DynamoDB (menu / orders)
 
-- SQS (async processing)
 
-## ☕ Backend Data Flow
-
-```
-Frontend → API Gateway → Lambda → SQS → Worker Lambda → DB
-```
-
-## ☕ Authentication Flow (Cognito) 🔐 Data Flow
-
-```
-User
- ↓
-CloudFront (Frontend)
- ↓
-Redirect to Cognito Hosted UI
- ↓
-User Login
- ↓
-Cognito returns JWT Token
- ↓
-Frontend stores token
- ↓
-API Gateway (Authorization Header)
- ↓
-Lambda validates JWT
- ↓
-Access granted → RDS / DynamoDB
-```
 
 ## ☕ API Flow (Frontend → Lambda → DB) 
 
