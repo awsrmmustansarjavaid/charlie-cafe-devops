@@ -1663,13 +1663,137 @@ Charlie Cafe frontend-to-backend architecture is designed for:
 <br><br>
 
 
-## ☕ Charlie Cafe Backend Data Flow
+# ☕ Charlie Cafe Backend Data Flow
+
+---
+
+## ☁️ High-Level Backend Flow
+
 
 ```
 Frontend → API Gateway → Lambda → SQS → Worker Lambda → DB
 ```
 
+# ☕ Charlie Cafe — Backend Data Flow
 
+---
+
+## ☕ 1. Request from Frontend
+
+### 🖥️ Frontend Layer
+
+The frontend application sends an API request to the backend.
+
+### Example actions:
+- Order creation  
+- Order update  
+- Fetch data (menu, status, etc.)  
+
+---
+
+## ☕ 2. API Entry Layer
+
+### 🚪 Amazon API Gateway
+
+API Gateway receives all incoming requests.
+
+### Responsibilities:
+- Validates incoming requests  
+- Routes requests to appropriate backend services  
+- Acts as secure API entry point  
+
+✔ Central control layer for backend access  
+
+---
+
+## ☕ 3. Business Logic Layer
+
+### ⚙️ AWS Lambda
+
+API Gateway triggers Lambda functions.
+
+### Handles:
+- Business logic execution  
+- Input validation  
+- Data preparation for processing  
+
+✔ Fully serverless compute layer  
+
+---
+
+## ☕ 4. Asynchronous Queue Layer
+
+### 📦 Amazon SQS
+
+Lambda sends events to SQS.
+
+### Purpose:
+- Decouple services  
+- Handle high traffic efficiently  
+- Improve system reliability  
+
+✔ Ensures scalable and fault-tolerant architecture  
+
+---
+
+## ☕ 5. Background Processing Layer
+
+### 🤖 Worker Lambda
+
+Worker Lambda consumes messages from SQS.
+
+### Performs:
+- Heavy processing tasks  
+- Order finalization  
+- Data transformation  
+
+✔ Enables reliable asynchronous processing  
+
+---
+
+## ☕ 6. Database Layer
+
+### 🗄️ Data Storage Systems
+
+Worker Lambda stores processed data into databases:
+
+---
+
+### 🗃️ Amazon RDS (MySQL)
+
+Stores structured relational data:
+
+- Orders  
+- Payments  
+- Customer records  
+
+✔ Ensures strong consistency and relational integrity  
+
+---
+
+### 📊 Amazon DynamoDB (Optional)
+
+Used for fast-access / real-time data:
+
+- Live order status  
+- Menu data  
+- Metrics and analytics  
+
+✔ Optimized for speed and scalability  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe backend architecture is designed for:
+
+- ⚡ High scalability  
+- 🔄 Asynchronous processing (SQS)  
+- 🧩 Microservices-based design  
+- 📡 Real-time + relational data handling  
+- 🔐 Secure API-driven architecture  
+
+---
 
 
 <br><br>
