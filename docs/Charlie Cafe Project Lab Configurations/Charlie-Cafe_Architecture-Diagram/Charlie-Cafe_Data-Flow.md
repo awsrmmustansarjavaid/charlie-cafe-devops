@@ -5,68 +5,6 @@
 > #### “Charlie Cafe uses a serverless event-driven architecture where API Gateway triggers Lambda functions, SQS decouples processing, and DynamoDB/RDS handle real-time and relational data storage, enabling scalable and real-time order management.”
 
 
-## ☕ AWS Official Architecture Diagram
-
-Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
-
-```
-[User]
-   ↓
-[CloudFront]
-   ↓
-[Application Load Balancer]
-   ↓
-[ECS / EC2 - Docker Container (Frontend)]
-   ↓
-[API Gateway]
-   ↓
-[Lambda Functions]
-   ↓
- ┌───────────────────────────────┐
- | Backend Services              |
- |-------------------------------|
- | SQS (Order Queue)             |
- | DynamoDB (NoSQL Tables)       |
- | RDS (MySQL Database)          |
- | Secrets Manager               |
- └───────────────────────────────┘
-   ↓
-[CloudWatch]
-```
-
-
-
-
-
-
-## ☕ DevOps Data Flow
-
-```
-Developer
-   ↓
-GitHub Repo
-   ↓
-GitHub Actions (CI/CD)
-   ↓
-Build Docker Image
-   ↓
-Push to ECR
-   ↓
-Deploy to ECS / Lambda
-   ↓
-ALB
-   ↓
-CloudFront
-   ↓
-Users
-```
-
-#### 💡 Add:
-
-- CloudWatch (logs)
-
-- CodeDeploy (blue/green)
-
 ## ☕ CI/CD Pipeline Flow
 
 ```

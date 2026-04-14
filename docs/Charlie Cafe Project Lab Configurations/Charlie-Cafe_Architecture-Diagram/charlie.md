@@ -397,9 +397,218 @@ Charlie Cafe is a **modern cloud-native serverless architecture** designed with:
 - Event-driven microservices  
 - Production-grade AWS DevOps design  
 
+
 <br><br>
 ---
 <br><br>
+
+
+# ☕ Charlie Cafe — AWS Official Architecture Diagram
+
+---
+
+## ☁️ High-Level Architecture Diagram
+
+```
+[User]
+   ↓
+[CloudFront]
+   ↓
+[Application Load Balancer]
+   ↓
+[ECS / EC2 - Docker Container (Frontend)]
+   ↓
+[API Gateway]
+   ↓
+[Lambda Functions]
+   ↓
+ ┌───────────────────────────────┐
+ |       Backend Services        |
+ |-------------------------------|
+ | SQS (Order Queue)             |
+ | DynamoDB (NoSQL Tables)       |
+ | RDS (MySQL Database)          |
+ | Secrets Manager               |
+ └───────────────────────────────┘
+   ↓
+[CloudWatch]
+```
+
+# ☕ Charlie Cafe — AWS Architecture Layers (Detailed Breakdown)
+
+---
+
+## ☕ 1. User Layer
+
+### 👤 Client Entry Point
+
+The system starts with the **User (Web or Mobile Application)**.
+
+### Users initiate requests such as:
+- Ordering food  
+- Viewing menu  
+- Checking order status  
+
+---
+
+## ☕ 2. Edge Delivery Layer
+
+### 🌐 Amazon CloudFront (CDN)
+
+Requests are routed through CloudFront.
+
+### Provides:
+- 🌍 Global content delivery  
+- ⚡ Low latency response  
+- 🔒 HTTPS security  
+- 🧠 Edge caching for static content  
+
+✔ Enhances performance and security
+
+---
+
+## ☕ 3. Load Balancing Layer
+
+### 🚦 Application Load Balancer (ALB)
+
+ALB forwards traffic to backend services.
+
+### Ensures:
+- Even distribution of requests  
+- High availability  
+- Fault tolerance  
+
+✔ Acts as an intelligent traffic manager
+
+---
+
+## ☕ 4. Application Hosting Layer
+
+### 🖥️ ECS / EC2 (Docker Frontend Services)
+
+ALB routes traffic to frontend services running on:
+
+- Amazon ECS (Containers)  
+- Amazon EC2 (Instances)  
+
+### Responsibilities:
+- UI rendering  
+- Frontend business logic  
+- API communication with backend  
+
+---
+
+## ☕ 5. API Management Layer
+
+### 🚪 Amazon API Gateway
+
+Frontend interacts with API Gateway.
+
+### Acts as:
+- Secure API entry point  
+- Request routing layer  
+- Authentication and validation handler  
+
+✔ Controls and secures backend access
+
+---
+
+## ☕ 6. Serverless Compute Layer
+
+### ⚙️ AWS Lambda Functions
+
+API Gateway triggers Lambda functions.
+
+### Handles:
+- Business logic execution  
+- Order processing  
+- Data transformation  
+
+✔ Fully serverless and auto-scaling
+
+---
+
+## ☕ 7. Backend Services Layer (Core System)
+
+---
+
+### 📦 Amazon SQS (Queue System)
+
+- Decouples services  
+- Handles asynchronous order processing  
+
+---
+
+### 📊 Amazon DynamoDB (NoSQL Database)
+
+Stores:
+
+- Menu data  
+- Order status  
+- Real-time metrics  
+
+✔ Optimized for fast performance  
+
+---
+
+### 🗃️ Amazon RDS (MySQL Database)
+
+Stores structured data:
+
+- Orders  
+- Payments  
+- Customer and employee records  
+
+✔ Ensures relational consistency  
+
+---
+
+### 🔐 AWS Secrets Manager
+
+Securely stores:
+
+- Database credentials  
+- API keys  
+- Sensitive configurations  
+
+✔ Prevents hardcoding secrets  
+
+---
+
+## ☕ 8. Monitoring & Observability Layer
+
+### 📡 Amazon CloudWatch
+
+CloudWatch monitors the entire system.
+
+### Provides:
+- Logs  
+- Metrics  
+- Alerts  
+- Performance tracking  
+
+✔ Enables debugging and system health monitoring  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe architecture follows a **modern AWS cloud-native design** with:
+
+- ☁️ Scalable infrastructure  
+- ⚡ High performance  
+- 🔄 Event-driven processing  
+- 🔐 Secure system design  
+- 📊 Full observability  
+
+---
+
+
+<br><br>
+---
+<br><br>
+
+
 # ☕ Charlie Cafe — Full System Flow (End-to-End Architecture)
 
 ---
@@ -798,6 +1007,12 @@ CloudFront (CDN)
 Users
 ```
 
+#### 💡 Add:
+
+- CloudWatch (logs)
+
+- CodeDeploy (blue/green)
+
 # ☕ Charlie Cafe — CI/CD DevOps Pipeline Layers
 
 ---
@@ -946,16 +1161,6 @@ Charlie Cafe CI/CD pipeline is a **fully automated DevOps workflow** designed fo
 - 🌍 Global content delivery  
 
 ---
-
-
-<br><br>
----
-<br><br>
-
-
-
-
-
 
 
 <br><br>
