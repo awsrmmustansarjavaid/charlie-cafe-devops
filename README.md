@@ -231,6 +231,8 @@ charlie-cafe-devops/
 #### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
 
 ---
+# ☕ Charlie Cafe Lab Configurations
+
 ## 1️⃣ Initialize GitHub Repo
 
 ### 1️⃣ Create repo on GitHub
