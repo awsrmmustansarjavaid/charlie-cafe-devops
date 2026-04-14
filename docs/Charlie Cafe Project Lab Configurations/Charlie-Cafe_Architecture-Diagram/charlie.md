@@ -765,5 +765,5 @@ Charlie Cafe is a **modern serverless microservices architecture** designed with
 - 🔐 Secure API orchestration  
 
 ---
----
----
+
+## ─────────────────────────────
