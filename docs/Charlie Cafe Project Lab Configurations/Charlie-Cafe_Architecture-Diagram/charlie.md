@@ -601,3 +601,169 @@ User
 ----
 ----
 
+# ☕ Charlie Cafe — Serverless Microservices Data Flow
+
+---
+
+## ☁️ High-Level Architecture Flow
+
+```
+User → CloudFront → Application Load Balancer (ALB) → ECS/EC2 → API Gateway → Lambda
+                                      ↓
+                          SQS → Worker Lambda
+                                      ↓
+                         DynamoDB + RDS (MySQL)
+```
+
+# ☕ Charlie Cafe — Serverless Microservices Architecture Layers
+
+---
+
+## ☕ 1. User Request Layer
+
+### 👤 Client Interaction Layer
+
+The system flow begins when a **User (Web/Mobile App)** sends a request.
+
+### Example Actions:
+- Place order  
+- View menu  
+- Check order status  
+
+---
+
+## ☕ 2. Edge & Traffic Management Layer
+
+---
+
+### 🌐 CloudFront + ALB
+
+## ☁️ Amazon CloudFront (CDN)
+
+- ⚡ Global content delivery  
+- 🌍 Edge caching for performance  
+- 🔒 HTTPS security enforcement  
+
+---
+
+## 🚦 Application Load Balancer (ALB)
+
+- Distributes traffic across backend services  
+- Ensures high availability  
+- Provides fault tolerance  
+
+✔ Acts as an intelligent traffic router
+
+---
+
+## ☕ 3. Application Hosting Layer
+
+### 🖥️ ECS / EC2 Frontend Services
+
+ALB forwards requests to frontend layer.
+
+### Responsibilities:
+- UI rendering  
+- Client-side logic execution  
+- API communication with backend  
+
+---
+
+## ☕ 4. API Orchestration Layer
+
+### 🚪 Amazon API Gateway
+
+API Gateway acts as:
+
+- Secure API entry point  
+- Request router to backend services  
+- Authentication and validation layer  
+
+✔ Central control point for backend access
+
+---
+
+## ☕ 5. Serverless Compute Layer
+
+### ⚙️ AWS Lambda
+
+API Gateway triggers Lambda functions.
+
+### Responsibilities:
+- Business logic execution  
+- Order processing rules  
+- Data transformation  
+
+✔ Fully serverless and auto-scaling
+
+---
+
+## ☕ 6. Asynchronous Processing Layer (Decoupling)
+
+---
+
+### 📦 Amazon SQS (Queue)
+
+- Stores events/messages temporarily  
+- Enables asynchronous processing  
+- Decouples system components  
+
+---
+
+### 🤖 Worker Lambda
+
+- Consumes messages from SQS  
+- Processes background tasks  
+- Ensures reliable execution  
+
+---
+
+### 📌 Benefits
+
+- High scalability  
+- Loose coupling between services  
+- Reliable background processing  
+
+---
+
+## ☕ 7. Data Persistence Layer (Hybrid Storage)
+
+---
+
+### 📊 Amazon DynamoDB (NoSQL)
+
+Stores:
+
+- Menu data  
+- Order status updates  
+- Real-time metrics  
+
+✔ Optimized for fast reads and writes  
+
+---
+
+### 🗃️ Amazon RDS (MySQL)
+
+Stores structured transactional data:
+
+- Orders  
+- Payments  
+- Business transactions  
+
+✔ Ensures relational consistency and ACID compliance  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe is a **modern serverless microservices architecture** designed with:
+
+- ⚡ High scalability  
+- 🔄 Asynchronous processing  
+- 📡 Real-time data handling  
+- 🧩 Microservices-based design  
+- 🔐 Secure API orchestration  
+
+---
+---
+---

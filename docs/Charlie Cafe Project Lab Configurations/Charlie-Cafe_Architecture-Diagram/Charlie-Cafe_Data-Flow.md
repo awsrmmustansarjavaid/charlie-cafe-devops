@@ -38,15 +38,7 @@ Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
 
 
 
-## ☕ Serverless Microservices Data Flow
 
-```
-User → CloudFront → ALB → ECS/EC2 → API Gateway → Lambda
-                                      ↓
-                          SQS → Worker Lambda
-                                      ↓
-                         DynamoDB + RDS
-```
 ## ☕ DevOps Data Flow
 
 ```
