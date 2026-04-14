@@ -5,29 +5,7 @@
 > #### “Charlie Cafe uses a serverless event-driven architecture where API Gateway triggers Lambda functions, SQS decouples processing, and DynamoDB/RDS handle real-time and relational data storage, enabling scalable and real-time order management.”
 
 
-## ☕ CI/CD Pipeline Flow
 
-```
-Developer Push Code
-   ↓
-GitHub
-   ↓
-GitHub Actions Trigger
-   ↓
-Build Docker Image
-   ↓
-Run Tests
-   ↓
-Push to ECR
-   ↓
-Update ECS Task Definition
-   ↓
-Deploy via CodeDeploy
-   ↓
-Traffic Shift (Blue → Green)
-   ↓
-Live Application
-```
 
 ## ☕ AWS ↔ GitHub CI/CD Flow
 

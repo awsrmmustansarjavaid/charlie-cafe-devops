@@ -1171,7 +1171,29 @@ Charlie Cafe CI/CD pipeline is a **fully automated DevOps workflow** designed fo
 <br><br>
 
 
+## ☕ CI/CD Pipeline Flow
 
+```
+Developer Push Code
+   ↓
+GitHub
+   ↓
+GitHub Actions Trigger
+   ↓
+Build Docker Image
+   ↓
+Run Tests
+   ↓
+Push to ECR
+   ↓
+Update ECS Task Definition
+   ↓
+Deploy via CodeDeploy
+   ↓
+Traffic Shift (Blue → Green)
+   ↓
+Live Application
+```
 
 
 <br><br>
