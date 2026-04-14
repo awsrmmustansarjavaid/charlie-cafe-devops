@@ -1463,7 +1463,11 @@ Charlie Cafe CI/CD integration between GitHub and AWS provides:
 <br><br>
 
 
-## ☕ Frontend ↔ Backend Data Flow
+# ☕ Charlie Cafe Frontend ↔ Backend Data Flow
+
+---
+
+## ☁️ High-Level System Flow
 
 ```
 User (Browser)
@@ -1483,13 +1487,175 @@ RDS (MySQL)
 Response → Frontend → User
 ```
 
-#### 💡 Also include:
+#### 💡 Additional Components
 
-- DynamoDB (menu / orders)
+- 📊 DynamoDB (Menu / Orders / Real-time Data)
 
-- SQS (async processing)
+- 📦 Amazon SQS (Asynchronous Processing Queue)
 
 
+# ☕ Charlie Cafe — Frontend ↔ Backend Architecture Layers
+
+---
+
+## ☕ 1. User Interaction Layer
+
+### 👤 Client Request Initiation
+
+A **User (Browser)** initiates a request such as:
+
+- Place order  
+- View menu  
+- Check order status  
+
+---
+
+## ☕ 2. Content Delivery Layer
+
+### 🌐 Amazon CloudFront (CDN)
+
+Requests first pass through CloudFront.
+
+### Benefits:
+- ⚡ Fast global content delivery  
+- 🔒 HTTPS security  
+- 🌍 Reduced latency via edge caching  
+
+✔ Improves performance and user experience  
+
+---
+
+## ☕ 3. Traffic Distribution Layer
+
+### 🚦 Application Load Balancer (ALB)
+
+CloudFront forwards requests to ALB.
+
+### Responsibilities:
+- Distributes incoming traffic  
+- Ensures high availability  
+- Provides fault tolerance  
+
+✔ Acts as intelligent traffic manager  
+
+---
+
+## ☕ 4. Frontend Application Layer
+
+### 🖥️ EC2 (Frontend - PHP / JavaScript)
+
+ALB routes traffic to frontend server.
+
+### Responsibilities:
+- UI rendering  
+- User interaction handling  
+- API communication with backend  
+
+---
+
+## ☕ 5. API Communication Layer
+
+### 🚪 Amazon API Gateway
+
+Frontend communicates with API Gateway.
+
+### Acts as:
+- Secure API entry point  
+- Request routing layer  
+- Backend service controller  
+
+✔ Central API management layer  
+
+---
+
+## ☕ 6. Backend Logic Layer
+
+### ⚙️ AWS Lambda
+
+API Gateway triggers Lambda functions.
+
+### Handles:
+- Business logic execution  
+- Order processing  
+- Data validation  
+
+✔ Fully serverless compute layer  
+
+---
+
+## ☕ 7. Data & Processing Layer
+
+---
+
+### 📊 Amazon DynamoDB (NoSQL)
+
+Stores real-time data:
+
+- Menu data  
+- Order status  
+- Live metrics  
+
+✔ Optimized for fast reads/writes  
+
+---
+
+### 📦 Amazon SQS (Queue System)
+
+Handles asynchronous processing:
+
+- Order queue management  
+- Decouples system components  
+- Improves scalability  
+
+✔ Ensures reliable background processing  
+
+---
+
+### 🗃️ Amazon RDS (MySQL)
+
+Stores structured relational data:
+
+- Orders  
+- Payments  
+- Customer records  
+
+✔ Ensures data consistency and reliability  
+
+---
+
+## ☕ 8. Response Flow
+
+### 🔄 End-to-End Response Path
+
+```
+Lambda
+   ↓
+API Gateway
+   ↓
+Frontend (EC2)
+   ↓
+Application Load Balancer (ALB)
+   ↓
+CloudFront
+   ↓
+User
+```
+
+✔ Ensures smooth and consistent response delivery
+
+## ☕ Final Summary
+
+Charlie Cafe frontend-to-backend architecture is designed for:
+
+- ⚡ High performance
+
+- 🔄 Asynchronous processing (SQS)
+
+- 📡 Real-time data (DynamoDB)
+
+- 🧩 Scalable backend (Lambda + ECS/EC2)
+
+- 🔐 Secure API communication
 
 
 <br><br>
@@ -1497,7 +1663,7 @@ Response → Frontend → User
 <br><br>
 
 
-## ☕ Backend Data Flow
+## ☕ Charlie Cafe Backend Data Flow
 
 ```
 Frontend → API Gateway → Lambda → SQS → Worker Lambda → DB
