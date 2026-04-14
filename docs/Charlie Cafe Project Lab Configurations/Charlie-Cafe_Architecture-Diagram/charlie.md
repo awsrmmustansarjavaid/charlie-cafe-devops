@@ -1344,7 +1344,11 @@ Charlie Cafe CI/CD pipeline implements a **modern DevOps deployment strategy** w
 <br><br>
 
 
-## ☕ AWS ↔ GitHub CI/CD Flow
+# ☕ Charlie Cafe — AWS ↔ GitHub CI/CD Flow
+
+---
+
+## ☁️ High-Level Integration Flow
 
 ```
 GitHub Actions
@@ -1360,7 +1364,98 @@ CodeDeploy
 ALB Traffic Switch
 ```
 
+# ☕ Charlie Cafe — AWS ↔ GitHub CI/CD Layers
 
+---
+
+## ☕ 1. CI/CD Trigger (GitHub Layer)
+
+### ⚙️ GitHub Actions
+
+- GitHub Actions starts the pipeline after code push or merge  
+- Automates build and deployment steps  
+
+✔ Enables fully automated CI/CD workflow  
+
+---
+
+## ☕ 2. Secure AWS Access
+
+### 🔐 IAM Authentication
+
+- GitHub Actions uses **IAM Access Keys or IAM Roles**  
+- Authenticates securely with AWS services via AWS CLI  
+
+### Ensures:
+- Controlled access  
+- Authorized deployments  
+- Secure communication between GitHub and AWS  
+
+---
+
+## ☕ 3. Build & Push Image (Artifact Layer)
+
+### 🐳 Docker Build & ECR Push
+
+- Docker image is built inside the CI/CD pipeline  
+- Image is pushed to **Amazon ECR (Elastic Container Registry)**  
+
+### Benefits:
+- Versioned container images  
+- Centralized artifact storage  
+- Secure image management  
+
+---
+
+## ☕ 4. Container Deployment (Compute Layer)
+
+### 🖥️ Amazon ECS
+
+- ECS pulls the latest image from ECR  
+- Updates running containers with new image version  
+
+✔ Enables scalable container-based deployment  
+
+---
+
+## ☕ 5. Deployment Automation
+
+### 🚀 AWS CodeDeploy
+
+- Manages application deployment lifecycle  
+- Controls rollout strategy  
+- Ensures safe and controlled updates  
+
+✔ Supports advanced deployment strategies  
+
+---
+
+## ☕ 6. Traffic Switching (Zero Downtime)
+
+### 🔄 Application Load Balancer (ALB)
+
+ALB shifts traffic between versions:
+
+- Old version → New version  
+
+### Supports:
+- Blue-Green deployment  
+- Zero downtime releases  
+- Safe rollback if needed  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe CI/CD integration between GitHub and AWS provides:
+
+- ⚙️ Automated CI/CD pipeline  
+- 🔐 Secure IAM-based authentication  
+- 🐳 Containerized deployment via ECR & ECS  
+- 🚀 Controlled rollout using CodeDeploy  
+- 🔄 Zero-downtime traffic switching with ALB  
+
+---
 
 
 <br><br>
