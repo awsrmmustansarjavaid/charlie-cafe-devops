@@ -1795,7 +1795,11 @@ Charlie Cafe backend architecture is designed for:
 <br><br>
 
 
-## ☕ Authentication Flow (Cognito) 🔐 Data Flow
+# ☕ Charlie Cafe Authentication Flow (AWS Cognito) 🔐
+
+---
+
+## ☁️ High-Level Authentication Flow
 
 ```
 User
@@ -1816,6 +1820,158 @@ Lambda validates JWT
  ↓
 Access granted → RDS / DynamoDB
 ```
+
+# ☕ Charlie Cafe — Authentication Flow (AWS Cognito) 🔐
+
+---
+
+## ☕ 1. User Access Layer
+
+### 👤 Client Entry Point
+
+A **User (Browser/Mobile App)** accesses the application.
+
+- Request initially goes through **Amazon CloudFront (CDN)**  
+- CloudFront delivers frontend content  
+
+---
+
+## ☕ 2. Authentication Redirect Layer
+
+### 🔐 AWS Cognito Hosted UI
+
+When authentication is required:
+
+- User is redirected to **AWS Cognito Hosted UI**  
+- Cognito acts as the centralized identity provider  
+
+✔ Ensures secure and managed authentication flow  
+
+---
+
+## ☕ 3. User Login Process
+
+### 👤 Credential Verification
+
+User enters credentials such as:
+
+- Username & password  
+- Social login (Google, Facebook, etc.)  
+
+### Cognito performs:
+- Secure identity verification  
+- Authentication checks  
+
+---
+
+## ☕ 4. Token Generation Layer
+
+### 🎟️ JWT Token Creation
+
+After successful authentication, Cognito generates:
+
+- 🔑 JWT Access Token  
+- 🆔 ID Token (optional)  
+
+### Tokens include:
+- User identity  
+- Roles & permissions  
+- Expiry information  
+
+✔ Enables stateless authentication  
+
+---
+
+## ☕ 5. Token Storage (Frontend Layer)
+
+### 💾 Secure Client Storage
+
+Frontend stores the JWT token securely.
+
+### Used for:
+- Future API requests  
+- Avoiding repeated login  
+
+✔ Improves user experience  
+
+---
+
+## ☕ 6. API Request with Authorization
+
+### 🚪 Amazon API Gateway
+
+Frontend sends API requests with token:
+
+- JWT token included in **Authorization Header**  
+
+### Example:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+## ☕ 7. Token Validation Layer
+
+### 🔍 JWT Verification
+
+API Gateway or Lambda Authorizer validates the token.
+
+### Checks:
+- Token signature  
+- Expiry time  
+- User permissions  
+
+✔ Prevents unauthorized access  
+
+---
+
+## ☕ 8. Secure Data Access Layer
+
+### 🧠 Backend Processing
+
+If the token is valid:
+
+- Access is granted to backend services  
+
+### Lambda interacts with:
+
+---
+
+### 🗃️ Amazon RDS (MySQL)
+
+Stores structured data:
+
+- Orders  
+- Payments  
+- Customer data  
+
+---
+
+### 📊 Amazon DynamoDB
+
+Stores real-time / NoSQL data:
+
+- Menu data  
+- Order status  
+- Live updates  
+
+---
+
+✔ Ensures secure and controlled data access  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe Authentication Flow using AWS Cognito provides:
+
+- 🔐 Secure user authentication  
+- 🎟️ JWT-based stateless sessions  
+- 🚪 Controlled API access via API Gateway  
+- 🧩 Role-based backend authorization  
+- ☁️ Scalable cloud-native identity management  
+
+---
 
 
 <br><br>
