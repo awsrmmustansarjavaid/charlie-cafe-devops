@@ -1199,6 +1199,144 @@ Traffic Shift (Blue → Green)
 Live Application
 ```
 
+# ☕ Charlie Cafe — CI/CD Pipeline Stages (Blue-Green Deployment)
+
+---
+
+## ☕ 1. Code Commit (Development Stage)
+
+### 👨‍💻 Developer Workflow
+
+- Developer pushes code changes to **GitHub Repository**  
+- This action triggers the automated CI/CD pipeline  
+
+---
+
+## ☕ 2. Source Control Layer
+
+### 📦 GitHub Repository
+
+GitHub manages:
+
+- Version control  
+- Branching strategy  
+- Collaboration and code reviews  
+
+✔ Ensures organized and controlled development process
+
+---
+
+## ☕ 3. CI Trigger (Automation Start)
+
+### ⚙️ GitHub Actions
+
+Pipeline is triggered on:
+
+- Code push  
+- Pull request merge  
+
+✔ Automatically starts CI/CD workflow
+
+---
+
+## ☕ 4. Build Stage (Containerization)
+
+### 🐳 Docker Image Build
+
+Application is built into a Docker image.
+
+### Ensures:
+- Consistent runtime environment  
+- Portability across deployments  
+
+---
+
+## ☕ 5. Testing Stage
+
+### 🧪 Automated Testing
+
+Automated tests are executed:
+
+- Unit tests  
+- Integration tests (if configured)  
+
+✔ Ensures code quality before deployment
+
+---
+
+## ☕ 6. Artifact Storage
+
+### 📦 Amazon ECR (Elastic Container Registry)
+
+- Stores Docker images securely  
+- Maintains versioned container images  
+
+✔ Acts as centralized artifact repository
+
+---
+
+## ☕ 7. Deployment Preparation
+
+### 🛠️ ECS Task Definition Update
+
+Updates ECS task definition with:
+
+- New Docker image version  
+- Environment configurations  
+
+✔ Prepares application for deployment
+
+---
+
+## ☕ 8. Deployment Strategy (Blue-Green)
+
+### 🚀 AWS CodeDeploy
+
+Deployment is managed using CodeDeploy.
+
+### Blue-Green Strategy:
+
+- 🔵 **Blue** → Current live version  
+- 🟢 **Green** → New version  
+
+✔ Enables safe and controlled releases
+
+---
+
+## ☕ 9. Traffic Shifting
+
+### 🔄 Blue → Green Transition
+
+- Traffic is gradually shifted to the new version  
+
+### Ensures:
+- Zero downtime deployment  
+- Safe rollback in case of failure  
+
+---
+
+## ☕ 10. Live Application
+
+### 🌍 Production Environment
+
+- New version becomes fully active  
+- Users access updated application seamlessly  
+
+✔ Ensures smooth user experience without interruption  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe CI/CD pipeline implements a **modern DevOps deployment strategy** with:
+
+- ⚡ Automated CI/CD workflows  
+- 🐳 Containerized application delivery  
+- 🧪 Integrated testing pipeline  
+- 🔄 Blue-Green deployment strategy  
+- 🚀 Zero-downtime releases  
+
+---
 
 
 <br><br>
