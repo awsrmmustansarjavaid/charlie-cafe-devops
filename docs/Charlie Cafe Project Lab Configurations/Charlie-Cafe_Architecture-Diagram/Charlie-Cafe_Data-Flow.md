@@ -4,17 +4,6 @@
 
 > #### “Charlie Cafe uses a serverless event-driven architecture where API Gateway triggers Lambda functions, SQS decouples processing, and DynamoDB/RDS handle real-time and relational data storage, enabling scalable and real-time order management.”
 
-### ☕ Business Data Flow
-
-```
-
-```
-
-## ☕ Architecture Data Flow Diagram
-
-```
-
-```
 
 ## ☕ AWS Official Architecture Diagram
 
