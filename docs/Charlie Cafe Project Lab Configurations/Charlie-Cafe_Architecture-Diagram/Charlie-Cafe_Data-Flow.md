@@ -15,83 +15,15 @@
 
 
 
-## ☕ API Flow (Frontend → Lambda → DB) 
 
-```
-Frontend (JS / PHP)
-   ↓
-API Gateway
-   ↓
-Lambda Function
-   ↓
-Secrets Manager (DB credentials)
-   ↓
-RDS (MySQL)
-   ↓
-DynamoDB (optional)
-   ↓
-Response → Frontend
-```
 
-## ☕ Async Order Processing (SQS Flow)
 
-```
-User places order
-   ↓
-API Gateway
-   ↓
-Producer Lambda
-   ↓
-SQS Queue
-   ↓
-Worker Lambda
-   ↓
-RDS Database
-   ↓
-Update Order Status
-```
 
-## ☕ VPC + Private Architecture Flow
 
-```
-Internet
- ↓
-CloudFront
- ↓
-ALB (Public Subnet)
- ↓
-ECS Tasks (Private Subnet)
- ↓
-Lambda (Private Subnet)
- ↓
-RDS (Private Subnet)
- ↓
-VPC Endpoints → AWS Services
-```
 
-## ☕ Blue/Green Deployment Flow
 
-```
-User Traffic
-   ↓
-ALB
-   ↓
-Blue (Current Version)
-   ↓
-Green (New Version)
-   ↓
-10% Traffic → Green
-   ↓
-Health Check
-   ↓
-100% Switch OR Rollback
-```
 
-## ☕ ECS + ECR Flow
 
-```
-Docker → ECR → ECS → ALB → User
-```
 
 ## ☕ RDS Order Flow
 
