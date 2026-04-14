@@ -13,27 +13,7 @@
 ## ☕ Architecture Data Flow Diagram
 
 ```
-User (Browser / Mobile)
-        ↓
-CloudFront (CDN + HTTPS)
-        ↓
-Application Load Balancer (ALB)
-        ↓
-Frontend (EC2 / ECS Docker Container)
-        ↓
-API Gateway
-        ↓
-Lambda Functions
-        ↓
------------------------------------------
-|           Backend Layer               |
-|  → SQS (Order Queue)                 |
-|  → DynamoDB (Menu / Orders / Metrics)|
-|  → RDS MySQL (Relational Data)       |
-|  → Secrets Manager (Credentials)     |
------------------------------------------
-        ↓
-CloudWatch Logs & Monitoring
+
 ```
 
 ## ☕ AWS Official Architecture Diagram

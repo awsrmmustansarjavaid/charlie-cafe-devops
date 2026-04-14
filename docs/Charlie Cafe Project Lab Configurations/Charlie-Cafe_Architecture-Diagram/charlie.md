@@ -177,3 +177,228 @@ Frontend continuously fetches updated data and displays:
 ---
 ---
 ---
+# ☕ Charlie Cafe — Complete Architecture Data Flow Diagram
+
+---
+
+## ☕ System Architecture Overview
+
+```
+User (Browser / Mobile)
+        ↓
+CloudFront (CDN + HTTPS)
+        ↓
+Application Load Balancer (ALB)
+        ↓
+Frontend (EC2 / ECS Docker Container)
+        ↓
+API Gateway
+        ↓
+Lambda Functions
+        ↓
+-----------------------------------------
+|           Backend Layer               |
+|  → SQS (Order Queue)                 |
+|  → DynamoDB (Menu / Orders / Metrics)|
+|  → RDS MySQL (Relational Data)       |
+|  → Secrets Manager (Credentials)     |
+-----------------------------------------
+        ↓
+CloudWatch Logs & Monitoring
+```
+
+# ☕ Charlie Cafe — System Architecture Layers
+
+---
+
+## ☕ 1. User Interaction Layer
+
+### 👤 Client Access Layer
+
+- Users access the system via **Browser or Mobile Application**
+- All requests originate from the frontend (UI layer)
+- This is the **entry point of the entire system**
+
+---
+
+## ☕ 2. Content Delivery & Security Layer
+
+### 🌐 Amazon CloudFront (CDN)
+
+CloudFront handles:
+
+- ⚡ Low latency content delivery  
+- 🔒 HTTPS security enforcement  
+- 🌍 Global caching for faster response  
+
+✔ Improves performance and reduces backend load
+
+---
+
+## ☕ 3. Traffic Management Layer
+
+### 🚦 Application Load Balancer (ALB)
+
+ALB is responsible for:
+
+- Distributing incoming traffic across services  
+- Ensuring high availability  
+- Providing fault tolerance  
+
+✔ Acts as a smart traffic controller
+
+---
+
+## ☕ 4. Frontend Hosting Layer
+
+### 🖥️ Frontend Application Layer
+
+ALB forwards requests to frontend hosted on:
+
+- 🟧 Amazon EC2 instances OR  
+- 🐳 Amazon ECS Docker containers  
+
+### Responsibilities:
+- UI rendering  
+- User interaction handling  
+- Sending API requests to backend  
+
+---
+
+## ☕ 5. API Layer (Backend Entry Point)
+
+### 🚪 Amazon API Gateway
+
+API Gateway acts as:
+
+- Secure API entry point  
+- Request validator  
+- Routing layer to backend services  
+
+✔ Ensures controlled access to backend systems
+
+---
+
+## ☕ 6. Serverless Processing Layer
+
+### ⚙️ AWS Lambda Functions
+
+Triggered by Amazon API Gateway.
+
+### Responsibilities:
+- Business logic execution  
+- Request processing  
+- Event-driven operations  
+
+✔ Fully serverless and auto-scaling
+
+---
+
+## ☕ 7. Backend Data & Messaging Layer
+
+---
+
+### 📦 Amazon SQS (Order Queue)
+
+**Features:**
+- Asynchronous order processing  
+- System decoupling  
+- Scalability under high load  
+
+---
+
+### 📊 Amazon DynamoDB (NoSQL Database)
+
+**Stores:**
+- Menu data  
+- Orders  
+- Real-time metrics  
+
+✔ Optimized for fast read/write operations
+
+---
+
+### 🗃️ Amazon RDS MySQL (Relational Database)
+
+**Stores structured business data:**
+- Payments  
+- Customer records  
+- Employee information  
+
+✔ Ensures relational consistency and transactional safety
+
+---
+
+### 🔐 AWS Secrets Manager
+
+**Secures:**
+- Database credentials  
+- API keys  
+- Sensitive configuration data  
+
+✔ Prevents hardcoding of secrets in code
+
+---
+
+## ☕ 8. Monitoring & Logging Layer
+
+### 📡 Amazon CloudWatch
+
+CloudWatch collects and monitors:
+
+- Logs  
+- Metrics  
+- System performance data  
+
+### Used for:
+- Debugging issues  
+- System health monitoring  
+- Alerts and alarms  
+
+---
+
+## ☕ 9. Key Architecture Principles
+
+---
+
+### ⚡ Scalability
+- SQS + Lambda enables automatic horizontal scaling  
+
+---
+
+### 🔄 Decoupling
+- Each service operates independently  
+
+---
+
+### 📡 Real-Time Processing
+- DynamoDB enables instant updates for live dashboards  
+
+---
+
+### 🧩 Microservices Approach
+- Each Lambda function handles a single responsibility  
+
+---
+
+### 🔐 Security First Design
+- Secrets Manager protects sensitive credentials  
+- CloudFront + HTTPS ensures secure communication  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe is a **modern cloud-native serverless architecture** designed with:
+
+- High scalability  
+- Real-time processing  
+- Secure API communication  
+- Event-driven microservices  
+- Production-grade AWS DevOps design  
+
+----
+----
+----
+
+
