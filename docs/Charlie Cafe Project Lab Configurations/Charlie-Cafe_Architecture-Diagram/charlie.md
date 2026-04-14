@@ -1171,7 +1171,11 @@ Charlie Cafe CI/CD pipeline is a **fully automated DevOps workflow** designed fo
 <br><br>
 
 
-## ☕ CI/CD Pipeline Flow
+# ☕ Charlie Cafe — CI/CD Pipeline Flow (Blue-Green Deployment)
+
+---
+
+## ☁️ High-Level CI/CD Flow
 
 ```
 Developer Push Code
@@ -1194,6 +1198,7 @@ Traffic Shift (Blue → Green)
    ↓
 Live Application
 ```
+
 
 
 <br><br>
