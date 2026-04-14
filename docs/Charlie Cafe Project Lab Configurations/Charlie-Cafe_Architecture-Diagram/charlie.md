@@ -2674,7 +2674,6 @@ This architecture represents a **full cloud-native backend system** using:
 
 ## ☁️ High-Level Authentication Flow
 
-
 ```
                          ┌────────────────────┐
                          │        User        │
@@ -2882,6 +2881,25 @@ Charlie Cafe RDS architecture provides:
 
 # ☕ Charlie Cafe ER Diagram (RDS Database Design)
 
+---
+
+## ☁️ Overview
+
+This ER model represents the core relational database structure (**Amazon RDS MySQL**) used in Charlie Cafe for:
+
+- 👨‍💼 HR management  
+- 🕒 Attendance tracking  
+- 🏖️ Leave management  
+- 🧾 Order processing  
+- 🎉 Business calendar control  
+
+✔ Designed using a **normalized relational model (3NF)** for scalability and consistency.
+
+---
+
+## ☁️ High-Level Authentication Flow
+
+
 ```
                         ┌──────────────────────┐
                         │     employees        │
@@ -2924,6 +2942,192 @@ Charlie Cafe RDS architecture provides:
                 │ description                 │
                 └──────────────────────────────┘
 ```
+
+---
+
+# 🧩 Core Database Schema
+
+---
+
+## 👨‍💼 1. Employees (Master Table)
+
+### Primary Entity of the System
+
+- **PK:** `employee_id`  
+- **Unique Key:** `cognito_user_id`  
+
+### Attributes:
+- name  
+- job_title  
+- salary  
+- start_date  
+- created_at  
+
+✔ Central identity source for all HR modules  
+
+---
+
+## 🕒 2. Attendance (Time Tracking Module)
+
+- **PK:** `attendance_id`  
+- **FK:** `employee_id → employees.employee_id`  
+
+### Attributes:
+- attendance_date  
+- checkin_time  
+- checkout_time  
+
+✔ Tracks daily employee presence and working hours  
+
+---
+
+## 🏖️ 3. Leaves (HR Leave Management)
+
+- **PK:** `leave_id`  
+- **FK:** `employee_id → employees.employee_id`  
+
+### Attributes:
+- leave_date  
+- leave_type  
+- created_at  
+
+✔ Manages employee leave requests and history  
+
+---
+
+## 🧾 4. Orders (Business Transaction Module)
+
+- **PK:** `order_id`  
+
+### Attributes:
+- table_number  
+- customer_name  
+- item  
+- quantity  
+- payment_method  
+- total_cost  
+- total_amount  
+- payment_status  
+- status  
+- created_at  
+
+✔ Core transaction table for café operations  
+
+### Future Extensions:
+- Customer table integration  
+- Payment gateway integration  
+
+---
+
+## 🎉 5. Holidays (Reference Table)
+
+- **PK:** `holiday_id`  
+- **Unique:** `holiday_date`  
+
+### Attributes:
+- description  
+
+✔ Used for:
+
+- Attendance validation  
+- Payroll calculations  
+- Scheduling logic  
+
+---
+
+# 🔗 Entity Relationships
+
+---
+
+## 👨‍💼 Employees → Attendance
+
+- One employee → many attendance records  
+
+### Relationship:
+
+```
+employees.employee_id → attendance.employee_id
+```
+
+# 👨‍💼 Employees → Leaves Relationship
+
+- One employee → many leave records  
+
+### 🔗 Relationship Mapping:
+```
+employees.employee_id → leaves.employee_id
+```
+
+✔ Ensures proper HR leave tracking per employee
+
+# 🧾 Orders (Independent Table)
+
+- No foreign key dependency  
+- Designed for scalability and high throughput  
+
+---
+
+## 🔮 Future Enhancements
+
+- 👤 Customer table integration  
+- 💳 Payment service integration  
+
+✔ Optimized for high transaction performance  
+
+---
+
+# 🎉 Holidays (Standalone Table)
+
+- Independent reference table  
+- Used globally for business logic validation  
+
+✔ Supports company-wide scheduling rules  
+
+---
+
+# 🧠 System Design Insight
+
+---
+
+## 🔹 Normalization Level
+
+✔ 3NF (Third Normal Form) design  
+✔ Eliminates redundancy  
+✔ Ensures strong data consistency  
+
+---
+
+## 🔹 Scalability Design
+
+- 🧾 Orders → Decoupled for high transaction volume  
+- 👨‍💼 HR modules → Relational for consistency  
+- 🧩 Hybrid architecture supports:
+
+  - ⚡ Transactional workloads  
+  - 🧠 Administrative workflows  
+
+---
+
+# ☕ Final Architecture Summary (Interview Version)
+
+- 👨‍💼 Employees → Core HR identity system  
+- 🕒 Attendance → Time tracking module  
+- 🏖️ Leaves → HR management system  
+- 🧾 Orders → Business transaction system  
+- 🎉 Holidays → Business calendar reference  
+
+---
+
+# ☕ Final Note
+
+This ER design supports a **production-grade cloud-native café system** with:
+
+- ⚡ Scalable architecture  
+- 🧩 Clean relational design  
+- 🔐 Secure identity integration (Cognito-ready)  
+- 📊 Analytics-ready structure  
+
+---
 
 
 <br><br>
