@@ -45,35 +45,9 @@ Use this structure to draw in draw.io / Lucidchart / AWS Architecture Icons
 [CloudWatch]
 ```
 
-## ☕ Full System Flow (END-TO-END)
 
-```
-User
- ↓
-CloudFront
- ↓
-ALB
- ↓
-ECS (Docker Container - Frontend)
- ↓
-API Gateway
- ↓
-Lambda
- ↓
-SQS → Worker Lambda
- ↓
-RDS (Orders DB)
- ↓
-DynamoDB (Menu / Metrics)
- ↓
-Response to User
-```
 
-#### 💡 Add:
 
-- Cognito (Auth)
-
-- Secrets Manager  
 
 ## ☕ Serverless Microservices Data Flow
 

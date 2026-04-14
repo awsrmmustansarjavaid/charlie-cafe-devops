@@ -428,6 +428,12 @@ DynamoDB (Menu / Metrics)
 Response returned to User
 ```
 
+#### 💡 Add:
+
+- Cognito (Auth)
+
+- Secrets Manager  
+
 # ☕ Charlie Cafe — System Request Flow (Clean Architecture View)
 
 ---
