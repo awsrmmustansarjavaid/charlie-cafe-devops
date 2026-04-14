@@ -1,0 +1,217 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ☕ Charlie Cafe - Lambda Functions Stack
+
+Parameters:
+  LambdaExecutionRoleArn:
+    Type: String
+    Description: Existing IAM Role ARN (Lambda-Cafe-Order-Role)
+
+  VpcId:
+    Type: String
+    Description: VPC ID
+
+  PrivateSubnets:
+    Type: List<String>
+    Description: Private Subnet IDs
+
+  LambdaSecurityGroup:
+    Type: String
+    Description: Security Group for Lambda
+
+  SQSQueueUrl:
+    Type: String
+    Description: SQS Queue URL
+
+Resources:
+
+# ===============================
+# 🔹 NON-VPC LAMBDA
+# ===============================
+  CafeMenuLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: CafeMenuLambda
+      Runtime: python3.11
+      Handler: CafeMenuLambda.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 15
+      Architectures:
+        - x86_64
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/CafeMenuLambda.zip
+
+# ===============================
+# 🔹 VPC CONFIG
+# ===============================
+  LambdaVpcConfig:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Lambda SG
+      VpcId: !Ref VpcId
+
+# ===============================
+# 🔹 COMMON VPC SETTINGS
+# ===============================
+  VpcLambdaConfig:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.11
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures:
+        - x86_64
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+# ===============================
+# 🔹 MAIN LAMBDAS (VPC)
+# ===============================
+
+  CafeOrderProcessor:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: CafeOrderProcessor
+      Runtime: python3.11
+      Handler: CafeOrderProcessor.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/CafeOrderProcessor.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+      Environment:
+        Variables:
+          SQS_QUEUE_URL: !Ref SQSQueueUrl
+
+  CafeOrderStatusLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: CafeOrderStatusLambda
+      Runtime: python3.11
+      Handler: CafeOrderStatusLambda.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/CafeOrderStatusLambda.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+  GetOrderStatusLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: GetOrderStatusLambda
+      Runtime: python3.11
+      Handler: GetOrderStatusLambda.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/GetOrderStatusLambda.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+  CafeOrderWorkerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: CafeOrderWorkerLambda
+      Runtime: python3.11
+      Handler: CafeOrderWorkerLambda.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 30
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/CafeOrderWorkerLambda.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+  AdminMarkPaidLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: AdminMarkPaidLambda
+      Runtime: python3.11
+      Handler: AdminMarkPaidLambda.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/AdminMarkPaidLambda.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+  CafeAnalyticsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: CafeAnalyticsLambda
+      Runtime: python3.11
+      Handler: CafeAnalyticsLambda.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/CafeAnalyticsLambda.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+# ===============================
+# 🔹 HR LAMBDAS (ALL VPC)
+# ===============================
+
+  HrAttendance:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: hr-attendance
+      Runtime: python3.11
+      Handler: hr-attendance.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/hr-attendance.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+
+  CafeAttendanceAdminService:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: cafe-attendance-admin-service
+      Runtime: python3.11
+      Handler: cafe-attendance-admin-service.lambda_handler
+      Role: !Ref LambdaExecutionRoleArn
+      Timeout: 20
+      Architectures: [x86_64]
+      Code:
+        S3Bucket: your-bucket-name
+        S3Key: lambda/cafe-attendance-admin-service.zip
+      VpcConfig:
+        SubnetIds: !Ref PrivateSubnets
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CafeAttendance
