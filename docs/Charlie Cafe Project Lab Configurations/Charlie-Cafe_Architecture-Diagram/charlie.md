@@ -2899,7 +2899,6 @@ This ER model represents the core relational database structure (**Amazon RDS My
 
 ## ☁️ High-Level Authentication Flow
 
-
 ```
                         ┌──────────────────────┐
                         │     employees        │
@@ -3135,6 +3134,23 @@ This ER design supports a **production-grade cloud-native café system** with:
 <br><br>
 
 
+# ☕ Charlie Cafe — Merged DynamoDB Data Flow Architecture
+
+---
+
+## ☁️ Overview
+
+This architecture represents a **high-performance NoSQL layer** using **Amazon DynamoDB**, designed for:
+
+- 🍽️ Fast menu retrieval  
+- 🧾 Real-time order tracking  
+- 📊 Scalable analytics processing  
+
+It follows an **event-driven, serverless, low-latency architecture pattern**.
+
+---
+
+## ☁️ High-Level Authentication Flow
 
 ```
                         ┌──────────────────────┐
@@ -3192,6 +3208,149 @@ This ER design supports a **production-grade cloud-native café system** with:
                         │ (Analytics Panel)    │
                         └──────────────────────┘
 ```
+
+---
+
+# 🍽️ 1. Menu System (Read-Optimized Layer)
+
+Frontend requests menu data.
+
+### Flow:
+```
+API Gateway → AWS Lambda → DynamoDB (CafeMenu)
+```
+
+### Stores:
+
+- Menu items
+- Prices
+- Categories
+- Availability
+
+✔ Optimized for fast reads and low latency
+
+# 🧾 2. Order Tracking System (Real-Time Layer)
+
+When a user places an order:
+
+### Flow:
+
+```
+Lambda → DynamoDB (CafeOrders)
+```
+
+### Stores:
+
+- Order status (Pending → In Progress → Completed)
+- Order lifecycle updates
+
+✔ Enables real-time order tracking in UI
+
+# 📊 3. Metrics & Analytics System (Background Layer)
+
+After order completion:
+
+- Worker Lambda processes events asynchronously  
+- Writes analytics data into **DynamoDB Metrics Table**
+
+### Stores:
+- Total order count  
+- Revenue statistics  
+- System performance metrics  
+
+✔ Used for admin dashboards and business insights  
+
+---
+
+# ⚙️ 4. Core Processing Layer
+
+## AWS Lambda (Central Engine)
+
+### Responsibilities:
+- Business logic execution  
+- Routing data to correct DynamoDB tables  
+- Triggering async workflows  
+
+✔ Acts as the core processing unit  
+
+---
+
+# 🌐 5. API Entry Layer
+
+## Amazon API Gateway
+
+### Responsibilities:
+- Request routing  
+- Input validation  
+- Security enforcement  
+
+✔ Single entry point for all requests  
+
+---
+
+# 🖥️ 6. Frontend Layer
+
+Frontend (Web / Mobile UI)
+
+### Displays:
+- 🍽️ Menu data  
+- 🧾 Live order status  
+- 📊 Admin analytics dashboard  
+
+✔ Ensures real-time user experience  
+
+---
+
+# ☁️ System Design Summary
+
+---
+
+## ⚡ DynamoDB Table Responsibilities
+
+---
+
+### 🍽️ CafeMenu
+
+- Fast menu reads  
+- Category-based browsing  
+- Lightweight, read-optimized design  
+
+✔ Optimized for performance  
+
+---
+
+### 🧾 CafeOrders
+
+- Real-time order lifecycle tracking  
+- Live updates to frontend  
+- Supports event-driven architecture  
+
+✔ Enables real-time order monitoring  
+
+---
+
+### 📊 Metrics Table
+
+- Business analytics  
+- Revenue tracking  
+- System performance monitoring  
+
+✔ Supports data-driven decision making  
+
+---
+
+# ☕ Final Architecture Note
+
+This DynamoDB-based system provides:
+
+- ⚡ Ultra-low latency performance  
+- 🔄 Event-driven real-time updates  
+- 📡 Scalable serverless architecture  
+- 🧩 Seamless integration with Lambda + API Gateway  
+- 📊 Analytics-ready data design  
+
+---
+
 
 <br><br>
 ---
