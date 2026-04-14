@@ -2121,6 +2121,9 @@ Charlie Cafe API Flow is designed for:
 
 ## ☕ Async Order Processing (SQS Flow)
 
+---
+## ☁️ High-Level Authentication Flow
+
 ```
 User places order
    ↓
@@ -2145,6 +2148,9 @@ Update Order Status
 
 
 ## ☕ Blue/Green Deployment Flow
+
+---
+## ☁️ High-Level Authentication Flow
 
 ```
 User Traffic
@@ -2171,6 +2177,9 @@ Health Check
 
 ## ☕ ECS + ECR Flow
 
+---
+## ☁️ High-Level Authentication Flow
+
 ```
 Docker → ECR → ECS → ALB → User
 ```
@@ -2182,6 +2191,9 @@ Docker → ECR → ECS → ALB → User
 
 
 ## ☕ VPC + Private Architecture Flow
+
+---
+## ☁️ High-Level Authentication Flow
 
 ```
 Internet
