@@ -1999,9 +1999,118 @@ DynamoDB (optional)
    ↓
 Response → Frontend
 ```
+
 ---
 
+## ☕ 1. Frontend Request Layer
 
+### 🖥️ Client Application
+
+The **Frontend (JavaScript / PHP)** sends an HTTP request.
+
+### Examples:
+- Create order  
+- Fetch menu  
+- Check order status  
+
+---
+
+## ☕ 2. API Gateway Layer
+
+### 🚪 Amazon API Gateway
+
+Request is received by API Gateway.
+
+### Responsibilities:
+- Acts as secure entry point  
+- Routes request to backend Lambda  
+- Handles request validation  
+
+✔ Central API management layer  
+
+---
+
+## ☕ 3. Serverless Compute Layer
+
+### ⚙️ AWS Lambda
+
+Lambda processes the request.
+
+### Responsibilities:
+- Business logic execution  
+- Input validation  
+- Preparing database queries  
+
+✔ Fully serverless compute layer  
+
+---
+
+## ☕ 4. Security Layer (Secrets Management)
+
+### 🔐 AWS Secrets Manager
+
+Lambda retrieves database credentials securely.
+
+### Ensures:
+- No hardcoded passwords  
+- Secure database access  
+- Centralized secret management  
+
+✔ Enhances application security  
+
+---
+
+## ☕ 5. Database Layer
+
+---
+
+### 🗃️ Amazon RDS (MySQL)
+
+Stores structured relational data:
+
+- Orders  
+- Payments  
+- Customer data  
+
+✔ Ensures strong consistency  
+
+---
+
+### 📊 Amazon DynamoDB (Optional)
+
+Stores fast-access / real-time data:
+
+- Menu items  
+- Order status updates  
+- Metrics  
+
+✔ Optimized for speed and scalability  
+
+---
+
+## ☕ 6. Response Flow
+
+### 🔄 End-to-End Response Path
+
+- Database returns response to Lambda  
+- Lambda sends response back through API Gateway  
+- Frontend receives data and updates UI  
+
+✔ Ensures smooth user experience  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe API Flow is designed for:
+
+- ⚡ Serverless scalability (Lambda)  
+- 🚪 Secure API management (API Gateway)  
+- 🔐 Safe credential handling (Secrets Manager)  
+- 📡 Hybrid database design (RDS + DynamoDB)  
+- 🔄 Fast frontend response cycles  
+
+---
 
 
 
