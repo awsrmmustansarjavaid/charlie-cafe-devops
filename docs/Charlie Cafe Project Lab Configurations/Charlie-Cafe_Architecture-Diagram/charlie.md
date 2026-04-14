@@ -2391,15 +2391,109 @@ Charlie Cafe Blue/Green Deployment ensures:
 <br><br>
 
 
-## ☕ ECS + ECR Flow
+# ☕ Charlie Cafe — ECS + ECR Flow
 
 ---
+
+## ☁️ Overview
+
+This flow explains how **containerized applications** are built, stored, and deployed using **AWS ECS and ECR** in a scalable cloud environment.
+
+---
+
 ## ☁️ High-Level Authentication Flow
 
 ```
 Docker → ECR → ECS → ALB → User
 ```
 
+---
+
+# ☕ 1. Docker Image (Build Stage)
+
+- Application is packaged into a **Docker container image**  
+
+### Ensures:
+- Consistent runtime environment  
+- Portability across systems  
+
+✔ Standardized application packaging  
+
+---
+
+# ☕ 2. Amazon ECR (Storage Stage)
+
+### 📦 Amazon Elastic Container Registry (ECR)
+
+Docker image is pushed to ECR.
+
+### Acts as:
+- Secure container image repository  
+- Version-controlled storage for deployments  
+
+✔ Centralized image management  
+
+---
+
+# ☕ 3. Amazon ECS (Deployment Stage)
+
+### 🖥️ Amazon Elastic Container Service (ECS)
+
+ECS pulls images from ECR and runs containers.
+
+### Supports:
+- EC2 launch type  
+- Fargate (serverless containers)  
+
+### Handles:
+- Scaling  
+- Service management  
+- Task scheduling  
+
+✔ Fully managed container orchestration  
+
+---
+
+# ☕ 4. Application Load Balancer (Traffic Layer)
+
+### 🚦 ALB (Application Load Balancer)
+
+Distributes incoming traffic to ECS containers.
+
+### Ensures:
+- High availability  
+- Fault tolerance  
+- Load balancing across tasks  
+
+✔ Improves system reliability and performance  
+
+---
+
+# ☕ 5. User Access Layer
+
+### 👤 Client Interaction
+
+Users access the application via ALB.
+
+### Experience:
+- ⚡ Fast responses  
+- 📡 Scalable backend execution  
+
+✔ Smooth and reliable user experience  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe ECS + ECR architecture provides:
+
+- 🐳 Containerized deployment standardization  
+- 📦 Secure image storage (ECR)  
+- 🖥️ Scalable orchestration (ECS)  
+- 🚦 Load-balanced traffic distribution (ALB)  
+- ⚡ High-performance cloud-native execution  
+
+---
 
 <br><br>
 ---
