@@ -3136,6 +3136,63 @@ This ER design supports a **production-grade cloud-native café system** with:
 
 
 
+```
+                        ┌──────────────────────┐
+                        │        Frontend      │
+                        │   (Web / Mobile UI)  │
+                        └─────────┬────────────┘
+                                  │
+                                  ↓
+                        ┌──────────────────────┐
+                        │    API Gateway       │
+                        │  (REST / HTTP APIs)  │
+                        └─────────┬────────────┘
+                                  │
+                                  ↓
+                        ┌──────────────────────┐
+                        │        Lambda        │
+                        │   (Business Logic)   │
+                        └───────┬───────┬──────┘
+                                │       │
+         ┌──────────────────────┘       └──────────────────────┐
+         ↓                                                     ↓
+
+┌──────────────────────────┐                      ┌──────────────────────────┐
+│   DynamoDB CafeMenu      │                      │   DynamoDB CafeOrders   │
+│──────────────────────────│                      │──────────────────────────│
+│ Menu Items / Prices      │                      │ Order Status Tracking   │
+│ Categories               │                      │ Live Order Updates      │
+│ Availability             │                      │ Order Lifecycle         │
+└──────────┬───────────────┘                      └──────────┬───────────────┘
+           │                                                  │
+           │                                                  │
+           ↓                                                  ↓
+   Return Menu Data                                  Live Order Status
+           │                                                  │
+           └──────────────────────┬───────────────────────────┘
+                                  ↓
+
+                        ┌──────────────────────┐
+                        │   Worker Lambda      │
+                        │ (Async Processing)   │
+                        └─────────┬────────────┘
+                                  │
+                                  ↓
+                        ┌──────────────────────┐
+                        │ DynamoDB Metrics     │
+                        │──────────────────────│
+                        │ Order Count          │
+                        │ Revenue Stats        │
+                        │ Performance Metrics   │
+                        └─────────┬────────────┘
+                                  │
+                                  ↓
+                        ┌──────────────────────┐
+                        │   Admin Dashboard    │
+                        │ (Analytics Panel)    │
+                        └──────────────────────┘
+```
+
 <br><br>
 ---
 <br><br>
