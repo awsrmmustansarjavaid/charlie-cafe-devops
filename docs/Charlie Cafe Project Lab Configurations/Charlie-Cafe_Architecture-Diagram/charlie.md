@@ -173,3 +173,7 @@ Frontend continuously fetches updated data and displays:
 ### 🧩 Microservices Approach
 
 - Each Lambda handles a single responsibility  
+
+---
+---
+---
