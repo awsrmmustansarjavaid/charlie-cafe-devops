@@ -597,9 +597,11 @@ CloudFront
 User
 ```
 
+
 <br><br>
 ---
 <br><br>
+
 
 # ☕ Charlie Cafe — Serverless Microservices Data Flow
 
@@ -764,6 +766,34 @@ Charlie Cafe is a **modern serverless microservices architecture** designed with
 - 🧩 Microservices-based design  
 - 🔐 Secure API orchestration  
 
+
 <br><br>
 ---
 <br><br>
+
+
+# ☕ Charlie Cafe — DevOps CI/CD Data Flow (Pipeline Architecture)
+
+---
+
+## ☁️ High-Level CI/CD Pipeline Flow
+
+```
+Developer
+   ↓
+GitHub Repository
+   ↓
+GitHub Actions (CI/CD)
+   ↓
+Build Docker Image
+   ↓
+Push to Amazon ECR
+   ↓
+Deploy to ECS / Lambda
+   ↓
+Application Load Balancer (ALB)
+   ↓
+CloudFront (CDN)
+   ↓
+Users
+```
