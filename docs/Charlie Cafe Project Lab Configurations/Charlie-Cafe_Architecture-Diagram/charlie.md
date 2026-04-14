@@ -2500,9 +2500,16 @@ Charlie Cafe ECS + ECR architecture provides:
 <br><br>
 
 
-## ☕ VPC + Private Architecture Flow
+# ☕ Charlie Cafe — VPC + Private Architecture Flow
 
 ---
+
+## ☁️ Overview
+
+This architecture ensures **high security and network isolation** by placing backend services inside a **VPC with public and private subnets**.
+
+---
+
 ## ☁️ High-Level Authentication Flow
 
 ```
@@ -2521,6 +2528,9 @@ RDS (Private Subnet)
 VPC Endpoints → AWS Services
 ```
 
+---
+
+
 
 <br><br>
 ---
@@ -2528,6 +2538,11 @@ VPC Endpoints → AWS Services
 
 
 # ☕ Charlie Cafe — RDS Architecture Data Flow
+
+---
+
+## ☁️ High-Level Authentication Flow
+
 
 ```
                          ┌────────────────────┐
@@ -2592,6 +2607,9 @@ VPC Endpoints → AWS Services
         │  DynamoDB → Menu / Cache / Metrics          │
         └──────────────────────────────────────────────┘
 ```
+
+---
+
 
 <br><br>
 ---
