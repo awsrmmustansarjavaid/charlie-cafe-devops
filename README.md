@@ -1,4 +1,4 @@
-# ☕ Charlie Cafe DevOps Project
+# ☕ Charlie Cafe DevOps Project — End-to-End AWS Cloud DevOps Project (Production-Grade Architecture)
 
 ## ☕ Project Goal
 
