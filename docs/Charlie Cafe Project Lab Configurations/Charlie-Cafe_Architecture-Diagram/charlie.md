@@ -1979,7 +1979,10 @@ Charlie Cafe Authentication Flow using AWS Cognito provides:
 <br><br>
 
 
-## ☕ API Flow (Frontend → Lambda → DB) 
+# ☕ Charlie Cafe API Flow (Frontend → Lambda → DB)
+
+---
+## ☁️ High-Level Authentication Flow
 
 ```
 Frontend (JS / PHP)
@@ -1996,6 +1999,8 @@ DynamoDB (optional)
    ↓
 Response → Frontend
 ```
+---
+
 
 
 
