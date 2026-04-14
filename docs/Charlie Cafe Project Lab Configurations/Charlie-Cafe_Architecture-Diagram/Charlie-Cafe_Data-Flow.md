@@ -7,27 +7,7 @@
 ### ☕ Business Data Flow
 
 ```
-Customer places order
-        ↓
-Frontend sends request
-        ↓
-API Gateway
-        ↓
-Lambda (Order Processor)
-        ↓
-SQS Queue (buffer)
-        ↓
-Worker Lambda
-        ↓
---------------------------------
-| Store Data                   |
-| → DynamoDB (orders)         |
-| → RDS (payments/employees)  |
---------------------------------
-        ↓
-Update Metrics (DynamoDB)
-        ↓
-Frontend Dashboard (Live Data)
+
 ```
 
 ## ☕ Architecture Data Flow Diagram

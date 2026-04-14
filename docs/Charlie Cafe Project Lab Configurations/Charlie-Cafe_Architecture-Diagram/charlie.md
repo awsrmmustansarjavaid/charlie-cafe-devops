@@ -7,7 +7,6 @@
 > *“Charlie Cafe uses a serverless event-driven architecture where API Gateway triggers Lambda functions, SQS decouples processing, and DynamoDB/RDS handle real-time and relational data storage, enabling scalable and real-time order management.”*
 
 ---
-
 ## ☕ 2. High-Level System Flow
 
 ```
@@ -19,19 +18,19 @@ API Gateway
         ↓
 Lambda (Order Processor)
         ↓
-SQS Queue (Buffer / Decoupling Layer)
+SQS Queue (buffer)
         ↓
 Worker Lambda
         ↓
-────────────────────────────────────
-| Data Storage Layer              |
-| → DynamoDB (Orders / Metrics)   |
-| → RDS MySQL (Payments / Users)  |
-────────────────────────────────────
+--------------------------------
+| Store Data                   |
+| → DynamoDB (orders)         |
+| → RDS (payments/employees)  |
+--------------------------------
         ↓
-Real-time Metrics Update (DynamoDB)
+Update Metrics (DynamoDB)
         ↓
-Frontend Dashboard (Live Data View)
+Frontend Dashboard (Live Data)
 ```
 
 # ☕ 3. System Architecture Breakdown
