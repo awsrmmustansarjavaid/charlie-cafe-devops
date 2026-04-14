@@ -1016,8 +1016,6 @@ Users
 
 - CodeDeploy (blue/green)
 
-# ☕ Charlie Cafe — CI/CD DevOps Pipeline Layers
-
 ---
 
 ## ☕ 1. Development Stage
@@ -1198,8 +1196,6 @@ Traffic Shift (Blue → Green)
    ↓
 Live Application
 ```
-
-# ☕ Charlie Cafe — CI/CD Pipeline Stages (Blue-Green Deployment)
 
 ---
 
@@ -1673,8 +1669,6 @@ Charlie Cafe frontend-to-backend architecture is designed for:
 ```
 Frontend → API Gateway → Lambda → SQS → Worker Lambda → DB
 ```
-
-# ☕ Charlie Cafe — Backend Data Flow
 
 ---
 
