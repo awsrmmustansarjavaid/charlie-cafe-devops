@@ -2660,6 +2660,18 @@ Charlie Cafe VPC architecture ensures:
 
 ---
 
+## ☁️ Overview
+
+This architecture represents a **full cloud-native backend system** using:
+
+- ⚙️ Serverless compute (AWS Lambda)  
+- 📦 Event-driven processing (Amazon SQS)  
+- 🔐 Secure secrets management (AWS Secrets Manager)  
+- 🗄️ Relational database (Amazon RDS MySQL)  
+- 📊 Optional NoSQL acceleration (Amazon DynamoDB)  
+
+---
+
 ## ☁️ High-Level Authentication Flow
 
 
@@ -2726,6 +2738,138 @@ Charlie Cafe VPC architecture ensures:
         │  DynamoDB → Menu / Cache / Metrics          │
         └──────────────────────────────────────────────┘
 ```
+
+---
+
+# ☕ 1. User Request Layer
+
+- User interacts with **Frontend (Web/Mobile UI)**  
+- Request enters system via **Amazon CloudFront (CDN)**  
+
+✔ Fast and secure global entry point  
+
+---
+
+# ☕ 2. Application Layer
+
+Request is forwarded to:
+
+- 🖥️ Frontend hosted on **EC2 / ECS**  
+- Frontend communicates with backend APIs  
+
+✔ Handles UI and client-side logic  
+
+---
+
+# ☕ 3. API Gateway Layer
+
+Frontend sends request to **Amazon API Gateway**.
+
+### Responsibilities:
+- REST / HTTP routing  
+- Secure API endpoint management  
+- Request forwarding to Lambda  
+
+✔ Central API control layer  
+
+---
+
+# ☕ 4. Backend Logic Layer (Lambda)
+
+## ⚙️ AWS Lambda
+
+Lambda executes core business logic.
+
+### Responsibilities:
+- Order processing  
+- Input validation  
+- Data transformation  
+
+✔ Fully serverless compute layer  
+
+---
+
+# ☕ 5. Secure Database Access Layer
+
+## 🔐 AWS Secrets Manager
+
+Lambda retrieves credentials securely.
+
+### Ensures:
+- ❌ No hardcoded secrets  
+- 🔐 Secure database authentication  
+- 🧩 Centralized secret management  
+
+✔ Strong security foundation  
+
+---
+
+# ☕ 6. Database Layer (RDS MySQL — Core System)
+
+## 🗄️ Amazon RDS (Private Subnet)
+
+Stores structured relational data:
+
+### 📊 Tables:
+- **orders** → customer orders  
+- **employees** → staff records  
+- **attendance** → daily check-in/out  
+- **leaves** → leave management  
+- **holidays** → company schedule  
+
+✔ Ensures strong relational consistency  
+
+---
+
+# ☕ 7. Asynchronous Processing Layer (SQS)
+
+- Lambda sends heavy tasks to **Amazon SQS Queue**  
+- Worker Lambda processes queued messages  
+- Final results are written to RDS  
+
+### ✔ Benefits:
+- 🔄 Decoupling  
+- ⚡ Scalability  
+- 🛡️ Fault tolerance  
+
+---
+
+# ☕ 8. Analytics & Reporting Layer
+
+- Admin dashboard runs SQL queries on **RDS**  
+- Used for business intelligence  
+
+### Used for:
+- 📊 Business reporting  
+- 💰 Sales analytics  
+- 👥 Employee management insights  
+
+✔ Enables data-driven decisions  
+
+---
+
+# ☕ 9. Optional Fast Data Layer (DynamoDB)
+
+Used for **low-latency operations**:
+
+### Stores:
+- Menu data  
+- Cached metrics  
+- Real-time updates  
+
+✔ Enhances performance for read-heavy workloads  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe RDS architecture provides:
+
+- ⚡ Scalable serverless backend design  
+- 🔐 Secure credential management  
+- 🧩 Hybrid database architecture (RDS + DynamoDB)  
+- 📦 Event-driven processing with SQS  
+- 📊 Strong analytics and reporting capabilities  
 
 ---
 
