@@ -1,4 +1,4 @@
-# ☕ Charlie Cafe — Data Flow Architecture
+# ☕ Charlie Cafe Data Flow Architecture
 
 ---
 
