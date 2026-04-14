@@ -174,9 +174,9 @@ Frontend continuously fetches updated data and displays:
 
 - Each Lambda handles a single responsibility  
 
+<br><br>
 ---
----
----
+<br><br>
 # ☕ Charlie Cafe — Complete Architecture Data Flow Diagram
 
 ---
@@ -397,9 +397,9 @@ Charlie Cafe is a **modern cloud-native serverless architecture** designed with:
 - Event-driven microservices  
 - Production-grade AWS DevOps design  
 
-----
-----
-----
+<br><br>
+---
+<br><br>
 # ☕ Charlie Cafe — Full System Flow (End-to-End Architecture)
 
 ---
@@ -597,9 +597,9 @@ CloudFront
 User
 ```
 
-----
-----
-----
+<br><br>
+---
+<br><br>
 
 # ☕ Charlie Cafe — Serverless Microservices Data Flow
 
@@ -764,6 +764,6 @@ Charlie Cafe is a **modern serverless microservices architecture** designed with
 - 🧩 Microservices-based design  
 - 🔐 Secure API orchestration  
 
+<br><br>
 ---
-
-## ─────────────────────────────
+<br><br>
