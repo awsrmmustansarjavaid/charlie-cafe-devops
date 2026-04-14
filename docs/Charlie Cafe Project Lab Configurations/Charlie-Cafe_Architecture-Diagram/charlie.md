@@ -2140,7 +2140,122 @@ RDS Database
 Update Order Status
 ```
 
+---
 
+## ☕ 1. Order Initiation (User Layer)
+
+### 👤 Client Request
+
+A **User** places an order from the frontend application.
+
+### Example actions:
+- Food order submission  
+- Payment request  
+- Order confirmation  
+
+---
+
+## ☕ 2. API Entry Layer
+
+### 🚪 Amazon API Gateway
+
+Request is received by API Gateway.
+
+### Responsibilities:
+- Validates incoming request  
+- Routes request to backend Lambda (Producer)  
+
+✔ Acts as secure API entry point  
+
+---
+
+## ☕ 3. Producer Lambda (Event Generator)
+
+### ⚙️ AWS Lambda (Producer)
+
+Processes the initial request.
+
+### Responsibilities:
+- Validate order data  
+- Format message payload  
+- Send event to SQS queue  
+
+✔ Prepares event for asynchronous processing  
+
+---
+
+## ☕ 4. Queue Layer (Decoupling System)
+
+### 📦 Amazon SQS (Simple Queue Service)
+
+Stores messages temporarily.
+
+### Benefits:
+- Decouples system components  
+- Handles traffic spikes efficiently  
+- Ensures reliable message delivery  
+- Prevents system overload  
+
+✔ Enables scalable architecture  
+
+---
+
+## ☕ 5. Worker Lambda (Background Processing)
+
+### 🤖 AWS Lambda (Consumer)
+
+Consumes messages from SQS.
+
+### Performs:
+- Order processing  
+- Business logic execution  
+- Data transformation  
+
+✔ Enables asynchronous processing  
+
+---
+
+## ☕ 6. Database Layer
+
+### 🗃️ Amazon RDS (MySQL)
+
+Stores final processed data:
+
+- Orders  
+- Payment details  
+- Customer transactions  
+
+✔ Ensures structured and consistent storage  
+
+---
+
+## ☕ 7. Order Status Update
+
+### 🔄 Real-Time Order Tracking
+
+After processing:
+
+- Order status is updated (e.g., Pending → Confirmed → Completed)  
+
+### Frontend can:
+- Poll status updates  
+- Display real-time tracking  
+
+✔ Provides smooth user experience  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe Async Order Processing Flow using SQS provides:
+
+- ⚡ High scalability under heavy load  
+- 🔄 Decoupled microservices architecture  
+- 📦 Reliable message-based processing  
+- 🧠 Event-driven system design  
+- 📡 Real-time order tracking capability  
+
+---
 
 <br><br>
 ---
