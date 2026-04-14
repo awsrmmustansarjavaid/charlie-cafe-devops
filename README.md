@@ -68,7 +68,7 @@ Build a scalable, secure, cloud-native café ordering system using modern DevOps
 
 ## ☕ Charlie Cafe Data Flow
 
-### [☕ Charlie Cafe Data Flow](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Charlie-Cafe_Data-Flow.md)
+### [☕ Charlie Cafe Data Flow](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Charlie-Cafe_Architecture-Diagram/Charlie-Cafe_Data-Flow.md)
 
 ### 🔹 Overview
 
