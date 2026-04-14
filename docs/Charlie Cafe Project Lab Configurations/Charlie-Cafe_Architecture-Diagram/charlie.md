@@ -174,9 +174,12 @@ Frontend continuously fetches updated data and displays:
 
 - Each Lambda handles a single responsibility  
 
+
 <br><br>
 ---
 <br><br>
+
+
 # ☕ Charlie Cafe — Complete Architecture Data Flow Diagram
 
 ---
