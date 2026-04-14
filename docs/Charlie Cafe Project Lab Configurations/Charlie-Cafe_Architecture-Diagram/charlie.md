@@ -797,3 +797,196 @@ CloudFront (CDN)
    ↓
 Users
 ```
+
+# ☕ Charlie Cafe — CI/CD DevOps Pipeline Layers
+
+---
+
+## ☕ 1. Development Stage
+
+### 👨‍💻 Developer Workflow
+
+- Developer writes code (frontend / backend updates / bug fixes / features)  
+- Code is committed and pushed to **GitHub Repository**  
+
+---
+
+## ☕ 2. Source Control Layer
+
+### 📦 GitHub Repository
+
+GitHub acts as the central version control system.
+
+### Manages:
+- Code versioning  
+- Branching strategy  
+- Collaboration via pull requests  
+
+✔ Ensures clean and organized development workflow
+
+---
+
+## ☕ 3. CI/CD Automation Layer
+
+### ⚙️ GitHub Actions
+
+Triggered automatically on every code push.
+
+### Performs:
+- Code validation  
+- Build process  
+- Automated testing (if configured)  
+
+✔ Enables Continuous Integration (CI)
+
+---
+
+## ☕ 4. Build & Containerization Layer
+
+### 🐳 Docker Image Build
+
+Application is packaged into a Docker image.
+
+### Benefits:
+- Consistent runtime environment  
+- Platform independence  
+- Easy deployment across systems  
+
+---
+
+## ☕ 5. Artifact Storage Layer
+
+### 📦 Amazon ECR (Elastic Container Registry)
+
+- Stores Docker images securely  
+- Acts as a container image repository  
+
+✔ Ensures versioned deployment artifacts
+
+---
+
+## ☕ 6. Deployment Layer
+
+### 🚀 Deployment Targets
+
+Application is deployed from ECR to:
+
+---
+
+### 🟧 Amazon ECS
+
+- Runs containerized frontend/backend services  
+
+---
+
+### ⚡ AWS Lambda
+
+- Handles serverless functions  
+
+---
+
+✔ Supports hybrid architecture (containers + serverless)
+
+---
+
+## ☕ 7. Traffic Management Layer
+
+### 🚦 Application Load Balancer (ALB)
+
+ALB exposes deployed services.
+
+### Responsibilities:
+- Load distribution  
+- High availability  
+- Fault tolerance  
+
+✔ Ensures stable application performance
+
+---
+
+## ☕ 8. Content Delivery Layer
+
+### 🌐 Amazon CloudFront (CDN)
+
+CloudFront sits at the edge of the system.
+
+### Provides:
+- ⚡ Global low-latency access  
+- 🌍 Edge caching  
+- 🔒 Secure HTTPS delivery  
+
+✔ Improves speed and user experience worldwide
+
+---
+
+## ☕ 9. End User Layer
+
+### 👤 User Access
+
+Users access the application via:
+
+- Web browser  
+- Mobile application  
+
+### Experience:
+- Fast response via CloudFront  
+- Scalable backend via ECS/Lambda  
+- Reliable system performance  
+
+---
+
+## ☕ Final Summary
+
+Charlie Cafe CI/CD pipeline is a **fully automated DevOps workflow** designed for:
+
+- ⚡ Continuous Integration & Deployment  
+- 🐳 Containerized application delivery  
+- ☁️ Scalable cloud infrastructure  
+- 🔄 Automated build & release process  
+- 🌍 Global content delivery  
+
+---
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+<br><br>
+---
+<br><br>
+
+
+
+
+<br><br>
+---
+<br><br>
