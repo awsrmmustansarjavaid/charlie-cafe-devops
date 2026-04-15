@@ -2371,7 +2371,71 @@ https://xxxx.execute-api.us-east-1.amazonaws.com/prod/hr-analytics
 
 ```
 
-### 3️⃣ Git Auto Deploy
+### 3️⃣ Update Frontend Configuration (config.js)
+
+#### 📍 File Location
+`/app/frontend/js/config.js`
+
+---
+
+#### 🧩 Purpose
+This file contains all the **environment-specific configuration values** required for the frontend application to communicate with AWS backend services such as API Gateway, CloudFront, and Cognito.
+
+---
+
+#### ⚙️ Required Configuration Parameters
+
+Update the following values in `config.js`:
+
+| Parameter                | Description |
+|-------------------------|-------------|
+| `CLOUDFRONT_URL`        | CloudFront distribution URL for frontend access |
+| `API_BASE_URL`          | API Gateway endpoint for backend APIs |
+| `COGNITO_DOMAIN`        | Cognito Hosted UI domain |
+| `COGNITO_USER_POOL_ID`  | Cognito User Pool ID |
+| `COGNITO_CLIENT_ID`     | Cognito App Client ID |
+
+> ⚠️ **Important:** Never expose sensitive data such as client secrets in frontend code.
+
+---
+
+#### 🧾 Example Configuration
+
+```javascript
+const CONFIG = {
+  CLOUDFRONT_URL: "https://d123abcxyz.cloudfront.net",
+
+  API_BASE_URL: "https://abc123.execute-api.us-east-1.amazonaws.com/prod",
+
+  COGNITO_DOMAIN: "https://charlie-cafe-auth.auth.us-east-1.amazoncognito.com",
+
+  COGNITO_USER_POOL_ID: "us-east-1_AbCdEf123",
+
+  COGNITO_CLIENT_ID: "4h5k6l7m8n9opqrs123456"
+};
+```
+
+#### 🔐 Security Best Practices
+
+- ❌ **Do NOT store Cognito Client Secret in frontend code**
+
+- ✅ Use **Authorization Code Flow (OAuth2)** instead
+
+- ✅ Store sensitive data in **backend services or environment variables**
+
+- ✅ Always use **HTTPS endpoints** for secure communication
+
+---
+
+#### 💡 Tips
+
+- Use versioning for config updates (e.g., `config.v2.js`)
+
+- Avoid hardcoding environment values in production (use environment-based configs)
+
+- Test all endpoints after updating configuration
+
+### 4️⃣ Git Auto Deploy
 
 #### 📄 deploy_via_ssm.sh
 
