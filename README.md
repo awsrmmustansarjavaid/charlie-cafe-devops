@@ -66,13 +66,13 @@ Build a scalable, secure, cloud-native café ordering system using modern DevOps
 
 - Handle peak traffic (rush hours)
 
-## ☕ Charlie Cafe Data Flow
-
-### [☕ Charlie Cafe Data Flow](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Charlie-Cafe_Architecture-Diagram/Charlie-Cafe_Data-Flow.md)
-
 ## ☕ Charlie Cafe —  End-to-End Architecture Diagram
 
 ![End-to-End Architecture Diagram](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/965fab6e-51fe-41b8-83cb-097b995fc64e.png)
+
+> #### ☕ Charlie Cafe Data Flow
+
+##### [☕ Charlie Cafe Data Flow](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Charlie-Cafe_Architecture-Diagram/Charlie-Cafe_Data-Flow.md)
 
 ### 🔹 Overview
 
