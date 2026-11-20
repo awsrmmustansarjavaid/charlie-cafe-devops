@@ -50,7 +50,7 @@ Role for EC2 to access Lambda, RDS, Secrets Manager, S3 and other services
 
 You can paste this directly into IAM → Policies → Create policy → JSON
 
-[EC2-Cafe-Secrets-Role](./Charlie%20Cafe%20IAm%20Policies/EC2-Cafe-Secrets-Role.json)
+[EC2-Cafe-Secrets-Role](../../../../infrastructure/iam-policies/EC2-Cafe-Secrets-Role.json)
 
 **⚠️ Attach role to EC2 (NO reboot).**
 
@@ -94,7 +94,7 @@ This IAM policy is designed to support the backend services of the Charlie Cafe 
 
 You can paste this directly into IAM → Policies → Create policy → JSON
 
-[charlie-cafe-iam-policy](./Charlie%20Cafe%20IAm%20Policies/charlie-cafe-iam-policy.json)
+[charlie-cafe-iam-policy](../../../../infrastructure/iam-policies/charlie-cafe-iam-policy.json)
 
 **⚠️ JUST Replace 123456789012 with your real AWS account ID. with your own account ID**
 
@@ -159,7 +159,7 @@ GitHub-Actions-iam-Role
 
 You can paste this directly into IAM → Policies → Create policy → JSON
 
-[GitHub-Actions.json](./Charlie%20Cafe%20IAm%20Policies/GitHub-Actions.json)
+[GitHub-Actions.json](../../../../infrastructure/iam-policies/GitHub-Actions.json)
 
 ---
 

@@ -68,11 +68,11 @@ Build a scalable, secure, cloud-native café ordering system using modern DevOps
 
 ## ☕ Charlie Cafe —  End-to-End Architecture Diagram
 
-![End-to-End Architecture Diagram](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/965fab6e-51fe-41b8-83cb-097b995fc64e.png)
+![End-to-End Architecture Diagram](./docs/Project%20Lab%20Configurations/965fab6e-51fe-41b8-83cb-097b995fc64e.png)
 
 > #### ☕ Charlie Cafe Data Flow
 
-##### [☕ Charlie Cafe Data Flow](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Charlie-Cafe_Architecture-Diagram/Charlie-Cafe_Data-Flow.md)
+##### [☕ Charlie Cafe Data Flow](./docs/Project%20Lab%20Configurations/Charlie-Cafe_Architecture-Diagram/Charlie-Cafe_Data-Flow.md)
 
 ### 🔹 Overview
 
@@ -80,7 +80,7 @@ Build a scalable, secure, cloud-native café ordering system using modern DevOps
 
 ### 🔹 AWS Deployment
 
-- **Refer:** [AWS Charlie Cafe Project](https://github.com/awsrmmustansarjavaid/Cloud-Engineering-R-S-D/blob/1eec632562867d778e7f490f9e0efcfc57027b6f/CLoud-Engineering/Cloud-research-study-drive/DevOps-research-study-drive/Cloud-ISPs-AWS-AZ-GC/AWS-Cloud-Engineering/AWS-Cloud-Practice-dev/AWS-Labs-AWS-Labs-Guide/AWS-Labs-Projects/AWS-Basic-Labs-Projects/AWS%20Challenge%20Lab%3A%20Build%20a%20Dynamic%20Caf%C3%A9%20Website%20%28Dev%20%2B%20Prod%29/AWS%20Charlie%20Cafe%20Project/AWS%20Charlie%20Cafe%20Project.md)
+- **Refer:** [AWS Charlie Cafe Project](./docs/Project%20Lab%20Configurations/AWS%20Charlie%20Cafe%20Project.md)
 
 ### 🚀 1. Final DevOps Architecture (Your Project Now)
 
