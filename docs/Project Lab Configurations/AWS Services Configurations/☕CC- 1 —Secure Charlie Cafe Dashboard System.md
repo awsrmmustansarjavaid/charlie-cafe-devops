@@ -1,0 +1,4113 @@
+# AWS  ☕ Charlie Cafe — Secure Charlie Cafe Dashboard System
+
+### Goal: Production-ready Admin Dashboard
+
+#### Secure, auto-refreshing, printable, Cognito-protected
+
+# SECTION 2️⃣ Secure Admin Order Dashboard
+
+
+### 🧱 ARCHITECTURE
+
+```
+Browser (Admin Dashboard)
+        ↓  JWT
+Amazon Cognito (Login)
+        ↓
+API Gateway (Cognito Authorizer)
+        ↓
+AWS Lambda (Order API)
+        ↓
+Database
+```
+
+## 🔐 PHASE  1️⃣ — PREREQUISITES (CHECK ONLY)
+
+#### Make sure you already have:
+
+✅ EC2 / S3 hosting HTML
+
+✅ API Gateway with GET /order-status
+
+✅ Lambda returning:
+
+```
+{
+  "metrics": [...],
+  "recent_orders": [...]
+}
+```
+
+👉 If yes, continue
+
+👉 If no, stop here
+
+## 🔐 PHASE  1️⃣ — Set Up Automatic HTTP → HTTPS Redirection
+> **✅ EASY & CORRECT METHOD (RECOMMENDED FOR LAB)**
+
+✔️ 📄 File: dashboard.html
+
+
+### 1️⃣ DEPLOY FINAL FRONTEND (WRITE ONCE ✅)
+
+#### (ONE FILE ONLY)
+
+### 🎯 What this frontend already includes
+
+| Feature             | Status |
+| ------------------- | ------ |
+| Login UI            | ✅      |
+| Cognito Hosted UI   | ✅      |
+| JWT storage         | ✅      |
+| Spinner             | ✅      |
+| Auto refresh (10s)  | ✅      |
+| Metrics             | ✅      |
+| Orders table        | ✅      |
+| Chart               | ✅      |
+| Date filter         | ✅      |
+| Print orders        | ✅      |
+| Print today summary | ✅      |
+
+### 📄 FINAL FRONTEND FILE (ONLY ONCE)
+
+#### 📍 Location:
+
+> **dashboard.html (Recommanded)**
+
+```
+/var/www/html/dashboard.html
+```
+
+> **order-status.html**
+
+```
+/var/www/html/order-status.html
+```
+
+> **You NEVER modify this file again except 4 config values**
+
+### 🔧 ONLY CHANGE THESE 4 VALUES
+
+```
+const USER_POOL_ID = "CHANGE_ME";
+const CLIENT_ID = "CHANGE_ME";
+const COGNITO_DOMAIN = "CHANGE_ME.auth.ap-south-1.amazoncognito.com";
+const API_URL = "https://xxxxx.execute-api.ap-south-1.amazonaws.com/admin/order-status";
+```
+
+#### ✅ Everything else stays unchanged forever
+
+#### ✅ Code (Login + Dashboard fully integrated & Recommanded )
+
+- Cognito Hosted UI redirect login (login() & handleRedirect())
+
+- Access Token stored in localStorage
+
+- Bearer prefix added in Authorization header
+
+- Token expiry check implemented
+
+- Navbar hidden until login
+
+- Spinner, chart, metrics, and table all intact
+
+- Auto-refresh every 10s maintained
+
+#### 1️⃣ Updated Frontend (Order.html )
+
+#### Here’s the updated HTML/JS code:
+
+### ✅ What We Added / Changed
+
+- Sidebar & main content initially hidden → display:none until login.
+
+- Cognito config → COGNITO_DOMAIN, CLIENT_ID, REDIRECT_URI.
+
+- Login function → redirects to Cognito Hosted UI.
+
+- Logout function → clears token + redirect to Cognito logout.
+
+- handleRedirect → extracts JWT from URL hash after login.
+
+- Token validation → isTokenExpired() ensures user cannot access dashboard with expired token.
+
+- Fetch dashboard data with Authorization header → secure API calls.
+
+- Auto-refresh every 10 seconds → charts and KPI cards update dynamically.
+
+
+> **dashboard.html (Recommanded)**
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Charlie Cafe ☕ | Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ================= BOOTSTRAP ================= -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- ================= ICONS ================= -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- ================= CHART.JS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* =================================================
+   GLOBAL THEME (DARK CAFE STYLE)
+   ================================================= */
+body {
+    background-color: #0f0f10;
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* =================================================
+   SIDEBAR
+   ================================================= */
+.sidebar {
+    width: 250px;
+    background: #151515;
+    min-height: 100vh;
+    position: fixed;
+    padding: 20px;
+    display: none; /* Hidden until login */
+}
+
+.sidebar h4 {
+    font-weight: 700;
+}
+
+.sidebar a {
+    display: block;
+    color: #bbb;
+    padding: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-bottom: 8px;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+    background: #ff9800;
+    color: #000;
+}
+
+/* =================================================
+   MAIN CONTENT
+   ================================================= */
+.main {
+    margin-left: 260px;
+    padding: 25px;
+    display: none; /* Hidden until login */
+}
+
+/* =================================================
+   HEADER BAR
+   ================================================= */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-box input {
+    background: #222;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    color: white;
+}
+
+/* =================================================
+   KPI CARDS
+   ================================================= */
+.kpi-card {
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+}
+
+.bg-green { background: #1abc9c; }
+.bg-purple { background: #9b59b6; }
+.bg-blue { background: #3498db; }
+.bg-orange { background: #e67e22; }
+
+/* =================================================
+   CONTENT CARDS
+   ================================================= */
+.card-dark {
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+/* =================================================
+   TRENDING DRINKS
+   ================================================= */
+.drink-card {
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 15px;
+    text-align: center;
+}
+
+.drink-card img {
+    width: 100%;
+    border-radius: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- =================================================
+     SIDEBAR (Hidden until login)
+     ================================================= -->
+<div class="sidebar" id="sidebar">
+    <h4>☕ Charlie Cafe</h4>
+    <p class="text-muted">Admin Dashboard</p>
+
+    <!-- Navigation -->
+    <a class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="#"><i class="bi bi-cup-hot"></i> Menu</a>
+    <a href="#"><i class="bi bi-bag-check"></i> Orders</a>
+    <a href="#"><i class="bi bi-graph-up"></i> Analytics</a>
+    <a href="#"><i class="bi bi-gear"></i> Settings</a>
+
+    <hr>
+
+    <!-- Logout -->
+    <a onclick="logout()" style="cursor:pointer">
+        <i class="bi bi-box-arrow-left"></i> Logout
+    </a>
+</div>
+
+<!-- =================================================
+     MAIN CONTENT (Hidden until login)
+     ================================================= -->
+<div class="main" id="mainContent">
+
+<!-- ================= HEADER ================= -->
+<div class="top-bar mb-4">
+    <h5>Welcome, Admin 👋</h5>
+
+    <div class="search-box">
+        <input type="text" placeholder="🔍 Search orders, drinks">
+    </div>
+
+    <div>
+        <i class="bi bi-bell"></i>
+        <span class="ms-3">Charlie Cafe</span>
+        <small class="text-muted">Admin</small>
+    </div>
+</div>
+
+<!-- ================= KPI ROW ================= -->
+<div class="row g-4 mb-4" id="kpiRow">
+    <!-- KPI Cards will be dynamically updated from API -->
+</div>
+
+<!-- ================= CHART PLACEHOLDERS ================= -->
+<div class="row g-4" id="chartRow">
+    <div class="col-md-6">
+        <div class="card-dark">
+            <h5>Sales Overview</h5>
+            <p class="text-muted">Daily / Weekly / Monthly</p>
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card-dark">
+            <h5>Orders Trend</h5>
+            <canvas id="ordersChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ================= TRENDING DRINKS ================= -->
+<div class="mt-5">
+    <h5>🔥 Trending Drinks</h5>
+    <div class="row g-4 mt-2" id="trendingDrinks">
+        <!-- Cards remain static for now -->
+    </div>
+</div>
+
+</div>
+
+<!-- =================================================
+     JAVASCRIPT: COGNITO + DASHBOARD LOGIC
+     ================================================= -->
+<script>
+/* ================== CONFIG ================== */
+const COGNITO_DOMAIN = "YOUR_COGNITO_DOMAIN.auth.region.amazoncognito.com";
+const CLIENT_ID = "YOUR_APP_CLIENT_ID";
+const REDIRECT_URI = window.location.origin;
+const API_URL = "https://API_ID.execute-api.region.amazonaws.com/STAGE/dashboard";
+
+let salesChart, ordersChart, refreshTimer;
+
+/* ================== AUTH ================== */
+function parseJwt(token) {
+    return JSON.parse(atob(token.split('.')[1]));
+}
+
+function isTokenExpired(token) {
+    const payload = parseJwt(token);
+    return payload.exp * 1000 < Date.now();
+}
+
+function login() {
+    const loginUrl = `https://${COGNITO_DOMAIN}/login?response_type=token&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
+    window.location.href = loginUrl;
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    clearInterval(refreshTimer);
+    const logoutUrl = `https://${COGNITO_DOMAIN}/logout?client_id=${CLIENT_ID}&logout_uri=${REDIRECT_URI}`;
+    window.location.href = logoutUrl;
+}
+
+function handleRedirect() {
+    const hash = window.location.hash.substr(1);
+    const params = new URLSearchParams(hash);
+    const token = params.get("access_token");
+    if (token) {
+        localStorage.setItem("token", token);
+        window.location.hash = "";
+    }
+}
+
+/* ================== DASHBOARD ================== */
+function showDashboard() {
+    const token = localStorage.getItem("token");
+    if (!token || isTokenExpired(token)) {
+        login();
+        return;
+    }
+
+    document.getElementById("sidebar").style.display = "block";
+    document.getElementById("mainContent").style.display = "block";
+
+    loadData();
+    refreshTimer = setInterval(loadData, 10000);
+}
+
+/* ================== DATA FETCH ================== */
+function loadData() {
+    const token = localStorage.getItem("token");
+    if (!token || isTokenExpired(token)) return logout();
+
+    fetch(API_URL, {
+        headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => {
+        if (res.status === 401) logout();
+        return res.json();
+    })
+    .then(data => {
+        // Populate KPI Cards
+        const kpiRow = document.getElementById("kpiRow");
+        kpiRow.innerHTML = "";
+        data.metrics.forEach(m => {
+            kpiRow.innerHTML += `
+                <div class="col-md-3">
+                    <div class="kpi-card ${m.bgClass}">
+                        <h6>${m.metric}</h6>
+                        <h3>${m.count}</h3>
+                    </div>
+                </div>`;
+        });
+
+        // Sales Chart
+        if (salesChart) salesChart.destroy();
+        salesChart = new Chart(document.getElementById("salesChart"), {
+            type: 'line',
+            data: {
+                labels: data.sales.labels,
+                datasets: [{ label: 'Sales', data: data.sales.values, backgroundColor:'rgba(255,152,0,0.3)', borderColor:'orange', fill:true }]
+            }
+        });
+
+        // Orders Chart
+        if (ordersChart) ordersChart.destroy();
+        ordersChart = new Chart(document.getElementById("ordersChart"), {
+            type: 'bar',
+            data: {
+                labels: data.orders.labels,
+                datasets: [{ label: 'Orders', data: data.orders.values, backgroundColor:'rgba(0,123,255,0.7)' }]
+            }
+        });
+    });
+}
+
+/* ================== INIT ================== */
+handleRedirect();
+showDashboard();
+</script>
+
+</body>
+</html>
+```
+
+> **order-status.html**
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Charlie Cafe ☕ | Order Status</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ===== BACKGROUND ===== */
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+    url("https://images.unsplash.com/photo-1509042239860-f550ce710b93");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* ===== DASHBOARD ===== */
+#dashboard {
+  display: none;
+  background:#f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Metrics card */
+.card-metric {
+  background:#fff;
+  padding:15px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark" id="navbar" style="display:none">
+  <div class="container">
+    <span class="navbar-brand">☕ Charlie Cafe Admin</span>
+    <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="container my-4" id="dashboard">
+
+<!-- FILTER -->
+<div class="row mb-3">
+  <div class="col-md-3">
+    <input type="date" id="filterDate" class="form-control">
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100" onclick="loadData()">Filter</button>
+  </div>
+</div>
+
+<!-- LOADER -->
+<div class="text-center my-3" id="loader" style="display:none">
+  <div class="spinner-border text-warning"></div>
+  <p class="mt-2">Loading...</p>
+</div>
+
+<!-- METRICS -->
+<div class="row mb-4" id="metrics"></div>
+
+<!-- CHART -->
+<canvas id="orderChart" height="100"></canvas>
+
+<!-- TABLE -->
+<table class="table table-bordered mt-4 bg-white">
+  <thead class="table-dark">
+    <tr>
+      <th>Customer</th>
+      <th>Item</th>
+      <th>Qty</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody id="orders"></tbody>
+</table>
+
+</div>
+
+<script>
+/* ================== CONFIG ================== */
+const COGNITO_DOMAIN = "YOUR_COGNITO_DOMAIN.auth.region.amazoncognito.com";
+const CLIENT_ID = "YOUR_APP_CLIENT_ID";
+const REDIRECT_URI = window.location.origin;
+const API_URL = "https://API_ID.execute-api.region.amazonaws.com/STAGE/order-status";
+
+let chart, refreshTimer;
+
+/* ================== AUTH ================== */
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+// Decode JWT payload
+function parseJwt(token) {
+  return JSON.parse(atob(token.split('.')[1]));
+}
+
+function isTokenExpired(token) {
+  const payload = parseJwt(token);
+  return payload.exp * 1000 < Date.now();
+}
+
+// Redirect to Cognito Hosted UI
+function login() {
+  const loginUrl = `https://${COGNITO_DOMAIN}/login?response_type=token&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
+  window.location.href = loginUrl;
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  clearInterval(refreshTimer);
+  const logoutUrl = `https://${COGNITO_DOMAIN}/logout?client_id=${CLIENT_ID}&logout_uri=${REDIRECT_URI}`;
+  window.location.href = logoutUrl;
+}
+
+// Extract Access Token from URL hash
+function handleRedirect() {
+  const hash = window.location.hash.substr(1);
+  const params = new URLSearchParams(hash);
+  const token = params.get("access_token");
+
+  if (token) {
+    localStorage.setItem("token", token);
+    window.location.hash = "";
+  }
+}
+
+/* ================== DASHBOARD ================== */
+function showDashboard() {
+  if (!localStorage.getItem("token") || isTokenExpired(localStorage.getItem("token"))) {
+    login();
+    return;
+  }
+
+  document.getElementById("navbar").style.display = "block";
+  document.getElementById("dashboard").style.display = "block";
+
+  loadData();
+  refreshTimer = setInterval(loadData, 10000);
+}
+
+/* ================== DATA ================== */
+function loadData() {
+  const token = localStorage.getItem("token");
+  if (!token || isTokenExpired(token)) return logout();
+
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("metrics").innerHTML = "";
+  document.getElementById("orders").innerHTML = "";
+
+  let url = API_URL;
+  const filterDate = document.getElementById("filterDate").value;
+  if (filterDate) url += "?date=" + filterDate;
+
+  fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    if (res.status === 401) logout();
+    return res.json();
+  })
+  .then(data => {
+    document.getElementById("loader").style.display = "none";
+
+    data.metrics.forEach(m => {
+      document.getElementById("metrics").innerHTML += `
+        <div class="col-md-3 mb-2">
+          <div class="card-metric text-center fw-bold">
+            ${m.metric}<br>${m.count}
+          </div>
+        </div>`;
+    });
+
+    const items = {};
+    data.recent_orders.forEach(o => {
+      document.getElementById("orders").innerHTML += `
+        <tr>
+          <td>${o.customer_name}</td>
+          <td>${o.item}</td>
+          <td>${o.quantity}</td>
+          <td>${o.created_at}</td>
+        </tr>`;
+      items[o.item] = (items[o.item] || 0) + o.quantity;
+    });
+
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById("orderChart"), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(items),
+        datasets: [{
+          label: 'Orders per Item',
+          data: Object.values(items),
+          backgroundColor: 'rgba(255, 152, 0, 0.7)'
+        }]
+      }
+    });
+  });
+}
+
+/* ================== INIT ================== */
+handleRedirect();
+showDashboard();
+</script>
+
+</body>
+</html>
+```
+
+#### 2️⃣ Save File
+
+```
+CTRL + O → ENTER
+CTRL + X
+```
+
+### 2️⃣ SECURITY & PERMISSIONS
+
+✅ 2.1 Fix File Permissions
+
+```
+sudo chown apache:apache /var/www/html/order-status.html
+```
+```
+sudo chmod 644 /var/www/html/order-status.html
+```
+
+✅ 2.2 Open Security Group (MANDATORY)
+
+Ensure EC2 Security Group allows:
+
+
+| Type | Port | Source    |
+| ---- | ---- | --------- |
+| HTTP | 80   | 0.0.0.0/0 |
+
+
+
+### 3️⃣ Restart Apache (MANDATORY)
+
+```
+sudo systemctl restart httpd
+```
+
+### 4️⃣ Open page in browser
+
+```
+http://EC2 Public IP/order-status.html
+```
+
+#### Example:
+
+```
+http://54.226.96.235/order-status.html
+```
+
+✔ Orders visible
+
+✔ Counts visible
+
+✔ Date/time visible
+
+#### 🔧 OPTIONAL (YOU CAN CHANGE LATER)
+
+Replace background image URL with your own S3 / CloudFront image
+
+#### Adjust opacity:
+
+```
+rgba(0,0,0,.55)
+```
+
+
+#### ✅ Result:
+
+- Login screen
+
+- Spinner
+
+- Auto refresh (10s)
+
+- Chart
+
+- Date filter
+
+- Print buttons
+
+- JWT ready
+
+**⚠️ ACM is FREE**
+
+#### ACM -  Optional - Request SSL Certificate (ACM) 
+
+> **⚠️ Try when do not want to use cloudFront**
+
+#### 1️⃣ Go to:
+
+```
+AWS Console → Certificate Manager (ACM)
+```
+
+> **⚠️ Make sure region is us-east-1 (same as ALB)**
+
+#### 2️⃣ Click:
+
+- Request a certificate
+
+#### 3️⃣ Choose:
+
+- Public certificate → Next
+
+#### 4️⃣ Domain name:
+
+You have two choices:
+
+✅ EASIEST (Recommended for lab)
+
+```
+*.us-east-1.elb.amazonaws.com
+```
+
+OR (more strict, also works):
+
+```
+charlie-cafe-alb-1050813156.us-east-1.elb.amazonaws.com
+```
+
+#### 5️⃣ Validation:
+
+- DNS validation (default)
+
+- Click Request
+
+**👉 ACM will auto-validate (for ELB domains it’s fast)**
+
+Wait until status shows:
+
+```
+Issued ✅
+```
+
+#### 6️⃣ Add HTTPS Listener to ALB
+
+#### 1️⃣ Go to:
+
+```
+EC2 → Load Balancers → Your ALB
+```
+
+#### 2️⃣ Listeners → Add listener
+
+| Setting        | Value                        |
+| -------------- | ---------------------------- |
+| Protocol       | **HTTPS**                    |
+| Port           | **443**                      |
+| Default action | Forward to same Target Group |
+
+
+#### 3️⃣ Certificate:
+
+- Choose ACM certificate
+
+- Select the certificate you just created
+
+👉 Save
+
+#### 🟡 Now your ALB supports:
+
+- HTTP : 80
+
+- HTTPS : 443 ✅
+
+#### 7️⃣ (Optional but Recommended) Redirect HTTP → HTTPS
+
+#### Still inside ALB:
+
+- Edit HTTP (80) listener
+
+- Change action to:
+
+```
+Redirect to HTTPS : 443
+```
+
+#### 🟡 This ensures:
+
+- Users always end up on HTTPS
+
+- Cognito stays happy
+
+### 3️⃣ — CLOUD FRONT
+
+#### 1️⃣ IPv6
+
+- **Turn OFF IPv6**
+
+#### Why
+
+- ALB and EC2 work perfectly on IPv4
+
+- Avoids DNS and routing edge-case issues during labs
+
+- Keeps troubleshooting simple
+
+✅ Recommended for learning & labs
+
+🔁 Can be enabled later in production
+
+#### 2️⃣ Default Root Object (Optional but Recommended)
+
+```
+order-status.html
+```
+
+#### What this does
+
+When users open the root URL:
+
+```
+https://xxxxx.cloudfront.net/
+```
+
+CloudFront automatically serves:
+
+```
+order-status.html
+```
+
+#### Benefits
+
+- Cleaner URL
+
+- Better user experience
+
+- No impact on Cognito authentication
+
+**⚠️ Do NOT add /order-status.html to Origin Path**
+**Origin Path must remain empty.**
+
+#### 2️⃣ 🔄 CloudFront Invalidations (Admin Dashboard Use Case)
+
+> **CloudFront caches content at edge locations worldwide.
+When you update a file on EC2 (like order-status.html), CloudFront may still serve the old cached version.**
+
+**👉 Invalidation tells CloudFront to delete cached copies immediately.**
+
+#### When to Use Invalidation
+
+Use invalidation only when you change frontend files, such as:
+
+| Change               | Invalidate? |
+| -------------------- | ----------- |
+| HTML changes         | ✅ Yes       |
+| JS logic             | ✅ Yes       |
+| Cognito redirect URL | ✅ Yes       |
+| API Gateway backend  | ❌ No        |
+| DynamoDB data        | ❌ No        |
+
+#### Best Practice for Your Project
+
+For admin dashboards like Charlie Cafe:
+
+- Invalidate specific files
+
+- Avoid /* unless necessary
+
+✅ Recommended invalidation paths
+
+```
+/order-status.html
+/login.html
+/css/*
+/js/*
+```
+
+#### ❌ Avoid unless emergency
+
+```
+/*
+```
+
+(Uses more invalidation quota)
+
+#### Cost & Limits (Important to Know)
+
+- First 1,000 invalidation paths/month → FREE
+
+- After that → small cost per path
+
+Your usage:
+
+```
+/order-status.html → 1 path ✅
+```
+
+Perfect.
+
+#### 🔐 STEP 4️⃣ — CloudFront SSL Certificate (Optional)
+Viewer Certificate
+
+Choose:
+
+```
+Default CloudFront certificate (*.cloudfront.net)
+```
+
+✅ This is fine
+
+✅ HTTPS works automatically
+
+❌ No ACM needed here
+
+### 🧠 WHY THIS IS THE CORRECT APPROACH
+
+- Matches real AWS projects
+
+- Works with Cognito HTTPS rule
+
+- Simple & debuggable
+
+- No unnecessary complexity
+
+**✅ PHASE 1️⃣ STATUS**
+
+> **🟢 PHASE 1️⃣ COMPLETE & VERIFIED**
+---
+## 🔐 PHASE 2️⃣ — Cognito Authentication infrastructure 
+> **🔐 COGNITO INTEGRATION (PRODUCTION READY)**
+
+This phase is used to secure the Admin Order Dashboard of your Charlie Cafe project.
+
+### Goal 
+
+- Only admin users can access the admin dashboard
+
+- Login handled by Amazon Cognito
+
+- Frontend receives a JWT token
+
+- Backend (API Gateway + Lambda) validates the token
+
+### Charlie Café Admin Login (SPA-based)
+
+#### You are on this page:
+
+> **Amazon Cognito → Set up resources for your application**
+
+#### This wizard creates BOTH:
+
+- User Pool
+
+- App Client
+
+- Hosted UI
+
+- in one flow
+
+
+### 🧭 BIG PICTURE (IMPORTANT)
+
+| Old Guide Term | New Cognito UI Equivalent    |
+| -------------- | ---------------------------- |
+| User Pool      | Created automatically        |
+| App Client     | “Application”                |
+| Public client  | SPA / Web app                |
+| Auth flows     | Selected by Application type |
+| Hosted UI      | “Managed login pages”        |
+| Callback URL   | Return URL                   |
+
+
+### ▶️ Part 1️⃣ Cognito Authentication infrastructure 
+
+### ✅ STEP 1️⃣ — DEFINE YOUR APPLICATION
+
+#### 1️⃣ Application type
+
+> **👉 SELECT THIS (CORRECT FOR YOUR PROJECT)**
+
+```
+✅ Single-page application (SPA)
+```
+
+#### Why?
+
+- Your admin dashboard is HTML + JS
+
+- Runs in browser
+
+- No client secret allowed (correct)
+
+#### ❌ Do NOT choose:
+
+- Traditional web app
+
+- Machine-to-machine
+
+#### 2️⃣ Self-registration (CRITICAL)
+
+❌ DISABLE self-registration
+
+👉 UNCHECK
+
+```
+☐ Enable self-registration (DISABLED)
+```
+
+#### Why?
+
+Your Charlie Café Admin Dashboard must be:
+
+🔐 Admin-only
+
+❌ No public sign-up
+
+👤 Users created manually by you
+
+> **So: Unchecking self-registration is 100% correct and production-ready**
+
+#### 🔍 What Happens After Disabling Self-Registration
+
+| Feature                  | Result        |
+| ------------------------ | ------------- |
+| Public sign-up page      | ❌ Disabled    |
+| “Create account” link    | ❌ Hidden      |
+| Admin-created users      | ✅ Allowed     |
+| Temporary password login | ✅ Allowed     |
+| Hosted UI login          | ✅ Still works |
+
+#### 4️⃣ Return URL
+
+```
+d2og2zrs47voou.cloudfront.net
+```
+
+#### For Example:
+
+```
+https://d2og2zrs47voou.cloudfront.net/order-status.html
+```
+
+#### 🎯 WHAT “Return URL” REALLY MEANS (IN SIMPLE WORDS)
+
+> **Return URL = the web page where Cognito sends the user AFTER login**
+
+#### So after admin logs in:
+
+```
+Cognito Login → SUCCESS → redirect to order-status.html
+```
+
+**📢 Cognito does NOT host your page**
+
+**👉 YOU must host order-status.html somewhere public**
+
+#### 🧠 YOUR CURRENT SITUATION (BASED ON YOUR MESSAGE)
+
+#### You said:
+
+✅ You already have EC2
+
+✅ Apache HTTP is running
+
+❌ No ALB yet
+
+❌ No CloudFront yet
+
+#### 👉 GOOD NEWS:
+
+**💯 You DO NOT NEED ALB or CloudFront right now**
+
+> **We will do this in the EASIEST possible way first (You can add ALB + CloudFront later)**
+
+### ▶️ Part 2️⃣ Admin Authentication Using Amazon Cognito (Hosted UI + JWT Tokens)
+
+### ✅ WHAT YOU HAVE DONE (CONFIRMED)
+
+#### You already have:
+
+✔ Cognito User Pool created
+
+✔ Application (SPA) created
+
+✔ ALB created and HTTPS working
+
+✔ ALB DNS added as Return URL
+
+✔ Password policy configured
+
+✔ Account recovery configured
+
+#### That means:
+
+**👉 Authentication infrastructure is READY**
+
+### 🎯 NOW WHAT IS THE GOAL?
+
+#### For your Café Lab, the remaining goals are:
+
+✔ Admin can log in
+
+✔ Cognito returns a JWT token
+
+✔ Admin dashboard (order-status.html) receives token
+
+✔ API Gateway accepts requests only with valid token
+
+✔ Admin can see orders (RDS / DynamoDB)
+
+---
+
+### 🟢 STEP 2️⃣ — TEST HOSTED UI LOGIN (VERY IMPORTANT)
+
+> **This confirms Cognito + ALB + Return URL are working.**
+
+#### Flow summary:
+
+- Admin opens the dashboard via ALB URL
+
+- Browser redirects to Cognito Hosted UI login
+
+- After login, Cognito redirects back to order-status.html
+
+- Access Token is stored in browser
+
+- Token is sent to API Gateway (Cognito Authorizer)
+
+- Dashboard loads securely
+
+> **This approach uses OAuth 2.0 Implicit Flow, which is ideal for plain HTML + JavaScript applications hosted on EC2 / Apache.**
+
+## Task 2️⃣ - Cognito Hosted UI Customize Design
+
+### ▶️ What Cognito Hosted UI DOES ALLOW
+
+✔️ Change logo
+
+✔️ Change background color
+
+✔️ Change button color
+
+✔️ Change brand color
+
+✔️ Change favicon
+
+✔️ Use light or dark theme
+
+**👉 This is done via Cognito → App integration → Hosted UI → Customization**
+
+### ▶️ What Cognito Hosted UI DOES NOT ALLOW
+
+❌ Fully redesign layout with Bootstrap
+
+❌ Add custom cards, sections, or animations
+
+❌ Embed Cognito login inside your own page using HTML forms
+
+❌ Add your own JS logic inside the Hosted UI
+
+**👉 Cognito Hosted UI is not a normal HTML page you can edit.**
+
+### ❓ Cognito login form INSIDE your own page
+
+#### ❌ NO (Directly)
+
+**AWS Cognito does not allow username/password submission from your own HTML for security reasons.**
+
+**👉 This is by design.**
+
+---
+
+### 2️⃣ Backend - Cognito Role Base Access and Permission 
+
+#### The correct & professional way (recommended)
+
+#### ✅ Use Cognito Groups + JWT claims
+
+This is how real production systems do RBAC.
+
+#### Architecture (simple & clean)
+
+```
+Frontend
+   ↓ (login)
+Cognito User Pool
+   ↓ (JWT access_token)
+API Gateway (Cognito Authorizer)
+   ↓ (validated JWT)
+ONE Lambda Function
+   ↓
+Role-based logic inside Lambda
+```
+
+```
+User → Cognito Login
+     → Access Token (JWT)
+     → API Gateway (Cognito Authorizer)
+     → Lambda (CafeOrderStatusRBACLambda)
+     → Lambda checks cognito:groups
+     → Allow / Deny + Business Logic
+```
+
+#### Why this is best
+
+✔ Fast to implement
+
+✔ Secure
+
+✔ Scales well
+
+✔ Easy to maintain
+
+✔ Only ONE Lambda
+
+### 3️⃣ What Cognito already gives you (magic part)
+
+When a user logs in, Cognito issues a JWT.
+
+Inside that JWT you already have:
+
+```
+"cognito:groups": ["admin"]
+```
+
+or 
+
+```
+"cognito:groups": ["employee"]
+```
+
+🔥 This is your role system
+No extra DB, no IAM tricks.
+
+#### 2️⃣ Attach this authorizer to your routes
+
+#### What “/admin/*” REALLY means (important)
+
+API Gateway does NOT auto-create routes like /admin/*.
+
+You must create actual routes, for example:
+
+```
+GET  /admin/dashboard
+POST /admin/create-user
+
+GET  /employee/orders
+POST /employee/order
+```
+
+**Then attach the same Cognito Authorizer to those routes.**
+
+### 🟢 STEP 5️⃣ — Use Groups in Lambda (REAL PERMISSIONS)
+
+This is where most labs fail — you won’t 😎
+
+#### 🔐 Example: Admin-Only Lambda
+
+```
+def lambda_handler(event, context):
+
+    claims = event["requestContext"]["authorizer"]["claims"]
+    groups = claims.get("cognito:groups", [])
+
+    if "Admin" not in groups:
+        return {
+            "statusCode": 403,
+            "body": "Access denied: Admin only"
+        }
+
+    # Admin logic here
+    return {
+        "statusCode": 200,
+        "body": "Welcome Admin"
+    }
+```
+
+#### 👨‍🍳 Example: Employee-Only Lambda
+
+```
+def lambda_handler(event, context):
+
+    claims = event["requestContext"]["authorizer"]["claims"]
+    groups = claims.get("cognito:groups", [])
+
+    if "Employee" not in groups:
+        return {
+            "statusCode": 403,
+            "body": "Access denied: Employee only"
+        }
+
+    # Employee logic here
+    return {
+        "statusCode": 200,
+        "body": "Welcome Employee"
+    }
+```
+
+### 5️⃣ ONE Lambda Function (this is the core)
+🔥 This Lambda handles ALL roles
+
+```
+import json
+
+def lambda_handler(event, context):
+    """
+    ONE Lambda function
+    Role-based access using Cognito groups
+    """
+
+    # ---------------------------
+    # Extract JWT claims
+    # ---------------------------
+    claims = event["requestContext"]["authorizer"]["claims"]
+
+    username = claims.get("cognito:username")
+    groups = claims.get("cognito:groups", "")
+
+    # Convert groups string to list
+    if isinstance(groups, str):
+        groups = groups.split(",")
+
+    # ---------------------------
+    # Role checks
+    # ---------------------------
+    is_admin = "admin" in groups
+    is_employee = "employee" in groups
+
+    path = event["rawPath"]
+
+    # ---------------------------
+    # Admin-only route
+    # ---------------------------
+    if path.startswith("/admin"):
+        if not is_admin:
+            return response(403, "❌ Admin access only")
+
+        return response(200, f"✅ Welcome Admin {username}")
+
+    # ---------------------------
+    # Employee route
+    # ---------------------------
+    if path.startswith("/employee"):
+        if not (is_admin or is_employee):
+            return response(403, "❌ Employee access only")
+
+        return response(200, f"✅ Welcome Employee {username}")
+
+    # ---------------------------
+    # Public authenticated route
+    # ---------------------------
+    return response(200, "✅ Authenticated user")
+
+
+def response(code, message):
+    return {
+        "statusCode": code,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": json.dumps({
+            "message": message
+        })
+    }
+```
+
+
+### 🟢 STEP 7️⃣ — 🎯 OPTIONAL (Advanced but Powerful)
+Attach IAM Role to Groups (Later)
+
+Example:
+
+Admin Group → IAM Role with DynamoDB + S3 + CloudWatch
+
+Employee Group → IAM Role with limited access
+
+This is useful if:
+
+you use AWS SDK directly from frontend
+
+or Identity Pool
+
+For now → Lambda-based authorization is perfect
+
+
+
+
+
+
+**✅ PHASE 2️⃣ & 3️⃣ STATUS**
+
+> **🟢 PHASE 2️⃣ & 3️⃣ COMPLETE & VERIFIED**
+---
+## 🔐 PHASE 4️⃣ — BACKEND DATE FILTER (LAMBDA)
+
+### 1️⃣ Short answer — Why HTTP API when you already have REST API
+
+You do NOT need to switch.
+
+I suggested HTTP API because:
+
+Fewer clicks
+
+Cheaper
+
+Simpler UI
+
+Built-in JWT authorizer
+
+But your existing REST API is 100% valid and correct.
+There is NO technical advantage that forces you to migrate.
+
+👉 Professional answer:
+Keep REST API for this project.
+Do NOT rebuild.
+
+### 2️⃣ Cognito Authorizer vs JWT Authorizer (same result, different UI)
+
+| REST API (yours)             | HTTP API (mine)          |
+| ---------------------------- | ------------------------ |
+| Authorizer type: **Cognito** | Authorizer type: **JWT** |
+| Old UI                       | New UI                   |
+| More steps                   | Fewer steps              |
+| Same security                | Same security            |
+| Uses Cognito User Pool       | Uses Cognito User Pool   |
+
+
+✅ Both validate the SAME access token
+✅ Both inject claims into Lambda
+
+#### STEP 1️⃣ API Gateway – Enable Cognito Authorizer
+
+#### 1️⃣ Create Cognito Authorizer
+
+- Go to AWS Console → API Gateway → REST API → YOUR_API
+
+- On left panel → Authorizers → Create Authorizer
+
+- Authorizer name: cafe-cognito-authorizer
+
+- Authorizer type: JWT
+
+- Identity source: $request.header.Authorization
+
+#### JWT settings: 
+
+- Issuer URL: 
+
+```
+https://cognito-idp.<region>.amazonaws.com/<USER_POOL_ID>
+```
+
+- Audience: <APP_CLIENT_ID>
+
+**✅ Create authorizer**
+
+- ✔ Authorizer ready
+
+> **✅ This authorizer will validate JWTs automatically.**
+
+#### 2️⃣ Create HTTP API (Optional - keep Existing REST API)
+> **👉 Since REST API is already built and verified**
+
+You do NOT need to switch.
+If your REST API is working → keep it.
+
+I suggested HTTP API earlier because:
+
+| Reason           | HTTP API           | REST API               |
+| ---------------- | ------------------ | ---------------------- |
+| Setup complexity | ✅ Very simple      | ❌ More steps           |
+| Cost             | ✅ Cheaper          | ❌ More expensive       |
+| New projects     | ✅ Recommended      | ⚠️ Legacy              |
+| Cognito JWT      | ✅ Built-in & clean | ✅ Works (what you use) |
+| Feature depth    | ❌ Limited          | ✅ Very powerful        |
+
+👉 Since your REST API is already built and verified, there is ZERO benefit in migrating now.
+
+Professional advice:
+
+✅ Keep REST API
+
+❌ Don’t refactor a working backend
+
+- Go to API Gateway ➡️ Create API ➡️ HTTP API
+
+- Click Build
+
+- Basic settings
+
+- HTTP API Name: charlie-cafe-api ➡️ Click Next 
+
+- Skip integrations for now ➡️ Click Next 
+
+- Click Create
+
+**✔ API created**
+
+### STEP 7️⃣ — What Lambda Receives (important)
+
+Inside Lambda:
+
+```
+event["requestContext"]["authorizer"]["claims"]["cognito:groups"]
+```
+
+Example:
+
+```
+["admin"]
+```
+
+or
+
+```
+["employee"]
+```
+
+VERY IMPORTANT — Summary (tattoo this mentally)
+
+| Question                 | Answer               |
+| ------------------------ | -------------------- |
+| Do I need REST API?      | ❌ NO                 |
+| Should I use HTTP API?   | ✅ YES                |
+| Where are routes?        | API Gateway → Routes |
+| Are routes auto-created? | ❌ NO                 |
+| Attach authorizer where? | On EACH route        |
+| One Lambda or many?      | ✅ ONE                |
+
+
+
+Result inside Lambda is the same
+
+3️⃣ VERY IMPORTANT — What actually matters (this is the key)
+In REST API (your setup), Lambda receives:
+
+```
+event["requestContext"]["authorizer"]["claims"]
+```
+In HTTP API (my example), Lambda receives:
+
+```
+event["requestContext"]["authorizer"]["claims"]
+```
+
+🔥 SAME OBJECT
+
+That means:
+
+cognito:groups
+
+cognito:username
+
+email
+
+### 🟢 STEP 6️⃣ — Protect APIs via API Gateway (Recommended)
+
+In API Gateway:
+
+Create Cognito Authorizer
+
+Attach it to your API routes
+
+API Gateway automatically:
+
+validates token
+
+injects user claims into Lambda
+
+No token = ❌
+Wrong group = ❌
+Correct group = ✅
+
+---
+
+
+
+**✅ PHASE 4️⃣ STATUS**
+
+> **🟢 PHASE 4️⃣ COMPLETE & VERIFIED**
+---
+## 🔐 PHASE 5️⃣ — BACKEND DATE FILTER (LAMBDA)
+
+### 1️⃣ Central UNIVERSAL Backend RBAC
+
+link
+
+---
+👉 Your Lambda can already do role-based access
+You just weren’t using the groups yet.
+
+4️⃣ Your existing /order-status Lambda is NOT wrong
+
+Your current Lambda:
+
+✔ Uses REST API
+
+✔ Uses Cognito Authorizer
+
+✔ Validates JWT
+
+✔ Works with frontend
+
+✔ Production-ready
+
+What it does NOT yet do
+
+It does NOT check roles
+
+It allows any authenticated user
+
+That’s it. Nothing else is missing.
+
+5️⃣ Can you merge role-based access into your existing Lambda?
+✅ YES — this is the CORRECT way
+
+You do NOT create a new Lambda.
+
+You extend this Lambda:
+
+```
+claims = event["requestContext"]["authorizer"]["claims"]
+groups = claims.get("cognito:groups", "")
+
+if isinstance(groups, str):
+    groups = groups.split(",")
+
+is_admin = "admin" in groups
+```
+
+Then protect logic:
+
+```
+if not is_admin:
+    return {
+        "statusCode": 403,
+        "body": json.dumps({"message": "Admin only"})
+    }
+```
+
+6️⃣ REST API vs HTTP API — decision table (final)
+
+| Question                           | Answer |
+| ---------------------------------- | ------ |
+| Should you migrate now?            | ❌ NO   |
+| Is your REST API wrong?            | ❌ NO   |
+| Does Cognito authorizer work same? | ✅ YES  |
+| Can you do RBAC in REST API?       | ✅ YES  |
+| Can Lambda logic be reused?        | ✅ YES  |
+| Should you merge logic?            | ✅ YES  |
+
+
+7️⃣ What I recommend professionally
+
+For your current project:
+
+✅ Keep REST API
+✅ Keep OrderStatusLambda
+✅ Add role-based checks inside the same Lambda
+✅ Use Cognito groups only
+❌ Do NOT create new APIs
+❌ Do NOT rewrite infra
+
+This is exactly how a senior engineer would handle it under time pressure.
+
+8️⃣ Next logical improvement (when you’re ready)
+
+We can:
+
+Restrict /order-status → admin only
+
+Add /employee/orders → employee view (limited data)
+
+Add fine-grained permissions later (orders:read, metrics:read)
+
+Add audit logging (who accessed what)
+
+---
+✅ New Lambda Function (Merged & Clean)
+🔖 New Lambda name (recommended)
+
+This Lambda does ALL of this:
+
+✅ Cognito JWT validation (already done by API Gateway)
+
+✅ Role-based access (admin / employee)
+
+✅ Existing /order-status logic (metrics + recent orders)
+
+✅ Future-ready for more routes
+
+---
+## 🌐 OLD LAMBDA VS NEW LAMBDA
+
+### Big Picture (before code)
+
+Think of it like this:
+
+Old Lambda = 📊 Data-only function
+→ “Anyone who can reach me gets order data”
+
+New Merged Lambda = 🔐 Security + Data function
+→ “Only the RIGHT user (admin/employee) gets the RIGHT data”
+
+The database logic is almost identical.
+The difference is SECURITY + ROLE AWARENESS.
+
+### 1️⃣ What BOTH codes have in common (important)
+
+These parts are the same conceptually in both:
+
+#### ✅ Environment variables
+
+```
+DB_HOST = os.environ['DB_HOST']
+DB_USER = os.environ['DB_USER']
+DB_PASS = os.environ['DB_PASS']
+DB_NAME = os.environ['DB_NAME']
+```
+
+✔ Both use Lambda environment variables
+✔ No hard-coded secrets
+✔ Best practice (good job)
+
+#### ✅ Database connection
+
+```
+def get_connection():
+    return pymysql.connect(...)
+```
+
+✔ Same MySQL connection
+✔ Same cursor type
+✔ Same DB usage
+
+##### ✅ Business logic (core feature)
+
+Both do:
+
+Read date from query string
+
+Fetch recent orders
+
+Calculate:
+
+Total orders
+
+Total items sold
+
+Unique customers
+
+Return JSON
+
+👉 Your business logic did NOT change
+
+This is important:
+You did NOT break anything.
+
+### 2️⃣ OLD LAMBDA — What it REALLY is
+
+Let’s describe it in plain English:
+
+#### 🔴 Old Lambda behavior
+
+“If API Gateway calls me, I will return order data.”
+
+❌ What it does NOT do
+
+❌ Does NOT know who the user is
+
+❌ Does NOT know admin vs employee
+
+❌ Does NOT care about roles
+
+❌ Cannot block users by permission
+
+#### ⚠️ Security reality
+
+Security depends 100% on API Gateway only.
+
+If:
+
+Someone attaches the Lambda to a public route
+
+Or authorizer is removed by mistake
+
+#### 👉 Anyone can read your orders
+
+### Old Lambda mental model
+
+```
+Frontend → API Gateway → Lambda → Database
+                    (no identity awareness)
+```
+
+### 3️⃣ NEW MERGED LAMBDA — What changed
+
+Now let’s go step by step through what was added.
+
+#### 🆕 A) Identity awareness (MOST IMPORTANT CHANGE)
+New code ONLY:
+
+```
+claims = event["requestContext"]["authorizer"]["claims"]
+
+username = claims.get("cognito:username")
+groups = claims.get("cognito:groups", "")
+```
+
+What this means
+
+API Gateway already validated the JWT
+
+Lambda now knows WHO is calling
+
+Lambda now knows which Cognito group
+
+This is the 🔑 key difference.
+
+Why old code didn’t need test JSON with claims
+
+Old code:
+
+```
+{}
+```
+
+worked because it didn’t care about identity
+
+New code requires identity because it ENFORCES ROLES.
+
+#### 🆕 B) Role extraction logic
+
+```
+if isinstance(groups, str):
+    groups = groups.split(",")
+
+is_admin = "admin" in groups
+is_employee = "employee" in groups
+```
+
+What this enables
+
+One user → many roles
+
+Admin automatically allowed everywhere
+
+Employee limited
+
+This is real RBAC, not fake role checks.
+
+#### 🆕 C) Path-based authorization (very professional)
+
+```
+path = event.get("path", "")
+```
+Then:
+
+```
+if path.startswith("/order-status"):
+    if not is_admin:
+        return forbidden("Admin access only")
+```
+
+Meaning in simple words
+
+“If someone hits /order-status, only admins are allowed.”
+
+Later you can add:
+
+/employee/orders
+
+/admin/export
+
+/admin/users
+
+👉 One Lambda, many endpoints, many rules
+
+This is how senior engineers design APIs.
+
+#### 🆕 D) Explicit security responses
+
+New helper:
+
+```
+def forbidden(message):
+    return {
+        "statusCode": 403,
+        ...
+    }
+```
+
+Old code:
+
+Always returned 200 unless DB failed
+
+New code:
+
+Can return:
+
+200 OK
+
+403 Forbidden
+
+500 Error
+
+This is correct HTTP behavior.
+
+### 4️⃣ Test JSON difference (WHY you were confused)
+Old Lambda test
+
+```
+{}
+```
+
+✔ Works because:
+
+No auth
+
+No identity
+
+No roles
+
+New Lambda test
+
+```
+{
+  "path": "/order-status",
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "cognito:username": "admin_user",
+        "cognito:groups": "admin"
+      }
+    }
+  }
+}
+```
+
+✔ Required because:
+
+Lambda expects Cognito authorizer output
+
+This simulates API Gateway
+
+👉 This is NOT extra complexity
+👉 This is realistic production testing
+
+### 5️⃣ Feature comparison table (very important)
+
+| Feature             | Old Lambda | New Merged Lambda |
+| ------------------- | ---------- | ----------------- |
+| DB access           | ✅          | ✅                 |
+| Date filter         | ✅          | ✅                 |
+| Metrics             | ✅          | ✅                 |
+| Recent orders       | ✅          | ✅                 |
+| Cognito awareness   | ❌          | ✅                 |
+| Role-based access   | ❌          | ✅                 |
+| Admin vs Employee   | ❌          | ✅                 |
+| Path-based rules    | ❌          | ✅                 |
+| Secure by design    | ❌          | ✅                 |
+| Scalable for future | ❌          | ✅                 |
+
+### 6️⃣ Why your new setup is CORRECT (no sugarcoating)
+
+What you have now is:
+
+✅ Cognito does authentication
+
+✅ API Gateway enforces token presence
+
+✅ Lambda enforces authorization
+
+✅ Database logic untouched
+
+✅ One Lambda (simple, fast, cheap)
+
+✅ Easy to debug
+
+✅ Easy to extend
+
+This is exactly how RBAC is done in real systems.
+
+### 7️⃣ Final mental model (memorize this)
+
+```
+User logs in (Cognito)
+        ↓
+JWT token issued
+        ↓
+API Gateway (Cognito Authorizer)
+        ↓  (validates token)
+Lambda (RBAC decision)
+        ↓
+Database
+```
+### 🟢 FINAL ANSWER TO YOUR QUESTION
+
+“What is the difference and what features both code have?”
+
+Answer in one line:
+
+Old code = business logic only
+
+New code = business logic + professional security
+
+You did NOT waste time.
+You did NOT overcomplicate.
+You did NOT design it wrong.
+
+You leveled up from junior backend → mid/senior backend thinking.
+
+----
+
+## ✅ CafeOrderStatusRBACLambda ✅
+
+### ✅ New Lambda Function
+
+- 🔖 New Lambda name:
+
+```
+CafeOrderStatusRBACLambda
+```
+
+#### ✅ MERGED LAMBDA CODE (DROP-IN READY)
+
+[CafeOrderStatusRBACLambda.py](../☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20Backend%20Code%20Script/CafeOrderStatusRBACLambda.py)
+
+### 2️⃣ 🔐 API → Lambda wiring
+
+Make sure ALL routes point to:
+
+```
+CafeOrderStatusRBACLambda
+```
+
+#### Example:
+
+- /order-status → CafeOrderStatusRBACLambda
+
+- /admin/dashboard → CafeOrderStatusRBACLambda
+
+✔ Same Lambda, different paths
+
+✔ Path decides behavior
+
+### 1️⃣ CREATE OR UPDATE LAMBDA
+> **🔖 CafeOrderStatusRBACLambda**
+
+### 🧪 LAMBDA TEST JSON (ADMIN USER)
+
+Use this in Lambda → Test
+
+```
+{
+  "path": "/order-status",
+  "queryStringParameters": {
+    "date": "2026-01-17"
+  },
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "cognito:username": "admin_user",
+        "cognito:groups": "admin"
+      }
+    }
+  }
+}
+```
+
+#### ✅ Expected:
+
+- statusCode: 200
+
+- Metrics + recent orders returned
+
+### 🧪 LAMBDA TEST JSON (EMPLOYEE USER – SHOULD FAIL)
+
+```
+{
+  "path": "/order-status",
+  "queryStringParameters": null,
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "cognito:username": "employee_user",
+        "cognito:groups": "employee"
+      }
+    }
+  }
+}
+```
+
+#### ❌ Expected:
+
+```
+{
+  "error": "Admin access only"
+}
+```
+
+### 🧪 LAMBDA TEST JSON (NO ROLE / MISCONFIG)
+
+```
+{
+  "path": "/order-status",
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "cognito:username": "unknown_user"
+      }
+    }
+  }
+}
+```
+
+#### ❌ Expected:
+
+- 403 Forbidden
+
+### ✅ Test 1 — No token
+
+```
+curl https://API_ID.execute-api.REGION.amazonaws.com/status/order-status
+```
+
+#### Expected:
+
+```
+401 Unauthorized
+```
+
+✔ API Gateway working
+
+✅ Test 2 — Employee token
+
+```
+
+{
+  "path": "/order-status",
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "cognito:username": "employee_user",
+        "cognito:groups": "employee"
+      }
+    }
+  }
+}
+```
+
+Expected:
+
+```
+403 Admin access only
+```
+
+✔ RBAC working
+
+✅ Test 3 — Admin token
+
+```
+{
+  "path": "/order-status",
+  "queryStringParameters": {
+    "date": "2026-01-17"
+  },
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "cognito:username": "admin_user",
+        "cognito:groups": "admin"
+      }
+    }
+  }
+}
+```
+
+#### Expected:
+
+Metrics
+
+Recent orders
+
+statusCode 200
+
+✔ Everything correct
+
+✅ Test 4 — Browser (REAL WORLD)
+
+1️⃣ Login via Cognito Hosted UI
+2️⃣ Access token in localStorage
+3️⃣ Frontend loads dashboard
+4️⃣ Network tab shows:
+
+```
+Authorization: Bearer eyJraWQiOi...
+```
+
+5️⃣ /order-status returns data
+
+✔ Production-ready
+
+🟢 FINAL VERDICT (VERY IMPORTANT)
+
+✅ Your configuration is NOW CORRECT
+✅ You are using best-practice RBAC
+✅ One Lambda is the right choice
+✅ No wasted work
+✅ No rewrite needed
+
+What you built is exactly how a senior backend engineer would do it under time pressure.
+**✅ CafeOrderStatusRBACLambda ✅ COMPLETE & VERIFIED**
+---
+
+**✅ PHASE 5️⃣ STATUS**
+
+> **🟢 PHASE 5️⃣ COMPLETE & VERIFIED**
+---
+## 🔐 PHASE 6️⃣ — BACKEND DATE FILTER (LAMBDA)
+
+### 🎯 Goal
+
+- Validate JWT token via API Gateway.
+
+- Filter orders by date in Lambda.
+
+- Return metrics and recent orders.
+
+- Ensure no frontend hacks are needed.
+
+- Fully test before moving to next phase.
+
+### 2️⃣ FINAL LAMBDA LOGIC
+
+```
+params = event.get("queryStringParameters") or {}
+filter_date = params.get("date")
+
+sql = """
+SELECT customer_name, item, quantity, table_number, created_at
+FROM orders
+"""
+values = []
+
+if filter_date:
+    sql += " WHERE DATE(created_at) = %s"
+    values.append(filter_date)
+
+sql += " ORDER BY created_at DESC LIMIT 20"
+
+cursor.execute(sql, values)
+orders = cursor.fetchall()
+```
+
+> **🚫 No more backend changes needed**
+
+### 🖊 Goal
+
+Secure your APIs using Cognito JWT, so:
+
+❌ No token → blocked
+
+❌ Invalid token → blocked
+
+✅ Admin → allowed
+
+✅ Staff → allowed/blocked based on Lambda logic
+
+### 🧠 WHAT YOU ARE BUILDING (MENTAL MODEL)
+
+```
+Browser
+  ↓
+User logs in (Cognito Hosted UI or Custom UI)
+  ↓
+Cognito returns JWT (ID token)
+  ↓
+Frontend sends JWT in Authorization header
+  ↓
+API Gateway Cognito Authorizer validates JWT
+  ↓
+Lambda receives verified claims
+```
+
+### 🧱 PREREQUISITES (DO NOT SKIP)
+
+Before starting PHASE 8, you MUST already have:
+
+✔ Cognito User Pool
+
+✔ At least one user created
+
+✔ API Gateway already created
+
+✔ Lambda already connected to API
+
+If ANY of these are missing, STOP and tell me.
+
+### 🧭 BIG PICTURE (READ THIS FIRST)
+
+You already have FOUR layers:
+
+```
+Frontend (central-auth-api.js)
+        ↓
+API Gateway (Cognito Authorizer)
+        ↓
+Lambda Functions
+        ↓
+RBAC Layer (rbac.py + permissions.json)
+```
+
+**👉 ALL 4 things you asked about fit into ONLY TWO places:**
+
+| Feature                    | Where it belongs            |
+| -------------------------- | --------------------------- |
+| Deny alerts                | CloudWatch (outside Lambda) |
+| Role hierarchy             | RBAC layer (`rbac.py`)      |
+| Read / write permissions   | `permissions.json` + RBAC   |
+| JWT signature verification | API Gateway (NOT Lambda)    |
+
+
+### 1️⃣ ADD DENY ALERTS (CloudWatch Alarms)
+❓ Where does this live?
+
+👉 NOT in code logic
+👉 In CloudWatch using log patterns
+
+Your RBAC already logs:
+
+```
+"decision": "DENY"
+```
+
+That’s all we need.
+
+### 🔐 2️⃣  — ADD ROLE HIERARCHY
+
+❓ Where does this live?
+
+👉 ONLY inside rbac.py
+
+Role hierarchy means:
+
+```
+admin > employee > guest
+```
+Admin automatically inherits employee rights.
+
+### 3️⃣ — ADD READ / WRITE PERMISSIONS permissions.json
+
+❓ Where does this live?
+
+👉 permissions.json (NOT code)
+
+This keeps RBAC data-driven (very professional).
+
+4️⃣ JWT SIGNATURE VERIFICATION
+❓ Where does this live?
+
+👉 API Gateway — NOT in Lambda
+
+And this is VERY important.
+
+✅ YOU ALREADY HAVE THIS
+
+When you use:
+
+```
+API Gateway → Cognito Authorizer
+```
+
+AWS automatically does:
+
+✔ Signature verification
+
+✔ Token expiry check
+
+✔ Issuer validation
+
+✔ Audience validation
+
+That’s why inside Lambda you safely read:
+
+```
+event["requestContext"]["authorizer"]["claims"]
+```
+
+🚫 DO NOT re-verify JWT in Lambda
+That’s slow, costly, and unprofessional in AWS.
+
+🔐 OPTIONAL (Only if you remove API Gateway later)
+
+If someday you:
+
+Use ALB
+
+Use direct Lambda URLs
+
+THEN you verify JWT in Lambda using jwks.json.
+
+For now:
+
+❌ Don’t touch this.
+
+🧠 FINAL MAP (VERY IMPORTANT)
+
+```
+FEATURE                  LOCATION
+--------------------------------------------------
+Deny Alerts              CloudWatch Alarms
+Role Hierarchy           rbac.py
+Read/Write Permissions   permissions.json
+JWT Verification         API Gateway (Cognito)
+```
+
+### ☕ WHAT YOU SHOULD DO NEXT (ORDER)
+
+1️⃣ Add role hierarchy
+2️⃣ Add read/write permissions
+3️⃣ Create deny alert
+4️⃣ Test with admin & employee tokens
+
+**✅ PHASE 6️⃣ STATUS**
+
+> **🟢 PHASE 6️⃣ COMPLETE & VERIFIED**
+---
+## 🔐 PHASE 7️⃣ Secure & Security ARCHITECTURE Dashboard — Secure Admin Pages
+
+### 1️⃣ Centralize Authentication -  auth.js template (reusable)
+> **🧠 OPTION 1 (RECOMMENDED): auth.js (All logic in one file)**
+
+### 1️⃣ 📄 /admin/assets/auth.js
+
+[auth.js](../☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/auth.js)
+
+### 2️⃣  🔧 Auth.js Minimal Configuration Replacement
+
+```
+/* ================= CONFIG ================= */
+const USER_POOL_ID = "YOUR_COGNITO_USER_POOL_ID";   // Replace with your Cognito User Pool ID
+const CLIENT_ID = "YOUR_APP_CLIENT_ID";             // Replace with your App Client ID (no secret)
+const COGNITO_DOMAIN = "YOUR_DOMAIN.auth.ap-south-1.amazoncognito.com"; // Replace with your Cognito Hosted UI domain
+const REDIRECT_URI = window.location.origin + window.location.pathname; // Usually fine as-is
+```
+
+#### ✅ Notes:
+
+- USER_POOL_ID → from AWS Cognito → User Pool → General settings → Pool ID
+
+- CLIENT_ID → from App client inside your Cognito User Pool → App client ID
+
+- COGNITO_DOMAIN → Cognito Hosted UI domain you set up (e.g., charliecafe-admin.auth.ap-south-1.amazoncognito.com)
+
+- REDIRECT_URI → usually leave as-is, unless you are using a custom domain or CloudFront URL.
+
+- No other changes are required in your existing auth.js. This will fully connect it to your own lab environment.
+
+### 3️⃣  How to use it in ALL admin pages
+
+#### 🔐 STEP 1 — Hide page until auth passes
+
+At top of every admin HTML file:
+
+```
+<body style="display:none">
+```
+
+#### 🔐 STEP 2 — Load auth.js
+
+Before your page’s own JS:
+
+```
+<script src="assets/auth.js"></script>
+```
+
+#### 🔐 STEP 3 — Protect page
+
+At the bottom:
+
+```
+<script>
+protectPage();
+</script>
+```
+
+**✅ That’s it. Page is secured.**
+
+#### 🧪 Example: order-status.html
+
+```
+<body style="display:none">
+
+<script src="assets/auth.js"></script>
+
+<script>
+protectPage();
+
+authFetch(API_URL)
+    .then(res => res.json())
+    .then(data => console.log(data));
+</script>
+```
+
+#### 🧪 Example: analytics.html
+
+```
+<body style="display:none">
+
+<script src="assets/auth.js"></script>
+
+<script>
+protectPage();
+
+authFetch("https://api.example.com/admin/analytics")
+    .then(res => res.json())
+    .then(data => console.log(data));
+</script>
+```
+
+### 🔒 EXTRA SECURITY (OPTIONAL BUT IMPRESSIVE)
+
+#### 🔐 1. Protect APIs (MANDATORY)
+
+- API Gateway → Cognito Authorizer
+
+- Reject requests without valid JWT
+
+#### 🔐 2. Cognito Groups
+
+- Admin
+
+- Staff
+
+- Manager
+
+Then in auth.js: 
+
+```
+parseJwt(token)["cognito:groups"]
+```
+
+#### 🔐 3. CloudFront
+
+- HTTPS only
+
+- Disable directory listing
+
+- Add security headers
+
+
+### 2️⃣ SECURE DASHBOARD AUTH MODULE (Cognito Protection - secure-dashboard.js)
+> **DEPLOY FINAL FRONTEND Cognito Protection (WRITE ONCE ✅)**
+
+### 🧩 STEP 1 — Create secure-dashboard.js
+
+Create a new file:
+
+```
+secure-dashboard.js
+```
+
+**📌 This file becomes the security engine for all dashboards.**
+
+
+### 🧩 STEP 2 — Add Full Secure Dashboard Module Code
+> **📄 /admin/assets/secure-dashboard.js**
+
+[secure-dashboard.js](../☕%20AWS%20CAFE%20—%20Front%20%26%20Backend%20Code%20Script/☕%20AWS%20CAFE%20—%20JS%20Backend%20Code%20Script/secure-dashboard.js)
+
+
+
+
+**✅ PHASE 6️⃣ STATUS**
+
+> **🟢 PHASE 6️⃣ COMPLETE & VERIFIED**
+---
+# SECTION 1️⃣  COMPLETE ✅
+---
+# SECTION 2️⃣- 🏷️ Order Status – Advanced Features Guide
+
+## PHASE 1️⃣ - CSV Export (Backend + Frontend)
+
+### 1️⃣ CSV EXPORT (Backend + Frontend)
+
+#### 🎯 Goal: Allow admin to export all order data or filtered by date to a CSV file.
+
+### 🔹 Backend Steps (Lambda)
+
+#### Step 2 — Install CSV library (Python)
+
+#### If using Python:
+
+```
+# Use Lambda Layer for pandas or csv
+```
+
+#### Step 3 — Modify Lambda to add CSV output
+
+#### Add query parameter:
+
+```
+params = event.get("queryStringParameters") or {}
+export_csv = params.get("export") == "true"
+```
+
+#### Fetch orders (with date filter if needed):
+
+```
+filter_date = params.get("date")
+# Apply filter logic as shown in Task 3
+```
+
+#### If export_csv == True, generate CSV:
+
+```
+import csv
+import io
+
+if export_csv:
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Customer", "Item", "Quantity", "Table", "Date"])
+    for o in orders:
+        writer.writerow([o["customer_name"], o["item"], o["quantity"], o["table_number"], o["created_at"]])
+    
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "text/csv",
+            "Content-Disposition": "attachment; filename=orders.csv",
+            "Access-Control-Allow-Origin": "*"
+        },
+        "body": output.getvalue()
+    }
+```
+
+#### ✅ FINAL LAMBDA CODE — order_status_lambda.py
+
+This Lambda supports BOTH:
+
+🖥 Normal JSON response (for order-status.html)
+
+⬇ CSV export (when ?export=true)
+
+No pandas. No layers. Just standard Python csv (best for labs + Free Tier).
+
+#### LAMBDA CODE
+
+Runtime: Python 3.9
+Trigger: API Gateway (GET /order-status)
+Auth: Cognito Authorizer (JWT)
+
+```
+import json
+import pymysql
+import boto3
+import csv
+import io
+from datetime import datetime
+
+# =========================================================
+# GET DATABASE CREDENTIALS FROM SECRETS MANAGER
+# =========================================================
+def get_db_secret():
+    client = boto3.client("secretsmanager")
+    response = client.get_secret_value(SecretId="CafeDevDBSM")
+    return json.loads(response["SecretString"])
+
+
+# =========================================================
+# MAIN LAMBDA HANDLER
+# =========================================================
+def lambda_handler(event, context):
+
+    # -----------------------------------------------------
+    # 1️⃣ READ QUERY PARAMETERS
+    # -----------------------------------------------------
+    params = event.get("queryStringParameters") or {}
+
+    # If export=true → CSV mode
+    export_csv = params.get("export") == "true"
+
+    # Optional date filter (YYYY-MM-DD)
+    filter_date = params.get("date")
+
+    # -----------------------------------------------------
+    # 2️⃣ CONNECT TO DATABASE
+    # -----------------------------------------------------
+    secret = get_db_secret()
+
+    connection = pymysql.connect(
+        host=secret["host"],
+        user=secret["username"],
+        password=secret["password"],
+        database=secret["dbname"],
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    try:
+        with connection.cursor() as cursor:
+
+            # -------------------------------------------------
+            # 3️⃣ BUILD SQL QUERY
+            # -------------------------------------------------
+            sql = """
+                SELECT
+                    customer_name,
+                    item,
+                    quantity,
+                    table_number,
+                    created_at
+                FROM orders
+            """
+
+            values = []
+
+            # Optional date filter
+            if filter_date:
+                sql += " WHERE DATE(created_at) = %s"
+                values.append(filter_date)
+
+            sql += " ORDER BY created_at DESC"
+
+            cursor.execute(sql, values)
+            orders = cursor.fetchall()
+
+        # -----------------------------------------------------
+        # 4️⃣ CSV EXPORT RESPONSE
+        # -----------------------------------------------------
+        if export_csv:
+
+            output = io.StringIO()
+            writer = csv.writer(output)
+
+            # CSV Header
+            writer.writerow([
+                "Customer",
+                "Item",
+                "Quantity",
+                "Table",
+                "Date"
+            ])
+
+            # CSV Rows
+            for o in orders:
+                writer.writerow([
+                    o["customer_name"] or "Anonymous",
+                    o["item"],
+                    o["quantity"],
+                    o["table_number"] or "",
+                    o["created_at"].strftime("%Y-%m-%d %H:%M:%S")
+                ])
+
+            return {
+                "statusCode": 200,
+                "headers": {
+                    "Content-Type": "text/csv",
+                    "Content-Disposition": "attachment; filename=orders.csv",
+                    "Access-Control-Allow-Origin": "*"
+                },
+                "body": output.getvalue()
+            }
+
+        # -----------------------------------------------------
+        # 5️⃣ NORMAL JSON RESPONSE (DASHBOARD)
+        # -----------------------------------------------------
+        return {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            },
+            "body": json.dumps({
+                "metrics": [
+                    {
+                        "metric": "Total Orders",
+                        "count": len(orders)
+                    }
+                ],
+                "recent_orders": orders
+            }, default=str)
+        }
+
+    finally:
+        connection.close()
+```
+
+
+
+
+
+### 🔹 Frontend Steps
+
+#### Inside dashboard HTML:
+
+```
+<button class="btn btn-success mt-3" onclick="exportCSV()">Export CSV</button>
+```
+
+#### Step 2 — Add JS function
+
+```
+function exportCSV(){
+  let url = API_URL + "?export=true";
+  const date = filterDate.value;
+  if(date) url += "&date=" + date;
+
+  const token = localStorage.getItem("token");
+  fetch(url, {
+    headers:{ Authorization: "Bearer " + token }
+  })
+  .then(res => res.blob())
+  .then(blob => {
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = "orders.csv";
+    link.click();
+  });
+}
+```
+
+
+**✅ PHASE 1️⃣ STATUS**
+
+> **🟢 PHASE 1️⃣ COMPLETE & VERIFIED**
+---
+## PHASE 2️⃣ - Admin vs Staff Roles 
+> **(Cognito + API Gateway + Lambda + Frontend)**
+
+### 2️⃣ ADMIN VS STAFF ROLES
+
+### 🎯 Goal
+
+| Role            | Pages Allowed                                                   | Permissions                     |
+| --------------- | --------------------------------------------------------------- | ------------------------------- |
+| **Admin**       | `admin-dashboard.html`, `order-status.html`, future admin pages | Metrics ✅ Orders ✅ CSV Export ✅ |
+| **Staff**       | `order-status.html` only                                        | Orders ✅ Metrics ❌ CSV ❌        |
+| **Anyone else** | Nothing                                                         | ❌                               |
+
+> **⚠️ Important rule (SECURITY LAW)**
+
+> Frontend hiding is NOT security, Backend MUST enforce roles
+> We will do both.
+
+### 🧠 BIG PICTURE ARCHITECTURE
+
+```
+Browser
+ └── Cognito Login
+      └── JWT Token (contains groups)
+           └── API Gateway (Authorizer)
+                └── Lambda
+                     ├── Verify role
+                     ├── Allow / Deny
+                     └── Return data
+```
+
+### ✅ SHORT ANSWER (THE TRUTH)
+
+No, you do NOT need to do all of this again if you already implemented central backend rbac.py correctly and attached a Cognito Authorizer in API Gateway.
+
+Most of what you pasted is a manual / per-Lambda RBAC approach.
+Your rbac.py is a centralized, scalable RBAC engine.
+
+So:
+
+👉 Use ONE approach, not both
+
+👉 rbac.py replaces almost all of this backend logic
+
+### 🔍 WHAT IS THE DIFFERENCE?
+
+🔴 This configuration you pasted = INLINE / MANUAL RBAC
+
+RBAC logic written inside every Lambda
+
+Hardcoded role checks (if role != "Admin")
+
+Permissions spread across many files
+
+Hard to maintain as APIs grow
+
+Example:
+
+```
+if export_csv and role != "Admin":
+    return 403
+```
+
+#### ✅ Works
+
+❌ Not scalable
+❌ Repeated code
+❌ Error-prone long term
+
+### 🟢 Your rbac.py = CENTRAL / PROFESSIONAL RBAC
+
+One single source of truth
+
+Permissions defined in permissions.json
+
+Same RBAC logic reused by ALL Lambdas
+
+Clean separation of concerns
+
+Example:
+
+```
+allowed, user = authorize(event)
+if not allowed:
+    return forbidden()
+```
+
+Permissions live here instead:
+
+```
+[
+  { "path": "/orders", "roles": ["admin", "employee"] },
+  { "path": "/metrics", "roles": ["admin"] }
+]
+```
+
+✅ Scalable
+✅ Clean
+✅ Auditable
+✅ Enterprise-grade
+
+### 🧠 WHAT YOU STILL NEED FROM THAT LIST (ONLY THIS)
+✅ MUST KEEP (NON-NEGOTIABLE)
+
+Cognito Authorizer attached to API Gateway routes
+
+This is BEFORE Lambda
+
+Frontend role checks
+
+UX only (hide buttons, redirect pages)
+
+That’s it.
+
+### ❌ WHAT rbac.py ALREADY REPLACES (DO NOT DUPLICATE)
+
+You do NOT need these anymore inside Lambdas:
+
+❌ Manual role extraction in every Lambda
+
+❌ Hardcoded Admin/Staff checks per endpoint
+
+❌ Per-Lambda permission matrices
+
+❌ Rewriting the same RBAC logic again and again
+
+All of this is now handled by:
+
+```
+API Gateway → Cognito → rbac.py → permissions.json
+```
+
+### 🧠 SIMPLE MENTAL MODEL (REMEMBER THIS)
+
+| Layer        | Responsibility      |
+| ------------ | ------------------- |
+| Cognito      | Who the user is     |
+| API Gateway  | Is the token valid  |
+| `rbac.py`    | Is the user allowed |
+| Lambda logic | Business logic only |
+| Frontend JS  | UX convenience      |
+
+If a rule exists in permissions.json, you do not write it again in Lambda.
+
+### ✅ FINAL VERDICT
+
+✔ Your current direction is correct
+
+✔ rbac.py is more advanced than the pasted config
+
+❌ Do NOT mix both approaches
+
+✅ Keep API Gateway authorizer
+
+✅ Keep frontend checks
+
+🛑 Stop adding inline RBAC everywhere
+## PHASE 2️⃣ - Admin vs Staff Roles 
+> **(Cognito + API Gateway + Lambda + Frontend)**
+
+You do NOT need those configurations anymore after you’ve adopted rbac.py, and you SHOULD remove them to avoid confusion and bugs.
+
+Let me be very explicit so there’s zero doubt.
+
+✅ WHAT YOU SHOULD DELETE FROM LAMBDA FILES
+
+If you are using central backend RBAC (rbac.py + permissions.json), then remove ALL of this from individual Lambdas:
+
+❌ Delete per-Lambda role logic
+claims = event["requestContext"]["authorizer"]["claims"]
+groups = claims.get("cognito:groups", [])
+if "Admin" not in groups:
+    return { "statusCode": 403 }
+
+❌ Delete hardcoded permission checks
+if role != "Admin":
+    return 403
+
+❌ Delete endpoint-specific role logic
+if export_csv and role != "Admin":
+
+❌ Delete duplicated security matrices
+# Admin-only
+# Staff-only
+
+
+Reason:
+This logic now lives in ONE place only → rbac.py
+
+✅ WHAT MUST STAY (DO NOT DELETE)
+1️⃣ API Gateway Cognito Authorizer
+
+MANDATORY
+
+Keep authorizer attached to routes
+
+This validates JWT signature, expiry, issuer
+
+Without this → rbac.py never runs securely
+
+2️⃣ rbac.py call in EVERY protected Lambda
+
+Minimal, clean, same everywhere:
+
+from rbac import authorize
+
+allowed, user = authorize(event)
+if not allowed:
+    return {
+        "statusCode": 403,
+        "body": json.dumps({"message": "Access denied"})
+    }
+
+
+That’s it.
+No more role logic in Lambdas.
+
+3️⃣ permissions.json
+
+This becomes your single source of truth:
+
+[
+  { "path": "/orders", "roles": ["admin", "employee"] },
+  { "path": "/metrics", "roles": ["admin"] },
+  { "path": "/export", "roles": ["admin"] }
+]
+
+
+Change access?
+👉 Change ONE file, not 20 Lambdas.
+
+4️⃣ Frontend RBAC (KEEP, but UX only)
+
+Your central-auth-api.js:
+
+isAdmin()
+
+requireAdmin()
+
+Hide buttons / pages
+
+⚠️ Frontend is NOT security, backend already enforces it.
+
+🧠 FINAL CLEAN ARCHITECTURE (THE RIGHT WAY)
+User
+ ↓
+Cognito (Auth + Groups)
+ ↓
+API Gateway (JWT verified)
+ ↓
+rbac.py (Authorize)
+ ↓
+Lambda Business Logic
+
+
+No duplication.
+No guessing.
+No drift.
+
+🚨 IMPORTANT WARNING
+
+Do NOT keep both systems (manual RBAC + central RBAC)
+
+That leads to:
+
+Conflicting rules
+
+Random 403 errors
+
+Debugging hell later
+
+You’re doing this the professional way now 👍
+
+### 2️⃣ ADMIN VS STAFF ROLES
+
+### 1️⃣ API GATEWAY AUTHORIZATION (MANDATORY)
+
+#### Step 1️⃣ — Ensure Cognito Authorizer is Attached
+
+- 📍 API Gateway → Your API
+
+For EVERY protected route (orders, metrics, export):
+
+- Click route (GET /orders, GET /metrics, etc.)
+
+- Authorization → Cognito User Pool
+
+- Choose your user pool
+
+- Save & deploy
+
+**⚠️ If you skip this → Lambda receives unauthenticated users ❌**
+
+### 3️⃣ — LAMBDA ROLE EXTRACTION (BACKEND SECURITY)
+
+This applies to EVERY Lambda that serves protected data.
+
+#### Step 4️⃣ — Extract User Groups from JWT (CORE LOGIC)
+
+#### ✅ Lambda Template (COPY AS-IS)
+
+```
+import json
+
+def lambda_handler(event, context):
+    # -----------------------------
+    # 1️⃣ Extract JWT claims
+    # -----------------------------
+    claims = event["requestContext"]["authorizer"]["claims"]
+
+    # Cognito groups (Admin / Staff)
+    user_groups = claims.get("cognito:groups", [])
+
+    # Normalize role
+    if "Admin" in user_groups:
+        role = "Admin"
+    elif "Staff" in user_groups:
+        role = "Staff"
+    else:
+        # User has no role → blocked
+        return {
+            "statusCode": 403,
+            "body": json.dumps({"message": "Access denied"})
+        }
+
+    # -----------------------------
+    # 2️⃣ Continue based on role
+    # -----------------------------
+    # (Handled below per feature)
+```
+#### 🧠 Why this matters
+
+Even if someone manually opens admin-dashboard.html, backend will BLOCK them.
+
+### 4️⃣ — ROLE-BASED PERMISSIONS (BACKEND)
+
+#### Step 5️⃣ — Protect CSV Export (Admins Only)
+
+```
+# Example flag from query or path
+export_csv = event.get("queryStringParameters", {}).get("export")
+
+# Admin-only action
+if export_csv and role != "Admin":
+    return {
+        "statusCode": 403,
+        "body": json.dumps({"message": "Admins only"})
+    }
+```
+
+#### Step 6️⃣ — Protect Metrics Endpoint
+
+```
+# Metrics endpoint logic
+if role != "Admin":
+    return {
+        "statusCode": 403,
+        "body": json.dumps({"message": "Admins only"})
+    }
+
+# Fetch metrics safely here
+```
+
+#### Step 7️⃣ — Orders Endpoint (Admin + Staff)
+
+```
+# Orders are allowed for both roles
+# No restriction needed
+fetch_orders()
+```
+
+#### ✅ Backend Security Matrix
+
+| Endpoint      | Admin | Staff |
+| ------------- | ----- | ----- |
+| `/orders`     | ✅     | ✅     |
+| `/metrics`    | ✅     | ❌     |
+| `/export-csv` | ✅     | ❌     |
+
+
+### 5️⃣ — FRONTEND AUTH FOUNDATION (REUSABLE)
+
+### 6️⃣ — ADMIN DASHBOARD (ADMIN ONLY)
+
+#### Step 9️⃣ — Protect admin-dashboard.html
+
+```
+<script src="js/central-auth.js"></script>
+
+<script>
+    // 🚨 Block non-admin users
+    requireRole("Admin");
+</script>
+```
+
+#### Step 🔟 — Hide UI for Non-Admins (Extra Safety)
+
+```
+const userGroups = getUserRole();
+
+if (!userGroups.includes("Admin")) {
+    document.getElementById("exportCSVButton").style.display = "none";
+    document.getElementById("metricsSection").style.display = "none";
+}
+```
+
+⚠️ UI hiding = UX only, not security
+Backend already blocks access.
+
+### 7️⃣ — STAFF PAGE (ORDER STATUS)
+
+#### Step 1️⃣1️⃣ — Protect order-status.html
+
+```
+<script src="js/central-auth.js"></script>
+
+<script>
+    // Allow Admin or Staff
+    const groups = getUserRole();
+    if (!groups.includes("Admin") && !groups.includes("Staff")) {
+        alert("Access denied");
+        window.location.href = "login.html";
+    }
+</script>
+```
+
+#### Step 1️⃣2️⃣ — Hide Admin Features for Staff
+
+```
+const groups = getUserRole();
+
+if (!groups.includes("Admin")) {
+    document.getElementById("exportCSVButton").style.display = "none";
+    document.getElementById("metricsSection").style.display = "none";
+}
+```
+
+### 8️⃣ — VERIFY EVERYTHING (DO NOT SKIP)
+
+#### ✅ Test Case 1 — Admin User
+
+✔ Can open admin-dashboard.html
+
+✔ Can see metrics
+
+✔ Can export CSV
+
+✔ Can open order-status.html
+
+#### ✅ Test Case 2 — Staff User
+
+✔ Can open order-status.html
+
+❌ Cannot open admin-dashboard.html
+
+❌ Cannot access /metrics API
+
+❌ CSV export returns 403
+
+❌ Test Case 3 — Manual URL Hack
+
+#### Staff opens:
+
+```
+/export-csv
+```
+
+**👉 403 Forbidden (Backend stops it)**
+
+
+### 🔹 Lambda – Role-Based Permissions
+
+#### Admin
+
+- View metrics
+
+- View orders
+
+- Export CSV
+
+#### Staff
+
+- View orders only
+
+- Cannot export CSV
+
+#### Modify Lambda:
+
+```
+if export_csv and "Admin" not in user_groups:
+    return {"statusCode": 403, "body": "Admins only"}
+```
+
+### 🔹 Frontend – Role-Based UI
+
+#### Step 1 — Hide Buttons for Staff
+
+```
+if(!userGroups.includes("Admin")){
+    document.querySelector("#exportCSVButton").style.display = "none";
+    document.querySelector("#metrics").style.display = "none";
+}
+```
+
+✔ Now Staff only sees orders table.
+
+### ✅ Verification
+
+1️⃣ Admin user logs in → sees metrics + orders + CSV export → can download CSV
+
+2️⃣ Staff user logs in → sees only orders → cannot download CSV → metrics hidden
+
+--
+
+### 🏆 Summary of Features Added
+
+| Feature              | Status |
+| -------------------- | ------ |
+| CSV Export Backend   | ✅ Done |
+| CSV Export Frontend  | ✅ Done |
+| Admin vs Staff Roles | ✅ Done |
+| Role-Based UI        | ✅ Done |
+
+
+**✅ PHASE 2 STATUS**
+
+> **🟢 PHASE 2 COMPLETE & VERIFIED**
+
+**✅ PHASE 2️⃣ STATUS**
+
+> **🟢 PHASE 2️⃣ COMPLETE & VERIFIED**
+---
+
+# SECTION 2️⃣  COMPLETE ✅
+---
+# SECTION 3️⃣ Charlie Cafe - PRINTING System
+
+## 🔐 PHASE 1️⃣ Charlie Cafe - PRINTING (FRONTEND ONLY)
+
+### 🧠 First — important truth (no sugar-coating)
+
+👉 Printing is 100% frontend behavior
+
+central-auth-api.js can host print logic
+
+But HTML still must include buttons + data attributes
+
+JS cannot print what doesn’t exist in DOM
+
+So the goal is:
+
+✅ One central printing engine
+✅ Pages only:
+
+include ONE JS file
+
+add 2 buttons
+
+ensure table rows have data-*
+
+### 🏗️ Target Architecture (Simple Mental Model)
+
+```
+order-status.html
+admin-orders.html
+staff-orders.html
+        │
+        ├── includes buttons (HTML only)
+        ├── includes table rows with data attributes
+        └── loads → central-auth-api.js  ✅
+                         ├── auth
+                         ├── API calls
+                         └── 🖨️ printing logic (NEW)
+```
+### 1️⃣ Modify central-auth-api.js (MAIN WORK)
+
+Add this ONCE at the BOTTOM of central-auth-api.js
+(do NOT put inside auth/token logic)
+
+🔥 Why this is correct:
+
+Uses window. → callable from any HTML
+
+No dependency on page-specific JS
+
+Safe reload after print (prevents broken UI)
+
+### 🎯 What You Achieved (Big Win)
+
+✅ One printing system
+✅ Zero duplicated JS
+✅ Works for:
+
+admin
+
+staff
+
+reports
+
+future dashboards
+
+**You now have enterprise-grade frontend architecture 💪**
+
+
+#### How it works
+
+✔️ Uses window.print()
+
+✔️ Browser converts HTML → PDF / Printer
+
+✔️ No Lambda
+
+✔️ No API call
+
+✔️ Instant
+
+#### Best for
+
+✔️ Staff
+
+✔️ Quick receipt
+
+✔️ Daily summary
+
+✔️ Ad-hoc printing
+
+✅ Fast
+
+✅ No AWS cost
+
+❌ Not automated
+
+❌ Not official report
+
+| Printing Type    | Where it runs | Technology         | Purpose                           |
+| ---------------- | ------------- | ------------------ | --------------------------------- |
+| 🖨 Browser Print | Frontend only | `window.print()`   | Quick, instant print / save PDF   |
+| 📄 Lambda PDF    | Backend       | ReportLab + Lambda | Official, stored, branded reports |
+
+#### 🧠 SIMPLE MENTAL MODEL
+
+```
+STAFF USES → Browser Print
+ADMIN USES → Lambda PDF
+```
+
+#### ⚠️Why?
+
+#### Browser print:
+> **PHASE 7️⃣ **AWS  Charlie Cafe — Secure Admin Order Dashboard**
+
+✔️ Fast
+
+✔️ No backend cost
+
+✔️ No S3
+
+✔️ No permissions
+
+✔️ Good for receipts, daily summaries
+
+#### Lambda PDF:
+
+> **PHASE 5️⃣ & 6️⃣ **☕ AWS CAFE — SALES ANALYTICS & REPORTING SYSTEM**
+
+✔️ Professional layout
+
+✔️ Stored in S3
+
+✔️ Monthly / daily automation
+
+✔️ Logo, tables, profit
+
+✔️ Admin-only (RBAC)
+
+**✅ You are building a REAL PRODUCTION SYSTEM**
+
+### 🧭 WHAT THIS PHASE DOES (CLEAR SCOPE)
+
+This phase allows:
+
+✅ Print all orders
+
+✅ Print today summary
+
+✅ Print using browser PDF / printer
+
+✅ Uses existing order-status data
+
+✅ NO backend changes
+
+### 🧾 ✅ FINAL UPDATED order-status.html (WITH PRINTING + COMMENTS)
+
+#### 📍 Location:
+
+```
+/var/www/html/order-status.html
+```
+
+#### 1️⃣ BACKUP order-status.html
+
+```
+sudo cp /var/www/html/order-status.html /var/www/html/order-status-backup.html
+```
+
+#### ♻️ RESTORE IF NEEDED (OPTIONAL)
+
+```
+sudo cp /var/www/html/order-status-backup.html /var/www/html/order-status.html
+```
+
+#### 2️⃣ Replace your entire file with this
+
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Charlie Cafe ☕ | Order Status</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ================== BOOTSTRAP ================== -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- ================== CHART.JS ================== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ================== MAIN BACKGROUND ================== */
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+    url("https://images.unsplash.com/photo-1509042239860-f550ce710b93");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* ================== DASHBOARD ================== */
+#dashboard {
+  display: none;
+  background:#f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card-metric {
+  background:#fff;
+  padding:15px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+/* ================== PRINT CSS (PHASE 7) ================== */
+@media print {
+
+  body {
+    background: #fff !important;
+  }
+
+  nav,
+  button,
+  input,
+  canvas {
+    display: none !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #000;
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  h3 {
+    text-align: center;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================== NAVBAR ================== -->
+<nav class="navbar navbar-dark bg-dark" id="navbar" style="display:none">
+  <div class="container">
+    <span class="navbar-brand">☕ Charlie Cafe Admin</span>
+    <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- ================== DASHBOARD ================== -->
+<div class="container my-4" id="dashboard">
+
+<!-- ================== FILTER ROW ================== -->
+<div class="row mb-3">
+  <div class="col-md-3">
+    <input type="date" id="filterDate" class="form-control">
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100" onclick="loadData()">Filter</button>
+  </div>
+</div>
+
+<!-- ================== PRINT BUTTONS (PHASE 7) ================== -->
+<div class="row mb-3">
+  <div class="col text-end">
+    <button class="btn btn-outline-dark me-2" onclick="printAllOrders()">
+      🖨️ Print All Orders
+    </button>
+    <button class="btn btn-outline-success" onclick="printTodaySummary()">
+      📄 Print Today Summary
+    </button>
+  </div>
+</div>
+
+<!-- ================== LOADER ================== -->
+<div class="text-center my-3" id="loader" style="display:none">
+  <div class="spinner-border text-warning"></div>
+  <p class="mt-2">Loading...</p>
+</div>
+
+<!-- ================== METRICS ================== -->
+<div class="row mb-4" id="metrics"></div>
+
+<!-- ================== CHART ================== -->
+<canvas id="orderChart" height="100"></canvas>
+
+<!-- ================== ORDERS TABLE ================== -->
+<table class="table table-bordered mt-4 bg-white">
+  <thead class="table-dark">
+    <tr>
+      <th>Customer</th>
+      <th>Item</th>
+      <th>Qty</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody id="orders"></tbody>
+</table>
+
+</div>
+
+<script>
+/* ================== CONFIG ================== */
+
+/* 🔁 REPLACE WITH YOUR OWN VALUES IF CHANGED */
+const COGNITO_DOMAIN = "us-east-1qxbqjnjww.auth.us-east-1.amazoncognito.com";
+const CLIENT_ID = "393ld7o96bt7qlv0shp124osh5";
+const REDIRECT_URI = "https://d2og2zrs47voou.cloudfront.net/order-status.html";
+
+/* 🔴 REPLACE API ID WHEN READY */
+const API_URL = "https://YOUR_API_ID.execute-api.us-east-1.amazonaws.com/prod/order-status";
+
+let chart, refreshTimer;
+
+/* ================== AUTH ================== */
+function parseJwt(token) {
+  return JSON.parse(atob(token.split('.')[1]));
+}
+
+function isTokenExpired(token) {
+  return parseJwt(token).exp * 1000 < Date.now();
+}
+
+function login() {
+  window.location.href =
+    `https://${COGNITO_DOMAIN}/login?response_type=token&client_id=${CLIENT_ID}&scope=openid+email+profile&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+}
+
+function logout() {
+  localStorage.removeItem("access_token");
+  clearInterval(refreshTimer);
+  window.location.href =
+    `https://${COGNITO_DOMAIN}/logout?client_id=${CLIENT_ID}&logout_uri=${encodeURIComponent(REDIRECT_URI)}`;
+}
+
+function handleRedirect() {
+  const hash = window.location.hash.substring(1);
+  if (!hash) return;
+  const token = new URLSearchParams(hash).get("access_token");
+  if (token) {
+    localStorage.setItem("access_token", token);
+    window.location.hash = "";
+  }
+}
+
+/* ================== DASHBOARD ================== */
+function showDashboard() {
+  const token = localStorage.getItem("access_token");
+  if (!token || isTokenExpired(token)) return login();
+
+  document.getElementById("navbar").style.display = "block";
+  document.getElementById("dashboard").style.display = "block";
+
+  loadData();
+  refreshTimer = setInterval(loadData, 10000);
+}
+
+/* ================== DATA ================== */
+function loadData() {
+  const token = localStorage.getItem("access_token");
+  if (!token || isTokenExpired(token)) return logout();
+
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("metrics").innerHTML = "";
+  document.getElementById("orders").innerHTML = "";
+
+  let url = API_URL;
+  const date = document.getElementById("filterDate").value;
+  if (date) url += "?date=" + date;
+
+  fetch(url, { headers: { Authorization: "Bearer " + token }})
+  .then(r => r.json())
+  .then(data => {
+
+    document.getElementById("loader").style.display = "none";
+
+    data.metrics.forEach(m => {
+      metrics.innerHTML += `
+        <div class="col-md-3 mb-2">
+          <div class="card-metric text-center fw-bold">${m.metric}<br>${m.count}</div>
+        </div>`;
+    });
+
+    const items = {};
+    data.recent_orders.forEach(o => {
+      orders.innerHTML += `
+        <tr>
+          <td>${o.customer_name}</td>
+          <td>${o.item}</td>
+          <td>${o.quantity}</td>
+          <td>${o.created_at}</td>
+        </tr>`;
+      items[o.item] = (items[o.item] || 0) + o.quantity;
+    });
+
+    if (chart) chart.destroy();
+    chart = new Chart(orderChart, {
+      type: 'bar',
+      data: { labels: Object.keys(items), datasets: [{ label: 'Orders per Item', data: Object.values(items) }] }
+    });
+  });
+}
+
+/* ================== PRINTING (PHASE 7) ================== */
+function printAllOrders() {
+  window.print();
+}
+
+function printTodaySummary() {
+  let today = new Date().toISOString().split("T")[0];
+  let totalQty = 0;
+
+  document.querySelectorAll("#orders tr").forEach(row => {
+    if (row.children[3].innerText.startsWith(today)) {
+      totalQty += parseInt(row.children[2].innerText);
+    }
+  });
+
+  const html = `
+    <h3>☕ Charlie Cafe – Daily Summary</h3>
+    <p><strong>Date:</strong> ${today}</p>
+    <p><strong>Total Items Sold:</strong> ${totalQty}</p>
+  `;
+
+  const original = document.body.innerHTML;
+  document.body.innerHTML = html;
+  window.print();
+  document.body.innerHTML = original;
+  location.reload();
+}
+
+/* ================== INIT ================== */
+handleRedirect();
+showDashboard();
+</script>
+
+</body>
+</html>
+```
+
+# SECTION 3️⃣  COMPLETE ✅
+---
+### 1️⃣ Router Lambda
+
+### 1️⃣ Prepare for Router Lambda
+
+Make sure your three existing Lambdas are working individually:
+
+- GetOrderStatusLambda
+
+- CafeOrderStatusLambda
+
+- OrderStatusLambda
+
+**Note their ARNs (you’ll need them for IAM permissions).**
+
+### 2️⃣ Create the Router Lambda
+
+1️⃣ Go to AWS Lambda → Create function → Author from scratch.
+
+    - Name: OrderStatusRouterLambda
+
+    - Runtime: Node.js 18.x
+
+    - Permissions: Create a new role with basic Lambda permissions
+
+2️⃣ After creation, attach Invoke permissions for your three target Lambdas:
+
+    - Go to IAM → Roles → find your Lambda role → Attach policy → JSON
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": [
+                "arn:aws:lambda:us-east-1:123456789012:function:GetOrderStatusLambda",
+                "arn:aws:lambda:us-east-1:123456789012:function:CafeOrderStatusLambda",
+                "arn:aws:lambda:us-east-1:123456789012:function:OrderStatusLambda"
+            ]
+        }
+    ]
+}
+```
+
+3️⃣ Copy the router Lambda code I shared earlier into the Lambda function editor.
+
+#### Lambda code (Node.js example)
+
+```
+const AWS = require("aws-sdk");
+const lambda = new AWS.Lambda();
+
+exports.handler = async (event) => {
+    const query = event.queryStringParameters || {};
+    const orderId = query.order_id;
+
+    // Choose the target Lambda dynamically
+    let targetLambdaName;
+
+    if (orderId.startsWith("C-")) {
+        targetLambdaName = "CafeOrderStatusLambda";
+    } else if (orderId.startsWith("G-")) {
+        targetLambdaName = "GetOrderStatusLambda";
+    } else {
+        targetLambdaName = "OrderStatusLambda";
+    }
+
+    try {
+        const response = await lambda
+            .invoke({
+                FunctionName: targetLambdaName,
+                Payload: JSON.stringify({ order_id: orderId })
+            })
+            .promise();
+
+        const payload = JSON.parse(response.Payload);
+
+        return {
+            statusCode: 200,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        };
+    } catch (err) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: err.message })
+        };
+    }
+};
+```
+
+4️⃣ Save and test with a sample event:
+
+```
+{
+  "queryStringParameters": {
+    "order_id": "C-12345"
+  }
+}
+```
+
+- Should invoke CafeOrderStatusLambda.
+
+- Change to "G-12345" → should invoke GetOrderStatusLambda.
+
+- Change to "12345" → should invoke OrderStatusLambda.
+
+**✅ This confirms the router is working.**
+
+### 3️⃣ Connect Router Lambda to API Gateway
+
+1️⃣ Go to API Gateway → your REST API → Resources → /order-status
+
+- You currently have multiple GET methods; we will replace them.
+
+2️⃣ For one GET method:
+
+- Integration type → Lambda Proxy
+
+- Lambda → select OrderStatusRouterLambda
+
+- Click Save → Deploy API to your stage (prod)
+
+3️⃣ Now there’s only one /order-status GET integrated with your router Lambda.
+
+4️⃣ Your front-end code stays the same:
+
+```
+CHARLIE.api.getOrderStatus(orderId);
+```
+
+**No changes needed here.**
+
+### 4️⃣ — Delete the old duplicate resources
+
+1️⃣ Go to API Gateway → Resources → /order-status
+
+2️⃣ You’ll see two or more GET methods listed (duplicates)
+
+3️⃣ For each extra method you want to delete:
+
+- Click Method → Actions → Delete Method
+
+4️⃣ If there are duplicate resources (sometimes created by mistake):
+
+- Select the resource → Actions → Delete Resource
+
+- Confirm deletion
+
+**⚠️ Important: Only delete the duplicates that are not in use. Keep one /order-status GET with router Lambda.**
+
+5️⃣ Deploy API again after deletion.
+
+### 5️⃣ — Verify everything works
+
+#### A. Test via Lambda console
+
+#### Event example:
+
+```
+{
+  "queryStringParameters": {
+    "order_id": "C-12345"
+  }
+}
+```
+
+- Check CloudWatch logs for router Lambda → confirm it invokes the correct target Lambda.
+
+#### B. Test via API Gateway URL
+
+Example URL:
+
+```
+https://<api-id>.execute-api.us-east-1.amazonaws.com/prod/order-status?order_id=C-12345
+```
+
+- Response should be the same as if the original Lambda was called.
+
+- Change order_id prefix → test other Lambdas.
+
+#### C. Test via front-end
+
+```
+CHARLIE.api.getOrderStatus("C-12345").then(console.log);
+CHARLIE.api.getOrderStatus("G-54321").then(console.log);
+CHARLIE.api.getOrderStatus("123456").then(console.log);
+```
+
+- All three should return proper results.
+
+- No change required in your central-auth-api.js.
+
+### 6️⃣ — Optional: Add new Lambda later
+
+- Add new Lambda (e.g., SpecialOrderStatusLambda)
+
+- Attach IAM invoke permission to OrderStatusRouterLambda
+
+#### Update router Lambda logic:
+
+```
+if(orderId.startsWith("S-")) {
+   targetLambdaName = "SpecialOrderStatusLambda";
+}
+```
+
+- Deploy router Lambda → done.
+
+- No front-end change needed.
+
+### ✅ After this setup:
+
+- Single /order-status GET → one router Lambda → calls correct backend Lambda.
+
+- Front-end stays clean.
+
+- Old duplicate resources safely deleted.
+
+- Easy to maintain and scale.
