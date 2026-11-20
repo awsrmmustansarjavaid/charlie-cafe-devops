@@ -1,3770 +1,1860 @@
-# ☕ Charlie Cafe DevOps Project — End-to-End AWS Cloud DevOps Project (Production-Grade Architecture)
+# ☕ Charlie Cafe DevOps Project
+## End-to-End AWS Cloud, DevOps, Infrastructure as Code & Kubernetes Platform
+
+<p align="center">
+  <strong>Building a Secure, Scalable and Cloud-Native Cafe Ordering Platform</strong>
+</p>
+
+<p align="center">
+  <em>From Application Development to Automated Cloud Infrastructure, CI/CD and Container Orchestration</em>
+</p>
+
+---
+
+## 📌 Table of Contents
+
+1. [Project Overview](#-project-overview)
+2. [Business Requirements](#-business-requirements)
+3. [Project Objectives](#-project-objectives)
+4. [Key Features](#-key-features)
+5. [System Architecture](#-system-architecture)
+6. [Application Architecture](#-application-architecture)
+7. [Technology Stack](#-technology-stack)
+8. [AWS Cloud Infrastructure](#-aws-cloud-infrastructure)
+9. [Networking Architecture](#-networking-architecture)
+10. [Database Architecture](#-database-architecture)
+11. [Serverless Architecture](#-serverless-architecture)
+12. [Containerization](#-containerization)
+13. [CI/CD Pipeline](#-cicd-pipeline)
+14. [Infrastructure as Code](#-infrastructure-as-code)
+15. [Kubernetes Architecture](#-kubernetes-architecture)
+16. [Security Architecture](#-security-architecture)
+17. [Monitoring and Logging](#-monitoring-and-logging)
+18. [Repository Structure](#-repository-structure)
+19. [Prerequisites](#-prerequisites)
+20. [Local Development Setup](#-local-development-setup)
+21. [AWS Deployment](#-aws-deployment)
+22. [Testing and Validation](#-testing-and-validation)
+23. [High Availability and Scalability](#-high-availability-and-scalability)
+24. [Cost Optimization](#-cost-optimization)
+25. [Documentation](#-documentation)
+26. [Implementation Roadmap](#-implementation-roadmap)
+27. [Troubleshooting](#-troubleshooting)
+28. [Security Best Practices](#-security-best-practices)
+29. [Contributing](#-contributing)
+30. [License](#-license)
+
+---
+
+# ☕ Project Overview
+
+**Charlie Cafe DevOps Project** is an end-to-end cloud and DevOps engineering project designed to build, deploy, automate, secure and manage a modern online cafe ordering platform using Amazon Web Services (AWS) and industry-standard DevOps technologies.
+
+The project simulates a real-world business environment in which a cafe requires a reliable digital ordering platform, employee management system, administrative dashboard, secure authentication and real-time order processing.
+
+The objective is to implement a complete DevOps lifecycle covering:
+
+- Application deployment and management.
+- Cloud infrastructure provisioning.
+- Infrastructure as Code (IaC).
+- Containerization and orchestration.
+- Automated CI/CD pipelines.
+- Cloud networking and security.
+- Serverless application architecture.
+- Database management.
+- Monitoring, logging and troubleshooting.
+- High availability and scalability.
+
+The project starts with traditional AWS infrastructure and progressively evolves toward automated, containerized and Kubernetes-based cloud-native deployment.
+
+## 🎯 Primary Goal
+
+Build a production-oriented, scalable and secure cafe ordering platform using modern cloud and DevOps engineering practices.
+
+## 🏢 Business Scenario
+
+**Client:** Charlie Cafe
+
+Charlie Cafe wants to modernize its business operations by introducing an online ordering and management platform.
+
+The platform should allow customers to interact with the cafe digitally while providing employees and administrators with tools to manage orders, payments, menus and business operations.
+
+---
+
+# 📋 Business Requirements
+
+## 1. Customer Requirements
+
+- Online cafe ordering system.
+- Browse available food and beverages.
+- View menu and product information.
+- Place orders online.
+- Track order processing status.
+- View payment information.
+- Access the ordering platform securely.
+
+## 2. Employee Requirements
+
+- Secure employee authentication.
+- Employee management system.
+- Order management dashboard.
+- Order processing and status updates.
+- Customer order information.
+- Payment tracking.
+- Cafe operational management.
+
+## 3. Administrator Requirements
+
+- Secure administrator login.
+- Administrative dashboard.
+- Employee management.
+- Menu and product management.
+- Order monitoring.
+- Payment monitoring.
+- System administration.
+
+## 4. Performance Requirements
+
+- Handle multiple simultaneous customer orders.
+- Maintain responsive application performance.
+- Support increased traffic during peak hours.
+- Provide reliable application availability.
+- Scale application components as demand increases.
+
+## 5. Security Requirements
+
+- No publicly accessible database.
+- Secure authentication and authorization.
+- AWS IAM role-based access.
+- Secure application secrets.
+- Private database connectivity.
+- Restricted network access.
+- Encrypted communication using HTTPS.
+- Secure CI/CD deployment credentials.
+
+## 6. Scalability Requirements
+
+- Horizontal application scaling.
+- Containerized application deployment.
+- Event-driven order processing.
+- Database scalability.
+- Kubernetes deployment support.
+- Multi-environment infrastructure management.
+
+---
+
+# 🎯 Project Objectives
+
+The project is organized around the following engineering objectives.
+
+| Area | Objective |
+|---|---|
+| Application | Build and deploy a cafe ordering platform |
+| AWS | Implement cloud infrastructure |
+| Networking | Design secure VPC architecture |
+| Database | Deploy and manage application databases |
+| Serverless | Implement Lambda-based backend services |
+| Messaging | Implement asynchronous processing using SQS |
+| Containers | Package applications using Docker |
+| Registry | Store images in Amazon ECR |
+| Compute | Deploy workloads using Amazon ECS |
+| CI/CD | Automate build, test and deployment |
+| IaC | Provision infrastructure using Terraform |
+| CloudFormation | Maintain AWS native infrastructure templates |
+| Kubernetes | Deploy workloads to local Kubernetes and Amazon EKS |
+| Security | Implement IAM, Cognito and Secrets Manager |
+| Monitoring | Monitor infrastructure and application health |
+
+---
+
+# 🚀 Key Features
+
+## Application Features
+
+- Online cafe ordering.
+- Customer-facing frontend.
+- Administrative dashboard.
+- Employee management.
+- Secure login and authentication.
+- Order management.
+- Payment tracking.
+- Order status monitoring.
+
+## AWS Cloud Features
+
+- Custom Amazon VPC.
+- Public and private subnets.
+- Internet Gateway.
+- NAT Gateway where required.
+- Security Groups.
+- VPC Endpoints.
+- Amazon EC2.
+- Application Load Balancer.
+- Amazon CloudFront.
+- Amazon RDS.
+- Amazon DynamoDB.
+- AWS Lambda.
+- Amazon API Gateway.
+- Amazon SQS.
+- Amazon Cognito.
+- AWS Secrets Manager.
+- Amazon CloudWatch.
+
+## DevOps Features
+
+- Git-based version control.
+- Docker containerization.
+- Docker Compose local environment.
+- Amazon ECR image management.
+- Amazon ECS deployment.
+- GitHub Actions automation.
+- Automated deployment.
+- Health checks.
+- Rolling deployment.
+- Blue/green deployment.
+- Deployment rollback.
+
+## Future Platform Engineering Features
+
+- Terraform modules.
+- Reusable infrastructure components.
+- Environment-specific Terraform configurations.
+- Remote Terraform state management.
+- Kubernetes manifests.
+- Helm-based deployments.
+- Local Kubernetes development.
+- Amazon EKS deployment.
+- Kubernetes scaling and health management.
+
+---
+
+# 🏗️ System Architecture
+
+The Charlie Cafe platform follows a layered cloud architecture.
+
+## High-Level Architecture
+
+![Charlie Cafe End-to-End AWS Architecture](./docs/Project%20Lab%20Configurations/965fab6e-51fe-41b8-83cb-097b995fc64e.png)
+
+## Architecture Layers
+
+| Layer | Components | Responsibility |
+|---|---|---|
+| Presentation | HTML, CSS, JavaScript, PHP | User interface |
+| CDN | CloudFront | Content delivery |
+| Load Balancing | Application Load Balancer | Traffic distribution |
+| Compute | EC2, ECS, EKS | Application execution |
+| API | API Gateway | API management |
+| Serverless | Lambda | Backend processing |
+| Messaging | SQS | Asynchronous processing |
+| Database | RDS, DynamoDB | Data persistence |
+| Authentication | Cognito | User identity |
+| Secrets | Secrets Manager | Credential management |
+| Storage | Amazon S3 | Object storage |
+| Monitoring | CloudWatch | Logs and metrics |
+| Automation | GitHub Actions | CI/CD |
+| IaC | Terraform, CloudFormation | Infrastructure provisioning |
+
+## Architecture Design Principles
+
+- Separation of application and infrastructure.
+- Private database access.
+- Least-privilege permissions.
+- Automated deployment.
+- Reusable infrastructure.
+- Event-driven processing.
+- Containerized workloads.
+- Environment isolation.
+- Monitoring and observability.
+
+## Data Flow Documentation
+
+Detailed application data flow:
+
+[Charlie Cafe Data Flow Architecture](./docs/Project%20Lab%20Configurations/Charlie-Cafe_Architecture-Diagram/Charlie-Cafe_Data-Flow.md)
+
+---
+
+# 🖥️ Application Architecture
+
+The application consists of frontend and backend components.
+
+## Frontend
+
+The frontend provides the customer and administrative interfaces.
+
+Technologies:
+
+- HTML5
+- CSS3
+- JavaScript
+- PHP
+- Apache HTTP Server
+
+Responsibilities:
+
+- Customer ordering interface.
+- Menu presentation.
+- Employee interface.
+- Administrative dashboard.
+- API communication.
+- Order status presentation.
+
+## Backend
+
+The backend handles application business logic and data processing.
+
+Responsibilities:
+
+- Order creation.
+- Order processing.
+- Customer management.
+- Employee management.
+- Payment tracking.
+- Database operations.
+- API request processing.
+- Event-driven execution.
+
+## Backend Architecture
+
+The project uses AWS Lambda and API Gateway for serverless backend capabilities.
+
+Amazon SQS provides asynchronous messaging for decoupled processing.
+
+---
+
+# 🛠️ Technology Stack
+
+## Programming and Application Technologies
+
+| Technology | Purpose |
+|---|---|
+| PHP | Backend application development |
+| Python | AWS Lambda functions and automation |
+| HTML5 | Frontend structure |
+| CSS3 | Frontend styling |
+| JavaScript | Frontend interaction |
+| SQL | Database operations |
+| Bash | Linux automation |
+
+## Cloud Platform
+
+| AWS Service | Purpose |
+|---|---|
+| Amazon VPC | Network isolation |
+| Amazon EC2 | Virtual compute |
+| Amazon ECS | Container orchestration |
+| Amazon ECR | Container image registry |
+| Amazon EKS | Managed Kubernetes |
+| AWS Lambda | Serverless execution |
+| API Gateway | API management |
+| Amazon SQS | Message queuing |
+| Amazon RDS | Relational database |
+| Amazon DynamoDB | NoSQL database |
+| Amazon S3 | Object storage |
+| Amazon CloudFront | CDN |
+| Application Load Balancer | Traffic distribution |
+| Amazon Cognito | Authentication |
+| AWS Secrets Manager | Secrets management |
+| Amazon CloudWatch | Monitoring and logging |
+| AWS CodeDeploy | Deployment automation |
+
+## DevOps Tools
+
+| Tool | Purpose |
+|---|---|
+| Git | Version control |
+| GitHub | Source code management |
+| GitHub Actions | CI/CD |
+| Docker | Containerization |
+| Docker Compose | Local multi-container environment |
+| Terraform | Infrastructure as Code |
+| AWS CloudFormation | AWS native IaC |
+| Kubernetes | Container orchestration |
+| Helm | Kubernetes package management |
+| kubectl | Kubernetes management |
+| AWS CLI | AWS resource management |
+| Linux | Server administration |
+
+---
+
+# ☁️ AWS Cloud Infrastructure
+
+The AWS infrastructure provides the foundation for hosting the Charlie Cafe platform.
+
+## 1. Networking
+
+- Custom VPC.
+- Public subnets.
+- Private application subnets.
+- Private database subnets.
+- Internet Gateway.
+- NAT Gateway when required.
+- Public and private route tables.
+- Network ACLs.
+- Security Groups.
+- VPC Endpoints.
+
+## 2. Compute
+
+- Amazon EC2.
+- Amazon ECS.
+- AWS Fargate or EC2 launch type where appropriate.
+- AWS Lambda.
+- Amazon EKS.
 
-## ☕ Project Goal
+## 3. Load Balancing
 
-### 🎯 Primary Goal
+Application Load Balancer provides traffic distribution and health checking for supported application deployments.
 
-Build a scalable, secure, cloud-native café ordering system using modern DevOps practices.
+## 4. Content Delivery
 
-### 🎯 Technical Goals
+Amazon CloudFront provides CDN functionality for supported frontend delivery and static content.
 
-- Implement serverless backend (Lambda + API Gateway)
+## 5. Storage
 
-- Use event-driven architecture (SQS)
+Amazon S3 supports object storage and other application storage requirements.
 
-- Deploy containerized frontend (Docker → ECS)
+## 6. Infrastructure Naming
 
-- Build CI/CD pipeline (GitHub Actions)
+Example resource naming convention:
 
-- Ensure secure architecture (VPC + Secrets Manager + Cognito)
+| Resource | Example Name |
+|---|---|
+| VPC | CafeDevVPC |
+| EC2 | CafeDevWebServer |
+| RDS | CafeRDS |
+| ECS Cluster | charlie-cluster |
+| ECS Service | charlie-service |
+| ECR Repository | charlie-cafe |
+| Lambda | charlie-cafe-order-function |
+| SQS Queue | charlie-cafe-orders |
+| Security Group | CafeRDS-SG |
 
-### 🎯 Business Goal
+Actual resource names can vary between environments.
 
-- Real-time order processing
+---
 
-- Secure employee/admin system
+# 🌐 Networking Architecture
 
-- Scalable system for future growth
+The project uses a VPC-based architecture to separate public-facing components from private application and database workloads.
 
-### ☕ Client Business Requirements
+## Network Design
 
-> ### 🧑‍💼 Client: Charlie Cafe
+| Component | Example CIDR |
+|---|---|
+| VPC | 10.0.0.0/16 |
+| Public Subnet | 10.0.1.0/24 |
+| Private Subnet 1 | 10.0.2.0/24 |
+| Private Subnet 2 | 10.0.3.0/24 |
 
-### 📌 What client wants:
+These are example development CIDRs and should be adjusted to avoid address conflicts.
 
-- Online café ordering system
+## Public Subnets
 
--  dashboard
+Used for components that require controlled public connectivity, such as:
 
-- Employee management system
+- Application Load Balancer.
+- NAT Gateway.
+- Internet-facing infrastructure.
 
-- Secure login system
+## Private Subnets
 
-- Real-time order tracking
+Used for:
 
-- Payment tracking (cash/card)
+- Application workloads.
+- ECS tasks.
+- Lambda network connectivity where required.
+- Internal services.
 
-### 📌 Performance Requirements:
+## Database Subnets
 
-- Handle multiple orders simultaneously
+RDS should be deployed in private database subnets with public accessibility disabled.
 
-- Fast response time
+## VPC Endpoints
 
-- High availability
+The architecture supports private AWS service communication through:
 
-### 📌 Security Requirements:
+- Secrets Manager Interface Endpoint.
+- SQS Interface Endpoint.
+- CloudWatch Logs Interface Endpoint.
+- ECR API Interface Endpoint.
+- ECR Docker Interface Endpoint.
+- S3 Gateway Endpoint.
+- DynamoDB Gateway Endpoint.
 
-- No public database access
+VPC endpoint availability and routing must be configured according to each workload's actual network requirements.
 
-- Secure authentication (Cognito)
+---
 
-- Secrets not hardcoded
+# 🗄️ Database Architecture
 
-### 📌 Scalability:
+The project uses relational and NoSQL database technologies.
 
-- System should grow with business
+## Amazon RDS
 
-- Handle peak traffic (rush hours)
+Amazon RDS provides relational database storage.
 
-## ☕ Charlie Cafe —  End-to-End Architecture Diagram
+Example database:
 
-![End-to-End Architecture Diagram](./docs/Project%20Lab%20Configurations/965fab6e-51fe-41b8-83cb-097b995fc64e.png)
+`cafedb`
 
-> #### ☕ Charlie Cafe Data Flow
+Example database responsibilities:
 
-##### [☕ Charlie Cafe Data Flow](./docs/Project%20Lab%20Configurations/Charlie-Cafe_Architecture-Diagram/Charlie-Cafe_Data-Flow.md)
+- Customer records.
+- Employee information.
+- Menu information.
+- Order records.
+- Payment records.
 
-### 🔹 Overview
+## Amazon DynamoDB
 
-#### Full-stack cloud-based cafe ordering system using:
+DynamoDB provides scalable NoSQL storage for workloads requiring key-value or document-oriented access.
 
-### 🔹 AWS Deployment
+Example logical tables:
 
-- **Refer:** [AWS Charlie Cafe Project](./docs/Project%20Lab%20Configurations/AWS%20Charlie%20Cafe%20Project.md)
+| Table | Purpose |
+|---|---|
+| CafeMenu | Menu information |
+| CafeOrders | Order information |
+| CafeOrderMetrics | Order metrics |
+| CafeAttendance | Employee attendance |
 
-### 🚀 1. Final DevOps Architecture (Your Project Now)
+## Database Security
 
-### ✅ Prerequisites
+- Disable public database access.
+- Use private database subnets.
+- Restrict port 3306 to authorized security groups.
+- Store database credentials in Secrets Manager.
+- Enable encryption at rest.
+- Use TLS for supported database connections.
+- Apply least-privilege database permissions.
+- Configure backups and recovery.
 
-#### 🔹 0. GITHUB
+## SQL Documentation
 
-- Github Account
+Database configuration and SQL files are maintained under the infrastructure documentation and database directories.
 
-- Github Repo
+---
 
-- Github Repository secrets
+# ⚡ Serverless Architecture
 
-#### 🔹 1. AWS Account
+The project uses AWS Lambda and API Gateway to support serverless backend processing.
 
-- Active AWS account with proper IAM permissions
+## AWS Lambda
 
-#### 🔹 2. AWS Services Knowledge
+Lambda functions handle application operations such as:
 
-#### 🌐 Networking Services
+- Order processing.
+- Backend business logic.
+- Database integration.
+- Event processing.
+- Application automation.
 
-- VPC (Virtual Private Cloud)
+## Amazon API Gateway
 
-- Security Groups
+API Gateway exposes backend functionality through managed HTTP APIs.
 
-- VPC Endpoints
+Responsibilities:
 
-- NAT Gateway
+- API endpoint management.
+- Request routing.
+- Integration with Lambda.
+- Authentication integration.
+- Request validation and throttling where configured.
 
-- Internet Gateway (IGW)
+## Amazon SQS
 
-- Application Load Balancer (ALB)
+SQS provides asynchronous communication between application components.
 
-- EC2 (Elastic Compute Cloud)
+Example order flow:
 
-- CloudFront
-
-#### 🗄️ Database Services
-
-- RDS (Relational Database Service)
-
-- DynamoDB
-
-#### 🔐 Credential & Secret Management
-
-- AWS Secrets Manager
-
-#### 🔑 Authentication & Authorization
-
-- Amazon Cognito
-
-#### ⚡ Serverless Services
-
-- AWS Lambda
-
-- API Gateway
-
-#### 🚀 DevOps & Container Services
-
-- ECS (Elastic Container Service)
-
-- ECR (Elastic Container Registry)
-
-#### 🔹 3. Technical Skills
-
-- Basic Linux commands
-
-- Basic networking concepts (optional but recommended)
-
-- PHP and MySQL fundamentals
-
-#### 🔹 4. Tools & Access
-
-- SSH client (e.g., PuTTY, Terminal) or AWS Cloud9
-
-- Git & GitHub basics
-
-## 📁 Professional Repository Structure
-
-### Create your repo like this:
-
-> #### Update your repo to this (no file changes, only organization):
-
+```text
+Customer
+   |
+   v
+Frontend Application
+   |
+   v
+API Gateway
+   |
+   v
+Order Lambda
+   |
+   v
+Amazon SQS
+   |
+   v
+Order Processing Lambda
+   |
+   v
+Database
+   |
+   v
+Order Status Update
 ```
+
+This design helps separate customer requests from background processing.
+
+For reliable event processing, configure retry behavior, visibility timeouts, dead-letter queues and idempotent consumers.
+
+---
+
+# 🐳 Containerization
+
+Docker is used to package the application and its runtime dependencies.
+
+## Docker Architecture
+
+The project uses Docker to package the PHP and Apache application environment.
+
+Main files:
+
+- `docker/apache-php/Dockerfile`
+- `docker-compose.yml`
+- `.dockerignore`
+
+## Local Container Environment
+
+Docker Compose can be used to run the supported application and database services locally.
+
+Example:
+
+```bash
+docker compose up -d --build
+```
+
+Check running containers:
+
+```bash
+docker compose ps
+```
+
+View logs:
+
+```bash
+docker compose logs -f
+```
+
+Stop containers:
+
+```bash
+docker compose down
+```
+
+## Amazon ECR
+
+Amazon Elastic Container Registry stores application container images.
+
+Example image workflow:
+
+```text
+Application Source
+       |
+       v
+Docker Build
+       |
+       v
+Container Image
+       |
+       v
+Amazon ECR
+       |
+       v
+Amazon ECS
+```
+
+Use immutable image tags for deployment traceability rather than relying exclusively on `latest`.
+
+---
+
+# 🚀 Amazon ECS Deployment
+
+Amazon ECS is used to run containerized application workloads.
+
+## ECS Components
+
+- ECS Cluster.
+- ECS Service.
+- Task Definition.
+- Container Image.
+- Application Load Balancer.
+- Target Groups.
+- Task Execution Role.
+- Task IAM Role.
+- CloudWatch Log Groups.
+
+## Deployment Architecture
+
+```text
+GitHub Repository
+       |
+       v
+GitHub Actions
+       |
+       v
+Docker Build
+       |
+       v
+Amazon ECR
+       |
+       v
+ECS Task Definition
+       |
+       v
+ECS Service
+       |
+       v
+Application Load Balancer
+       |
+       v
+Charlie Cafe Application
+```
+
+## Deployment Strategies
+
+### Rolling Deployment
+
+Gradually replaces existing application tasks with updated tasks.
+
+### Blue/Green Deployment
+
+Uses separate blue and green deployment environments to support controlled traffic switching.
+
+### Canary Deployment
+
+Introduces a new version to a small portion of traffic before increasing exposure.
+
+### Automatic Rollback
+
+Deployment failures and configured CloudWatch alarms can trigger rollback when the deployment strategy supports it.
+
+---
+
+# 🔄 CI/CD Pipeline
+
+GitHub Actions automates application build, validation and deployment.
+
+## Pipeline Objectives
+
+- Automated source checkout.
+- Application validation.
+- Docker image building.
+- Container image tagging.
+- Amazon ECR authentication.
+- Image publishing.
+- Deployment initiation.
+- Deployment verification.
+- Failure reporting.
+
+## CI/CD Workflow
+
+```text
+Developer
+    |
+    v
+Git Push
+    |
+    v
+GitHub Repository
+    |
+    v
+GitHub Actions
+    |
+    v
+Source Validation
+    |
+    v
+Docker Build
+    |
+    v
+Amazon ECR
+    |
+    v
+ECS Deployment
+    |
+    v
+Health Checks
+    |
+    v
+Deployment Success
+```
+
+## GitHub Actions
+
+Workflow directory:
+
+`.github/workflows/`
+
+Deployment workflow:
+
+`deploy.yml`
+
+## Example Development Workflow
+
+```bash
+git add .
+git commit -m "Update Charlie Cafe application"
+git push origin main
+```
+
+GitHub Actions executes automatically when the workflow's configured trigger matches the push.
+
+## CI/CD Security
+
+Prefer GitHub Actions OpenID Connect (OIDC) with AWS IAM role assumption instead of long-lived AWS access keys.
+
+Use:
+
+- Restricted IAM permissions.
+- Protected deployment branches.
+- GitHub environment approvals.
+- Encrypted secrets where needed.
+- Deployment health checks.
+- Versioned container images.
+
+---
+
+# 🏗️ Infrastructure as Code (IaC)
+
+Infrastructure as Code is a major evolution of the Charlie Cafe project.
+
+The existing AWS architecture will progressively move toward reusable and automated infrastructure provisioning.
+
+## IaC Strategy
+
+The project uses two complementary infrastructure technologies:
+
+| Technology | Role |
+|---|---|
+| Terraform | Primary infrastructure provisioning approach |
+| AWS CloudFormation | AWS-native infrastructure templates |
+
+### 1. Terraform — Primary Implementation
+
+Terraform is the first implementation priority for infrastructure automation.
+
+Objectives:
+
+- Provision AWS infrastructure using code.
+- Create reusable Terraform modules.
+- Separate environments.
+- Manage infrastructure state.
+- Automate infrastructure deployment.
+- Support repeatable infrastructure provisioning.
+- Reduce manual AWS configuration.
+
+Planned Terraform modules:
+
+| Module | Responsibility |
+|---|---|
+| VPC | Networking infrastructure |
+| Subnets | Public and private networking |
+| Security Groups | Network access control |
+| IAM | Roles and policies |
+| EC2 | Virtual machine infrastructure |
+| ALB | Load balancing |
+| RDS | Relational database |
+| DynamoDB | NoSQL database |
+| S3 | Object storage |
+| Lambda | Serverless functions |
+| API Gateway | API infrastructure |
+| SQS | Messaging |
+| Cognito | Authentication |
+| ECR | Container registry |
+| ECS | Container services |
+| CloudWatch | Monitoring |
+
+### Terraform Environment Strategy
+
+Planned environment separation:
+
+```text
+terraform/
+│
+├── modules/
+│   ├── vpc/
+│   ├── iam/
+│   ├── ec2/
+│   ├── alb/
+│   ├── rds/
+│   ├── dynamodb/
+│   ├── lambda/
+│   ├── api-gateway/
+│   ├── sqs/
+│   ├── cognito/
+│   ├── ecr/
+│   ├── ecs/
+│   └── cloudwatch/
+│
+├── environments/
+│   ├── dev/
+│   ├── staging/
+│   └── production/
+│
+├── backend/
+│
+├── versions.tf
+├── providers.tf
+└── README.md
+```
+
+This is the planned Terraform architecture; it does not imply that all modules or environments have already been implemented.
+
+### Terraform Workflow
+
+```bash
+terraform init
+terraform fmt -recursive
+terraform validate
+terraform plan
+terraform apply
+```
+
+For infrastructure removal:
+
+```bash
+terraform plan -destroy
+terraform destroy
+```
+
+Review every plan before applying changes.
+
+### Terraform State Management
+
+The intended remote-state architecture uses:
+
+- Amazon S3 for Terraform state.
+- State locking supported by the selected Terraform backend configuration.
+- Encryption at rest.
+- Restricted IAM access.
+- State versioning and recovery.
+- Separate state files for independent environments.
+
+Never commit Terraform state files, state backups or sensitive variable files to Git.
+
+### 2. AWS CloudFormation
+
+The repository already includes a `cloudformation/` directory.
+
+CloudFormation is retained as the AWS-native IaC implementation.
+
+Its role includes:
+
+- AWS infrastructure templates.
+- Stack-based resource management.
+- Parameterized deployments.
+- Infrastructure repeatability.
+- AWS-native deployment workflows.
+
+Terraform remains the first implementation priority.
+
+---
+
+# ☸️ Kubernetes Architecture
+
+Kubernetes is the next major container orchestration objective.
+
+The project targets both local Kubernetes environments and Amazon Elastic Kubernetes Service (EKS).
+
+## Kubernetes Objectives
+
+- Deploy containerized Charlie Cafe workloads.
+- Manage application pods.
+- Configure Kubernetes services.
+- Manage application configuration.
+- Implement health probes.
+- Configure resource requests and limits.
+- Support horizontal scaling.
+- Manage deployments and rollbacks.
+- Integrate Kubernetes with CI/CD.
+
+## 1. Local Kubernetes
+
+The local Kubernetes environment will provide a development and testing platform.
+
+Supported implementation targets may include:
+
+- Minikube.
+- kind.
+- Docker Desktop Kubernetes.
+
+## 2. Amazon EKS
+
+Amazon EKS will provide managed Kubernetes infrastructure on AWS.
+
+Planned components:
+
+- EKS Cluster.
+- Managed Node Groups or supported compute alternatives.
+- Kubernetes Deployments.
+- Services.
+- Ingress.
+- AWS Load Balancer Controller.
+- ConfigMaps.
+- Secrets.
+- Horizontal Pod Autoscaler.
+- Cluster monitoring.
+
+## Kubernetes Application Flow
+
+```text
+GitHub Repository
+       |
+       v
+GitHub Actions
+       |
+       v
+Docker Build
+       |
+       v
+Amazon ECR
+       |
+       v
+Kubernetes Deployment
+       |
+       v
+Kubernetes Service
+       |
+       v
+Ingress / Load Balancer
+       |
+       v
+Charlie Cafe Application
+```
+
+## Kubernetes Deployment Structure
+
+Planned directory:
+
+```text
+kubernetes/
+│
+├── base/
+│   ├── namespace.yaml
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── configmap.yaml
+│   ├── ingress.yaml
+│   └── hpa.yaml
+│
+├── overlays/
+│   ├── local/
+│   └── eks/
+│
+└── README.md
+```
+
+Kubernetes manifests and environment overlays will be introduced during the Kubernetes implementation phase.
+
+---
+
+# 🔐 Security Architecture
+
+Security is a core design requirement.
+
+## Identity and Access Management
+
+AWS IAM provides identity-based access control.
+
+Implementation objectives:
+
+- Least-privilege IAM policies.
+- EC2 instance roles.
+- Lambda execution roles.
+- ECS task execution roles.
+- ECS task roles.
+- GitHub Actions deployment roles.
+- EKS workload IAM integration where required.
+
+## Authentication
+
+Amazon Cognito provides customer and employee authentication capabilities.
+
+## Secrets Management
+
+AWS Secrets Manager stores sensitive application credentials.
+
+Examples:
+
+- Database credentials.
+- API credentials.
+- Application secrets.
+
+Never hardcode credentials in source code or Docker images.
+
+## Network Security
+
+- Private database subnets.
+- Restricted Security Groups.
+- No public database access.
+- HTTPS communication.
+- VPC Endpoints where appropriate.
+- Restricted administrative access.
+
+## Container Security
+
+- Trusted base images.
+- Minimal container images.
+- Image vulnerability scanning.
+- Non-root containers where supported.
+- No secrets embedded in images.
+- Restricted container permissions.
+
+## Infrastructure Security
+
+- Encrypted Terraform state.
+- Restricted state access.
+- Protected GitHub branches.
+- Secret scanning.
+- IAM policy reviews.
+- Infrastructure change reviews.
+
+---
+
+# 📊 Monitoring and Logging
+
+Amazon CloudWatch provides infrastructure and application observability.
+
+## Monitoring Objectives
+
+- EC2 health.
+- ECS service health.
+- Container CPU and memory.
+- Lambda execution metrics.
+- Lambda errors.
+- SQS queue depth.
+- RDS database metrics.
+- ALB request metrics.
+- Target group health.
+- Deployment status.
+
+## Logging
+
+CloudWatch Logs can collect logs from:
+
+- Lambda functions.
+- ECS containers.
+- Application components.
+- Supported deployment processes.
+
+## Alerting
+
+Planned monitoring includes:
+
+- CloudWatch Alarms.
+- Unhealthy target monitoring.
+- Lambda error alarms.
+- Resource utilization alarms.
+- Application health monitoring.
+- Deployment failure notifications.
+
+---
+
+# 📁 Repository Structure
+
+The project maintains one main GitHub repository.
+
+Repository:
+
+https://github.com/awsrmmustansarjavaid/charlie-cafe-devops
+
+## Current Repository Layout
+
+The following reflects the major top-level directories and files currently present in the repository:
+
+```text
 charlie-cafe-devops/
 │
 ├── README.md
-├── appspec.yaml              ✅ (NEW - REQUIRED)
-├── LICENSE
 ├── .gitignore
-├── .dockerignore                
+├── .dockerignore
+├── appspec.yaml
 ├── docker-compose.yml
 │
-├── app/                         # Your original code (UNCHANGED)
+├── app/
 │   ├── frontend/
-│   │   ├── *.html/
-│   │   ├── *.php/
-│   │   ├── css/
-│   │   └── js/
-│   │
 │   └── backend/
 │       └── lambda/
-│           ├── *.py
+│
+├── cloudformation/
+│
+├── docker/
+│   └── apache-php/
+│       └── Dockerfile
 │
 ├── infrastructure/
 │   ├── rds/
-│   │   ├── schema.sql          
-│   │   ├── data.sql            ✅ (separate data)
-│   │   └── verify.sql          ✅ (for CI/CD testing)
-│   │
-│   ├── scripts/
-│   │   ├── setup_lamp.sh
-│   │   ├── setup_rds.sh
-│   │   ├── s3_to_ec2.sh
-│   │   ├── ec2_to_s3.sh
-│   │   └── lambda_layer.sh     
-│
-├── docker/
-│   ├── apache-php/
-│   │   └── Dockerfile          
-│   │
-│   └── mysql/
-│       └── Dockerfile          
+│   └── scripts/
 │
 ├── docs/
-│   ├── architecture.md
-│   ├── deployment.md
-│   ├── docker.md               
-│   └── AWS Charlie Cafe Project.md
+│   └── Charlie Cafe Project Lab Configurations/
 │
 └── .github/
     └── workflows/
-        └── deploy.yml          
+        └── deploy.yml
 ```
 
-### 👉 Important:
+## Planned Extended Repository Architecture
 
-- Your original files go inside folders as-is
+As Terraform and Kubernetes are implemented, the repository will progressively evolve toward:
 
-- No edits needed
+```text
+charlie-cafe-devops/
+│
+├── README.md
+├── LICENSE
+├── .gitignore
+├── .dockerignore
+├── docker-compose.yml
+├── appspec.yaml
+│
+├── app/
+│   ├── frontend/
+│   └── backend/
+│       └── lambda/
+│
+├── docker/
+│   └── apache-php/
+│       └── Dockerfile
+│
+├── infrastructure/
+│   │
+│   ├── terraform/
+│   │   ├── modules/
+│   │   ├── environments/
+│   │   ├── backend/
+│   │   └── README.md
+│   │
+│   ├── cloudformation/
+│   │
+│   ├── rds/
+│   │   ├── schema.sql
+│   │   ├── data.sql
+│   │   └── verify.sql
+│   │
+│   └── scripts/
+│
+├── kubernetes/
+│   ├── base/
+│   ├── overlays/
+│   │   ├── local/
+│   │   └── eks/
+│   └── README.md
+│
+├── helm/
+│
+├── tests/
+│   ├── application/
+│   ├── infrastructure/
+│   └── deployment/
+│
+├── docs/
+│   ├── architecture/
+│   ├── deployment/
+│   ├── terraform/
+│   ├── kubernetes/
+│   ├── security/
+│   └── Charlie Cafe Project Lab Configurations/
+│
+└── .github/
+    └── workflows/
+        ├── deploy.yml
+        ├── terraform.yml
+        ├── docker.yml
+        └── kubernetes.yml
+```
 
-### 📝 Create DEVOPS Files
+The extended layout is a target architecture, not a statement that every directory already exists.
 
-#### 📑 1. [Dockerfile](./docker/apache-php/Dockerfile)
-
-#### 📑 2. [docker-compose.yml](./docker-compose.yml)
-
-#### 📑 3. [.dockerignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.dockerignore)
-
-#### 📑 4. [.gitignore](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.gitignore)
-
-#### 📑 5. [deploy.yml](https://github.com/awsrmmustansarjavaid/charlie-cafe-devops/blob/main/.github/workflows/deploy.yml)
+**Repository strategy:** Continue developing the existing repository without splitting the project into separate repositories.
 
 ---
+
+# 📦 Prerequisites
+
+## 1. Accounts
+
+- GitHub account.
+- AWS account.
+
+## 2. Development Environment
+
+- Linux, Windows or macOS.
+- Git.
+- Docker.
+- Docker Compose.
+- AWS CLI.
+- Terraform.
+- Python.
+- PHP.
+- MySQL client.
+
+## 3. AWS Knowledge
+
+Recommended knowledge:
+
+- IAM.
+- VPC.
+- EC2.
+- Security Groups.
+- RDS.
+- S3.
+- Lambda.
+- API Gateway.
+- SQS.
+- ECS.
+- ECR.
+- CloudWatch.
+
+## 4. Kubernetes Tools
+
+Required during Kubernetes implementation:
+
+- kubectl.
+- Helm.
+- Local Kubernetes runtime.
+- AWS CLI.
+- eksctl where required.
+
+---
+
+# 💻 Local Development Setup
+
+## 1. Clone Repository
+
+```bash
+git clone https://github.com/awsrmmustansarjavaid/charlie-cafe-devops.git
+
+cd charlie-cafe-devops
+```
+
+## 2. Review Project Structure
+
+```bash
+ls -la
+```
+
+## 3. Build Docker Environment
+
+```bash
+docker compose build
+```
+
+## 4. Start Application
+
+```bash
+docker compose up -d
+```
+
+## 5. Check Container Status
+
+```bash
+docker compose ps
+```
+
+## 6. View Logs
+
+```bash
+docker compose logs -f
+```
+
+## 7. Stop Application
+
+```bash
+docker compose down
+```
+
+Configure environment-specific application variables and database credentials before starting services.
+
+---
+
+# ☁️ AWS Deployment
+
+The AWS deployment is organized into logical implementation phases.
+
+## Phase 1: AWS Foundation
+
+- Create AWS networking.
+- Configure VPC.
+- Create public and private subnets.
+- Configure route tables.
+- Create Security Groups.
+- Configure IAM roles.
+
+## Phase 2: Compute Infrastructure
+
+- Launch EC2 where required.
+- Configure application hosting.
+- Install required dependencies.
+- Configure application health checks.
+
+## Phase 3: Database Infrastructure
+
+- Create RDS database.
+- Configure database subnet group.
+- Create database Security Group.
+- Configure Secrets Manager.
+- Deploy database schema.
+- Validate connectivity.
+
+## Phase 4: Serverless Backend
+
+- Create Lambda functions.
+- Configure Lambda execution roles.
+- Configure VPC connectivity where required.
+- Create SQS queues.
+- Integrate API Gateway.
+- Configure authentication.
+
+## Phase 5: Container Infrastructure
+
+- Create ECR repository.
+- Build Docker image.
+- Push image to ECR.
+- Create ECS cluster.
+- Configure task definitions.
+- Create ECS service.
+- Configure ALB.
+
+## Phase 6: CI/CD
+
+- Configure GitHub Actions.
+- Configure AWS deployment authentication.
+- Add required GitHub secrets and variables.
+- Configure deployment workflow.
+- Test automated deployments.
+
+## Phase 7: Advanced Deployment
+
+- Configure blue/green deployment where applicable.
+- Configure health checks.
+- Configure CloudWatch alarms.
+- Configure rollback.
+- Validate deployment behavior.
+
+## Phase 8: Infrastructure as Code
+
+- Implement Terraform modules.
+- Configure remote state.
+- Provision development infrastructure.
+- Validate infrastructure plans.
+- Introduce additional environments.
+
+## Phase 9: Kubernetes
+
+- Configure local Kubernetes.
+- Deploy Charlie Cafe workloads locally.
+- Configure application services.
+- Implement Kubernetes health probes.
+- Provision Amazon EKS.
+- Deploy application to EKS.
+- Integrate Kubernetes with CI/CD.
+
+**Detailed manual AWS configuration:** See the project configuration documentation in `docs/Charlie Cafe Project Lab Configurations/`.
+
+---
+
+# 🧪 Testing and Validation
+
+Testing is required at every layer.
+
+## Application Testing
+
+- Frontend availability.
+- Backend functionality.
+- API responses.
+- Authentication.
+- Order processing.
+- Database connectivity.
+
+## Infrastructure Testing
+
+- VPC connectivity.
+- Subnet routing.
+- Security Group rules.
+- IAM permissions.
+- RDS connectivity.
+- VPC Endpoint connectivity.
+
+## Container Testing
+
+- Docker image builds.
+- Container startup.
+- Application health checks.
+- Container logs.
+- Environment configuration.
+
+## CI/CD Testing
+
+- Workflow execution.
+- Build validation.
+- Image publishing.
+- Deployment success.
+- Health verification.
+- Rollback testing.
+
+## Terraform Testing
+
+- Terraform formatting.
+- Terraform validation.
+- Terraform plan review.
+- Infrastructure deployment.
+- Infrastructure drift checks.
+
+## Kubernetes Testing
+
+- Pod status.
+- Deployment status.
+- Service connectivity.
+- Ingress availability.
+- Readiness probes.
+- Liveness probes.
+- Horizontal scaling.
+- Rollback validation.
+
+---
+
+# 📈 High Availability and Scalability
+
+The architecture is designed to support future business growth.
+
+## Application Availability
+
+- Multiple application tasks where required.
+- Load balancing.
+- Health checks.
+- Automated replacement of unhealthy tasks.
+- Deployment rollback.
+
+## Database Availability
+
+- Private database networking.
+- Automated backups.
+- Multi-AZ deployment where required.
+- Recovery planning.
+
+## Application Scalability
+
+- ECS service scaling.
+- Lambda concurrency configuration.
+- SQS-based decoupling.
+- Kubernetes Horizontal Pod Autoscaler.
+- Load-balanced application services.
+
+## Traffic Management
+
+- Application Load Balancer.
+- CloudFront.
+- API Gateway throttling.
+- Application-level rate limiting.
+
+---
+
+# 💰 Cost Optimization
+
+AWS infrastructure costs must be considered throughout development.
+
+## Cost Optimization Strategies
+
+- Use appropriate EC2 instance sizes.
+- Stop unused development resources.
+- Avoid unnecessary NAT Gateways.
+- Use VPC Endpoints where economically appropriate.
+- Monitor data transfer costs.
+- Configure ECS task sizing.
+- Use Lambda for suitable event-driven workloads.
+- Configure CloudWatch log retention.
+- Review RDS sizing and storage.
+- Use budgets and cost alerts.
+
+## Important AWS Cost Considerations
+
+Some AWS services incur charges even when application traffic is low.
+
+Pay particular attention to:
+
+- NAT Gateway.
+- Application Load Balancer.
+- RDS instances.
+- EKS control plane.
+- EC2 instances.
+- VPC Interface Endpoints.
+- Data transfer.
+- CloudWatch ingestion and retention.
+
+**Recommendation:** Use development-sized infrastructure and destroy temporary resources when they are no longer required.
+
+---
+
+# 📚 Documentation
+
+The repository contains implementation guides and supporting technical documentation.
+
+## Main Documentation
+
+| Documentation | Description |
+|---|---|
+| Main README | Project overview and architecture |
+| AWS Charlie Cafe Project | AWS project configuration |
+| Charlie Cafe Data Flow | Application data flow |
+| DevOps Cheatsheet | DevOps reference commands |
+| Docker Configuration | Container setup |
+| AWS IAM Documentation | IAM roles and policies |
+| Infrastructure Scripts | Deployment and automation scripts |
+
+## Documentation Location
+
+```text
+docs/
+│
+└── Charlie Cafe Project Lab Configurations/
+```
+
+For detailed AWS setup instructions, refer to the existing configuration guides in that directory.
+
+---
+
+# 🗺️ Implementation Roadmap
+
+The project will evolve through the following stages.
+
+## Phase 1 — Application and Repository Foundation
+
+- [x] Establish Charlie Cafe GitHub repository.
+- [x] Organize core application and DevOps components.
+- [x] Add Docker configuration.
+- [x] Add Docker Compose configuration.
+- [x] Add AWS deployment documentation.
+- [ ] Standardize application tests.
+
+## Phase 2 — AWS Cloud Foundation
+
+- [x] Document VPC architecture.
+- [x] Document EC2 configuration.
+- [x] Document database configuration.
+- [x] Document IAM roles and policies.
+- [ ] Standardize infrastructure validation.
+- [ ] Complete automated infrastructure provisioning.
+
+## Phase 3 — Serverless Architecture
+
+- [x] Document Lambda architecture.
+- [x] Document API Gateway integration.
+- [x] Document SQS architecture.
+- [ ] Complete automated serverless testing.
+- [ ] Validate asynchronous processing and failure handling.
+
+## Phase 4 — Docker and ECS
+
+- [x] Add Docker application configuration.
+- [x] Add Docker Compose.
+- [x] Document ECR.
+- [x] Document ECS deployment.
+- [x] Document advanced deployment strategies.
+- [ ] Standardize container security scanning.
+
+## Phase 5 — CI/CD Automation
+
+- [x] Add GitHub Actions deployment workflow.
+- [x] Document automated deployment.
+- [x] Document ECS deployment integration.
+- [ ] Implement stronger automated testing.
+- [ ] Integrate secure OIDC authentication.
+- [ ] Standardize deployment approvals and rollback validation.
+
+## Phase 6 — Terraform Implementation
+
+- [ ] Design Terraform repository architecture.
+- [ ] Configure Terraform providers.
+- [ ] Configure remote state.
+- [ ] Implement reusable modules.
+- [ ] Implement VPC module.
+- [ ] Implement IAM module.
+- [ ] Implement database modules.
+- [ ] Implement Lambda and API Gateway modules.
+- [ ] Implement SQS module.
+- [ ] Implement ECS and ECR modules.
+- [ ] Implement CloudWatch module.
+- [ ] Configure development environment.
+- [ ] Integrate Terraform with GitHub Actions.
+
+## Phase 7 — CloudFormation
+
+- [x] Establish CloudFormation repository area.
+- [ ] Standardize reusable CloudFormation templates.
+- [ ] Validate stack deployment.
+- [ ] Document template parameters and outputs.
+
+## Phase 8 — Local Kubernetes
+
+- [ ] Configure local Kubernetes environment.
+- [ ] Create namespace.
+- [ ] Create application Deployment.
+- [ ] Create Kubernetes Service.
+- [ ] Configure ConfigMaps.
+- [ ] Configure Secrets.
+- [ ] Implement health probes.
+- [ ] Implement resource requests and limits.
+- [ ] Configure autoscaling.
+- [ ] Test deployment and rollback.
+
+## Phase 9 — Amazon EKS
+
+- [ ] Design EKS architecture.
+- [ ] Provision EKS infrastructure.
+- [ ] Configure cluster access.
+- [ ] Configure managed compute.
+- [ ] Integrate Amazon ECR.
+- [ ] Deploy Charlie Cafe workloads.
+- [ ] Configure ingress and load balancing.
+- [ ] Configure workload IAM.
+- [ ] Implement monitoring.
+- [ ] Integrate EKS with GitHub Actions.
+
+## Phase 10 — Production Readiness
+
+- [ ] Complete security reviews.
+- [ ] Complete infrastructure validation.
+- [ ] Complete application testing.
+- [ ] Configure backup and recovery.
+- [ ] Configure monitoring and alerting.
+- [ ] Validate scaling.
+- [ ] Validate disaster recovery.
+- [ ] Document operational procedures.
+
+---
+
+# 🔧 Troubleshooting
+
+| Problem | Possible Cause | Recommended Action |
+|---|---|---|
+| EC2 SSH failure | Incorrect Security Group or key permissions | Validate SSH access |
+| RDS connection failure | Incorrect routing or Security Group | Check private networking |
+| Lambda timeout | Missing permissions or connectivity | Review Lambda logs and VPC |
+| SQS processing failure | Incorrect IAM permissions | Validate queue permissions |
+| Docker build failure | Invalid Dockerfile or dependencies | Review build logs |
+| ECR authentication failure | Missing IAM permissions | Validate ECR access |
+| ECS task failure | Image, networking or configuration issue | Inspect ECS events |
+| ALB unhealthy targets | Incorrect health check or application port | Validate target group |
+| GitHub Actions failure | Incorrect workflow configuration | Inspect workflow logs |
+| Terraform failure | Invalid configuration or state issue | Run validation and review state |
+| Kubernetes pod failure | Image, configuration or resource issue | Inspect pod events and logs |
+
+---
+
+# 🔒 Security Best Practices
+
+The following practices should be followed throughout development and deployment:
+
+1. Never commit AWS credentials.
+2. Never expose database ports publicly.
+3. Prefer IAM roles over static credentials.
+4. Use GitHub OIDC for AWS authentication.
+5. Store secrets in AWS Secrets Manager.
+6. Use private subnets for internal workloads.
+7. Restrict inbound Security Group rules.
+8. Encrypt sensitive data.
+9. Enable appropriate logging and monitoring.
+10. Use container image scanning.
+11. Protect production deployment workflows.
+12. Review Terraform plans before applying changes.
+13. Protect remote Terraform state.
+14. Use Kubernetes RBAC.
+15. Avoid storing sensitive information in container images or Git repositories.
+
+---
+
 # ☕ Charlie Cafe Lab Configurations
 
-## 1️⃣ Initialize GitHub Repo
+This section provides a comprehensive, step-by-step configuration guide for implementing the **Charlie Cafe AWS DevOps Project** end to end.
 
-### 1️⃣ Create repo on GitHub
+Follow the manual configuration instructions to set up, configure, and deploy all required AWS and DevOps components.
 
-- Go to: 👉 https://github.com  → New Repo
-
-- Name:
-
-```
-charlie-cafe-devops
-```
-
-### 2️⃣ Create IAM User for GitHub Actions
-
-- Go to AWS → IAM → Users → Add user
-
-  - UserName: github-ci-cd-user
-
-  - ✅ Select:
-
-```
-Provide user access to the AWS Management Console → ❌ UNCHECK
-```
-
-#### 👉 IMPORTANT:
-
-  - You only need programmatic access (API)
-
-  - NOT console login
-
-- Attach policy (minimum required):
-
-```
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "lambda:UpdateFunctionCode",
-        "lambda:GetFunction",
-        "lambda:ListFunctions",
-        "ec2:DescribeInstances",
-        "ssm:SendCommand",
-        "ssm:GetCommandInvocation",
-        "secretsmanager:GetSecretValue"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-- Policy Name: GitHub-Actions
-
-#### ✅ Paste 
-
-[GitHub-Actions](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie%20Cafe%20IAm%20Policies/GitHub-Actions.json)
-
-- 👉 Then attach this policy to your user
-
-### 3️⃣ 🔐 Create IAM User Access Key for GitHub
-
-- Go to AWS → IAM → Users → your user
-
-- Go to Security credentials → Access keys → Create Access key
-
-- #### Choose Use Case:
-
-  Select: 👉 Command Line Interface (CLI)
-
-- Click Next → Create
-
-- ### ✅ Save Keys (VERY IMPORTANT)
-
-You will get:
-
-```
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-```
-
-### 4️⃣ Configure AWS Secrets in GitHub
-
-- Go to GitHub repo → Settings → Secrets → Actions → Add the following secrets:
-
-| Secret Name             | Value                                          |
-| ----------------------- | ---------------------------------------------- |
-| `AWS_ACCESS_KEY_ID`     | Your IAM user access key                       |
-| `AWS_SECRET_ACCESS_KEY` | Your IAM user secret key                       |
-| `AWS_REGION`            | e.g., `us-east-1`                              |
-| `AWS_ACCOUNT_ID`        | Your AWS account ID                            |
-| `EC2_INSTANCE_ID`       | `i-0123456789abcdef0` (target EC2)             |
-| `EC2_USER`              | `ec2-user` (default username)                  |
-| `ECR_REPO`              | If using containerized Lambda or ECS           |
-| `ECS_CLUSTER`           | If using ECS                                   |
-| `ECS_SERVICE`           | If using ECS                                   |
-| `RDS_SECRET_ARN`        | ARN of your AWS Secrets Manager RDS credential |
+**Project Configuration Guide:** [AWS DevOps Charlie Cafe Project](./docs/project_configurations_guide/AWS%20DevOps%20Charlie%20Cafe%20Project.md)
 
 ---
-## 2️⃣ Initialize AWS 
 
-### 1️⃣ IAM Role & Policies
+# 🤝 Contributing
 
-- Create the following three IAM roles using the configurations defined in the [Charlie Cafe DevOps IAM Policy](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie-Cafe_IAM_Roles_Config.md)
+Contributions and suggestions are welcome.
 
-### 2️⃣ Network & Compute (Foundation)
+Recommended contribution workflow:
 
-#### 🔹 VPC Configuration
+```bash
+git clone https://github.com/awsrmmustansarjavaid/charlie-cafe-devops.git
 
-| Resource | Name         | CIDR Block    | Region      |
-| -------- | ------------ | ------------- | ----------- |
-| VPC      | `CafeDevVPC` | `10.0.0.0/16` | `us-east-1` |
+cd charlie-cafe-devops
 
-#### 🔹 Public Subnet
-
-| Resource      | Name                  | CIDR Block    | Auto Public IP |
-| ------------- | --------------------- | ------------- | -------------- |
-| Public Subnet | `CafeDevPublicSubnet` | `10.0.1.0/24` | Enabled        |
-
-#### 🔹 Private Subnets
-
-| Resource         | Name                    | CIDR Block    | Availability Zone |
-| ---------------- | ----------------------- | ------------- | ----------------- |
-| Private Subnet 1 | `CafeDevPrivateSubnet1` | `10.0.2.0/24` | AZ-a              |
-| Private Subnet 2 | `CafeDevPrivateSubnet2` | `10.0.3.0/24` | AZ-b              |
-
-#### 🔹 Internet Access Configuration
-
-| Component        | Configuration                            |
-| ---------------- | ---------------------------------------- |
-| Internet Gateway | Create and attach to `CafeDevVPC`        |
-| Route Table      | Add route `0.0.0.0/0 → Internet Gateway` |
-
-#### 💡 Pro Tip
-
-For production-ready setup, you should also include:
-
-- Separate route tables for public and private subnets
-
-- NAT Gateway for private subnet internet access
-
-- Proper tagging (Environment = Dev, Project = CharlieCafe)
-
-### 3️⃣ Security Groups (Quick View)
-
-#### 🔹 Overview
-
-| SG Name      | Purpose       | Attached To  | Inbound (Key)                    | Outbound  |
-| ------------ | ------------- | ------------ | -------------------------------- | --------- |
-| `default-sg` | General use   | EC2, RDS     | SSH, HTTP, HTTPS, MySQL, ALL TCP | Allow All |
-| `rds-sg`     | DB protection | RDS          | MySQL (from Lambda + Default SG) | Allow All |
-| `lambda-sg`  | Lambda access | Lambda (VPC) | HTTP/HTTPS, MySQL to RDS         | Allow All |
-
-#### 🔹 Rules 
-
-| SG Name    | Port   | Protocol | Source / Destination   | Purpose           |
-| ---------- | ------ | -------- | ---------------------- | ----------------- |
-| default-sg | 22     | TCP      | 0.0.0.0/0 (or your IP) | SSH access        |
-| default-sg | 80     | TCP      | 0.0.0.0/0              | Web (HTTP)        |
-| default-sg | 443    | TCP      | 0.0.0.0/0              | Web (HTTPS)       |
-| default-sg | 3306   | TCP      | Open / restricted      | MySQL access      |
-| rds-sg     | 3306   | TCP      | lambda-sg, default-sg  | DB access control |
-| lambda-sg  | 3306   | TCP      | rds-sg                 | Connect to RDS    |
-| lambda-sg  | 80/443 | TCP      | default-sg (optional)  | API testing       |
-
-#### 🔹 NACL
-
-| Component | Rule                             |
-| --------- | -------------------------------- |
-| NACL      | Allow all inbound/outbound (Dev) |
-
-#### 💡 Important Notes 
-
-🔒 RDS should NOT be public → only accessible via lambda-sg
-
-⚡ Lambda needs outbound 3306 → RDS
-
-🚫 Avoid 0.0.0.0/0 for MySQL in production
-
-🧪 SSH/HTTP in Lambda SG = optional (debug only)
-
-### 4️⃣ EC2 Configuration
-
-| Parameter      | Value                   |
-| -------------- | ----------------------- |
-| Name           | `CafeDevWebServer`      |
-| AMI            | Amazon Linux 2023       |
-| Instance Type  | `t2.micro`              |
-| VPC / Subnet   | Dev VPC / Public Subnet |
-| Security Group | `default-sg`            |
-| IAM Role       | `EC2-Cafe-Secrets-Role` |
-
-#### 🌐 EC2 IAM ROle 
-
-[EC2-Cafe-Secrets-Role](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/AWS%20IAM%20Role%20&%20Policies/Charlie%20Cafe%20IAm%20Policies/EC2-Cafe-Secrets-Role.json)
-
-#### 🔹 EC2 User Data
-
-| Item        | Details                          |
-| ----------- | -------------------------------- |
-| Script Name | `charlie-cafe-devops.sh`         |
-| Purpose     | Install and configure LAMP stack |
-| Location    | GitHub (User Data script)        |
-
-#### 🌐 EC2 User Data Script
-
-[charlie-cafe-devops.sh](./infrastructure/scripts/charlie-cafe-devops.sh)
-
-### 5️⃣ EC2 Access & Setup
-
-#### 🔹 Connect to EC2
-
-| Step           | Command                                      |
-| -------------- | -------------------------------------------- |
-| Set Permission | `chmod 400 CafeDevKey.pem`                   |
-| SSH Login      | `ssh -i CafeDevKey.pem ec2-user@<PUBLIC-IP>` |
-
-#### 🔹 Verify User Data Execution
-
-| Step            | Command                                            |
-| --------------- | -------------------------------------------------- |
-| Open Script     | `sudo nano charlie-cafe-full-devops-verify.sh`     |
-| Make Executable | `sudo chmod +x charlie-cafe-full-devops-verify.sh` |
-| Run Script      | `sudo ./charlie-cafe-full-devops-verify.sh`        |
-
-#### 🌐 EC2 Verify Script
-
-[charlie-cafe-full-devops-verify.sh](./infrastructure/scripts/charlie-cafe-full-devops-verify.sh)
-
-#### 💡 Notes
-
-- EC2 instance uses Amazon Linux 2023
-
-- Prerequisite setup is automated using a User Data script
-
-- The verification script ensures that the environment is properly configured and ready
----
-## 3️⃣ VPC ENDPOINTS
-
-### 1️⃣ VPC Interface Endpoints
-
-#### 🔹 Secrets Manager Endpoint
-
-| Parameter      | Value                                    |
-| -------------- | ---------------------------------------- |
-| Name           | `secretsmanager-INT-EP`                  |
-| Service        | `com.amazonaws.us-east-1.secretsmanager` |
-| Type           | Interface                                |
-| VPC            | Your Dev VPC                             |
-| Subnets        | Private subnets (Lambda same AZs)        |
-| Security Group | Allow HTTPS (443) from Lambda SG         |
-| Private DNS    | Enabled                                  |
-
-#### 🔹 SQS Interface Endpoint
-
-| Parameter      | Value                         |
-| -------------- | ----------------------------- |
-| Name           | `sqs-INT-EP`                  |
-| Service        | `com.amazonaws.us-east-1.sqs` |
-| Type           | Interface                     |
-| VPC            | Same VPC                      |
-| Subnets        | Private subnets               |
-| Security Group | `Lambda-SG`                   |
-| Private DNS    | Enabled                       |
-
-#### 🔹 CloudWatch Logs Endpoint
-
-| Parameter      | Value                          |
-| -------------- | ------------------------------ |
-| Name           | `cloudwatch-INT-EP`            |
-| Service        | `com.amazonaws.us-east-1.logs` |
-| Type           | Interface                      |
-| VPC            | Same VPC                       |
-| Subnets        | Private subnets                |
-| Security Group | `Lambda-SG`                    |
-| Private DNS    | Enabled                        |
-
-#### 🔹 DynamoDB Gateway Endpoint
-
-| Parameter    | Value                              |
-| ------------ | ---------------------------------- |
-| Name         | `dynamodb-GW-EP`                   |
-| Service      | `com.amazonaws.us-east-1.dynamodb` |
-| Type         | Gateway                            |
-| VPC          | Same VPC                           |
-| Route Tables | All private route tables           |
-| Purpose      | Enable private DynamoDB access     |
-
-### 🐳 2️⃣ ECR Interface VPC Endpoints
-
-#### 🔹 Purpose: 
-
-Allow ECS/Lambda to pull Docker images from ECR without internet or NAT Gateway.
-
-#### 🔹 ECR API Endpoint
-
-| Parameter      | Value                                  |
-| -------------- | -------------------------------------- |
-| Name           | `ecr-api-endpoint`                     |
-| Service        | `com.amazonaws.us-east-1.ecr.api`      |
-| Type           | Interface                              |
-| Purpose        | ECS → ECR API communication            |
-| Subnets        | Private subnets (same as ECS tasks)    |
-| Security Group | Allow outbound HTTPS (443) from ECS SG |
-| Private DNS    | Enabled                                |
-
-#### 🔹 ECR Docker Registry Endpoint
-
-| Parameter      | Value                               |
-| -------------- | ----------------------------------- |
-| Name           | `ecr-dkr-endpoint`                  |
-| Service        | `com.amazonaws.us-east-1.ecr.dkr`   |
-| Type           | Interface                           |
-| Purpose        | Docker image pull (registry access) |
-| Subnets        | Private ECS subnets                 |
-| Security Group | ECS SG allowed outbound HTTPS (443) |
-| Private DNS    | Enabled                             |
-
-### 3️⃣ S3 Gateway Endpoint (Required for ECR)
-
-#### 🔹 Purpose
-
-ECR stores image layers in S3 → required for image downloads.
-
-| Parameter    | Value                        |
-| ------------ | ---------------------------- |
-| Name         | `s3-ecr-gateway-endpoint`    |
-| Service      | `com.amazonaws.us-east-1.s3` |
-| Type         | Gateway                      |
-| Purpose      | ECR image layers retrieval   |
-| Route Tables | Private subnet route tables  |
-| Destination  | S3 Prefix List               |
-
-#### 🔄 Architecture Flow
-
-```
-Lambda (Private Subnet)
-   ↓
-VPC Endpoints
-   ↓
-AWS Services (SQS / Secrets / Logs / DynamoDB)
-```
-
-```
-GitHub Actions
-   ↓
-ECR (Docker Images)
-   ↓
-VPC Endpoints (ECR API + ECR DKR + S3)
-   ↓
-ECS Tasks (Private Subnets)
-   ↓
-ALB (Public Access Layer)
-   ↓
-CloudFront (CDN Layer)
-   ↓
-Frontend Users
-```
-
-#### 💡 Key Architecture
-
-🔒 Fully private ECS deployment
-
-🚫 No NAT Gateway required
-
-⚡ Faster image pulls from ECR
-
-🛡 Secure backend communication
-
-💰 Lower AWS cost
-
-🏗 Production-grade DevOps setup
-
-#### 🧠 Combined VPC Endpoint Strategy
-
-| Category           | Endpoints            |
-| ------------------ | -------------------- |
-| Security & Secrets | Secrets Manager, SSM |
-| Messaging          | SQS                  |
-| Logging            | CloudWatch Logs      |
-| Database           | DynamoDB Gateway     |
-| Container System   | ECR API, ECR DKR     |
-| Storage            | S3 Gateway           |
-
-
-#### ⚙️ Endpoint Strategy Summary
-
-| Service         | Type      | Purpose                   |
-| --------------- | --------- | ------------------------- |
-| Secrets Manager | Interface | Secure credentials access |
-| SQS             | Interface | Messaging system          |
-| CloudWatch Logs | Interface | Logging Lambda output     |
-| DynamoDB        | Gateway   | Private DB access         |
-
-#### ⚙️ ECS VPC Access Summary
-
-| Component     | Requirement             |
-| ------------- | ----------------------- |
-| ECS Tasks     | Run in Private Subnets  |
-| ECR Access    | Via Interface Endpoints |
-| Image Storage | S3 Gateway Endpoint     |
-| Internet/NAT  | ❌ Not required          |
-
-#### 🔐 Security Rules
-
-| Component     | Rule                            |
-| ------------- | ------------------------------- |
-| ECS SG        | Outbound HTTPS (443) allowed    |
-| Endpoint SG   | Inbound HTTPS (443) from ECS SG |
-| Public Access | ❌ Not required                  |
-| NAT Gateway   | ❌ Not needed                    |
-
-### 💡 Important Rules
-
-- Always use VPC endpoints for private Lambda
-
-- Never expose RDS directly (0.0.0.0/0 is forbidden)
-
-- Enable Private DNS for interface endpoints
-
-- DynamoDB must use Gateway endpoint
-
-- Lambda must run inside private subnets
-
-- Enables fully private container deployment
-
-- Improves security (no internet exposure)
-
-- Reduces cost (no NAT Gateway required)
-
-- Required for production-grade ECS architecture
-
-- Works with CI/CD pipelines (GitHub Actions → ECR → ECS)
-
-### 🚨 Common Failure Points
-
-| Issue                    | Cause                     |
-| ------------------------ | ------------------------- |
-| Lambda cannot access SQS | Missing SQS endpoint      |
-| Secrets Manager timeout  | No interface endpoint     |
-| RDS connection failed    | Wrong SG (0.0.0.0/0 used) |
-| CloudWatch logs missing  | Missing logs endpoint     |
----
-## 4️⃣ NAT Gateway (OPTIONAL INTERNET ACCESS FOR ECS)
-
-### 1️⃣ NAT Gateway Architecture
-
-| Component        | Purpose                                        |
-| ---------------- | ---------------------------------------------- |
-| NAT Gateway      | Provides internet access for private ECS tasks |
-| Internet Gateway | Public subnet outbound connectivity            |
-| Private Subnet   | ECS tasks run here (no public IP)              |
-| Route Table      | Routes internet traffic via NAT Gateway        |
-
-### 2️⃣ NAT Gateway Setup
-
-| Parameter       | Value                |
-| --------------- | -------------------- |
-| Name            | `ecs-nat-gateway`    |
-| Placement       | Public Subnet        |
-| Elastic IP      | Required             |
-| Internet Access | Via Internet Gateway |
-
-### 3️⃣ Route Table Configuration (Critical)
-
-#### 🔹 Private Subnet Route Table
-
-| Destination | Target      |
-| ----------- | ----------- |
-| `0.0.0.0/0` | NAT Gateway |
-
-### 4️⃣ ECS Task Networking
-
-| Setting         | Value                      |
-| --------------- | -------------------------- |
-| Subnet Type     | Private Subnet             |
-| Public IP       | ❌ Disabled                 |
-| Outbound Access | Via NAT Gateway            |
-| Security Group  | Allow HTTPS (443) outbound |
-
-###  5️⃣ Security Group Rules
-
-| Type                   | Protocol | Port | Destination                 |
-| ---------------------- | -------- | ---- | --------------------------- |
-| HTTPS                  | TCP      | 443  | `0.0.0.0/0`                 |
-| (Optional Restriction) | TCP      | 443  | ECR CIDR (`52.95.255.0/24`) |
-
-### 💡 NAT Gateway Benefits vs Limitations
-
-| Pros                      | Cons                                 |
-| ------------------------- | ------------------------------------ |
-| Easy setup                | High cost (hourly + data transfer)   |
-| Works immediately         | Not fully private architecture       |
-| No VPC endpoints required | Not recommended for production scale |
-
-### 🔄 Use Case Flow (NAT Based ECS)
-
-```
-ECS Task (Private Subnet)
-   ↓
-Route Table
-   ↓
-NAT Gateway (Public Subnet)
-   ↓
-Internet Gateway
-   ↓
-ECR / AWS Services
-```
-
-### ⚖️ NAT Gateway vs VPC Endpoints
-
-| Feature           | NAT Gateway | VPC Endpoints |
-| ----------------- | ----------- | ------------- |
-| Cost              | ❌ High      | ✔ Low         |
-| Security          | Medium      | High          |
-| Performance       | Good        | Better        |
-| Production Use    | Optional    | Recommended   |
-| Internet Required | Yes         | No            |
-
-### 🧠  DevOps Recommendation
-
-- Use NAT Gateway only for quick setup/testing
-
-- Use VPC Endpoints for production (best practice)
-
-- Prefer private architecture (no internet dependency)
-
-- Combine with ECR + ECS endpoints for full security
-
-### 🚀 Final ECS Internet Access Flow
-
-```
-ECS Task (Private Subnet)
-   ↓
-Route Table (0.0.0.0/0)
-   ↓
-NAT Gateway
-   ↓
-Internet Gateway
-   ↓
-ECR / AWS Services / Internet
-```
----
-## 5️⃣ Cafe Database Configuration
-
-### 1️⃣ — RDS Core Setup
-
-#### 🔹 Infrastructure Setup
-
-| Step | Component          | Configuration                                                                                                                                                     |
-| ---- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1️⃣  | DB Subnet Group    | Name: `CafeRDSSubnetGroup`<br>VPC: `CafeDevVPC`<br>Subnets: Private Subnets (2 AZs)                                                                               |
-| 2️⃣  | RDS Security Group | Name: `CafeRDS-SG`<br>Inbound: MySQL (3306) from `Lambda-SG`, `EC2-Web-SG`<br>Outbound: All traffic                                                               |
-| 3️⃣  | RDS Instance       | Engine: MySQL/MariaDB<br>DB Name: `cafedb`<br>Username: `cafe_user`<br>Password: `StrongPassword123`<br>Public Access: ❌ Disabled<br>Security Group: `CafeRDS-SG` |
----
-### 2️⃣ — AWS Secrets Manager
-
-#### 🔹 Store Database Credentials
-
-| Item        | Value                            |
-| ----------- | -------------------------------- |
-| Secret Name | `CafeDevDBSM`                    |
-| Secret Type | Key/Value (Other type of secret) |
-| Username    | `cafe_user`                      |
-| Password    | `StrongPassword123`              |
-| Host        | RDS Endpoint                     |
-| DB Name     | `cafe_db`                        |
-
-#### 🔹 Secret JSON Format
-
-```
-{
-  "username": "cafe_user",
-  "password": "StrongPassword123",
-  "host": "your-rds-endpoint.amazonaws.com",
-  "dbname": "cafe_db"
-}
-```
-
-#### 🔹 Example (Real Format)
-
-```
-{
-  "username": "cafe_user",
-  "password": "StrongPassword123",
-  "host": "cafedb.abc123xyz.us-east-1.rds.amazonaws.com",
-  "dbname": "cafe_db"
-}
-```
-
-#### 🔹 Secret ARN
-
-| Item       | Value                                                                    |
-| ---------- | ------------------------------------------------------------------------ |
-| Secret ARN | `arn:aws:secretsmanager:us-east-1:123456789012:secret:CafeDevDBSM-xxxxx` |
----
-### 3️⃣ Run RDS Bash Script 
-
-```
-nano charlie_cafe_devops-rds_setup_full.sh
-```
-[charlie_cafe_devops-rds_setup_full.sh](./infrastructure/scripts/charlie_cafe_devops-rds_setup_full.sh)
-
-#### 🧪 HOW TO USE
-
-#### 1️⃣ Give permission
-
-```
-chmod +x charlie_cafe_devops-rds_setup_full.sh
-```
-
-#### 2️⃣ Run
-
-```
-./charlie_cafe_devops-rds_setup_full.sh
-```
-
-#### 💡 Important Notes
-
-- RDS is NOT public (secure private DB)
-
-- Only Lambda / EC2 with proper SG can access MySQL (3306)
-
-- Secret ARN is used inside Lambda / backend code
-
-- Credentials are never hardcoded in application
-
----
-### 4️⃣ DynamoDB Setup
-
-### 1️⃣ Create DynamoDB CafeMenu Table 
-
-#### 🔹 Table Configuration
-
-| Parameter     | Value          |
-| ------------- | -------------- |
-| Table Name    | `CafeMenu`     |
-| Partition Key | `item`         |
-| Key Type      | String         |
-| Sort Key      | ❌ Not required |
-
-#### 🔹 Capacity Settings
-
-| Setting       | Value     |
-| ------------- | --------- |
-| Capacity Mode | On-Demand |
-
-#### 💡 Why On-Demand?
-
-| Reason               | Benefit               |
-| -------------------- | --------------------- |
-| No planning required | Auto scaling          |
-| Cost efficient       | Free-tier friendly    |
-| Ideal use case       | Learning + small apps |
-
-#### 🔹 Default Settings (Keep As-Is)
-
-| Setting             | Value           |
-| ------------------- | --------------- |
-| Encryption          | AWS Owned Key   |
-| Table Class         | Standard        |
-| Deletion Protection | Disabled        |
-| Tags                | Optional (skip) |
-
-#### 🔹 Table Status
-
-| Step         | Status         |
-| ------------ | -------------- |
-| Create Table | Click “Create” |
-| Wait Status  | `ACTIVE`       |
-
-### 🍽️ 2️⃣ Insert Menu Items (Cafe Data)
-
-#### 🔹 Item Structure
-
-| Attribute | Type   |
-| --------- | ------ |
-| item      | String |
-| price     | Number |
-
-#### ☕ Menu Items
-
-| Item        | JSON Format                         |
-| ----------- | ----------------------------------- |
-| Coffee      | `"item": "Coffee", "price": 3`      |
-| Latte       | `"item": "Latte", "price": 5`       |
-| Tea         | `"item": "Tea", "price": 2`         |
-| Cappuccino  | `"item": "Cappuccino", "price": 8`  |
-| Fresh Juice | `"item": "Fresh Juice", "price": 6` |
-
-#### 🧾 3️⃣ JSON Item Examples
-
-#### ☕ Coffee
-
-You will see a JSON editor.
-
-Replace everything with:
-
-```
-{
-  "item": {
-    "S": "Coffee"
-  },
-  "price": {
-    "N": "3"
-  }
-}
-```
-
-- ✅ Click Create item
-
-#### 🥛 Latte
-
-Click Create item again:
-
-```
-{
-  "item": {
-    "S": "Latte"
-  },
-  "price": {
-    "N": "5"
-  }
-}
-```
-
-- ✅ Click Create item
-
-#### 🍵 Tea
-
-Click Create item again:
-
-```
-{
-  "item": {
-    "S": "Tea"
-  },
-  "price": {
-    "N": "2"
-  }
-}
-```
-
-- ✅ Click Create item
-
----
-
-#### ☕ Cappuccino
-
-```
-{
-  "item": {
-    "S": "Cappuccino"
-  },
-  "price": {
-    "N": "8"
-  }
-}
-```
-
-- ✅ Click Create item
-
----
-
-#### 🍹 Fresh Juice
-
-```
-{
-  "item": {
-    "S": "Fresh Juice"
-  },
-  "price": {
-    "N": "6"
-  }
-}
-```
-
-- ✅ Click Create item
-
-#### 🔄 Data Flow
-
-```
-DynamoDB Table (CafeMenu)
-   ↓
-API Gateway / Lambda
-   ↓
-Frontend (Cafe Website)
-```
-
-### 💡 Notes
-
-- DynamoDB uses NoSQL key-value structure
-
-- item is the primary identifier
-
-- On-demand mode = auto scaling
-
-- Perfect for menu / product catalog
-
-- No need for relational schema
-
-### 🚀 Final Summary
-
-| Component     | Value        |
-| ------------- | ------------ |
-| Database Type | DynamoDB     |
-| Table Name    | CafeMenu     |
-| Primary Key   | item         |
-| Mode          | On-Demand    |
-| Use Case      | Menu Storage |
-
-### 2️⃣ Create DynamoDB METRICS TABLE
-
-### 1️⃣ Create DynamoDB Table
-
-| Parameter     | Value                 |
-| ------------- | --------------------- |
-| Table Name    | `CafeOrderMetrics`    |
-| Partition Key | `metric`              |
-| Key Type      | String                |
-| Sort Key      | ❌ None                |
-| Table Class   | Standard              |
-| Capacity Mode | On-Demand             |
-| Encryption    | Default (AWS managed) |
-
-#### 🔹 Table Status
-
-| Step         | Status         |
-| ------------ | -------------- |
-| Create Table | Click “Create” |
-| Wait Status  | `ACTIVE`       |
-
-#### 🔹 Metrics Table Data Structure
-
-| Attribute | Type   | Purpose           |
-| --------- | ------ | ----------------- |
-| metric    | String | Metric identifier |
-| count     | Number | Metric value      |
-
-#### 🔹 Initial Metrics Items
-
-| Metric Name  | Meaning                | Initial Value |
-| ------------ | ---------------------- | ------------- |
-| TOTAL_ORDERS | Total orders in system | 0             |
-| TODAY_ORDERS | Orders for current day | 0             |
-
-### 🧾 2️⃣ Insert Items (JSON Format)
-
-**Click table → Explore table → Create item**
-
-#### 🔹 TOTAL_ORDERS
-
-```
-{
-  "metric": { "S": "TOTAL_ORDERS" },
-  "count": { "N": "0" }
-}
-```
-
-#### 🔹 TODAY_ORDERS
-
-```
-{
-  "metric": { "S": "TODAY_ORDERS" },
-  "count": { "N": "0" }
-}
-```
-
-### 🔄 Metrics Data Flow
-
-```
-Order Placement (SQS/Lambda)
-   ↓
-Update Metrics Lambda
-   ↓
-DynamoDB (CafeOrderMetrics)
-   ↓
-Frontend Dashboard
-```
-
-### 💡 Notes
-
-- Designed for real-time dashboard metrics
-
-- Uses simple key-value structure
-
-- Optimized for fast reads/writes
-
-- Works with Lambda update triggers
-
-- No relational complexity required
-
-### 🚀 Final Summary
-
-| Component   | Value               |
-| ----------- | ------------------- |
-| Table Name  | CafeOrderMetrics    |
-| Type        | NoSQL Metrics Store |
-| Primary Key | metric              |
-| Mode        | On-Demand           |
-| Use Case    | Dashboard analytics |
-
-### 3️⃣ Create DynamoDB CafeOrders TABLE
-
-### 1️⃣ Create Table Configuration
-
-| Field         | Value                 |
-| ------------- | --------------------- |
-| Table Name    | `CafeOrders`          |
-| Partition Key | `order_id`            |
-| Key Type      | String                |
-| Sort Key      | ❌ None                |
-| Table Class   | Standard              |
-| Capacity Mode | On-Demand             |
-| Encryption    | Default (AWS Managed) |
-
-#### 🔹 Table Creation Status
-
-| Step         | Status         |
-| ------------ | -------------- |
-| Create Table | Click “Create” |
-| Wait Time    | 1–2 minutes    |
-| Final Status | `ACTIVE`       |
-
-#### 🔑 Primary Key Verification
-
-| Parameter     | Value      |
-| ------------- | ---------- |
-| Partition Key | `order_id` |
-| Type          | String     |
-
-⚠️ If not correct → STOP setup (critical dependency for system)
-
-### 3️⃣ Order Item Structure
-
-| Attribute      | Type   | Description           |
-| -------------- | ------ | --------------------- |
-| order_id       | String | Unique order ID       |
-| table_number   | Number | Customer table number |
-| item           | String | Menu item             |
-| quantity       | Number | Quantity ordered      |
-| total_amount   | Number | Total price           |
-| payment_method | String | CASH / CARD           |
-| payment_status | String | PENDING / PAID        |
-| status         | String | Order state           |
-| created_at     | String | Timestamp             |
-
-### 4️⃣ Test Items
-
-#### 🔹 Test Order 1 (CASH – PENDING)
-
-```
-{
-  "order_id": { "S": "ORD-TEST-001" },
-  "table_number": { "N": "5" },
-  "item": { "S": "Coffee" },
-  "quantity": { "N": "2" },
-  "total_amount": { "N": "6" },
-  "payment_method": { "S": "CASH" },
-  "payment_status": { "S": "PENDING" },
-  "status": { "S": "RECEIVED" },
-  "created_at": { "S": "2026-01-14T10:30:00Z" }
-}
-```
-
-#### 🔹 Test Order 2 (CARD – PENDING)
-
-```
-{
-  "order_id": { "S": "ORD-TEST-002" },
-  "table_number": { "N": "5" },
-  "item": { "S": "Coffee" },
-  "quantity": { "N": "2" },
-  "total_amount": { "N": "6" },
-  "payment_method": { "S": "CARD" },
-  "payment_status": { "S": "PENDING" },
-  "status": { "S": "RECEIVED" },
-  "created_at": { "S": "2026-01-14T10:30:00Z" }
-}
-```
-
-#### 🔎 Verification Checklist
-
-| Check           | Expected Result |
-| --------------- | --------------- |
-| Item visible    | Yes             |
-| payment_method  | CASH / CARD     |
-| payment_status  | PENDING         |
-| order_id unique | Yes             |
-
-#### 🔄 Data Flow
-
-```
-Frontend Order → Lambda → SQS → Worker Lambda → DynamoDB (CafeOrders)
-```
-
-### 💡 DevOps Notes
-
-- order_id is the primary system identifier
-
-- DynamoDB auto-creates attributes (No schema required)
-
-- Designed for event-driven architecture
-
-- Works with SQS + Lambda pipeline
-
-- Supports real-time order tracking system
-
-### 🚀 Final Summary
-
-| Component   | Value                   |
-| ----------- | ----------------------- |
-| Table Name  | CafeOrders              |
-| Type        | NoSQL Orders Store      |
-| Primary Key | order_id                |
-| Mode        | On-Demand               |
-| Use Case    | Order Management System |
-
-### 4️⃣ CREATE GSI
-
-- AWS Console → DynamoDB → CafeOrders
-
-- Click Indexes tab → Create index
-
-- Configure Index
-
-| Setting       | Value            |
-| ------------- | ---------------- |
-| Partition Key | order_date       |
-| Type          | String           |
-| Sort Key      | ❌ None           |
-| Index Name    | order_date-index |
-
-- Projection Type: ALL | Capacity Mode: On-demand (default) | Action: Click Create Index | Status: ACTIVE (wait 1–2 min)
-
-#### 📦 REQUIRED TABLE STRUCTURE
-
-> #### 🧾 DynamoDB GSI Configuration (CafeOrders)
-
-| Parameter       | Value                        |
-| --------------- | ---------------------------- |
-| Table Name      | CafeOrders                   |
-| Index Name      | order_date-index             |
-| Index Type      | Global Secondary Index (GSI) |
-| Partition Key   | order_date (String)          |
-| Sort Key        | None                         |
-| Projection Type | ALL                          |
-| Capacity Mode   | On-Demand                    |
-| Status          | ACTIVE                       |
-
-#### 📦 REQUIRED TABLE STRUCTURE (IMPORTANT)
-
-> #### 🧾 Orders Table Schema
-
-| Parameter       | Value                        |
-| --------------- | ---------------------------- |
-| Table Name      | CafeOrders                   |
-| Index Name      | order_date-index             |
-| Index Type      | Global Secondary Index (GSI) |
-| Partition Key   | order_date (String)          |
-| Sort Key        | None                         |
-| Projection Type | ALL                          |
-| Capacity Mode   | On-Demand                    |
-| Status          | ACTIVE                       |
-
-### 2️⃣ Verify Required Attributes (CRITICAL)
-
-Click Explore table items
-
-Open at least ONE COMPLETED order
-
-It MUST contain ALL attributes below:
-
-```
-{
-  "order_id": "ORD123",
-  "order_date": "2026-01-17",
-  "order_timestamp": 1705488000,
-  "item_name": "Latte",
-  "quantity": 2,
-  "item_cost": 1.5,
-  "item_price": 3.0,
-  "order_status": "COMPLETED"
-}
-```
-❌ If ANY field is missing → fix order-creation Lambda first
-
-✔ Do NOT continue until this is correct
-
-### 2️⃣ TEST GSI
-
-- Go to: Explore table items → Change: Scan → Query
-
-- Select index: order_date-index
-
-#### ✔ Query Example:
-
-| Field      | Value      |
-| ---------- | ---------- |
-| order_date | 2026-01-17 |
-
-> #### - OR range: BETWEEN 2026-01-01 AND 2026-01-31
-
-✔ If items return → GSI works
-
-❌ If empty → fix dates or index
-
-### 5️⃣ Create DynamoDB CafeAttendance TABLE
-
-### 1️⃣ Create Table Configuration
-
-#### 🔹 Basic Setup
-
-| Field              | Value                      |
-| ------------------ | -------------------------- |
-| Table Name         | `CafeAttendance`           |
-| Partition Key      | `employee_id`              |
-| Partition Key Type | String                     |
-| Sort Key           | `date`                     |
-| Sort Key Type      | String (YYYY-MM-DD format) |
-
-#### 🔹 Table Design Purpose
-
-| Feature            | Description                                     |
-| ------------------ | ----------------------------------------------- |
-| One record per day | Each employee has one attendance entry per date |
-| Query pattern      | employee-wise + date-wise lookup                |
-| Use case           | HR attendance tracking system                   |
-
-#### 🔹 Table Settings
-
-| Setting       | Value                   |
-| ------------- | ----------------------- |
-| Capacity Mode | On-Demand               |
-| Table Class   | Standard                |
-| Encryption    | AWS Owned Key (Default) |
-| Tags          | Optional (Skip)         |
-
-#### 🔹 Important Rules
-
-| Rule                                 | Status                                |
-| ------------------------------------ | ------------------------------------- |
-| Add attributes manually              | ❌ Not allowed                         |
-| Define check_in/check_out in console | ❌ Not required                        |
-| DynamoDB schema                      | Schema-less (auto attribute creation) |
-
-#### 🔹 Attendance Item Structure (Inserted via Lambda)
-
-| Attribute   | Type   | Description                  |
-| ----------- | ------ | ---------------------------- |
-| employee_id | String | Employee unique ID           |
-| date        | String | Attendance date (YYYY-MM-DD) |
-| check_in    | String | Check-in time                |
-| check_out   | String | Check-out time               |
-| role        | String | Employee role                |
-
-#### 🔹 Example Item (DynamoDB JSON Format)
-
-```
-{
-  "employee_id": { "S": "101" },
-  "date": { "S": "2026-02-01" },
-  "check_in": { "S": "09:03" },
-  "check_out": { "S": "17:11" },
-  "role": { "S": "Employee" }
-}
-```
-
-#### 🔹 Example Item (Lambda boto3 Format)
-
-```
-dynamo_table.put_item(
-    Item={
-        "employee_id": "101",
-        "date": "2026-02-01",
-        "check_in": "09:03",
-        "check_out": "17:11",
-        "role": "Employee"
-    }
-)
-```
-
-### 🔥 Key Design Notes
-
-| Concept       | Explanation                             |
-| ------------- | --------------------------------------- |
-| Partition Key | employee_id groups data per employee    |
-| Sort Key      | date ensures daily tracking             |
-| Schema        | Fully dynamic (NoSQL)                   |
-| Best Practice | Use Lambda for inserts                  |
-| Data Format   | No manual attribute definition required |
-
-### 🚀 Final Summary
-
-| Component   | Value                   |
-| ----------- | ----------------------- |
-| Table Name  | CafeAttendance          |
-| Primary Key | employee_id             |
-| Sort Key    | date                    |
-| Type        | NoSQL Attendance System |
-| Mode        | On-Demand               |
-| Use Case    | HR Tracking System      |
-
----
-## 6️⃣ ALB & CloudFront Configuration
-
-### ⚖️ 1️⃣ Application Load Balancer (ALB)
-
-#### 🔹 Core Configuration
-
-| Parameter      | Value                              |
-| -------------- | ---------------------------------- |
-| Name           | `charlie-cafe-alb`                 |
-| Scheme         | Internet-facing                    |
-| IP Type        | IPv4                               |
-| VPC            | `CafeDevVPC`                       |
-| Subnets        | 2+ Public Subnets (multi-AZ)       |
-| Security Group | Allow HTTPS (443) from `0.0.0.0/0` |
-
-#### 🔹 Target Group (EC2 Backend)
-
-| Parameter    | Value                               |
-| ------------ | ----------------------------------- |
-| Type         | Instance                            |
-| Protocol     | HTTP                                |
-| Port         | 80                                  |
-| Target       | EC2 Instance (`CafeDevWebServer`)   |
-| Health Check | `/` or `/cafe-admin-dashboard.html` |
-
-#### 🔹 Listeners (HTTP → HTTPS Setup - Optional)
-
-| Listener   | Action                  |
-| ---------- | ----------------------- |
-| HTTP :80   | Redirect → HTTPS :443   |
-| HTTPS :443 | Forward to Target Group |
-
-#### 🔹 SSL Certificate (ACM - Optional)
-
-| Parameter  | Value                         |
-| ---------- | ----------------------------- |
-| Source     | AWS Certificate Manager (ACM) |
-| Type       | Public SSL Certificate        |
-| Validation | DNS (recommended)             |
-| Domain     | Your domain / wildcard        |
-
-#### 🔹 ALB Output
-
-| Item    | Value                                                         |
-| ------- | ------------------------------------------------------------- |
-| ALB DNS | `http(s)://charlie-cafe-alb-xxxx.us-east-1.elb.amazonaws.com` |
-
-### ☁️ 2️⃣ CloudFront Configuration
-
-#### 🔹 Origin (ALB Backend)
-
-| Parameter       | Value                                               |
-| --------------- | --------------------------------------------------- |
-| Origin Type     | Application Load Balancer                           |
-| Origin Domain   | ALB DNS (`charlie-cafe-alb-xxxx.elb.amazonaws.com`) |
-| Origin Protocol | HTTP only                                           |
-| Port            | 80                                                  |
-
-#### 🔹 Default Cache Behavior
-
-| Setting                | Value                                        |
-| ---------------------- | -------------------------------------------- |
-| Viewer Protocol Policy | Redirect HTTP → HTTPS                        |
-| Allowed Methods        | GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE |
-| Cache Policy           | CachingDisabled                              |
-| Origin Request Policy  | AllViewer                                    |
-
-#### 🔹 Key Purpose
-
-| Feature           | Purpose                      |
-| ----------------- | ---------------------------- |
-| Forward Headers   | Auth (Cognito tokens)        |
-| Disable Cache     | Prevent login/session issues |
-| Full HTTP Methods | Support APIs + forms         |
-
-#### 🔹 General Settings
-
-| Parameter           | Value                       |
-| ------------------- | --------------------------- |
-| IPv6                | Disabled (lab setup)        |
-| Default Root Object | `cafe-admin-dashboard.html` |
-| Origin Path         | Empty                       |
-
-#### 🔹 Routing Flow
-
-```
-CloudFront → ALB → EC2 → Apache → Web App
-```
-
-#### 🔹 CloudFront Domain
-
-| Item | Value                  |
-| ---- | ---------------------- |
-| URL  | `xxxxx.cloudfront.net` |
-
-### 🔄 3️⃣ CloudFront Invalidations
-
-#### 🔹 Common Paths
-
-| Type           | Path                         |
-| -------------- | ---------------------------- |
-| HTML           | `/cafe-admin-dashboard.html` |
-| Full JS Folder | `/js/*`                      |
-| Entire Cache   | `/*`                         |
-
-#### 🔹 Best Practice (Recommended)
-
-| Method            | Recommendation               |
-| ----------------- | ---------------------------- |
-| Versioning        | `app.v2.js` or `?v=2`        |
-| Cache Bypass      | Avoid frequent invalidations |
-| Full Invalidation | Use only when required       |
-
-### ✅ BEST PRACTICE (Better Than Invalidation)
-
-Instead of invalidating every time, use versioning:
-
-```
-/js/config.v2.js
-/js/central-auth.v2.js
-/js/utils.v2.js
-/js/api.v2.js
-/js/central-printing.v2.js
-/var/www/html/js/role-guard.v2.js
-```
-
-#### Or:
-
-```
-<script src="/js/config.js?v=2"></script>
-<script src="/js/central-auth.js?v=2"></script>
-<script src="/js/utils.js?v=2"></script>
-<script src="/js/app.js?v=2"></script>
-<script src="/js/central-printing.js?v=2"></script>
-<script src="/js/role-guard.js?v=2"></script>
-```
-
-### 🔐 4️⃣ Cognito Integration
-
-| Parameter            | Value                          |
-| -------------------- | ------------------------------ |
-| Hosted UI Return URL | `https://xxxxx.cloudfront.net` |
-| Login Flow           | ALB → CloudFront → EC2         |
-| Requirement          | HTTPS mandatory                |
-
-#### 💡 Key Notes
-
-- ALB handles traffic routing + SSL termination
-
-- CloudFront handles global caching + HTTPS enforcement
-
-- Always use HTTPS (required for Cognito)
-
-- Avoid caching API/auth responses
-
-- Use versioning instead of frequent invalidations
----
-## 7️⃣ AWS Cognito Authentication Configuration
-
-### 🔐 1️⃣ Cognito User Pool (Core Setup)
-
-| Parameter           | Value                            |
-| ------------------- | -------------------------------- |
-| User Pool Name      | `CharlieCafeAdminSPA`            |
-| Application Type    | Single Page Application (SPA)    |
-| Sign-in Method      | Username only                    |
-| Example Users       | `admin`, `manager1`, `employee1` |
-| Self Registration   | ❌ Disabled                       |
-| Required Attributes | `email` only                     |
-
-### 🔐 2️⃣ Security Configuration
-
-| Setting          | Value                |
-| ---------------- | -------------------- |
-| Password Policy  | Default              |
-| MFA              | ❌ Disabled (Dev/Lab) |
-| Account Recovery | Email only           |
-| SMS Recovery     | ❌ Disabled           |
-
-### 🔐 3️⃣ App Client Configuration
-
-| Parameter        | Value                        |
-| ---------------- | ---------------------------- |
-| Client Type      | Public Client (NO secret)    |
-| App Client Name  | `CharlieCafeAdminSPA`        |
-| OAuth Flow       | Authorization Code Grant     |
-| Implicit Flow    | ❌ Disabled                   |
-| Supported Scopes | `openid`, `email`, `profile` |
-
-### 🔐 4️⃣ Authentication Flows
-
-| Flow               | Status     |
-| ------------------ | ---------- |
-| USER_PASSWORD_AUTH | Enabled    |
-| USER_SRP_AUTH      | Enabled    |
-| REFRESH_TOKEN_AUTH | Enabled    |
-| Others             | ❌ Disabled |
-
-### 👥 5️⃣ User Groups (RBAC)
-
-| Group    | Precedence | Purpose              |
-| -------- | ---------- | -------------------- |
-| Admin    | 1          | Full system access   |
-| Manager  | 5          | Management dashboard |
-| Employee | 10         | Employee portal      |
-
-### 👤 6️⃣ User Management
-
-| Username  | Group    | Email                                                         | Password (Default) | New Password | Email Verified |
-| --------- | -------- | ------------------------------------------------------------- | ------------------ | ------------ | -------------- |
-| cafeadmin | Admin    | [cafeadmin@charliecafe.com](mailto:cafeadmin@charliecafe.com) | ^MyH%H!A4YjD       | *KEXO^C3mjm3 | ✔ true         |
-| manager1  | Manager  | [manager1@charliecafe.com](mailto:manager1@charliecafe.com)   | jfZvm@^3gTVE       | *KEXO^C3mjm3 | ✔ true         |
-| ali       | Employee | [ali@charliecafe.com](mailto:ali@charliecafe.com)             | *KEXO^C3mjm3       | ^MyH%H!A4YjD | ✔ true         |
-
-
-### 🧩 7️⃣ Custom Attributes (Employee Mapping)
-
-- Go to : Amazon Cognito Console → User Pools → Your User Pool
-
-- Open Sign-up experience
-
-- Scroll to Custom attributes
-
-- Click Add custom attribute
-
-| Attribute | Value                                   |
-| --------- | --------------------------------------- |
-| Name      | `employee_id`                    |
-| Type      | String                                  |
-| Mutable   | Yes                                     |
-| Purpose   | Link Cognito user → RDS employee record |
-
-> #### Cognito will internally store it as: custom:employee_id
-
-### 🔐 8️⃣ App Client Attribute Access
-
-| Setting          | Value                |
-| ---------------- | -------------------- |
-| Read Permission  | `custom:employee_id` |
-| Write Permission | `custom:employee_id` |
-| Token Inclusion  | Included in JWT      |
-
-### 🌍 9️⃣ Cognito Hosted UI
-
-| Parameter     | Value                                                |
-| ------------- | ---------------------------------------------------- |
-| Domain Prefix | `charlie-cafe-auth`                                  |
-| Full Domain   | `charlie-cafe-auth.auth.us-east-1.amazoncognito.com` |
-| Type          | Hosted UI (OAuth2)                                   |
-
-### 🔁 1️⃣0️⃣ OAuth Configuration
-
-| Setting       | Value                    |
-| ------------- | ------------------------ |
-| Grant Type    | Authorization Code Grant |
-| Implicit Flow | ❌ Disabled               |
-| Scope         | openid + email + profile |
-
-### 🔗 1️⃣1️⃣ Callback & Logout URLs
-
-| Type          | URL                                                                     |
-| ------------- | ----------------------------------------------------------------------- |
-| Callback URLs | CloudFront routes (dashboard, login, order, analytics, employee portal) |
-| Logout URL    | `https://YOUR_CLOUDFRONT/logout.php?loggedout=true`                     |
-
-#### 🔗 Construct the LOGIN URL
-
-Open browser and paste (replace values):
-
-```
-https://YOUR_DOMAIN.auth.us-east-1.amazoncognito.com/login
-?client_id=YOUR_CLIENT_ID
-&response_type=code
-&scope=openid+email+profile
-&redirect_uri=https://yourdomain.com/login.html
-```
-
-#### 📌 Example:
-
-```
-https://charlie-cafe.auth.us-east-1.amazoncognito.com/login
-?client_id=YOUR_CLIENT_ID
-&response_type=code
-&scope=openid+email+profile
-&redirect_uri=https://yourdomain.com/login.html
-```
-
-- 👉 Press Enter
-
-#### 🌐 Cognito Access Auth Code
-
-```
-https://yourdomain.com/login.html?code=ebec6a0a-54e8-49c0-a093-d68150c182b1
-```
-
-#### 🔗 Login Screen Appears
-
-- Enter username & password
-
-- Click Sign in
-
-If login is successful → browser redirects to:
-
-```
-https://yourdomain.com/login.html?code=AUTH_CODE
-```
-
-Access token will only appear after your frontend exchanges the code via:
-
-```
-POST https://YOUR_DOMAIN/oauth2/token
-```
-
-### 🔐 1️⃣2️⃣ Authentication Flow Summary
-
-| Component  | Role                        |
-| ---------- | --------------------------- |
-| Cognito    | Authentication + JWT tokens |
-| CloudFront | Frontend hosting            |
-| ALB        | Backend routing             |
-| Lambda/API | Business logic              |
-| RDS        | Employee + order data       |
-
-### 🧠 1️⃣3️⃣ Token Structure (Important)
-
-| Token Type    | Contains           |
-| ------------- | ------------------ |
-| ID Token      | User info + groups |
-| Access Token  | API authorization  |
-| Refresh Token | Session renewal    |
-
-### 🔄 1️⃣4️⃣ Login Flow (Architecture)
-
-```
-CloudFront → Cognito Hosted UI → JWT Token → Frontend → API Gateway/Lambda → RDS
-```
-
-### 🧩 1️⃣5️⃣ Employee ID Mapping (Critical Design)
-
-| Component         | Value                        |
-| ----------------- | ---------------------------- |
-| Cognito Attribute | `custom:employee_id`         |
-| Purpose           | Match RDS employee table     |
-| Flow              | Cognito → JWT → Lambda → RDS |
-
-### ⚠️ 1️⃣6️⃣ Key Security Rules
-
-| Rule                   | Status        |
-| ---------------------- | ------------- |
-| Self registration      | ❌ Disabled    |
-| Public admin creation  | ❌ Not allowed |
-| Implicit flow          | ❌ Disabled    |
-| Password auth exposure | ❌ Restricted  |
-| Groups-based access    | ✔ Enabled     |
-
-### 💡 1️⃣7️⃣ Best Practices
-
-- Use Authorization Code Flow (modern standard)
-
-- Always enforce group-based access control
-
-- Store no secrets in frontend
-
-- Use custom attributes for DB mapping
-
-- Never use implicit OAuth flow
-
-- Always validate JWT in backend
-
-### 🚀 Final Summary
-
-| Layer            | Service            |
-| ---------------- | ------------------ |
-| Identity         | Cognito            |
-| UI Auth          | Hosted UI          |
-| Token            | JWT                |
-| Role Control     | Cognito Groups     |
-| Backend Security | Lambda/API Gateway |
-| Data Layer       | RDS                |
----
-## 8️⃣ ☕ Employee ID System (Cognito ↔ RDS Integration)
-
-### 🔄 Flow Diagram (Concept)
-
-- Employee signs up in Amazon Cognito
-
-- Cognito generates a unique sub (User ID)
-
-- Lambda / Admin inserts employee into RDS
-
-- RDS stores Cognito ID as reference
-
-- Frontend uses Cognito token → fetch employee data from RDS
-
-### 🔄 RDS Table Structure (Employee Master Table)
-
-| Column Name     | Data Type           | Purpose                 |
-| --------------- | ------------------- | ----------------------- |
-| id              | INT AUTO_INCREMENT  | Internal DB ID          |
-| cognito_user_id | VARCHAR(100) UNIQUE | Links Cognito user      |
-| name            | VARCHAR(100)        | Employee name           |
-| job_title       | VARCHAR(50)         | Role (Barista, Manager) |
-| salary          | DECIMAL(10,2)       | Salary                  |
-| start_date      | DATE                | Joining date            |
-
-### 🔄 Cognito → Employee Identity Mapping
-
-| Cognito Attribute  | Meaning        | Usage in RDS                |
-| ------------------ | -------------- | --------------------------- |
-| sub                | Unique User ID | Stored as `cognito_user_id` |
-| email              | Login email    | Optional mapping            |
-| cognito:username   | Username       | UI reference                |
-| custom:employee_id | Optional DB ID | Alternative mapping         |
-
-### 1️⃣ Get Cognito User Info
-
-Example Cognito user:
-
-| Field    | Value                                  |
-| -------- | -------------------------------------- |
-| username | ali                                    |
-| sub      | `74e8a458-a011-700d-dcdb-df9692b61962` |
-| group    | Employee                               |
-
-### 2️⃣ Insert Employee into RDS
-
-```
-INSERT INTO employees
-(cognito_user_id, name, job_title, salary, start_date)
-VALUES
-('74e8a458-a011-700d-dcdb-df9692b61962',
- 'Ali',
- 'Barista',
- 40000,
- '2026-03-05');
-```
-
-### 3️⃣ Verify Employee in RDS
-
-```
-SELECT * FROM employees
-WHERE cognito_user_id = '74e8a458-a011-700d-dcdb-df9692b61962';
-```
-
-### 4️⃣ Batch Insert (Optional)
-
-```
-INSERT INTO employees (cognito_user_id, name, job_title, salary, start_date)
-VALUES
-('ID-2', 'Bob', 'Chef', 50000, '2026-03-01'),
-('ID-3', 'Carol', 'Manager', 60000, '2026-02-15');
-```
-
-### 5️⃣ Integration Query (App Use Case)
-
-```
-SELECT name, job_title, salary
-FROM employees
-WHERE cognito_user_id = '74e8a458-a011-700d-dcdb-df9692b61962';
-```
-
-### 6️⃣ Cognito Configuration (Required Setup)
-
-#### 🔐 App Client Settings
-
-| Setting    | Value                    |
-| ---------- | ------------------------ |
-| OAuth Flow | Authorization Code Grant |
-| Scope      | openid, email, profile   |
-
-#### 🔁 Redirect URLs
-
-| Type     | URL                                                                                                  |
-| -------- | ---------------------------------------------------------------------------------------------------- |
-| Callback | [https://your-cloudfront-url/employee-portal.html](https://your-cloudfront-url/employee-portal.html) |
-| Logout   | [https://your-cloudfront-url/employee-login.html](https://your-cloudfront-url/employee-login.html)   |
-
-#### 🌐 Cognito Hosted Domain
-
-- Example: charlie-cafe-auth
-
-- Login URL:
-
-```
-https://charlie-cafe-auth.auth.us-east-1.amazoncognito.com/login
-```
-
-### 🌐 Login Flow (Frontend)
-
-#### 🔑 Login URL Example
-
-```
-https://charlie-cafe-auth.auth.us-east-1.amazoncognito.com/login
-?client_id=YOUR_CLIENT_ID
-&response_type=code
-&scope=openid+email+profile
-&redirect_uri=https://your-cloudfront-url/employee-portal.html
-```
-
-#### 🔁 After Login
-
-Cognito returns:
-
-```
-employee-portal.html?code=xxxx
-```
-
-Frontend exchanges code → token
-
-### 🔑 Token Verification (Frontend)
-
-```
-console.log(parseJwt(localStorage.getItem("id_token")));
-```
-
-#### ✅ Expected Token Output
-
-```
-{
-  "sub": "74e8a458-a011-700d-dcdb-df9692b61962",
-  "email": "ali@charliecafe.com",
-  "cognito:username": "ali",
-  "custom:employee_id": "5"
-}
-```
-
-### 🌀 RDS ↔ Cognito Integration Logic
-
-| Step | Action                   |
-| ---- | ------------------------ |
-| 1    | User logs in via Cognito |
-| 2    | Get `sub` from token     |
-| 3    | Use `sub` to query RDS   |
-| 4    | Fetch employee record    |
-| 5    | Return data to frontend  |
-
-### 🌀 Lambda Automation (Best Practice)
-
-#### ⚡ Auto Employee Creation (Post Confirmation Trigger)
-
-```
-INSERT INTO employees 
-(cognito_user_id, name, job_title, salary, start_date)
-VALUES (%s, %s, %s, %s, %s)
-```
-
-#### 🔄 Workflow:
-
-| Event                | Action            |
-| -------------------- | ----------------- |
-| Cognito user created | Lambda triggered  |
-| Lambda executes      | Inserts into RDS  |
-| Employee ready       | Portal auto-syncs |
-
-### ⚒ Final Verification Checklist
-
-#### ✅ RDS Check
-
-```
-SHOW TABLES;
-SELECT * FROM employees;
-```
-
-#### ✅ Cognito Check
-
-- User pool active
-
-- App client configured
-
-- Hosted UI enabled
-
-- OAuth scopes correct
-
-#### ✅ Integration Check
-
-- Token contains sub
-
-- RDS stores cognito_user_id
-
-- Query returns employee data
-
-### 🎯 Final Result
-
-✔ Cognito handles authentication
-
-✔ RDS stores employee profile
-
-✔ sub links both systems
-
-✔ Frontend uses token to fetch employee data
-
-✔ Lambda can automate employee creation
----
-## 9️⃣ — SQS (Producer Setup)
-
-### 1️⃣ SQS Queue Configuration
-
-| Parameter          | Value             | Notes                    |
-| ------------------ | ----------------- | ------------------------ |
-| Queue Name         | `CafeOrdersQueue` | Main order queue         |
-| Queue Type         | Standard          | ❌ Do NOT use FIFO        |
-| Visibility Timeout | 60 seconds        | Lambda processing window |
-| Message Retention  | 4 days            | Default                  |
-| Max Message Size   | 256 KB            | Default                  |
-| Delivery Delay     | 0 seconds         | Default                  |
-| Receive Wait Time  | 0 seconds         | Default                  |
-| Dead-Letter Queue  | ❌ Disabled        | Will be added later      |
-| Encryption         | ❌ Disabled        | Free-tier friendly       |
-| Access Policy      | Basic (default)   | Do not modify            |
-
-### 2️⃣ Purpose & Behavior
-
-| Component       | Role                               |
-| --------------- | ---------------------------------- |
-| SQS Queue       | Stores incoming orders             |
-| Producer Lambda | Sends messages to queue            |
-| Worker Lambda   | Processes messages + writes to RDS |
-| Flow Type       | Asynchronous processing            |
-
-### 3️⃣ Performance Design
-
-| Setting                  | Reason                                |
-| ------------------------ | ------------------------------------- |
-| Visibility Timeout (60s) | Ensures Lambda completes DB insert    |
-| Standard Queue           | High throughput, unordered processing |
-| No DLQ (initial)         | Simpler setup for development         |
-
-### 4️⃣ Security & Access
-
-| Setting       | Value                                   |
-| ------------- | --------------------------------------- |
-| Encryption    | Disabled (dev mode)                     |
-| Access Policy | Default AWS-managed                     |
-| Public Access | Not applicable (SQS is private service) |
-
-### 5️⃣ Output Values (IMPORTANT)
-
-| Item         | Value                                 |
-| ------------ | ------------------------------------- |
-| Queue Status | Available                             |
-| Queue URL    | Save for Lambda integration           |
-| Queue ARN    | Required for IAM + Lambda permissions |
-
-### 💡 Notes
-
-- SQS acts as buffer between API and database
-
-- Ensures decoupled architecture
-
-- Prevents DB overload
-
-- Enables scalable async processing
-
-- Standard queue = best for event-driven systems
-
-### 🔄 Architecture Flow
-
-```
-API → Producer Lambda → SQS Queue → Worker Lambda → RDS
-```
----
-### 🔟 Lambda & API Configuration 
-
-### 1️⃣ Create Lambda Function
-
-- ### 1️⃣ Lambda Function 
-
-| Lambda Function Name          | Python File                      | Handler                                      | VPC Required |
-| ----------------------------- | -------------------------------- | -------------------------------------------- | ------------ |
-| CafeOrderProcessor            | CafeOrderProcessor.py            | CafeOrderProcessor.lambda_handler            | ✔ Yes        |
-| CafeMenuLambda                | CafeMenuLambda.py                | CafeMenuLambda.lambda_handler                | ❌ No         |
-| CafeOrderStatusLambda         | CafeOrderStatusLambda.py         | CafeOrderStatusLambda.lambda_handler         | ✔ Yes        |
-| GetOrderStatusLambda          | GetOrderStatusLambda.py          | GetOrderStatusLambda.lambda_handler          | ✔ Yes        |
-| CafeOrderWorkerLambda         | CafeOrderWorkerLambda.py         | CafeOrderWorkerLambda.lambda_handler         | ✔ Yes        |
-| AdminMarkPaidLambda           | AdminMarkPaidLambda.py           | AdminMarkPaidLambda.lambda_handler           | ✔ Yes        |
-| CafeAnalyticsLambda           | CafeAnalyticsLambda.py           | CafeAnalyticsLambda.lambda_handler           | ✔ Yes        |
-| hr-attendance                 | hr-attendance.py                 | hr-attendance.lambda_handler                 | ✔ Yes        |
-| hr-employee-profile           | hr-employee-profile.py           | hr-employee-profile.lambda_handler           | ✔ Yes        |
-| hr-attendance-history         | hr-attendance-history.py         | hr-attendance-history.lambda_handler         | ✔ Yes        |
-| hr-leaves-holidays            | hr-leaves-holidays.py            | hr-leaves-holidays.lambda_handler            | ✔ Yes        |
-| cafe-attendance-admin-service | cafe-attendance-admin-service.py | cafe-attendance-admin-service.lambda_handler | ✔ Yes        |
-
-- ### 2️⃣ Basic Lambda Configurations
-
-| Setting         | Value                          |
-|-----------------|--------------------------------|
-| Runtime         | Python 3.10, 3.11, or 3.12    |
-| Architecture    | x86_64                         |
-| Execution role  | Use existing role              |
-| Role            | Lambda-Cafe-Order-Role         |
-| Timeout         | 10–30 seconds                  |
-
-- ### 3️⃣ FIX HANDLER (VERY IMPORTANT)
-
-- Go to: 👉 Scroll Down → Runtime settings
-
-- Click Edit
-
-- Set Handler like this:
-
-```
-CafeOrderProcessor.lambda_handler
-```
-
-- RULE:
-
-```
-filename.function
-```
-
-
-⚠️ If wrong → CI/CD works but Lambda FAILS
-
-- Save
-
-✅ You only need to do this once per function. After this, your Bash script can fully update the code and layers automatically.
-
-- ### 4️⃣ Move Lambda Into VPC
-
-| Lambda Function Name             |
-|---------------------------------|
-| CafeOrderProcessor               | 
-| CafeOrderStatusLambda            | 
-| GetOrderStatusLambda             | 
-| CafeOrderWorkerLambda            | 
-| AdminMarkPaidLambda              | 
-| CafeAnalyticsLambda              | 
-| hr-attendance                    | 
-| hr-employee-profile              | 
-| hr-attendance-history            | 
-| hr-leaves-holidays               | 
-| cafe-attendance-admin-service    | 
-
-- AWS Console → Lambda → Your Function
-
-- Go to Configuration → Open VPC → Click Edit
-
-- Select:
-
-  - VPC → same as EC2
-
-  - Subnets → PRIVATE subnets (important)
-
-  - Security Group → Lambda SG
-
-- Save
-
-- ### 5️⃣ 🌐 Environment Variables
-
-- #### 1️⃣ CafeOrderProcessor
-
-| Key           | Value                  |
-| ------------- | ---------------------- |
-| SQS_QUEUE_URL | (paste your Queue URL) |
-
-- #### 2️⃣ cafe-attendance-admin-service
-
-| Key              | Value            |
-|------------------|------------------|
-| DYNAMODB_TABLE   | CafeAttendance   |
-
-### 2️⃣ API Gateway Endpoints
-
-#### 1️⃣ Create a REST API
-
-- Open AWS Management Console → API Gateway.
-
-- Click Create API.
-
-- Choose REST API → Build.
-
-- Configuration:
-
-  - API name: CafeOrderAPI
-
-  - Description: API for processing café orders
-
-  - Endpoint type: Regional (default)
-
-- Click Create API.
-
-#### 2️⃣ Create Resource
-
-- In your API, click Resources → Actions → Create Resource.
-
-- Configure:
-
-  - Integration type: Lambda Function
-
-  - Lambda Region: us-east-1
-
-  - Check Use Lambda Proxy integration
-
-| Resource Name        | Resource Path           | Lambda Function                | API Method | Enable CORS |
-|---------------------|------------------------|-------------------------------|------------|-------------|
-| orders              | /orders               | CafeOrderProcessor            | POST       | Yes         |
-| get-order-status    | /get-order-status     | GetOrderStatusLambda          | GET        | Yes         |
-| cafe-order-status   | /cafe-order-status    | CafeOrderStatusLambda         | GET        | Yes         |
-| order-update        | /order-update         | CafeOrderWorkerLambda         | POST       | Yes         |
-| mark-paid           | /admin/mark-paid      | AdminMarkPaidLambda           | POST       | Yes         |
-| analytics           | /analytics            | CafeAnalyticsLambda           | GET        | Yes         |
-| Attendance          | /attendance/checkin   | hr-attendance                 | POST       | Yes         |
-| Attendance          | /attendance/checkout  | hr-attendance                 | POST       | Yes         |
-| Employee Profile    | /employee-profile     | hr-employee-profile           | POST       | Yes         |
-| Attendance History  | /attendance-history   | hr-attendance-history         | POST       | Yes         |
-| Leaves & Holidays   | /leaves-holidays      | hr-leaves-holidays            | POST       | Yes         |
-| hr-analytics        | /hr-analytics         | cafe-attendance-admin-service | GET        | Yes         |
-
-- Click Save → OK to give permissions to API Gateway to invoke Lambda.
-
-#### 3️⃣ Enable CORS (Cross-Origin Resource Sharing)
-> Repeat the same configuration for all API application resources listed above.
-
-- Select resource 
-
-> for example /orders
-
-- Click Actions → Enable CORS.
-
-- Configure:
-
-  - Allowed Methods: Select method of paritcular resource
-
-  - Allowed Headers: Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token
-
-  - Allow Credentials: unchecked
-
-- Click Enable CORS and replace existing CORS headers.
-
-- Click Yes, replace existing values if prompted.
-
-#### 4️⃣ Deploy API
-
-- Click Actions → Deploy API.
-
-- Configure:
-
-  - Deployment stage: prod
-
-  - Stage description: Development stage
-
-  - Deployment description: Initial deployment
-
-- Click Deploy.
-
-#### 5️⃣ Cognito Authorizers
-
-- Go to Authorizers
-
-- Create new:
-
-  - Name: Cognito-Authorizer
-
-  - Type: Cognito
-
-  - User Pool: your pool
-
-  - Token source: Authorization
-
-- Attach authorizer to these 3 endpoints:
-
-```
-/employee-profile
-
-/attendance-history
-
-/leaves-holidays
-```
-
-👉 Now API Gateway expects:
-
-```
-Authorization: Bearer <JWT>
-```
-
-#### 6️⃣ Copy API Invoke URL
-
-After deployment, you’ll see an Invoke URL at the top of the Stage page, e.g.:
-
-```
-https://abcdefg123.execute-api.us-east-1.amazonaws.com/prod/
-```
-
-#### ✅ Final API Endpoint
-
-| Resource Name        | Full Endpoint URL                                      | Lambda Function                | Method | CORS |
-|---------------------|--------------------------------------------------------|-------------------------------|--------|------|
-| orders              | https://api.yourdomain.com/orders                     | CafeOrderProcessor            | POST   | Yes  |
-| get-order-status    | https://api.yourdomain.com/get-order-status          | GetOrderStatusLambda          | GET    | Yes  |
-| cafe-order-status   | https://api.yourdomain.com/cafe-order-status         | CafeOrderStatusLambda         | GET    | Yes  |
-| order-update        | https://api.yourdomain.com/order-update              | CafeOrderWorkerLambda         | POST   | Yes  |
-| mark-paid           | https://api.yourdomain.com/admin/mark-paid           | AdminMarkPaidLambda           | POST   | Yes  |
-| analytics           | https://api.yourdomain.com/analytics                 | CafeAnalyticsLambda           | GET    | Yes  |
-| attendance-checkin  | https://api.yourdomain.com/attendance/checkin        | hr-attendance                 | POST   | Yes  |
-| attendance-checkout | https://api.yourdomain.com/attendance/checkout       | hr-attendance                 | POST   | Yes  |
-| employee-profile    | https://api.yourdomain.com/employee-profile          | hr-employee-profile           | POST   | Yes  |
-| attendance-history  | https://api.yourdomain.com/attendance-history        | hr-attendance-history         | POST   | Yes  |
-| leaves-holidays     | https://api.yourdomain.com/leaves-holidays           | hr-leaves-holidays            | POST   | Yes  |
-| hr-analytics        | https://api.yourdomain.com/hr-analytics              | cafe-attendance-admin-service | GET    | Yes  |
-
-Your endpoint becomes:
-
-```
-https://xxxxx.execute-api.us-east-1.amazonaws.com/prod/orders
-
-https://xxxxx.execute-api.us-east-1.amazonaws.com/prod/get-order-status
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/cafe-order-status
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/order-update
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/admin/mark-paid
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/analytics
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/attendance/checkin
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/attendance/checkout
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/employee-profile
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/attendance-history
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/leaves-holidays
-
-https://xxxx.execute-api.us-east-1.amazonaws.com/prod/hr-analytics
-
-```
-
-### 3️⃣ Update Frontend Configuration (config.js)
-
-#### 📍 File Location
-`/app/frontend/js/config.js`
-
----
-
-#### 🧩 Purpose
-This file contains all the **environment-specific configuration values** required for the frontend application to communicate with AWS backend services such as API Gateway, CloudFront, and Cognito.
-
----
-
-#### ⚙️ Required Configuration Parameters
-
-Update the following values in `config.js`:
-
-| Parameter                | Description |
-|-------------------------|-------------|
-| `CLOUDFRONT_URL`        | CloudFront distribution URL for frontend access |
-| `API_BASE_URL`          | API Gateway endpoint for backend APIs |
-| `COGNITO_DOMAIN`        | Cognito Hosted UI domain |
-| `COGNITO_USER_POOL_ID`  | Cognito User Pool ID |
-| `COGNITO_CLIENT_ID`     | Cognito App Client ID |
-
-> ⚠️ **Important:** Never expose sensitive data such as client secrets in frontend code.
-
----
-
-#### 🧾 Example Configuration
-
-```javascript
-const CONFIG = {
-  CLOUDFRONT_URL: "https://d123abcxyz.cloudfront.net",
-
-  API_BASE_URL: "https://abc123.execute-api.us-east-1.amazonaws.com/prod",
-
-  COGNITO_DOMAIN: "https://charlie-cafe-auth.auth.us-east-1.amazoncognito.com",
-
-  COGNITO_USER_POOL_ID: "us-east-1_AbCdEf123",
-
-  COGNITO_CLIENT_ID: "4h5k6l7m8n9opqrs123456"
-};
-```
-
-#### 🔐 Security Best Practices
-
-- ❌ **Do NOT store Cognito Client Secret in frontend code**
-
-- ✅ Use **Authorization Code Flow (OAuth2)** instead
-
-- ✅ Store sensitive data in **backend services or environment variables**
-
-- ✅ Always use **HTTPS endpoints** for secure communication
-
----
-
-#### 💡 Tips
-
-- Use versioning for config updates (e.g., `config.v2.js`)
-
-- Avoid hardcoding environment values in production (use environment-based configs)
-
-- Test all endpoints after updating configuration
-
-### 4️⃣ Git Auto Deploy
-
-#### 📄 deploy_via_ssm.sh
-
-```
-nano deploy_via_ssm.sh
-```
-
-[deploy_via_ssm.sh](./infrastructure/scripts/deploy_via_ssm.sh)
-
-#### 💡 What you only need to provide:
-
-```
-GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
-```
-
-```
-chmod +x deploy_via_ssm.sh
-./deploy_via_ssm.sh
-```
-
-#### 📄 github-aws-devops-lambda-deploy.sh
-
-```
-nano github-aws-devops-lambda-deploy.sh
-```
-
-[github-aws-devops-lambda-deploy.sh](./infrastructure/scripts/github-aws-devops-lambda-deploy.sh)
-
-#### 💡 What you only need to provide:
-
-```
-GITHUB_REPO_URL="https://github.com/YOUR_USERNAME/YOUR_REPO.git"
-```
-
-- Everything else is fully automated.
-
-#### 🧪 HOW TO USE
-
-#### 1️⃣ Give permission
-
-```
-chmod +x github-aws-devops-lambda-deploy.sh
-```
-
-#### 2️⃣ Run
-
-```
-./github-aws-devops-lambda-deploy.sh
-```
-
-### 🌐 Verification Test (Optional)
-
-#### 1️⃣ One-liner to list all Lambda functions in your region
-
-```
-aws lambda list-functions --region us-east-1 --query 'Functions[].FunctionName' --output table
-```
-
-✅ This will show a table of all Lambda function names. You can check if your functions (like CafeOrderProcessor or CafeMenuLambda) exist.
-
-#### 2️⃣ Optional: check if a specific Lambda exists before running script
-
-```
-LAMBDA_NAME="CafeOrderProcessor"
-aws lambda get-function --function-name $LAMBDA_NAME --region us-east-1 >/dev/null 2>&1 && echo "$LAMBDA_NAME exists ✅" || echo "$LAMBDA_NAME does not exist ❌"
-```
-
-- Replace CafeOrderProcessor with any function name
-
-- Returns exists / does not exist
-
-#### 3️⃣ Bash snippet to check all your functions at once
-
-```
-#!/bin/bash
-
-LAMBDA_LIST=("CafeOrderProcessor" "CafeMenuLambda" "CafeOrderStatusLambda" "GetOrderStatusLambda")
-
-for func in "${LAMBDA_LIST[@]}"; do
-    aws lambda get-function --function-name "$func" --region us-east-1 >/dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo "✅ $func exists"
-    else
-        echo "❌ $func does not exist"
-    fi
-done
-```
-
-- This is a pre-check script you can run before your main deployment script
-
-- Ensures all Lambda functions exist and are ready to receive code and layers
-
-### 🌐 EC2 Docker Health (Optional)
-
-#### ✅ Docker Container Read more [verify_docker-container](./docs/Readme/verify_docker-container.md)
-
-```
-nano ec2_docker_health.sh
-```
-
-[ec2_docker_health.sh](./infrastructure/scripts/ec2_docker_health.sh)
-
-#### 🔹 Usage
-
-```
-chmod +x ec2_docker_health.sh
-./ec2_docker_health.sh
-```
-
-✅ This will work every time on EC2, no matter where you run it from, as long as the repo is cloned in ~/charlie-cafe-devops.
-
----
-## 1️⃣1️⃣ ☁️ AWS DEVOPS UPGRADE -- ECS & ECR
-
-Read more about [Charlie Cafe - AWS DEVOPS ECS & ECR Configurations](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/Charlie-cafe_AWS-DEVOPS_ECS_ECR-Configurations.md)
-
-### 1️⃣ CREATE ECR (DOCKER REGISTRY)
-
-#### 1️⃣ Create Repository
-
-- Go to: ECR → Create Repository
-
-- Name: charlie-cafe
-
-- Visibility: Private
-
-- Keep Mutable tags (default)
-
-- Click Create repository
-
-#### ✅ Copy Repository URI
-
-- ✅ Example: You should now see your repo:
-
-```
-123456789.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe
-```
-
-### 🌐 deploy-ecr-docker (Recommanded)
-
-```
-nano deploy-ecr-docker.sh
-```
-
-[deploy-ecr-docker](./infrastructure/scripts/deploy-ecr-docker.sh)
-
-```
-chmod +x deploy-ecr-docker.sh
-./deploy-ecr-docker.sh
-```
-
-or 
-
-#### 2️⃣ Login to ECR
-
-On your local machine (or EC2):
-
-```
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789.dkr.ecr.us-east-1.amazonaws.com
-```
-
-#### 3️⃣ Go to ROOT project folder
-
-```
-cd ~/charlie-cafe-devops
-```
-
-#### 4️⃣ Build using Dockerfile path
-
-```
-docker build -t charlie-cafe -f docker/apache-php/Dockerfile .
-```
-
-#### 🔥 IMPORTANT:
-
-The dot . means:
-
-“use FULL project root as build context”
-
-- -t charlie-cafe → names your image charlie-cafe.
-
-- . → tells Docker to use the current folder for the Dockerfile and context.
-
-#### Now Docker can see:
-
-```
-app/frontend/
-docker/apache-php/Dockerfile
-```
-
-#### 5️⃣ Tag image for ECR
-
-```
-docker tag charlie-cafe:latest 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
-```
-
-#### 6️⃣ Push the Docker image to ECR
-
-```
-docker push 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
-```
-
-✅ After this, your Docker image will be in ECR, ready for ECS or Fargate deployment.
-
-#### 💡 Optional tip: If you want to build from anywhere, you can also specify the Dockerfile path:
-
-```
-docker build -t charlie-cafe -f ~/charlie-cafe-devops/docker/apache-php/Dockerfile ~/charlie-cafe-devops/docker/apache-php/
-```
-
-✅ This avoids having to cd into the folder.
-
-### 2️⃣ ECS SETUP
-
-- ### 1️⃣ Create ECS Service-Linked IAM Role
-
-- Go to IAM → Roles → Create Role.
-
-- Choose AWS Service → Elastic Container Service.
-
-- Under Use Case, select Elastic Container Service (this is for ECS itself, not tasks or EC2).
-
-- Click Next: Permissions → You do not need to attach any extra policy (AWS adds AmazonECSServiceRolePolicy automatically).
-
-- Name the role: AWSServiceRoleForECS.
-
-- Click Create Role.
-
-✅ This is the official Service-Linked Role required by ECS.
-
-### Option B: Automatic (Easiest)
-
-Run this CLI command in your AWS CLI:
-
-```
-aws iam create-service-linked-role --aws-service-name ecs.amazonaws.com
-```
-
-✅ This automatically creates the required role: AWSServiceRoleForECS
-
-> Note: This requires your IAM user/role to have iam:CreateServiceLinkedRole permission.
-
-- ### 2️⃣ Create ECS Cluster
-
-- Go to ECS → Clusters → Create Cluster.
-
-- Select Networking Only (Fargate).
-
-- Click Next Step.
-
-- Name your cluster: charlie-cluster.
-
-- Leave other defaults (VPC, subnets) for now unless you have a specific setup.
-
-- Click Create.
-
-Wait until the status shows Active.
-
-✅ No need to attach EC2 instances since this is Fargate.
-
-- ### 3️⃣ Create Task Execution Role (if not exists)
-
-The task execution role is needed for Fargate to pull images from ECR and write logs to CloudWatch.
-
-- Go to IAM → Roles → Create Role → AWS Service → Elastic Container Service → Task Execution Role.
-
-- Click Next: Permissions.
-
-- Attach AmazonECSTaskExecutionRolePolicy.
-
-- Name it: ecsTaskExecutionRole.
-
-- Click Create Role.
-
-This role will be used later in the task definition.
-
-- ### 4️⃣ Create Task Definition
-
-- Go to ECS → Task Definitions → Create new Task Definition.
-
-- Select Fargate → Click Next.
-
-- Task Definition Family: charlie-task.
-
-- Task Role: Leave None (for now).
-
-- Task Execution Role: Select ecsTaskExecutionRole created in Step 2.
-
-- Network Mode: awsvpc.
-
-- CPU: 0.5 vCPU.
-
-- Memory: 1 GB.
-
-- Click Next to add containers.
-
-- ### 5️⃣ Add Container to Task
-
-- Container Name: charlie-container.
-
-- Image: 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest.
-
-- Port Mapping:
-
-- Container Port: 80
-
-- Protocol: TCP
-
-- Environment Variables (optional for now):
-
-  - DB_HOST = your-rds-endpoint
-
-  - DB_USER = admin
-
-  - DB_PASS = your-password
-
-- Logging:
-
-  - Check Enable CloudWatch Logs
-
-  - Log group: /ecs/charlie-task
-
-  - Region: us-east-1
-
-  - Stream prefix: ecs
-
-- Create log group: true
-
-- Leave other optional settings (HealthCheck, Restart Policy, Storage) as default.
-
-- Click Add → Click Create Task Definition.
-
-### 🌐 Create Create Task Definition with JSON
-
-- Go to ECS → Task Definitions → Create new Task Definition.
-
-- Select create task with JSON
-
-- #### ✅ charlie-task JSON [charlie-task.json](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/AWS%20Services%20Configurations%20/charlie-task%20JSON/charlie-task.json)
-
-- ### 6️⃣  Network Connectivity
-
-> #### NAT GW / VPC ENDPoint
-
-Read more [“Click here for configuration.”](./charlie-cafe-devops-Network%20Connectivity.md)
-
-#### 🔹 VPC Endpoints (Private Access)
-
-| Endpoint                        | Type      | Notes                                            |
-| ------------------------------- | --------- | ------------------------------------------------ |
-| com.amazonaws.us-east-1.ecr.api | Interface | ECS tasks → ECR API                              |
-| com.amazonaws.us-east-1.ecr.dkr | Interface | ECS tasks → Docker registry                      |
-| com.amazonaws.us-east-1.s3      | Gateway   | Needed because ECR image layers are stored in S3 |
-
-- Steps:
-
-  - Go VPC → Endpoints → Create Endpoint
-
-  - Choose service (above)
-
-  - Attach private subnet of ECS tasks
-
-  - Security group: allows inbound HTTPS from ECS tasks
-
-  - Redeploy ECS service
-
-✅ This is recommended if you want production-level private networking.
-
-- ### 7️⃣ ALB + ECS SERVICE
-
-> #### KEEP existing ALB and upgrade it for ECS.
-
-#### 1️⃣ Create NEW Target Groups (for ECS)
-
-- 👉 Go to EC2 → Target Groups → Create Target Group.
-
-#### 🔵 Blue Target Group
-
-- Name: charlie-blue
-
-- Target type: IP (IMPORTANT)
-
-> ✅ (because Fargate tasks get their own ENI and private IP in the VPC, not EC2 instances).
-
-- Protocol / Port: HTTP / 80.
-
-- Health check: /health.php
-
-> ✅ (or / if your container does not have a health endpoint yet).
-
-- VPC: Select the VPC where your ECS cluster / tasks run.
-
-- Leave other settings default → Create.
-
-> ✅ Important: Do NOT select EC2 instances. For Fargate, the targets are IP addresses of tasks, not EC2 machines.
-
-#### 🟢 Green Target Group
-
-> ✅ Repeat the same steps for the green deployment:
-
-- Name: charlie-green
-
-- Target Type: IP
-
-- Protocol: HTTP / 80
-
-- Health check: /health.php
-
-- VPC: same as ECS tasks
-
-- Click Create.
-
-> ✅ This is usually used for blue/green deployments, but even if you are just testing, it’s good practice to have separate TGs.
-
-#### 2️⃣ Update ALB Listener
-
-- Go to: EC2 → Load Balancer → Listeners
-
-- Edit HTTP:80
-
-#### 👉 Set default:
-
-- Default action: Forward → charlie-blue
-
-#### 3️⃣ Create ECS Service
-
-- Go ECS → Cluster → charlie-cluster → Create Service
-
-- #### Compute options
-
-   - Launch type: Fargate
-
-- #### Task Definition  
-
-  - Task definition: charlie-task
-
-  - Revision: latest
-
-- #### Service name  
-
-  - Service name: charlie-service
-  
-  - Desired tasks (Number of tasks): 1 (start small)
-
-- #### NETWORKING
-
-- 👉 VPC : 
-  
-  - Select your default VPC (or custom if you made one)
-
-- 👉 Subnets 
-
-> ✅ Choose ONLY:
-
-- ✔ Public Subnets (important)
-
-#### Example:
-
-- subnet-xxxx (public-subnet-1)
-
-- subnet-xxxx (public-subnet-2)
-
-#### ❌ DO NOT choose:
-
-- Private subnets (for now)
-
-- Isolated subnets
-
-- 👉 Auto-assign Public IP
-
-- 👉 MUST SET: ENABLE
-
-✔ This is what allows internet access
-
-- 🔐 Security Group: Create or select default-SG:
-
-| Type | Port | Source    |
-| ---- | ---- | --------- |
-| HTTP | 80   | 0.0.0.0/0 |
-
-- #### LOAD BALANCER (OPTIONAL but recommended)
-
-- Load Balancer: Application Load Balancer
-
-  > Use existing ALB
-
-- Listener: HTTP:80
-
-- Target group: charlie-blue
-
-- Container Mapping: charlie-container port 80
-
-  - Container: charlie-container
-
-  - Port: 80
-
-✅ Click Create Service → Wait for tasks to become Running
-
-🕓 Wait 2–5 minutes
-
-- ### 8️⃣  Run Task in Cluster
-
-- Go to ECS → Clusters → charlie-cluster → Tasks → Run new Task.
-
-- Launch Type: Fargate.
-
-- Task Definition: charlie-task:1 (latest revision).
-
-- Cluster VPC & Subnets: select defaults or your preferred VPC.
-
-- Security group: allow TCP 80 (HTTP) from 0.0.0.0/0 if public access needed.
-
-- Click Run Task.
-
-✅ Your container should start. Check Logs → CloudWatch → /ecs/charlie-task to verify the app is running.
-
-### 3️⃣ Verification Test 
-
-### 1️⃣  Verify Container
-
-- Go to ECS → Cluster → Tasks.
-
-- Click on your task → Containers → View Logs.
-
-- Verify container started successfully, listening on port 80.
-
-### 2️⃣ Verify Target Group
-
-- Go EC2 → Target Groups → charlie-blue → Targets
-
-> You should see IP addresses (Fargate tasks) and Status: Healthy
-
-#### You should see:
-
-- IP addresses (NOT EC2)
-
-- Status: Healthy
-
-### 2️⃣ Quick Test Before Redeploy (Optional)
-
-#### 🔹 Step 1: Use a temporary EC2 instance in the same subnet as your ECS tasks:
-
-```
-# Test ECR API
-curl -v https://api.ecr.us-east-1.amazonaws.com/
-
-# Test ECR Docker registry
-curl -v https://537236558357.dkr.ecr.us-east-1.amazonaws.com/v2/
-```
-
-- Timeout → network problem
-
-- JSON / HTTP 200 → network works
-
-#### 🔹 Step 2: Verify ECS Once Networking Works
-
-After your tasks can access ECR:
-
-- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
-
-- Check Tasks:
-
-  - Status: Running
-
-  - Last Status: RUNNING
-
-- Go to Target Groups → charlie-blue → Targets
-
-  - Status: Healthy
-
-  - Should see the private IP of the Fargate task
-
-- Open your ALB DNS in browser:
-
-  - You should see your app page served from the container
-
-- Logs:
-
-  - Go to CloudWatch Logs (if configured in task definition)
-
-  - Verify container starts without errors
-
-#### 🔹 Step 3: Make sure AWS CLI works
-
-```
-aws sts get-caller-identity
-```
-
-If this works → IAM role is OK.
-
-#### 🔹 Step 4: Login to ECR
-
-```
-aws ecr get-login-password --region us-east-1 \
-| docker login --username AWS --password-stdin 537236558357.dkr.ecr.us-east-1.amazonaws.com
-```
-
-#### Expected success output:
-
-```
-Login Succeeded
-```
-
-#### 🔹 Step 5: Login to ECR
-
-```
-docker pull 537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
-``` 
-
-#### 🔹 Step 6: 🌐 Access App
-
-- Go to your ALB DNS in browser
-
-```
-http://YOUR-ALB-DNS
-```
-
-✅ It should now serve your Dockerized app
-
-### 4️⃣ GITHUB CI/CD (AUTO DEPLOY)
-
-- ### 1️⃣ Add GitHub Secrets
-
-#### ✅ REQUIRED SECRETS 
-
-- Go to GitHub repo → Settings → Secrets and variables → Actions → Add the following secrets:
-
-- Add each one manually:
-
-| Secret Name             | Value Example   | Where to Get    |
-| ----------------------- | --------------- | --------------- |
-| `AWS_ACCESS_KEY_ID`     | AKIA...         | IAM User        |
-| `AWS_SECRET_ACCESS_KEY` | xxxxx           | IAM User        |
-| `AWS_REGION`            | us-east-1       | Your AWS region |
-| `AWS_ACCOUNT_ID`        | 123456789012    | AWS Account     |
-| `ECS_CLUSTER`           | charlie-cluster | ECS Console     |
-| `ECS_SERVICE`           | charlie-service | ECS Console     |
-| `ECR_REPO`              | charlie-cafe    | ECR Repo Name   |
-
-- ECR Repository created (charlie-cafe)
-
-- ECS Cluster and Service running
-
-✅ Everything you mentioned is already done.
-
-### 5️⃣ Commit & Push
-
-- Save the updated deploy.yml in .github/workflows/
-
-- Commit & push to main
-
-- GitHub Actions will automatically trigger
-
-- Check Actions tab → Logs for each step
-
-✅ If all steps succeed, your ECS service will be automatically updated whenever you push to main.
-
-### 6️⃣ Testing the ECS Deployment
-
-- Go to ECS → Cluster → charlie-cluster → Tasks
-
-- You should see new tasks running with the latest image
-
-- Go to ALB → Target Groups → charlie-blue → Targets
-
-- Status should be Healthy
-
-- Open your ALB DNS in the browser to test the live app
-
-#### 🔍 Open:
-
-```
-http://YOUR-ALB-DNS
-```
-
----
-## 🚀 Enterprise Zero-Downtime CI/CD Pipeline (ECS + CodeDeploy + Immutable Images)
-
-### ✅ Prerequisites
-
-- Application Load Balancer (ALB) is configured
-
-- Two target groups created:
-
-  - charlie-blue
-
-  - charlie-green
-
-- Health check endpoint configured: /health.php
-
-- ALB Listener (HTTP:80) is set to forward traffic to charlie-blue
-
-> #### 👉 “ALB with blue/green target groups is already configured, with traffic currently routed to charlie-blue and health checks on /health.php.”
-
-### 📁 REQUIRED FILES (VERY IMPORTANT)
-
-You need 2 files in repo:
-
-### ✅ 1. appspec.yaml
-
-```
-version: 1
-Resources:
-  - TargetService:
-      Type: AWS::ECS::Service
-      Properties:
-        TaskDefinition: "charlie-task"
-        LoadBalancerInfo:
-          ContainerName: "charlie-container"
-          ContainerPort: 80
-```
-
-### ✅ 2. .github/task-definition.json
-
-```
-{
-  "family": "charlie-task",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "512",
-  "memory": "1024",
-  "executionRoleArn": "YOUR_ECS_TASK_EXECUTION_ROLE_ARN",
-  "containerDefinitions": [
-    {
-      "name": "charlie-container",
-      "image": "IMAGE_PLACEHOLDER",
-      "essential": true,
-      "portMappings": [
-        {
-          "containerPort": 80,
-          "hostPort": 80,
-          "protocol": "tcp"
-        }
-      ]
-    }
-  ]
-}
-```
-
-### ✅ IAM ROle for CodeDeploy
-
-- Go to IAM role → create iam role 
-
-- Select Trusted Entity: AWS service
-
-- Use case: CodeDeploy
-
-#### You will see 3 options:
-
-- CodeDeploy
-
-- CodeDeploy for Lambda
-
-- ✅ CodeDeploy for ECS ← SELECT THIS
-
-- AWS will automatically attach: 👉 AWSCodeDeployRoleForECS
-
-- Role Name: charlie-codedeploy-role
-
-👉 Click Create role
-
-### 1️⃣ — CREATE CODEDEPLOY APP
-
-- Go to AWS CODEDEPLOY → Applications → Click Create application
-
-- Application name: charlie-ecs-app
-
-- Compute platform: ECS
-
-- ✅ Click Create
-
-### 2️⃣ — CREATE DEPLOYMENT GROUP
-
-👉 Now inside that app: Click Create deployment group
-
-- Name: charlie-ecs-deployment-group
-
-- Service role: 👉 Select your role: charlie-codedeploy-role
-
-- Deployment type: Blue/Green
-
-### Environment configuration:
-
-- Cluster: charlie-cluster
-
-- Service: charlie-service
-
-### Load balancer:
-
-- Select: Application Load Balancer
-
-- Choose: charlie-cafe-alb
-
-#### Target groups:
-
-- Blue → charlie-blue
-
-- Green → charlie-green
-
-#### Deployment settings:
-
-- Traffic shifting: All at once
-
-👉 Click Create deployment group
-
-### 2️⃣ — ECS SERVICE (CRITICAL)
-
-- Go to ECS → Clusters → charlie-cluster → Services → charlie-service
-
-- Top right → Click Update
-
-> Now scroll slowly 👇
-
-- Look for:
-
-   👉 Deployment configuration
-
-   👉 Deployment controller
-
-- CHANGE CONTROLLER: 
-
-👉 Scroll to: Deployment options → Deployment controller type
-
-- ❌ Current: ❌ ECS
-
-- ✅ Change to: ✅ CodeDeploy
-
-- Deployment strategy:
-
-> #### You will see something like:
-
-   > - Rolling update (default)
-
-   > - External (CodeDeploy)
-
-- ❌ Current: ❌ Rolling update
-
-- ✅ Change to: ✅ Blue/Green (CodeDeploy)
-
-- Service role: 👉 Select your role: charlie-codedeploy-role
-
-- Load Balancing → Blue/Green config: 
-
-- Choose: charlie-cafe-alb
-
-- Target groups:
-
-   - Blue → charlie-blue
-
-   - Green → charlie-green
-
-- Click Update 
-
-#### ⚠️ VERY IMPORTANT BEHAVIOR
-
-👉 The moment you select CodeDeploy:
-
-👉 Sometimes it shows as:
-
-```
-Deployment controller: CodeDeploy
-```
-
-You will see UI changes like:
-
-- Blue target group field becomes active
-
-- Green target group field becomes selectable ✅
-
-- ALB config becomes mandatory
-
-### 4️⃣ — ECS TASK EXECUTION ROLE
-
-- Use:
-
-```
-ecsTaskExecutionRole
-```
-
-- Put ARN in:
-
-```
-task-definition.json
-```
-
-### 5️⃣ — PUSH CODE
-
-```
-git add .
-git commit -m "final pipeline"
-git push origin main
-```
-
----
-## ☁️ CHARLIE CAFE — PRODUCTION BLUE/GREEN CANARY DEPLOYMENT WITH AUTO ROLLBACK & MONITORING
-
-### 1️⃣ — Enable Canary Deployment
-
-In deployment group:
-
-#### Deployment config:
-
-```
-CodeDeployDefault.ECSCanary10Percent5Minutes
-```
-
-### 2️⃣ — Enable Auto Rollback
-
-#### Enable:
-
-✔ Rollback on:
-
-- Deployment failure
-
-- Alarm trigger
-
-### 3️⃣ — Create CloudWatch Alarm
-
-#### Create alarm:
-
-- Name: charlie-health-alarm
-
-- Metric: UnHealthyHostCount
-
-- Target Group: charlie-green
-
-- Condition: >= 1
-
-### 4️⃣ — Attach Alarm to CodeDeploy
-
-In deployment group:
-
-- Attach: charlie-health-alarm
-
-### 🧭 STEP-BY-STEP UPGRADE
-
-### 1️⃣ — UPDATE CODEDEPLOY (MOST IMPORTANT)
-
-- Go to: 👉 AWS CodeDeploy → Deployment Group
-
-#### 🔧 CHANGE THIS:
-
-- ❌ Old config: CodeDeployDefault.ECSAllAtOnce
-
-- ✅ NEW CONFIG (CANARY): CodeDeployDefault.ECSCanary10Percent5Minutes
-
-### 2️⃣ — ENABLE AUTO ROLLBACK
-
-Inside SAME deployment group:
-
-#### Turn ON:
-
-```
-✔ Rollback when deployment fails
-✔ Rollback when CloudWatch alarm triggers
-```
-
-### 3️⃣ — CREATE CLOUDWATCH ALARM
-
-- Go to: 👉 CloudWatch → Alarms → Create Alarm
-
-### 📊 ALARM 1 (CRITICAL)
-
-- Name: charlie-green-unhealthy-alarm
-
-- Metric: ApplicationELB → UnHealthyHostCount
-
-- Target Group: charlie-green
-
-- Condition: >= 1 for 1 minute
-
-### 4️⃣ — ATTACH ALARM TO CODEDEPLOY
-
-- Go to: 👉 CodeDeploy Deployment Group
-
-- Add: charlie-green-unhealthy-alarm
-
-### 5️⃣ GitHub → Auto-Deploy Setup (Charlie Cafe)
-
-> #### Optional Task 
-
-- Read more here [GitHub Auto-Deploy Config](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/GitHub_Auto-Deploy_Config.md)
-
-### ✅ TRIGGER deploy.yml (VERY IMPORTANT)
-
-- You DO NOT run deploy.yml manually ❌
-
-- GitHub Actions runs it automatically ✅
-
-#### 🔹 METHOD 1 — Trigger via Push (RECOMMENDED)
-
-Run this on your local machine or EC2:
-
-```
-cd ~/charlie-cafe-devops
+git checkout -b feature/your-feature
 
 git add .
-git commit -m "🚀 trigger deployment"
-git push origin main
+
+git commit -m "Add your feature"
+
+git push origin feature/your-feature
 ```
 
-#### 👉 This will:
+Open a Pull Request for review.
 
-- Trigger GitHub Actions
+Please follow these guidelines:
 
-- Start your CI/CD pipeline automatically
+- Keep code clean and maintainable.
+- Document infrastructure changes.
+- Avoid committing credentials.
+- Test configuration changes.
+- Follow consistent naming conventions.
+- Keep deployment instructions updated.
 
-#### 🔹 METHOD 2 — Manual Trigger (Optional)
-
-If your workflow supports it:
-
-- Go to GitHub repo
-
-- Click Actions tab
-
-- Select workflow
-
-- Click Run workflow
-
-### 6️⃣ — VERIFY ECS + ALB BEHAVIOR
-
-After deployment:
-
-You will see:
-
-#### Phase 1:
-
-- 10% users → GREEN
-
-#### Phase 2:
-
-CloudWatch monitors health
-
-#### Phase 3:
-
-If OK → 100% traffic to GREEN
-
-#### Phase 4:
-
-If FAIL → rollback to BLUE
 ---
-## ✅ 🔥 BEST ALTERNATIVES (WITHOUT CodeDeploy)
 
-### 🚀 ECS Rolling Deployment (NO CodeDeploy, FREE, ZERO DOWNTIME)
+# 📄 License
 
-```
-nano ecs_zero_downtime_deploy.sh
-```
+This project is maintained in the Charlie Cafe DevOps GitHub repository.
 
-[ecs_zero_downtime_deploy.sh](./infrastructure/scripts/ecs_zero_downtime_deploy.sh)
+See the repository's [LICENSE](./LICENSE) file for licensing information.
 
-### 🔥 MAKE FILE EXECUTABLE & RUN IT
-
-#### After saving:
-
-```
-chmod +x ecs_zero_downtime_deploy.sh
-./ecs_zero_downtime_deploy.sh
-```
-
-### 🔍 VERIFY TEST
-
-### 1️⃣ VERIFY ECS DEPLOYMENT
-
-- Go here: ECS → Your Cluster → charlie-cluster
-
-#### 📊 WHAT YOU SHOULD SEE HERE
-
-- Inside cluster:
-
-✔ Service name: charlie-service
-
-✔ Status: ACTIVE
-
-✔ Running tasks: 1 (or more depending on your config)
-
-- go to charlie-service → Now go into Service details page
-
-- Go to Check DEPLOYMENTS TAB → Scroll to → Deployments section 
-
-✔ EXPECTED OUTPUT YOU SHOULD SEE
-
-You should see something like:
-
-| Field           | Value                      |
-| --------------- | -------------------------- |
-| Primary         | YES                        |
-| Status          | **COMPLETED**              |
-| Task Definition | charlie-task:4 (or latest) |
-| Desired Count   | 1                          |
-| Running Count   | 1                          |
-
-
-👉 If you see:
-
-```
-PRIMARY = YES
-STATUS = COMPLETED
-```
-
-✔ That means rolling update succeeded
-
-### 2️⃣ Verify EVENTS TAB
-
-- Click tab: Events
-
-✔ EXPECTED SUCCESS EVENTS
-
-You should see messages like:
-
-```
-service charlie-service has started 1 tasks
-service charlie-service has stopped 1 running tasks
-service reached steady state
-```
-
-👉 Most important line:
-
-```
-service reached steady state
-```
-
-✔ This confirms ZERO downtime deployment completed
-
-### 3️⃣ Check TASKS (RUNNING CONTAINERS)
-
-- Go to: Tasks tab
-
-✔ EXPECTED OUTPUT
-
-You should see:
-
-- Task status = RUNNING
-
-- Launch type = FARGATE / EC2 (your setup)
-
-- Health = HEALTHY
-
-- Task definition = latest revision (e.g. charlie-task:4)
-
-### 4️⃣ VERIFY NEW IMAGE IS RUNNING
-
-- Click the running task → open details
-
-- Check: Container image
-
-✔ EXPECTED:
-
-```
-537236558357.dkr.ecr.us-east-1.amazonaws.com/charlie-cafe:latest
-```
-
-👉 If it matches your latest push = SUCCESS
-
-### 5️⃣ VERIFY APPLICATION (REAL TEST)
-
-- Open ALB URL:
-
-```
-http://<your-alb-dns>/health.php
-```
-
-✔ EXPECTED OUTPUT:
-
-```
-OK
-```
-
-OR:
-
-```
-200 OK
-```
-
-### 📊 FINAL “PRO DEVOPS CHECKLIST”
-
-If ALL below are true → deployment is PERFECT:
-
-✔ Service = ACTIVE
-
-✔ Deployment = COMPLETED
-
-✔ Running tasks = 1
-
-✔ Events = "steady state reached"
-
-✔ Task = latest revision
-
-✔ ALB health = OK
-
-
-### 7️⃣ Charlie Cafe cleanup
-
-[ec2-cleanup.sh](./infrastructure/scripts/ec2-cleanup.sh)
-
-#### How to use:
-
-- Save this as ec2-cleanup.sh on your EC2.
-
-```
-nano ec2-cleanup.sh
-```
-
-- Make it executable:
-
-```
-chmod +x ec2-cleanup.sh
-```
-
-- Run it:
-
-```
-./ec2-cleanup.sh
-```
-
-### 8️⃣ Charlie Cafe -- Github Logs
-
-[Charlie Cafe -- Github Logs](./docs/Charlie%20Cafe%20Project%20Lab%20Configurations/Github%20Tasks%20Configurations/Charlie-cafe_github-logs.md)
-
-```
-nano ~/github_logs_setup_capture.sh
-```
-
-[github_logs_setup_capture](./infrastructure/scripts/github_logs_setup_capture.sh)
-
-```
-chmod +x ~/github_logs_setup_capture.sh
-~/github_logs_setup_capture.sh
-```
-
-- #### Check logs:
-
-```
-ls -la ~/charlie-cafe-devops/github_logs
-less ~/charlie-cafe-devops/github_logs/github_logs_173_20260402_151230.txt
-```
 ---
-## ☕ 4. Lab Task List (Step-by-Step)
 
-### 🔹 Phase 1 – Setup
+# 👨‍💻 Project Repository
 
-⬜️ Create GitHub repo
+**Project:** Charlie Cafe DevOps
 
-⬜️ Organize project structure
+**Repository:**  
+https://github.com/awsrmmustansarjavaid/charlie-cafe-devops
 
-⬜️ Setup Docker (local)
+**Primary Cloud Platform:** Amazon Web Services (AWS)
 
-### 🔹 Phase 2 – AWS Foundation
+**Infrastructure as Code:** Terraform and CloudFormation
 
-⬜️ Create VPC, subnets
+**Containerization:** Docker
 
-⬜️ Configure Security Groups
+**Container Orchestration:** Amazon ECS and Kubernetes (local and Amazon EKS)
 
-⬜️ Launch EC2 instance
+**CI/CD:** GitHub Actions
 
-⬜️ Setup ALB
+---
 
-### 🔹 Phase 3 – Database
+# ☕ Final Project Vision
 
-⬜️ Create RDS MySQL
+Charlie Cafe DevOps is designed to demonstrate how a traditional application can evolve into a modern cloud-native platform through the adoption of professional DevOps engineering practices.
 
-⬜️ Create DynamoDB tables:
+The project brings together:
 
-⬜️ CafeMenu
+- Application development.
+- AWS cloud architecture.
+- Cloud networking.
+- Serverless computing.
+- Database engineering.
+- Docker containerization.
+- Automated CI/CD.
+- Infrastructure as Code.
+- Kubernetes orchestration.
+- Cloud security.
+- Monitoring and observability.
 
-⬜️ CafeOrders
+The long-term objective is to build a reusable, automated and scalable cloud platform that demonstrates the complete DevOps lifecycle, from source code to production deployment.
 
-⬜️ CafeOrderMetrics
+**Build. Automate. Secure. Deploy. Scale.**
 
-⬜️ CafeAttendance
-
-⬜️ Store credentials in Secrets Manager
-
-### 🔹 Phase 4 – Lambda + SQS 
-
-⬜️ Create Lambda functions
-
-⬜️ Connect Lambda to VPC
-
-⬜️ Configure environment variables
-
-⬜️ Create SQS queue
-
-### 🔹 Phase 5 – API Layer
-
-⬜️ Create API Gateway
-
-⬜️ Connect endpoints to Lambda
-
-⬜️ Enable CORS
-
-⬜️ Add Cognito authorizer
-
-### 🔹 Phase 6 – Authentication
-
-⬜️ Setup Cognito User Pool
-
-⬜️ Create users & groups
-
-⬜️ Configure Hosted UI
-
-### 🔹 Phase 7 – DevOps
-
-⬜️ Create Dockerfile
-
-⬜️ Push image to ECR
-
-⬜️ Deploy ECS service
-
-⬜️ Configure ALB target group
-
-### 🔹 Phase 8 – CI/CD
-
-⬜️ Setup GitHub Actions
-
-⬜️ Add AWS secrets
-
-⬜️ Automate deployment
-
-### 🔹 Phase 9 – Advanced
-
-⬜️ Setup Blue/Green deployment
-
-⬜️ Configure CodeDeploy
-
-⬜️ Add CloudWatch alarms
-
-----
-## 📑 Important Charlie Cafe DOC
-
-1. [Charlie Cafe DEVOPS Cheatsheet](./docs/Charlie-Cafe-DEVOPS-Cheatsheet.md)
-
+### ☕ Charlie Cafe DevOps Project

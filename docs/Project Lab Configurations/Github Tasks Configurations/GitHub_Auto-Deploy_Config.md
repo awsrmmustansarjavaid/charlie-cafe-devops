@@ -2,8 +2,6 @@
 
 ## GitHub → Auto-Deploy Setup (Charlie Cafe)
 
-- Read more here [GitHub Actions auto-deploy-EC2](./Readme/GitHub%20Actions%20auto-deploy.md)
-
 - ### ✅ Method 1️⃣  Add GitHub Secrets for AWS Access Key (Recommanded)
 
 #### 1️⃣ Add Keys to GitHub Secrets
@@ -71,7 +69,7 @@ chmod +x deploy_via_ssm.sh
 nano charlie_cafe_full_check.sh
 ```
 
-[charlie_cafe_full_check.sh](../infrastructure/scripts/charlie_cafe_full_check.sh)
+[charlie_cafe_full_check.sh](./../../../infrastructure/scripts/charlie_cafe_full_check.sh)
 
 ```
 chmod +x charlie_cafe_full_check.sh
@@ -298,7 +296,7 @@ Hi <your-github-username>! You've successfully authenticated, but GitHub does no
 nano ec2_git_auto_deploy.sh
 ```
 
-[ec2_git_auto_deploy.sh](../infrastructure/scripts/ec2_git_auto_deploy.sh)
+[ec2_git_auto_deploy.sh](../../../infrastructure/scripts/ec2_git_auto_deploy.sh)
 
 ```
 chmod +x ec2_git_auto_deploy.sh
@@ -325,7 +323,7 @@ Save this as:
 nano verify-devops-env.sh
 ```
 
-[verify-devops-env.sh](../infrastructure/scripts/verify-devops-env.sh)
+[verify-devops-env.sh](../../../infrastructure/scripts/verify-devops-env.sh)
 
 ```
 chmod +x verify-devops-env.sh
