@@ -1608,7 +1608,7 @@ The repository contains implementation guides and supporting technical documenta
 ```text
 docs/
 │
-└── Charlie Cafe Project Lab Configurations/
+└── Project Lab Configurations/
 ```
 
 For detailed AWS setup instructions, refer to the existing configuration guides in that directory.
