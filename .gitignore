@@ -41,5 +41,5 @@ docker-compose.yml
 # -----------------------------
 # Docs
 # -----------------------------
-docs/
-README.md
+# docs/
+# README.md
