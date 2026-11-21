@@ -41,7 +41,7 @@
 26. [Implementation Roadmap](#-implementation-roadmap)
 27. [Troubleshooting](#-troubleshooting)
 28. [Security Best Practices](#-security-best-practices)
-29. [Charlie Cafe Lab Configurations] (#-Charlie-Cafe-Lab-Configurations)
+29. [Charlie Cafe Lab Configurations](#-Charlie-Cafe-Lab-Configurations)
 30. [Contributing](#-contributing)
 31. [License](#-license)
 
