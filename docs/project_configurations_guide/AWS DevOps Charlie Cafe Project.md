@@ -273,16 +273,17 @@ AWS_SECRET_ACCESS_KEY
 
 #### 🔹 Public Subnet
 
-| Resource      | Name                  | CIDR Block    | Auto Public IP |
-| ------------- | --------------------- | ------------- | -------------- |
-| Public Subnet | `CafeDevPublicSubnet` | `10.0.1.0/24` | Enabled        |
+| Resource        | Name                   | CIDR Block    | Auto Public IP |
+| --------------- | ---------------------- | ------------- | -------------- |
+| Public Subnet 1 | `CafeDevPublicSubnet1` | `10.0.1.0/24` | Enabled        |
+| Public Subnet 2 | `CafeDevPublicSubnet2` | `10.0.2.0/24` | Enabled        |
 
 #### 🔹 Private Subnets
 
 | Resource         | Name                    | CIDR Block    | Availability Zone |
 | ---------------- | ----------------------- | ------------- | ----------------- |
-| Private Subnet 1 | `CafeDevPrivateSubnet1` | `10.0.2.0/24` | AZ-a              |
-| Private Subnet 2 | `CafeDevPrivateSubnet2` | `10.0.3.0/24` | AZ-b              |
+| Private Subnet 1 | `CafeDevPrivateSubnet1` | `10.0.3.0/24` | AZ-a              |
+| Private Subnet 2 | `CafeDevPrivateSubnet2` | `10.0.4.0/24` | AZ-b              |
 
 #### 🔹 Internet Access Configuration
 
@@ -671,7 +672,7 @@ ECR / AWS Services
 
 | Feature           | NAT Gateway | VPC Endpoints |
 | ----------------- | ----------- | ------------- |
-| Cost              | ❌ High      | ✔ Low         |
+| Cost              | ❌ High     | ✔ Low        |
 | Security          | Medium      | High          |
 | Performance       | Good        | Better        |
 | Production Use    | Optional    | Recommended   |
