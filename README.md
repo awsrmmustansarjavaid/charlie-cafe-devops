@@ -1771,7 +1771,10 @@ This section provides a comprehensive, step-by-step configuration guide for impl
 
 Follow the manual configuration instructions to set up, configure, and deploy all required AWS and DevOps components.
 
+## Phase 1	Manually created AWS infrastructure, Bash automation, Docker and application deployment
+
 **Project Configuration Guide:** [AWS DevOps Charlie Cafe Project](./docs/project_configurations_guide/AWS%20DevOps%20Charlie%20Cafe%20Project.md)
+
 
 ---
 
