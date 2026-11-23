@@ -1,43 +1,693 @@
-name: Terraform Phase 2
+
+# ==============================================================================
+# Charlie Cafe - Terraform Phase 2 Deployment Workflow
+# ==============================================================================
+#
+# Purpose:
+#   Automate Terraform infrastructure planning and controlled deployment
+#   for the Charlie Cafe Phase 2 AWS development environment.
+#
+# Workflow Responsibilities:
+#   1. Validate deployment configuration.
+#   2. Authenticate with AWS using GitHub Actions OIDC.
+#   3. Package the Lambda PyMySQL dependency layer.
+#   4. Initialize the Terraform working directory and backend.
+#   5. Check Terraform formatting.
+#   6. Validate Terraform configuration.
+#   7. Generate and publish a Terraform execution plan.
+#   8. Apply the exact saved plan after explicit confirmation and
+#      GitHub Environment approval.
+#
+# Deployment Strategy:
+#   - Plan-only execution by default.
+#   - Terraform Apply is optional.
+#   - Apply uses the saved execution plan from the same workflow run.
+#   - Production infrastructure changes are not performed by this workflow.
+#
+# Security:
+#   - AWS authentication uses GitHub OIDC.
+#   - No permanent AWS access keys are required.
+#   - Database credentials are provided through GitHub Secrets.
+#   - The Terraform execution plan is retained as a short-lived artifact.
+#
+# Environment:
+#   Development (dev)
+#
+# Terraform Version:
+#   1.11.4
+#
+# ==============================================================================
+
+name: Charlie Cafe - Terraform Phase 2
+
+# ------------------------------------------------------------------------------
+# Workflow Trigger
+# ------------------------------------------------------------------------------
+# This workflow is manually triggered through GitHub Actions.
+#
+# The confirm_apply input controls whether the workflow proceeds beyond
+# Terraform Plan and attempts to apply the saved execution plan.
+#
+# false = Generate and publish a Terraform plan only.
+# true  = Generate a plan and request the configured GitHub Environment
+#         approval before applying it.
+#
+# IMPORTANT:
+# The boolean input is not itself a GitHub approval mechanism.
+# Configure required reviewers on the "dev" GitHub Environment.
+# ------------------------------------------------------------------------------
+
 on:
   workflow_dispatch:
     inputs:
+
       confirm_apply:
-        description: "Set true only after reviewing the Phase 2 plan and confirming target AWS account"
+        description: "Confirm Terraform Apply after reviewing the generated plan and target AWS account."
         required: true
         type: boolean
         default: false
+
+# ------------------------------------------------------------------------------
+# GitHub Actions Permissions
+# ------------------------------------------------------------------------------
+# contents: read
+#   Allows GitHub Actions to check out the repository.
+#
+# id-token: write
+#   Allows GitHub Actions to request an OIDC identity token.
+#   AWS IAM uses this token to authenticate the deployment role.
+#
+# No additional GitHub repository write permissions are required.
+# ------------------------------------------------------------------------------
+
 permissions:
   contents: read
   id-token: write
+
+# ------------------------------------------------------------------------------
+# Workflow Concurrency
+# ------------------------------------------------------------------------------
+# Prevent multiple Phase 2 Terraform executions from running simultaneously.
+#
+# This reduces the possibility of overlapping infrastructure operations
+# against the same development Terraform state.
+#
+# Existing runs are not automatically cancelled.
+# ------------------------------------------------------------------------------
+
+concurrency:
+  group: charlie-cafe-terraform-phase2-dev
+  cancel-in-progress: false
+
+# ==============================================================================
+# JOB 1 - TERRAFORM PLAN
+# ==============================================================================
+# Responsibilities:
+#   - Check out the repository.
+#   - Configure Terraform.
+#   - Authenticate with AWS using OIDC.
+#   - Package Lambda dependencies.
+#   - Initialize the Terraform backend.
+#   - Format and validate Terraform configurations.
+#   - Generate the Terraform execution plan.
+#   - Publish the plan for review.
+#
+# This job does not modify the infrastructure.
+# ==============================================================================
+
 jobs:
-  terraform:
+
+  terraform-plan:
+
+    name: Terraform Phase 2 - Plan
+
     runs-on: ubuntu-latest
+
+    # Prevent unexpectedly long Terraform planning operations.
+    timeout-minutes: 30
+
+    # --------------------------------------------------------------------------
+    # Job Environment Variables
+    # --------------------------------------------------------------------------
+
     env:
+
+      # Supply the database password through a protected GitHub repository
+      # secret rather than storing credentials in Terraform configuration files.
+      #
+      # Terraform automatically maps TF_VAR_db_password to the
+      # corresponding Terraform input variable.
       TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+
+    # --------------------------------------------------------------------------
+    # Default Working Directory
+    # --------------------------------------------------------------------------
+    # All Terraform CLI commands execute from the development environment.
+    # --------------------------------------------------------------------------
+
     defaults:
       run:
         working-directory: terraform/environments/dev
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+
+      # ========================================================================
+      # STEP 1 - CHECKOUT SOURCE CODE
+      # ========================================================================
+      # Retrieve the repository source code associated with this workflow run.
+      #
+      # Terraform configurations, Lambda packaging scripts, and backend
+      # configuration files are required for the subsequent steps.
+      # ========================================================================
+
+      - name: Checkout Charlie Cafe Repository
+
+        uses: actions/checkout@v4
+
+        with:
+          # Avoid persisting the GitHub token in the local Git configuration.
+          persist-credentials: false
+
+      # ========================================================================
+      # STEP 2 - SET UP TERRAFORM
+      # ========================================================================
+      # Install the specified Terraform CLI version.
+      #
+      # Pinning the CLI version helps maintain consistent behavior between
+      # local development and GitHub Actions execution.
+      # ========================================================================
+
+      - name: Setup Terraform CLI
+
+        uses: hashicorp/setup-terraform@v3
+
         with:
           terraform_version: 1.11.4
-      - name: Configure AWS credentials (OIDC)
+
+          # Disable the Terraform wrapper to use the native CLI exit codes.
+          terraform_wrapper: false
+
+      # ========================================================================
+      # STEP 3 - CONFIGURE AWS CREDENTIALS USING OIDC
+      # ========================================================================
+      # Authenticate with AWS without storing permanent AWS access keys.
+      #
+      # GitHub Actions requests an OIDC token and assumes the IAM role
+      # configured in the GitHub repository secret.
+      #
+      # Required GitHub Secret:
+      #   TERRAFORM_AWS_ROLE_ARN
+      #
+      # The IAM role must trust the GitHub OIDC provider and restrict access
+      # to the intended repository and branch/environment.
+      # ========================================================================
+
+      - name: Configure AWS Credentials - OIDC
+
         uses: aws-actions/configure-aws-credentials@v4
+
         with:
+
+          # AWS IAM role authorized to provision and inspect Phase 2 resources.
           role-to-assume: ${{ secrets.TERRAFORM_AWS_ROLE_ARN }}
+
+          # AWS region used by the development infrastructure.
           aws-region: us-east-1
-      - name: Package Lambda PyMySQL layer
-        run: bash ../../scripts/package-lambda-layer.sh
+
+          # Identify this session in AWS CloudTrail.
+          role-session-name: CharlieCafeTerraformPhase2Plan
+
+          # Restrict the lifetime of temporary AWS credentials.
+          role-duration-seconds: 3600
+
+      # ========================================================================
+      # STEP 4 - VERIFY AWS AUTHENTICATION
+      # ========================================================================
+      # Confirm that the workflow has successfully assumed the expected
+      # AWS IAM role before running Terraform commands.
+      #
+      # This helps identify incorrect AWS accounts or authentication settings.
+      # ========================================================================
+
+      - name: Verify AWS Identity
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Verifying AWS authentication..."
+
+          aws sts get-caller-identity
+
+          echo "AWS OIDC authentication completed successfully."
+
+      # ========================================================================
+      # STEP 5 - PACKAGE LAMBDA PYMYSQL DEPENDENCY LAYER
+      # ========================================================================
+      # Execute the project packaging script responsible for preparing
+      # the PyMySQL dependency layer required by the Lambda functions.
+      #
+      # The script is located inside:
+      #   terraform/scripts/package-lambda-layer.sh
+      #
+      # The generated Lambda layer must be available to Terraform before
+      # planning and applying infrastructure changes.
+      # ========================================================================
+
+      - name: Package Lambda PyMySQL Layer
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Packaging Lambda PyMySQL dependency layer..."
+
+          bash ../../scripts/package-lambda-layer.sh
+
+          echo "Lambda dependency packaging completed."
+
+      # ========================================================================
+      # STEP 6 - INITIALIZE TERRAFORM
+      # ========================================================================
+      # Initialize Terraform providers, modules, and the configured backend.
+      #
+      # backend.hcl contains the backend configuration for the development
+      # Terraform state.
+      #
+      # Terraform remote state should use appropriate access controls,
+      # encryption, and state locking.
+      # ========================================================================
+
       - name: Terraform Init
-        run: terraform init -backend-config=backend.hcl
-      - name: Terraform Format
-        run: terraform fmt -check -recursive ../../..
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Initializing Terraform development environment..."
+
+          terraform init -backend-config=backend.hcl
+
+          echo "Terraform initialization completed."
+
+      # ========================================================================
+      # STEP 7 - CHECK TERRAFORM FORMATTING
+      # ========================================================================
+      # Verify that Terraform configuration files follow the standard
+      # Terraform formatting conventions.
+      #
+      # The recursive check starts from the repository root.
+      #
+      # This step checks formatting only; it does not automatically modify
+      # Terraform files.
+      # ========================================================================
+
+      - name: Terraform Format Check
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Checking Terraform formatting..."
+
+          terraform fmt -check -recursive ../../..
+
+          echo "Terraform formatting validation completed."
+
+      # ========================================================================
+      # STEP 8 - VALIDATE TERRAFORM CONFIGURATION
+      # ========================================================================
+      # Validate the Terraform configuration syntax and internal consistency.
+      #
+      # Terraform Init must complete successfully before this step.
+      #
+      # This validation does not prove that AWS infrastructure changes
+      # will succeed or that the deployment role has all required permissions.
+      # ========================================================================
+
       - name: Terraform Validate
-        run: terraform validate
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Validating Terraform configuration..."
+
+          terraform validate
+
+          echo "Terraform validation completed successfully."
+
+      # ========================================================================
+      # STEP 9 - GENERATE TERRAFORM EXECUTION PLAN
+      # ========================================================================
+      # Generate a saved execution plan for the Phase 2 development environment.
+      #
+      # The plan is stored as:
+      #   phase2.tfplan
+      #
+      # The saved plan ensures that the Apply job uses the exact Terraform
+      # execution plan generated during this workflow run.
+      #
+      # No infrastructure modifications are performed by this command.
+      # ========================================================================
+
       - name: Terraform Plan
-        run: terraform plan -out=phase2.tfplan
-      - name: Apply (manual approval input only)
-        if: inputs.confirm_apply == true
-        run: terraform apply -auto-approve phase2.tfplan
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Generating Charlie Cafe Phase 2 Terraform plan..."
+
+          terraform plan -input=false -out=phase2.tfplan
+
+          echo "Terraform execution plan generated successfully."
+
+      # ========================================================================
+      # STEP 10 - DISPLAY TERRAFORM PLAN FOR REVIEW
+      # ========================================================================
+      # Convert the saved binary execution plan into readable text.
+      #
+      # Terraform marks sensitive values as sensitive where supported,
+      # but plan output must still be treated as potentially confidential.
+      #
+      # Review:
+      #   - AWS account and region.
+      #   - Resources to be created.
+      #   - Resources to be modified.
+      #   - Resources to be destroyed.
+      #   - IAM permissions and networking changes.
+      #   - Database and application infrastructure changes.
+      # ========================================================================
+
+      - name: Display Terraform Plan
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Displaying Terraform execution plan..."
+
+          terraform show -no-color phase2.tfplan
+
+      # ========================================================================
+      # STEP 11 - UPLOAD SAVED TERRAFORM PLAN
+      # ========================================================================
+      # Publish the binary execution plan as a short-lived GitHub Actions
+      # artifact so that it can be inspected and transferred to the Apply job.
+      #
+      # IMPORTANT:
+      # Terraform plan files may contain sensitive information.
+      # Access should be restricted to authorized repository users.
+      #
+      # Artifact retention is intentionally limited to one day.
+      # ========================================================================
+
+      - name: Upload Terraform Execution Plan
+
+        uses: actions/upload-artifact@v4
+
+        with:
+
+          # Artifact name used by the Apply job.
+          name: charlie-cafe-phase2-terraform-plan
+
+          # Saved binary Terraform execution plan.
+          path: terraform/environments/dev/phase2.tfplan
+
+          # Do not fail when an artifact path is unexpectedly missing.
+          if-no-files-found: error
+
+          # Keep the sensitive plan artifact for only one day.
+          retention-days: 1
+
+# ==============================================================================
+# JOB 2 - TERRAFORM APPLY
+# ==============================================================================
+# Responsibilities:
+#   - Run only when the operator explicitly enables confirm_apply.
+#   - Wait for the GitHub Environment approval gate.
+#   - Reconfigure AWS OIDC authentication.
+#   - Reinitialize the Terraform backend.
+#   - Download the saved execution plan.
+#   - Apply the exact reviewed Terraform plan.
+#
+# IMPORTANT:
+# Configure the "dev" GitHub Environment with required reviewers.
+# The environment protection rule is the actual approval mechanism.
+# ==============================================================================
+
+  terraform-apply:
+
+    name: Terraform Phase 2 - Apply
+
+    # The Apply job cannot start until the Plan job completes successfully.
+    needs: terraform-plan
+
+    # Apply is optional and requires explicit operator confirmation.
+    if: ${{ inputs.confirm_apply == true }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    # --------------------------------------------------------------------------
+    # GitHub Environment Approval
+    # --------------------------------------------------------------------------
+    # Configure a GitHub Environment named "dev" under:
+    #
+    # Repository Settings
+    #   -> Environments
+    #   -> dev
+    #   -> Required reviewers
+    #
+    # GitHub will pause this job until an authorized reviewer approves it.
+    # The approval occurs after the Terraform Plan job has completed.
+    # --------------------------------------------------------------------------
+
+    environment:
+      name: dev
+
+    # --------------------------------------------------------------------------
+    # Job Environment Variables
+    # --------------------------------------------------------------------------
+
+    env:
+
+      # Provide the database password to Terraform through GitHub Secrets.
+      TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+
+    # Use the same Terraform development working directory as the Plan job.
+    defaults:
+      run:
+        working-directory: terraform/environments/dev
+
+    steps:
+
+      # ========================================================================
+      # STEP 1 - CHECKOUT THE SAME SOURCE REVISION
+      # ========================================================================
+      # Retrieve the repository revision associated with this workflow run.
+      #
+      # The Apply job must use the same source commit as the Plan job.
+      # ========================================================================
+
+      - name: Checkout Charlie Cafe Repository
+
+        uses: actions/checkout@v4
+
+        with:
+          persist-credentials: false
+
+      # ========================================================================
+      # STEP 2 - SET UP THE SAME TERRAFORM VERSION
+      # ========================================================================
+      # Use the exact Terraform CLI version used to generate the saved plan.
+      #
+      # Changing Terraform versions between Plan and Apply can cause
+      # compatibility problems.
+      # ========================================================================
+
+      - name: Setup Terraform CLI
+
+        uses: hashicorp/setup-terraform@v3
+
+        with:
+          terraform_version: 1.11.4
+          terraform_wrapper: false
+
+      # ========================================================================
+      # STEP 3 - CONFIGURE AWS CREDENTIALS USING OIDC
+      # ========================================================================
+      # Obtain temporary AWS credentials for the infrastructure deployment.
+      #
+      # This step runs after the GitHub Environment approval gate.
+      # ========================================================================
+
+      - name: Configure AWS Credentials - OIDC
+
+        uses: aws-actions/configure-aws-credentials@v4
+
+        with:
+
+          role-to-assume: ${{ secrets.TERRAFORM_AWS_ROLE_ARN }}
+
+          aws-region: us-east-1
+
+          role-session-name: CharlieCafeTerraformPhase2Apply
+
+          role-duration-seconds: 3600
+
+      # ========================================================================
+      # STEP 4 - VERIFY AWS ACCOUNT
+      # ========================================================================
+      # Confirm the AWS identity before modifying infrastructure.
+      # ========================================================================
+
+      - name: Verify AWS Identity
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Verifying AWS deployment identity..."
+
+          aws sts get-caller-identity
+
+          echo "AWS identity verification completed."
+
+      # ========================================================================
+      # STEP 5 - PACKAGE LAMBDA PYMYSQL DEPENDENCY LAYER
+      # ========================================================================
+      # Recreate the Lambda dependency package on the Apply runner.
+      #
+      # GitHub-hosted jobs use separate runners, so files generated during
+      # the Plan job are not automatically available in this job.
+      #
+      # The packaging script must produce the same expected Terraform
+      # dependency artifact from the checked-out source revision.
+      # ========================================================================
+
+      - name: Package Lambda PyMySQL Layer
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Preparing Lambda dependency package for Terraform Apply..."
+
+          bash ../../scripts/package-lambda-layer.sh
+
+          echo "Lambda dependency package is ready."
+
+      # ========================================================================
+      # STEP 6 - INITIALIZE TERRAFORM BACKEND
+      # ========================================================================
+      # Initialize Terraform in the same development environment.
+      #
+      # The same backend configuration and state must be used for both
+      # Terraform Plan and Terraform Apply.
+      # ========================================================================
+
+      - name: Terraform Init
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Initializing Terraform before applying the saved plan..."
+
+          terraform init -backend-config=backend.hcl
+
+          echo "Terraform initialization completed."
+
+      # ========================================================================
+      # STEP 7 - DOWNLOAD SAVED TERRAFORM PLAN
+      # ========================================================================
+      # Retrieve the execution plan generated by the successful Plan job.
+      #
+      # The artifact is downloaded into the Terraform working directory.
+      # ========================================================================
+
+      - name: Download Terraform Execution Plan
+
+        uses: actions/download-artifact@v4
+
+        with:
+
+          name: charlie-cafe-phase2-terraform-plan
+
+          path: terraform/environments/dev
+
+      # ========================================================================
+      # STEP 8 - VERIFY SAVED PLAN EXISTS
+      # ========================================================================
+      # Ensure that the downloaded execution plan is available before
+      # performing infrastructure modifications.
+      # ========================================================================
+
+      - name: Verify Terraform Execution Plan
+
+        run: |
+
+          set -euo pipefail
+
+          if [[ ! -f "phase2.tfplan" ]]; then
+            echo "::error::Saved Terraform plan was not found."
+            exit 1
+          fi
+
+          echo "Saved Terraform execution plan found."
+
+      # ========================================================================
+      # STEP 9 - APPLY SAVED TERRAFORM PLAN
+      # ========================================================================
+      # Apply the exact saved execution plan generated by the Plan job.
+      #
+      # The -auto-approve option is safe here because:
+      #   1. The Plan job generated the execution plan.
+      #   2. The operator explicitly enabled confirm_apply.
+      #   3. The GitHub Environment approval gate has been satisfied.
+      #
+      # Terraform still validates that the saved plan is applicable against
+      # the current state. If the state has changed, the operation can fail
+      # rather than silently generating and applying a different plan.
+      # ========================================================================
+
+      - name: Terraform Apply
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Applying approved Charlie Cafe Phase 2 Terraform plan..."
+
+          terraform apply -input=false phase2.tfplan
+
+          echo "Terraform Apply completed successfully."
+
+      # ========================================================================
+      # STEP 10 - DEPLOYMENT SUMMARY
+      # ========================================================================
+      # Display a summary after successful infrastructure deployment.
+      # ========================================================================
+
+      - name: Terraform Deployment Summary
+
+        if: ${{ success() }}
+
+        run: |
+
+          set -euo pipefail
+
+          echo "================================================"
+          echo " Charlie Cafe - Terraform Phase 2"
+          echo "================================================"
+
+          echo "Environment       : Development"
+          echo "Terraform Version : 1.11.4"
+          echo "AWS Region        : us-east-1"
+          echo "Git Commit        : $GITHUB_SHA"
+          echo "Deployment Status : Successfully Applied"
+
+          echo "================================================"
