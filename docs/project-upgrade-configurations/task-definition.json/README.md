@@ -34,7 +34,65 @@ docs/
 | `legacy/` | Contains the original ECS task definition used in the manual AWS setup. |
 | `terraform/` | Contains the updated ECS task definition configuration for Terraform implementation. |
 
-## 3. Legacy Task Definition
+## 3. Configuration 
+
+### 1. legacy/task-definition.json
+
+```
+{
+  "family": "charlie-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::537236558357:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "charlie-container",
+      "image": "IMAGE_PLACEHOLDER",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 2. terraform/task-definition.json
+
+```
+{
+  "family": "charlie-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "REPLACE_WITH_TERRAFORM_ECS_EXECUTION_ROLE_ARN",
+  "taskRoleArn": "REPLACE_WITH_TERRAFORM_ECS_TASK_ROLE_ARN",
+  "containerDefinitions": [{
+    "name": "charlie-container",
+    "image": "REPLACE_WITH_ECR_IMAGE_URI",
+    "essential": true,
+    "portMappings": [{"containerPort": 80,"hostPort": 80,"protocol": "tcp"}],
+    "environment": [{"name":"DB_NAME","value":"cafedb"}],
+    "secrets": [
+      {"name":"DB_HOST","valueFrom":"REPLACE_WITH_DB_SECRET_ARN:host::"},
+      {"name":"DB_USER","valueFrom":"REPLACE_WITH_DB_SECRET_ARN:username::"},
+      {"name":"DB_PASS","valueFrom":"REPLACE_WITH_DB_SECRET_ARN:password::"}
+    ],
+    "logConfiguration": {"logDriver":"awslogs","options":{"awslogs-group":"/ecs/charlie-task","awslogs-region":"us-east-1","awslogs-stream-prefix":"ecs"}}
+  }]
+}
+
+```
+
+
+## 4. Legacy Task Definition
 
 **Location:** `legacy/task-definition.json`
 
@@ -62,7 +120,7 @@ The legacy version represents the original ECS Fargate task definition created d
 
 This version is preserved for historical reference and comparison with the Terraform implementation.
 
-## 4. Terraform Task Definition
+## 5. Terraform Task Definition
 
 **Location:** `terraform/task-definition.json`
 
@@ -99,7 +157,7 @@ These placeholders must be replaced with actual values before registering the EC
 
 In the final Terraform implementation, resource references and Terraform expressions should supply these values dynamically rather than relying on manually hardcoded AWS ARNs.
 
-## 5. Key Improvements in the Terraform Version
+## 6. Key Improvements in the Terraform Version
 
 | Feature | Legacy Version | Terraform Version |
 |---|---|---|
@@ -112,17 +170,17 @@ In the final Terraform implementation, resource references and Terraform express
 | CloudWatch Logging | No | Yes |
 | Terraform Integration | No | Yes |
 
-### 5.1 IAM Execution Role
+### 6.1 IAM Execution Role
 
 The execution role allows Amazon ECS to perform tasks required to start containers, including retrieving container images from Amazon ECR and sending logs to CloudWatch.
 
-### 5.2 IAM Task Role
+### 6.2 IAM Task Role
 
 The task role provides AWS permissions to the application running inside the ECS container.
 
 It is maintained separately from the execution role to follow AWS IAM least-privilege principles.
 
-### 5.3 Database Configuration
+### 6.3 Database Configuration
 
 The Terraform version defines the database name through an environment variable:
 
@@ -138,7 +196,7 @@ The following secret values are configured:
 
 This approach avoids directly storing database credentials inside the task definition.
 
-### 5.4 CloudWatch Logging
+### 6.4 CloudWatch Logging
 
 The Terraform version enables the AWS Logs driver.
 
@@ -152,7 +210,7 @@ This allows container logs to be collected and monitored through Amazon CloudWat
 
 **Important:** The CloudWatch log group must exist before the ECS task starts unless automatic log group creation is explicitly configured with the necessary permissions.
 
-## 6. Terraform Implementation Requirements
+## 7. Terraform Implementation Requirements
 
 Before deploying the Terraform task definition, ensure that the following AWS resources are available or managed by Terraform:
 
@@ -171,7 +229,7 @@ The ECS task role should contain only the permissions required by the applicatio
 
 The ECS task networking configuration must also allow connectivity to the database and required AWS services.
 
-## 7. Important Notes
+## 8. Important Notes
 
 - The `legacy/` directory must remain unchanged to preserve the original manual implementation.
 - The `terraform/` directory contains the updated configuration for Infrastructure as Code.
@@ -182,7 +240,7 @@ The ECS task networking configuration must also allow connectivity to the databa
 - Ensure the Secrets Manager secret JSON keys match `host`, `username`, and `password`.
 - Keep the AWS region consistent across Terraform resources and ECS logging configuration.
 
-## 8. Recommended Usage
+## 9. Recommended Usage
 
 | Implementation | Configuration to Use |
 |---|---|
@@ -191,7 +249,7 @@ The ECS task networking configuration must also allow connectivity to the databa
 
 The Terraform implementation should be the primary configuration going forward.
 
-## 9. Project Documentation Purpose
+## 10. Project Documentation Purpose
 
 This directory is part of the Charlie Cafe AWS DevOps project documentation.
 
