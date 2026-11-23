@@ -1,0 +1,5 @@
+bucket = "YOUR-BOOTSTRAP-STATE-BUCKET"
+key = "charlie-cafe/phase2/dev/terraform.tfstate"
+region = "us-east-1"
+encrypt = true
+use_lockfile = true

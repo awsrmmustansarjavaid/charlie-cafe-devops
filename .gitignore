@@ -1,45 +1,111 @@
-# -----------------------------
-# System Files
-# -----------------------------
+
+# ============================================================
+# SYSTEM FILES
+# Ignore operating system-generated files
+# ============================================================
 .DS_Store
 Thumbs.db
 
-# -----------------------------
-# Logs
-# -----------------------------
+# ============================================================
+# LOG FILES
+# Ignore application logs and generated log files
+# ============================================================
 *.log
 
-# -----------------------------
-# Environment Variables
-# -----------------------------
+# ============================================================
+# ENVIRONMENT VARIABLES & SECRETS
+# Ignore environment files containing sensitive credentials,
+# API keys, passwords, and configuration values
+# ============================================================
 .env
 
-# -----------------------------
-# Node / PHP Dependencies
-# -----------------------------
+# ============================================================
+# NODE.JS / PHP DEPENDENCIES
+# Ignore installed dependencies (reinstall using package managers)
+# ============================================================
 node_modules/
 vendor/
 
-# -----------------------------
-# Git (safety)
-# -----------------------------
+# ============================================================
+# GIT INTERNAL FILES
+# Ignore nested Git repositories and Git metadata
+# ============================================================
 .git
 
-# -----------------------------
-# Build Artifacts (IMPORTANT 🔥)
-# -----------------------------
+# ============================================================
+# BUILD ARTIFACTS & GENERATED PACKAGES
+# Ignore generated deployment packages, Lambda layers,
+# ZIP archives, and other build outputs
+# ============================================================
 layer/
 lambda_zips/
 pymysql-layer.zip
 
-# -----------------------------
-# Docker / Local Files
-# -----------------------------
+# ============================================================
+# DOCKER & LOCAL DEVELOPMENT FILES
+# Ignore locally generated Docker archives and Compose files
+# ============================================================
 docker/*.tar
 docker-compose.yml
 
-# -----------------------------
-# Docs
-# -----------------------------
+# ============================================================
+# DOCUMENTATION (OPTIONAL)
+# Uncomment these rules if you want Git to ignore documentation
+# ============================================================
 # docs/
 # README.md
+
+# ============================================================
+# TERRAFORM GENERATED FILES
+# Ignore Terraform working directories, state files,
+# execution plans, and generated binary artifacts
+# ============================================================
+
+# Terraform provider plugins and working directory
+**/.terraform/*
+
+# Terraform state files (may contain sensitive information)
+*.tfstate
+*.tfstate.*
+
+# Terraform execution plans
+*.tfplan
+
+# Terraform variable files (may contain sensitive values)
+# Keep example templates under version control
+*.tfvars
+!*.tfvars.example
+
+# Keep example backend configuration templates
+!backend.hcl.example
+
+# Ignore development environment backend configuration
+terraform/environments/dev/backend.hcl
+
+# Ignore generated Phase 2 execution plan
+terraform/environments/dev/phase2.tfplan
+
+# Ignore generated Lambda deployment ZIP package
+terraform/modules/lambda/lambda_bundle.zip
+
+# Ignore generated Phase 2 Terraform outputs
+terraform/environments/dev/phase2-outputs.json
+
+# ============================================================
+# PYTHON CACHE FILES
+# Ignore Python bytecode and automatically generated cache folders
+# ============================================================
+**/__pycache__/
+*.pyc
+
+# ============================================================
+# LAMBDA LAYER PACKAGES
+# Ignore generated PyMySQL Lambda dependency layer archive
+# ============================================================
+terraform/modules/lambda/pymysql-layer.zip
+
+# ============================================================
+# DUPLICATE SYSTEM FILE RULE
+# Ignore macOS metadata files
+# ============================================================
+.DS_Store

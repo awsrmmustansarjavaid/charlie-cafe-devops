@@ -1,0 +1,600 @@
+
+# ==============================================================================
+# Charlie Cafe - Application Deployment Pipeline
+# ==============================================================================
+#
+# Purpose:
+#   Automate the deployment of Charlie Cafe to AWS infrastructure.
+#
+# Supported deployment targets:
+#   1. EC2  - Deploy the existing application using AWS Systems Manager (SSM).
+#   2. ECS  - Build a Docker image, publish it to Amazon ECR, and deploy it
+#             to Amazon ECS using AWS CodeDeploy blue/green deployments.
+#   3. Both - Execute both deployment strategies.
+#
+# Security:
+#   - Uses GitHub Actions OIDC authentication.
+#   - Does not require permanent AWS access keys.
+#   - Uses minimum GitHub token permissions.
+#   - Keeps deployment configuration in GitHub Secrets or workflow inputs.
+#
+# Triggers:
+#   - Manual execution through workflow_dispatch.
+#   - Reusable execution through workflow_call.
+#
+# ==============================================================================
+
+name: Charlie Cafe Application Deploy
+
+# ------------------------------------------------------------------------------
+# Workflow Triggers
+# ------------------------------------------------------------------------------
+on:
+
+  # Allow authorized users to start deployments manually from GitHub Actions.
+  workflow_dispatch:
+    inputs:
+
+      deployment_target:
+        description: "Select the AWS deployment target."
+        required: true
+        type: choice
+        default: both
+        options:
+          - ec2
+          - ecs
+          - both
+
+      aws_region:
+        description: "AWS deployment region."
+        required: true
+        type: string
+        default: us-east-1
+
+      ec2_instance_id:
+        description: "EC2 instance ID (optional; falls back to GitHub Secret)."
+        required: false
+        type: string
+
+      ecr_repository:
+        description: "Amazon ECR repository name."
+        required: false
+        type: string
+
+      ecs_cluster:
+        description: "Amazon ECS cluster name."
+        required: false
+        type: string
+
+      ecs_service:
+        description: "Amazon ECS service name."
+        required: false
+        type: string
+
+      codedeploy_application:
+        description: "AWS CodeDeploy application name."
+        required: false
+        type: string
+
+      codedeploy_deployment_group:
+        description: "AWS CodeDeploy deployment group."
+        required: false
+        type: string
+
+  # Allow other GitHub Actions workflows to reuse this deployment pipeline.
+  workflow_call:
+    inputs:
+
+      deployment_target:
+        description: "Deployment target: ec2, ecs, or both."
+        required: false
+        type: string
+        default: both
+
+      aws_region:
+        description: "AWS deployment region."
+        required: false
+        type: string
+        default: us-east-1
+
+      ec2_instance_id:
+        description: "EC2 instance ID."
+        required: false
+        type: string
+
+      ecr_repository:
+        description: "Amazon ECR repository name."
+        required: false
+        type: string
+
+      ecs_cluster:
+        description: "Amazon ECS cluster name."
+        required: false
+        type: string
+
+      ecs_service:
+        description: "Amazon ECS service name."
+        required: false
+        type: string
+
+      codedeploy_application:
+        description: "AWS CodeDeploy application name."
+        required: false
+        type: string
+
+      codedeploy_deployment_group:
+        description: "AWS CodeDeploy deployment group."
+        required: false
+        type: string
+
+# ------------------------------------------------------------------------------
+# GitHub Token Permissions
+# ------------------------------------------------------------------------------
+# contents: read  - Allows the workflow to check out the repository.
+# id-token: write - Allows GitHub to request an OIDC token for AWS IAM.
+#
+# AWS access is granted through the IAM role assumed by the workflow.
+# ------------------------------------------------------------------------------
+
+permissions:
+  contents: read
+  id-token: write
+
+# ------------------------------------------------------------------------------
+# Deployment Concurrency
+# ------------------------------------------------------------------------------
+# Prevent overlapping deployments for the same branch or environment.
+# Existing deployments are not automatically cancelled.
+# ------------------------------------------------------------------------------
+
+concurrency:
+  group: charlie-cafe-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+# ------------------------------------------------------------------------------
+# Deployment Job
+# ------------------------------------------------------------------------------
+
+jobs:
+
+  deploy:
+
+    name: Deploy Charlie Cafe to AWS
+
+    runs-on: ubuntu-latest
+
+    # Maximum execution time for the complete deployment job.
+    timeout-minutes: 60
+
+    # --------------------------------------------------------------------------
+    # Environment Variables
+    # --------------------------------------------------------------------------
+
+    env:
+
+      # AWS region supplied through workflow input.
+      AWS_REGION: ${{ inputs.aws_region || 'us-east-1' }}
+
+      # Selected deployment target.
+      DEPLOYMENT_TARGET: ${{ inputs.deployment_target || 'both' }}
+
+      # Deployment configuration with workflow-input and secret fallback.
+      EC2_INSTANCE_ID: ${{ inputs.ec2_instance_id || secrets.EC2_INSTANCE_ID }}
+
+      ECR_REPOSITORY: ${{ inputs.ecr_repository || secrets.ECR_REPO }}
+
+      ECS_CLUSTER: ${{ inputs.ecs_cluster || secrets.ECS_CLUSTER }}
+
+      ECS_SERVICE: ${{ inputs.ecs_service || secrets.ECS_SERVICE }}
+
+      CODEDEPLOY_APPLICATION: ${{ inputs.codedeploy_application || secrets.CODEDEPLOY_APPLICATION }}
+
+      CODEDEPLOY_DEPLOYMENT_GROUP: ${{ inputs.codedeploy_deployment_group || secrets.CODEDEPLOY_DEPLOYMENT_GROUP }}
+
+      # Immutable Docker image tag based on the Git commit SHA.
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+
+      # ========================================================================
+      # STEP 1 - Checkout Repository
+      # ========================================================================
+
+      - name: Checkout Charlie Cafe Repository
+
+        uses: actions/checkout@v4
+
+        with:
+
+          # Do not persist the GitHub token in the local Git configuration.
+          persist-credentials: false
+
+      # ========================================================================
+      # STEP 2 - Validate Deployment Configuration
+      # ========================================================================
+
+      - name: Validate Deployment Configuration
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          echo "============================================"
+          echo " Charlie Cafe Deployment Configuration"
+          echo "============================================"
+
+          # Validate the selected deployment target.
+          case "$DEPLOYMENT_TARGET" in
+            ec2|ecs|both)
+              echo "Deployment target: $DEPLOYMENT_TARGET"
+              ;;
+            *)
+              echo "::error::Invalid deployment target: $DEPLOYMENT_TARGET"
+              exit 1
+              ;;
+          esac
+
+          # AWS region must be supplied.
+          if [[ -z "$AWS_REGION" ]]; then
+            echo "::error::AWS_REGION is required."
+            exit 1
+          fi
+
+          # Validate configuration required for EC2 deployments.
+          if [[ "$DEPLOYMENT_TARGET" == "ec2" || "$DEPLOYMENT_TARGET" == "both" ]]; then
+
+            if [[ -z "$EC2_INSTANCE_ID" ]]; then
+              echo "::error::EC2_INSTANCE_ID is required for EC2 deployment."
+              exit 1
+            fi
+
+          fi
+
+          # Validate configuration required for ECS deployments.
+          if [[ "$DEPLOYMENT_TARGET" == "ecs" || "$DEPLOYMENT_TARGET" == "both" ]]; then
+
+            [[ -n "$ECR_REPOSITORY" ]] || {
+              echo "::error::ECR_REPO is required."
+              exit 1
+            }
+
+            [[ -n "$ECS_CLUSTER" ]] || {
+              echo "::error::ECS_CLUSTER is required."
+              exit 1
+            }
+
+            [[ -n "$ECS_SERVICE" ]] || {
+              echo "::error::ECS_SERVICE is required."
+              exit 1
+            }
+
+            [[ -n "$CODEDEPLOY_APPLICATION" ]] || {
+              echo "::error::CODEDEPLOY_APPLICATION is required."
+              exit 1
+            }
+
+            [[ -n "$CODEDEPLOY_DEPLOYMENT_GROUP" ]] || {
+              echo "::error::CODEDEPLOY_DEPLOYMENT_GROUP is required."
+              exit 1
+            }
+
+            # Ensure all required deployment files exist.
+            [[ -f ".github/task-definition.json" ]] || {
+              echo "::error::ECS task definition file not found."
+              exit 1
+            }
+
+            [[ -f "appspec.yaml" ]] || {
+              echo "::error::AWS CodeDeploy appspec.yaml not found."
+              exit 1
+            }
+
+            [[ -f "docker/apache-php/Dockerfile" ]] || {
+              echo "::error::Dockerfile not found."
+              exit 1
+            }
+
+          fi
+
+          echo "Deployment configuration validation completed."
+
+      # ========================================================================
+      # STEP 3 - Configure AWS Authentication Using GitHub OIDC
+      # ========================================================================
+
+      - name: Configure AWS Credentials
+
+        uses: aws-actions/configure-aws-credentials@v4
+
+        with:
+
+          # IAM role trusted by the GitHub Actions OIDC identity provider.
+          role-to-assume: ${{ secrets.DEPLOY_AWS_ROLE_ARN }}
+
+          # AWS deployment region.
+          aws-region: ${{ env.AWS_REGION }}
+
+          # Identify the deployment session in AWS CloudTrail.
+          role-session-name: CharlieCafeGitHubDeployment
+
+          # Limit the lifetime of the assumed role credentials.
+          role-duration-seconds: 3600
+
+      # ========================================================================
+      # STEP 4 - Verify AWS Authentication
+      # ========================================================================
+
+      - name: Verify AWS Identity
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Verifying AWS deployment identity..."
+
+          aws sts get-caller-identity
+
+          echo "AWS authentication successful."
+
+      # ========================================================================
+      # EC2 DEPLOYMENT
+      # ========================================================================
+      # This section runs only when the selected deployment target includes EC2.
+      # Application files are updated through AWS Systems Manager.
+      # ========================================================================
+
+      # ========================================================================
+      # STEP 5 - Deploy Application to EC2 Using SSM
+      # ========================================================================
+
+      - name: Deploy Existing Application to EC2 via SSM
+
+        if: ${{ env.DEPLOYMENT_TARGET == 'ec2' || env.DEPLOYMENT_TARGET == 'both' }}
+
+        shell: bash
+
+        env:
+
+          INSTANCE_ID: ${{ env.EC2_INSTANCE_ID }}
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Starting Charlie Cafe EC2 deployment..."
+
+          # Execute the existing application deployment on the EC2 instance.
+          # The command is static and passed as a JSON parameter to avoid
+          # unsafe shell interpolation of workflow input values.
+          COMMAND='set -euo pipefail
+          cd /opt/charlie-cafe
+          git pull --ff-only
+          cp -a app/frontend/html/. /var/www/html/
+          cp -a app/frontend/php/. /var/www/html/
+          cp -a app/frontend/css app/frontend/js /var/www/html/
+          systemctl reload httpd'
+
+          # Convert the command into valid JSON for the SSM API.
+          PARAMETERS=$(jq -cn --arg command "sudo bash -lc $(printf '%q' "$COMMAND")" \
+            '{commands: [$command]}')
+
+          # Submit the remote deployment command and capture its command ID.
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --parameters "$PARAMETERS" \
+            --comment "Charlie Cafe application deployment - ${GITHUB_SHA}" \
+            --query "Command.CommandId" \
+            --output text)
+
+          if [[ -z "$COMMAND_ID" || "$COMMAND_ID" == "None" ]]; then
+            echo "::error::Failed to submit EC2 deployment command."
+            exit 1
+          fi
+
+          echo "SSM Command ID: $COMMAND_ID"
+
+          # Wait for the SSM command to finish.
+          # The waiter returns a non-zero status if the command fails.
+          set +e
+
+          aws ssm wait command-executed \
+            --command-id "$COMMAND_ID" \
+            --instance-id "$INSTANCE_ID"
+
+          WAITER_STATUS=$?
+
+          set -e
+
+          # Retrieve the final execution status and remote output.
+          INVOCATION=$(aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "$INSTANCE_ID" \
+            --output json)
+
+          STATUS=$(echo "$INVOCATION" | jq -r '.Status // "Unknown"')
+
+          echo "EC2 deployment status: $STATUS"
+
+          # Display remote command output for troubleshooting.
+          echo "$INVOCATION" | jq -r '.StandardOutputContent // empty'
+
+          # Display remote errors when present.
+          echo "$INVOCATION" | jq -r '.StandardErrorContent // empty'
+
+          # Do not report success when SSM execution failed or timed out.
+          if [[ "$WAITER_STATUS" -ne 0 || "$STATUS" != "Success" ]]; then
+            echo "::error::EC2 deployment failed. Final SSM status: $STATUS"
+            exit 1
+          fi
+
+          echo "EC2 application deployment completed successfully."
+
+      # ========================================================================
+      # ECS DEPLOYMENT
+      # ========================================================================
+      # This section runs only when the selected deployment target includes ECS.
+      #
+      # Deployment sequence:
+      #   1. Authenticate with Amazon ECR.
+      #   2. Build Docker image.
+      #   3. Push image to ECR.
+      #   4. Render ECS task definition.
+      #   5. Deploy using CodeDeploy blue/green.
+      # ========================================================================
+
+      # ========================================================================
+      # STEP 6 - Authenticate with Amazon ECR
+      # ========================================================================
+
+      - name: Login to Amazon ECR
+
+        if: ${{ env.DEPLOYMENT_TARGET == 'ecs' || env.DEPLOYMENT_TARGET == 'both' }}
+
+        id: login-ecr
+
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ========================================================================
+      # STEP 7 - Build and Push Docker Image
+      # ========================================================================
+
+      - name: Build and Push Charlie Cafe Docker Image
+
+        if: ${{ env.DEPLOYMENT_TARGET == 'ecs' || env.DEPLOYMENT_TARGET == 'both' }}
+
+        id: build-image
+
+        shell: bash
+
+        env:
+
+          # Registry URL generated by the ECR login action.
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+
+          # Target ECR repository.
+          REPOSITORY: ${{ env.ECR_REPOSITORY }}
+
+          # Unique image tag based on the source commit.
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+
+        run: |
+
+          set -euo pipefail
+
+          echo "Building Charlie Cafe Docker image..."
+
+          IMAGE_URI="$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+
+          # Build the application container using the project Dockerfile.
+          docker build \
+            --pull \
+            --file docker/apache-php/Dockerfile \
+            --tag "$IMAGE_URI" \
+            .
+
+          # Push the immutable image tag to Amazon ECR.
+          docker push "$IMAGE_URI"
+
+          # Export the image URI for subsequent deployment steps.
+          echo "image=$IMAGE_URI" >> "$GITHUB_OUTPUT"
+
+          echo "Docker image successfully published: $IMAGE_URI"
+
+      # ========================================================================
+      # STEP 8 - Render ECS Task Definition
+      # ========================================================================
+
+      - name: Render ECS Task Definition
+
+        if: ${{ env.DEPLOYMENT_TARGET == 'ecs' || env.DEPLOYMENT_TARGET == 'both' }}
+
+        id: render-task-definition
+
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+
+        with:
+
+          # Existing task definition maintained in source control.
+          task-definition: .github/task-definition.json
+
+          # Container name must match the name in task-definition.json.
+          container-name: charlie-container
+
+          # Replace the existing container image with the newly built image.
+          image: ${{ steps.build-image.outputs.image }}
+
+      # ========================================================================
+      # STEP 9 - Deploy ECS Using AWS CodeDeploy Blue/Green
+      # ========================================================================
+
+      - name: Deploy ECS Application Using CodeDeploy Blue Green
+
+        if: ${{ env.DEPLOYMENT_TARGET == 'ecs' || env.DEPLOYMENT_TARGET == 'both' }}
+
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+
+        with:
+
+          # Task definition generated in the previous step.
+          task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+
+          # Target ECS service and cluster.
+          service: ${{ env.ECS_SERVICE }}
+
+          cluster: ${{ env.ECS_CLUSTER }}
+
+          # AWS CodeDeploy AppSpec file.
+          codedeploy-appspec: appspec.yaml
+
+          # Existing CodeDeploy application.
+          codedeploy-application: ${{ env.CODEDEPLOY_APPLICATION }}
+
+          # Existing CodeDeploy deployment group.
+          codedeploy-deployment-group: ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}
+
+          # Wait for deployment completion and service stability.
+          wait-for-service-stability: true
+
+          # Use a consistent polling interval.
+          wait-max-delay-seconds: 15
+
+      # ========================================================================
+      # STEP 10 - Deployment Summary
+      # ========================================================================
+
+      - name: Charlie Cafe Deployment Summary
+
+        if: ${{ success() }}
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          echo "================================================"
+          echo " Charlie Cafe Deployment Completed Successfully"
+          echo "================================================"
+
+          echo "Deployment Target : $DEPLOYMENT_TARGET"
+          echo "AWS Region        : $AWS_REGION"
+          echo "Git Commit        : $GITHUB_SHA"
+          echo "Git Branch        : $GITHUB_REF_NAME"
+
+          if [[ "$DEPLOYMENT_TARGET" == "ec2" || "$DEPLOYMENT_TARGET" == "both" ]]; then
+            echo "EC2 Instance      : $EC2_INSTANCE_ID"
+          fi
+
+          if [[ "$DEPLOYMENT_TARGET" == "ecs" || "$DEPLOYMENT_TARGET" == "both" ]]; then
+            echo "ECS Cluster       : $ECS_CLUSTER"
+            echo "ECS Service       : $ECS_SERVICE"
+            echo "ECR Repository    : $ECR_REPOSITORY"
+            echo "Docker Image Tag  : $IMAGE_TAG"
+          fi
+
+          echo "================================================"

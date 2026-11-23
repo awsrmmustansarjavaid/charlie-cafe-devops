@@ -1,9 +1,23 @@
+
 version: 1
+
 Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "charlie-task"
+
+        # OLD (Before Terraform):
+        # TaskDefinition: "charlie-task"
+        #
+        # NEW (Terraform):
+        # <TASK_DEFINITION> is a CodeDeploy placeholder.
+        # CodeDeploy replaces it with the task definition
+        # revision from the deployment AppSpec.
+        TaskDefinition: <TASK_DEFINITION>
+
         LoadBalancerInfo:
-          ContainerName: "charlie-container"
+          # Container name remains unchanged.
+          ContainerName: charlie-container
+
+          # Container port remains unchanged.
           ContainerPort: 80

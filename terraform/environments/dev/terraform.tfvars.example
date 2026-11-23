@@ -1,0 +1,21 @@
+aws_region = "us-east-1"
+name_suffix = "-p2"
+vpc_cidr = "10.0.0.0/16"
+availability_zones = ["us-east-1a", "us-east-1b"]
+enable_nat_gateway = false
+ssh_cidr_blocks = []
+instance_type = "t2.micro"
+ec2_key_name = null
+db_name = "cafe_db"
+rds_initial_db_name = "cafedb"
+db_username = "cafe_user"
+# Supply with TF_VAR_db_password; do not store a production password in this file.
+db_instance_class = "db.t3.micro"
+db_allocated_storage = 20
+alb_certificate_arn = null
+cognito_domain_prefix = "charlie-cafe-auth-p2"
+# CloudFront callback/logout URLs are automatically added; add any extra custom URLs here.
+cognito_callback_urls = []
+cognito_logout_urls = []
+
+ecs_desired_count = 0
